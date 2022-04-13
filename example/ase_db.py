@@ -15,9 +15,9 @@ def main(args):  # pylint: disable=redefined-outer-name
 
             data = (
                 {
-                    "wB97x/6-31G(d).energy": mol["wB97x/6-31G(d).energy"].__float__(),
-                    "wB97x/6-31G(d).atomization_energy": mol["wB97x/6-31G(d).atomization_energy"].__float__(),
-                    "wB97x/6-31G(d).forces": mol["wB97x/6-31G(d).forces"].tolist(),
+                    "wB97x/6-31G(d).energy": mol["wB97x/6-31G(d).energy"],
+                    "wB97x/6-31G(d).atomization_energy": mol["wB97x/6-31G(d).atomization_energy"],
+                    "wB97x/6-31G(d).forces": mol["wB97x/6-31G(d).forces"],
                 },
             )
             db.write(atoms, data=data)
