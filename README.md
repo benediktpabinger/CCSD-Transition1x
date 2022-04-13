@@ -22,7 +22,7 @@ for molecule in dataloader:
     ...
 ```
 
-The molecule have the following keys available:
+The elements in the data loader each represent a single molecule. It is a dictionary that has the following keys available:
 *    formula:                           chemical formula for the molecule.
 *    positions:                         list of x, y, z coordinates of all atoms in the molecule in √Ö.
 *    atomic_numbers:                    list of atomic numbers ordered in the same way as positions.
