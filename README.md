@@ -1,6 +1,9 @@
-To get the Transition1x HDF5 file run
+#### Installation
+git clone {address}
+pip install .
 
-python get\_t1x.py --path
+
+
 
 
 
