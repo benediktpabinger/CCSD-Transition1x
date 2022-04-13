@@ -39,8 +39,8 @@ The ase\_db.py example we generate an ase.db database where each row has energy,
 #### Reference Energies
 
 The reference energies used to calculate atomization energy of the configurations are:
-    H) -13.62eV
-    C) -1029.41eV
-    N) -1484.87eV
-    O) -2041.83eV
-    F) -2712.82eV
+* H: -13.62eV
+* C: -1029.41eV
+* N: -1484.87eV
+* O: -2041.83eV
+* F: -2712.82eV
