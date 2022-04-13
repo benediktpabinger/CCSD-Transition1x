@@ -16,6 +16,7 @@ In python run
 
 ```
 import t1x.Dataloader
+
 dataloader = t1x.Dataloader(path_to_h5_file)
 for molecule in dataloader:
     energy = molecule["wB97x/6-31G(d).energy"]
@@ -33,3 +34,13 @@ The elements in the data loader each represent a single molecule. It is a dictio
 
 #### ase_db example
 The ase\_db.py example we generate an ase.db database where each row has energy, forces and atomization\_energy in the data-field.
+
+
+#### Reference Energies
+
+The reference energies used to calculate atomization energy of the configurations are:
+    H: -13.62eV
+    C: -1029.41eV
+    N: -1484.87eV
+    O: -2041.83eV
+    F: -2712.82eV
