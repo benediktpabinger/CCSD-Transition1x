@@ -35,10 +35,9 @@ class Dataloader:
 
                 for energy, force, positions in zip(energies, forces, positions):
                     d = {
-                        "wB97x/6-31G(d).energy": energy,
-                        "wB97x/6-31G(d).forces": force,
-                        "wB97x/6-31G(d).atomization_energy": energy
-                        - molecular_reference_energy,
+                        "wB97x/6-31G(d).energy": energy.__float__(),
+                        "wB97x/6-31G(d).atomization_energy": energy - molecular_reference_energy.__float__(),
+                        "wB97x/6-31G(d).forces": force.tolist(),
                         "positions": positions,
                         "formula": formula,
                         "atomic_numbers": atomic_numbers,
