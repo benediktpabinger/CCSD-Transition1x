@@ -11,6 +11,14 @@ if you want to run the ase_db.py example instead to install dependencies
 $ pip install '.[example]'
 ```
 
+To get the hdf5 file, run:
+
+```
+$ python get_t1x.py {path}
+```
+
+if no path is specified data will be downloaded in the current folder
+
 #### Usage
 In python run
 
@@ -19,7 +27,7 @@ import t1x.Dataloader
 
 dataloader = t1x.Dataloader(path_to_h5_file)
 for molecule in dataloader:
-    energy = molecule["wB97x/6-31G(d).energy"]
+    energy = molecule["wB97x_6-31G(d).energy"]
     ...
 ```
 
@@ -34,5 +42,3 @@ The elements in the data loader each represent a single molecule. It is a dictio
 
 #### ase_db example
 The ase\_db.py example we generate an ase.db database where each row has energy, forces and atomization\_energy in the data-field.
-
-
