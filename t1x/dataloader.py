@@ -1,3 +1,5 @@
+# pylint: disable=stop-iteration-return
+
 import h5py
 
 REFERENCE_ENERGIES = {
@@ -17,30 +19,54 @@ def get_molecular_reference_energy(atomic_numbers):
     return molecular_reference_energy
 
 
+def generator(formula, rxn, grp):
+    """ Iterates through a h5 group """
+
+    energies = grp["wB97x_6-31G(d).energy"]
+    forces = grp["wB97x_6-31G(d).forces"]
+    atomic_numbers = list(grp["atomic_numbers"])
+    positions = grp["positions"]
+    molecular_reference_energy = get_molecular_reference_energy(atomic_numbers)
+
+    for energy, force, positions in zip(energies, forces, positions):
+        d = {
+            "rxn": rxn,
+            "wB97x_6-31G(d).energy": energy.__float__(),
+            "wB97x_6-31G(d).atomization_energy": energy
+            - molecular_reference_energy.__float__(),
+            "wB97x_6-31G(d).forces": force.tolist(),
+            "positions": positions,
+            "formula": formula,
+            "atomic_numbers": atomic_numbers,
+        }
+
+        yield d
+
+
 class Dataloader:
-    def __init__(self, hdf5_file):
+    """
+    Can iterate through h5 data set for paper ####
+    hdf5_file: path to data
+    only_final: if this is True, the iterator will only loop through reactant, product and transition
+    state for each reaction. If not the transition state is include
+    """
+
+    def __init__(self, hdf5_file, only_final=False):
         self.hdf5_file = hdf5_file
+        self.only_final = only_final
 
     def __iter__(self):
         with h5py.File(self.hdf5_file, "r") as f:
-            for grp in f.values():
-                formula = grp.name.lstrip("/")
-                energies = grp["wB97x/6-31G(d).energy"]
-                forces = grp["wB97x/6-31G(d).forces"]
-                atomic_numbers = list(grp["atomic_numbers"])
-                positions = grp["positions"]
-                molecular_reference_energy = get_molecular_reference_energy(
-                    atomic_numbers
-                )
+            for formula, grp in f.items():
+                for rxn, subgrp in grp.items():
+                    reactant = next(generator(formula, rxn, subgrp['reactant']))
+                    product = next(generator(formula, rxn, subgrp['product']))
+                    yield reactant
+                    yield product
 
-                for energy, force, positions in zip(energies, forces, positions):
-                    d = {
-                        "wB97x/6-31G(d).energy": energy.__float__(),
-                        "wB97x/6-31G(d).atomization_energy": energy - molecular_reference_energy.__float__(),
-                        "wB97x/6-31G(d).forces": force.tolist(),
-                        "positions": positions,
-                        "formula": formula,
-                        "atomic_numbers": atomic_numbers,
-                    }
-
-                    yield d
+                    if self.only_final:
+                        transition_state = next(generator(formula, rxn, subgrp['transition_state']))
+                        yield transition_state
+                    else:
+                        for molecule in generator(formula, rxn, subgrp):
+                            yield molecule
