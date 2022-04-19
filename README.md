@@ -38,7 +38,7 @@ The elements in the data loader each represent a single molecule. It is a dictio
 *    atomic_numbers:                    list of atomic numbers ordered in the same way as positions.
 *    wB97x_6-31G(d).energy:             total energy of molecule in eV.
 *    wB97x_6-31G(d).atomization_energy: atomization energy of molecule in eV.
-*    wB97x_6-31G(d).forces:             list of x, y, z forces on each atom ordered in the same way as positions in eV/Å.
+*    wB97x_6-31G(d).forces:             list of x, y, z forces on each atom in eV/Å - atoms are ordered in the same way as in positions.
 
 
 It is also possible to go through the reactant, transition state and product only by setting 'only_final' kwarg to True when instantiating the data loader.
