@@ -59,12 +59,19 @@ class Dataloader:
         with h5py.File(self.hdf5_file, "r") as f:
             for formula, grp in f.items():
                 for rxn, subgrp in grp.items():
-                    reactant = next(generator(formula, rxn, subgrp['reactant']))
-                    product = next(generator(formula, rxn, subgrp['product']))
+                    reactant = next(generator(formula, rxn, subgrp["reactant"]))
+                    product = next(generator(formula, rxn, subgrp["product"]))
 
                     if self.only_final:
-                        transition_state = next(generator(formula, rxn, subgrp['transition_state']))
-                        yield {'reactant': reactant, 'product': product, 'transition_state': transition_state}
+                        transition_state = next(
+                            generator(formula, rxn, subgrp["transition_state"])
+                        )
+                        yield {
+                            "rxn": rxn,
+                            "reactant": reactant,
+                            "product": product,
+                            "transition_state": transition_state,
+                        }
                     else:
                         yield reactant
                         yield product
