@@ -47,6 +47,8 @@ In this case the data loader will return dictionaries where the configurations c
 dataloader = t1x.Dataloader(path_to_h5_file, only_final=True)
 for molecule in dataloader:
     ts_energy = molecule["transition_state"]["wB97x_6-31G(d).energy"]
+    r_energy = molecule["reactant"]["wB97x_6-31G(d).energy"]
+    activation_energy = ts_energy - r_energy
     ...
 ```
 
