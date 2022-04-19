@@ -32,12 +32,13 @@ for molecule in dataloader:
 ```
 
 The elements in the data loader each represent a single molecule. It is a dictionary that has the following keys available:
+*    rxn:                               the name of the reaction that the molecule is coming from
 *    formula:                           chemical formula for the molecule.
-*    positions:                         list of x, y, z coordinates of all atoms in the molecule in √Ö.
+*    positions:                         list of x, y, z coordinates of all atoms in the molecule in Å.
 *    atomic_numbers:                    list of atomic numbers ordered in the same way as positions.
-*    wB97x_6-31G(d).energy:             total energy of molecule
-*    wB97x_6-31G(d).atomization_energy: atomization energy of molecule
-*    wB97x_6-31G(d).forces:             list of x, y, z forces on each atom ordered in the same way as positions.
+*    wB97x_6-31G(d).energy:             total energy of molecule in eV.
+*    wB97x_6-31G(d).atomization_energy: atomization energy of molecule in eV.
+*    wB97x_6-31G(d).forces:             list of x, y, z forces on each atom ordered in the same way as positions in eV/Å.
 
 
 It is also possible to go through the reactant, transition state and product only by setting 'only_final' kwarg to True when instantiating the data loader.
