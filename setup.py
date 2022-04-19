@@ -7,6 +7,6 @@ setup(
     packages=find_packages(),
     install_requires=['h5py'],
     extras_require={
-        "example": ["ase"],
+        "example": ["ase","tqdm"],
     },
 )
