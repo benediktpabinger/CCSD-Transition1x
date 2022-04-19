@@ -61,12 +61,12 @@ class Dataloader:
                 for rxn, subgrp in grp.items():
                     reactant = next(generator(formula, rxn, subgrp['reactant']))
                     product = next(generator(formula, rxn, subgrp['product']))
-                    yield reactant
-                    yield product
 
                     if self.only_final:
                         transition_state = next(generator(formula, rxn, subgrp['transition_state']))
-                        yield transition_state
+                        yield {'reactant': reactant, 'product': product, 'transition_state': transition_state}
                     else:
+                        yield reactant
+                        yield product
                         for molecule in generator(formula, rxn, subgrp):
                             yield molecule
