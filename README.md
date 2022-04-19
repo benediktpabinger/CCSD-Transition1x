@@ -5,19 +5,19 @@ $ git clone {address}
 $ cd T1x
 $ pip install .
 ```
-if you want to run the ase_db.py example instead to install dependencies
+if you want to run the ase\_db.py example instead to install dependencies
 
 ```
 $ pip install '.[example]'
 ```
 
-To get the hdf5 file, run:
+To download the hdf5 file to a given path, run:
 
 ```
 $ python get_t1x.py {path}
 ```
 
-if no path is specified data will be downloaded in the current folder
+The data will be downloaded to the current folder if no path is specified.
 
 #### Usage
 In python run
@@ -35,9 +35,9 @@ The elements in the data loader each represent a single molecule. It is a dictio
 *    formula:                           chemical formula for the molecule.
 *    positions:                         list of x, y, z coordinates of all atoms in the molecule in √Ö.
 *    atomic_numbers:                    list of atomic numbers ordered in the same way as positions.
-*    wB97x/6-31G(d).energy:             total energy of molecule
-*    wB97x/6-31G(d).atomization_energy: atomization energy of molecule
-*    wB97x/6-31G(d).forces:             list of x, y, z forces on each atom ordered in the same way as positions.
+*    wB97x_6-31G(d).energy:             total energy of molecule
+*    wB97x_6-31G(d).atomization_energy: atomization energy of molecule
+*    wB97x_6-31G(d).forces:             list of x, y, z forces on each atom ordered in the same way as positions.
 
 
 It is also possible to go through the reactant, transition state and product only by setting 'only_final' kwarg to True when instantiating the data loader.
