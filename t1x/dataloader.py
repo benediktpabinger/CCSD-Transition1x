@@ -46,9 +46,11 @@ def generator(formula, rxn, grp):
 class Dataloader:
     """
     Can iterate through h5 data set for paper ####
+
     hdf5_file: path to data
-    only_final: if this is True, the iterator will only loop through reactant, product and transition
-    state for each reaction. If not the transition state is include
+    only_final: if True, the iterator will only loop through reactant, product and transition
+    state instead of all configurations for each reaction and return them in dictionaries.
+
     """
 
     def __init__(self, hdf5_file, only_final=False):
