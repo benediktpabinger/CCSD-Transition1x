@@ -41,8 +41,20 @@ The elements in the data loader each represent a single molecule. It is a dictio
 *    wB97x_6-31G(d).forces:             list of x, y, z forces on each atom in eV/Å - atoms are ordered in the same way as in positions.
 
 
-It is also possible to go through the reactant, transition state and product only by setting 'only_final' kwarg to True when instantiating the data loader.
+It is possible to provide a datasplit key to the dataloader from 'train', 'val' or 'test' to only iterate through the training, validation or test data, respectively.
+
+```
+dataloader = t1x.Dataloader(path_to_h5_file, datasplit='test')
+for molecule in dataloader:
+    energy = molecule["wB97x_6-31G(d).energy"] # Molecule from test-data
+    ...
+```
+
+Finally, it is possible to go through the reactant, transition state and product only by setting 'only_final' kwarg to True when instantiating the data loader.
 In this case the data loader will return dictionaries where the configurations can be accessed under 'product', 'transition_state' or 'reactant'.
+
+
+
 
 ```
 dataloader = t1x.Dataloader(path_to_h5_file, only_final=True)
