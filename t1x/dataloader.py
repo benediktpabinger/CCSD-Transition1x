@@ -52,24 +52,24 @@ class Dataloader:
     state instead of all configurations for each reaction and return them in dictionaries.
     """
 
-    def __init__(self, hdf5_file, only_final=False, datasplit=None):
+    def __init__(self, hdf5_file, datasplit="data", only_final=False):
         self.hdf5_file = hdf5_file
         self.only_final = only_final
 
         self.datasplit = datasplit
         if datasplit:
             assert datasplit in [
+                "data",
                 "train",
                 "val",
                 "test",
-            ], "datasplit must be one of 'train', 'val' or 'test'"
+            ], "datasplit must be one of 'all', 'train', 'val' or 'test'"
 
     def __iter__(self):
         with h5py.File(self.hdf5_file, "r") as f:
-            if self.datasplit:
-                f = f[self.datasplit]
+            split = f[self.datasplit]
 
-            for formula, grp in f.items():
+            for formula, grp in split.items():
                 for rxn, subgrp in grp.items():
                     reactant = next(generator(formula, rxn, subgrp["reactant"]))
                     product = next(generator(formula, rxn, subgrp["product"]))
