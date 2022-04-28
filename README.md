@@ -11,10 +11,10 @@ if you want to run the ase\_db.py example instead to install dependencies
 $ pip install '.[example]'
 ```
 
-To download the hdf5 file to a given path, run:
+To download the hdf5 file to a given path (default is '.'), run:
 
 ```
-$ python get_t1x.py {path}
+$ python download_t1x.py {path}
 ```
 
 The data will be downloaded to the current folder if no path is specified.
