@@ -1,7 +1,7 @@
 #### Installation
 To install, run:
 ```
-$ git clone {address}
+$ git clone https://gitlab.gbar.dtu.dk/sure/Transition1x
 $ cd T1x
 $ pip install .
 ```
