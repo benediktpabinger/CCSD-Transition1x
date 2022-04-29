@@ -1,0 +1,6 @@
+t1x_test.db
+venv/*
+*egg-info*
+*__pycache__*
+build/
+
