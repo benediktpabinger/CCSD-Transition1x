@@ -4,7 +4,7 @@ from urllib.request import urlretrieve
 
 
 def main(args):  # pylint: disable=redefined-outer-name
-    os.makedirs(args.dir,exist_ok=True) # , exists_ok=True)
+    os.makedirs(args.dir,exist_ok=True)
 
     urlretrieve(
         "https://figshare.com/ndownloader/files/34935780",
