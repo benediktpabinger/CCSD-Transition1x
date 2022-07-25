@@ -7,7 +7,7 @@ def main(args):  # pylint: disable=redefined-outer-name
     os.makedirs(args.dir,exist_ok=True)
 
     urlretrieve(
-        "https://figshare.com/ndownloader/files/34935780",
+        "https://figshare.com/ndownloader/files/34935789",
         os.path.join(args.dir, "t1x.h5"),
     )
 
