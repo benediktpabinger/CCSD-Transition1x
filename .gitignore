@@ -4,3 +4,10 @@ venv/*
 *__pycache__*
 build/
 
+
+test_rxns/*
+
+integration_test/t1x.db
+integration_test/t1x.h5
+test.index.json
+example/make_ts_dataset.py
