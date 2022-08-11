@@ -27,7 +27,7 @@ def main(args):  # pylint: disable=redefined-outer-name
     print(f"Downloading Transition1x data to {args.dir}/transition1x.h5")
     urlretrieve(
         "https://figshare.com/ndownloader/files/36035789",
-        os.path.join(args.dir, "Transition1x.h5"),
+        os.path.join(args.dir, "transition1x.h5"),
         ProgressBar()
     )
 
