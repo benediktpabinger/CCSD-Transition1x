@@ -1,7 +1,7 @@
 #### Installation
 To install, run:
 ```
-$ git clone https://gitlab.com/matschreiner/T1x
+$ git clone https://gitlab.com/matschreiner/Transition1x
 $ cd Transition1x
 $ pip install .
 ```
