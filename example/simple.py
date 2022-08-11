@@ -8,10 +8,9 @@ def main(args):  # pylint: disable=redefined-outer-name
     # loop through all configurations in the data set
     dataloader = Dataloader(args.h5file)
     for i, configuration in enumerate(dataloader):
-        print(configuration.pop('formula'))
-        print("##########")
+        print('\n', configuration.pop('formula'), "\n##########")
+
         pprint(configuration)
-        print('\n')
         if i>10:
             break
 
