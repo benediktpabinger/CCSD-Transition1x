@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from pprint import pprint
 
-from t1x import Dataloader
+from transition1x import Dataloader
 
 
 def main(args):  # pylint: disable=redefined-outer-name

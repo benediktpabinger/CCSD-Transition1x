@@ -3,7 +3,7 @@ import os
 from ase import Atoms
 from ase.io import write
 
-from t1x import Dataloader
+from transition1x import Dataloader
 
 
 def main(args):  # pylint: disable=redefined-outer-name

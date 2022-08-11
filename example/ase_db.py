@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 
 import ase.db
 from ase import Atoms
-from t1x import Dataloader
+from transition1x import Dataloader
 from tqdm import tqdm
 
 
