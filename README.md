@@ -2,7 +2,7 @@
 To install, run:
 ```
 $ git clone https://gitlab.com/matschreiner/T1x
-$ cd T1x
+$ cd Transition1x
 $ pip install .
 ```
 if you want to run the ase\_db.py example instead to install dependencies
