@@ -23,7 +23,7 @@ The data will be downloaded to the current folder if no path is specified.
 In python run
 
 ```
-from t1x import Dataloader
+from transition1x import Dataloader
 
 dataloader = Dataloader(path_to_h5_file)
 for molecule in dataloader:
