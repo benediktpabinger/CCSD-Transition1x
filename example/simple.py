@@ -7,19 +7,17 @@ from transition1x import Dataloader
 def main(args):  # pylint: disable=redefined-outer-name
     # loop through all configurations in the data set
     dataloader = Dataloader(args.h5file)
-    for configuration in dataloader:
+    for i, configuration in enumerate(dataloader):
+        print(configuration.pop('formula'))
+        print("##########")
         pprint(configuration)
-
-
-    # loop through all product, reactant, transition state triplets in the dat aset
-    dataloader = Dataloader(args.h5file, only_final=True)
-    for configuration in dataloader:
-        pprint(configuration)
-
+        print('\n')
+        if i>10:
+            break
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("h5file")
+    parser.add_argument("h5file", nargs='?', default="data/transition1x.h5")
     args = parser.parse_args()
 
     main(args)
