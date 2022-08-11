@@ -34,7 +34,7 @@ def main(args):  # pylint: disable=redefined-outer-name
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("dir", default=".")
+    parser.add_argument("dir", nargs="?", default="data")
     args = parser.parse_args()
 
     main(args)
