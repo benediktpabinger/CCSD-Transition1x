@@ -42,8 +42,8 @@ def main(args):  # pylint: disable=redefined-outer-name
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument("h5file")
-    parser.add_argument("db")
+    parser.add_argument("h5file", nargs="?", default='data/transition1x.h5')
+    parser.add_argument("db", nargs="?", default='data/transition1x.db')
     args = parser.parse_args()
 
     main(args)
