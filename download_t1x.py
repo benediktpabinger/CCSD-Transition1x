@@ -24,7 +24,7 @@ class ProgressBar:
 def main(args):  # pylint: disable=redefined-outer-name
     os.makedirs(args.dir, exist_ok=True)
 
-    print(f"Downloading Transition1x data to {args.dir}/Transition1x.h5")
+    print(f"Downloading Transition1x data to {args.dir}/transition1x.h5")
     urlretrieve(
         "https://figshare.com/ndownloader/files/36035789",
         os.path.join(args.dir, "Transition1x.h5"),
