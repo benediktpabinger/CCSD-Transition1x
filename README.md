@@ -94,7 +94,7 @@ The original data can be fetched here 'https://zenodo.org/record/3715478#.YyxLJe
 
 Unzip the data and run the NEB script on all:
 ```
-$ python neb.py --output {output_path} --reactant {reaction_path}/reactant.xyz --product {reaction_path}/product.xyz --transition-state {reaction_path}/transition-state.xyz --output {path_to_output} --orcabinary {path_to_orca_binary}
+$ scripts/python neb.py --output {output_path} --reactant {reaction_path}/reactant.xyz --product {reaction_path}/product.xyz --transition-state {reaction_path}/transition-state.xyz --output {path_to_output} --orcabinary {path_to_orca_binary}
 ```
 
 It is also possible to specify
@@ -132,3 +132,12 @@ Running the above code on a reaction will produce the following files in the {ou
 * xyz - this directory contains xyz files of reactant, product and transition state
 * orca - this directory is used by orca to perform its calculations. ORCA files for last iteration of the algorithm can be found here.
 
+Compile a JSON list with paths to all output directories for all converged reactions and run
+
+```
+$ python scripts/combine_dbs.py --h5file {path_to_h5_output} --rxns {path_to_json_list}
+```
+
+This will generate the Transition1x.h5 file that has been released with the paper.
+
+Please feel free to contact me if you have any questions regarding the dataset.
