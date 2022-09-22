@@ -5,7 +5,7 @@ $ git clone https://gitlab.com/matschreiner/Transition1x
 $ cd Transition1x
 $ pip install .
 ```
-if you want to run the ase\_db.py example instead to install dependencies
+if you want to run the ase\_db.py example or generate the dataset from scratch, instead install dependencies by running
 
 ```
 $ pip install '.[example]'
@@ -139,5 +139,4 @@ $ python scripts/combine_dbs.py --h5file {path_to_h5_output} --rxns {path_to_jso
 ```
 
 This will generate the Transition1x.h5 file that has been released with the paper.
-
 Please feel free to contact me if you have any questions regarding the dataset.
