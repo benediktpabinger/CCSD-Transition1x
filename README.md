@@ -89,8 +89,8 @@ $ python example/simple.py {path_h5}
 
 #### Data generation
 To generate the dataset from scratch:
-Download and install ORCA [here]('https://www.orcasoftware.de/tutorials_orca/').
-The original data can be fetched [here]('https://zenodo.org/record/3715478#.YyxLJexBxqs'). Download the zipped directory 'wb97xd3.tar.gz' - [this]('https://zenodo.org/record/3715478/files/wb97xd3.tar.gz?download=1') is a direct link to the file.
+Download and install ORCA 'https://www.orcasoftware.de/tutorials_orca/'.
+The original data can be fetched 'https://zenodo.org/record/3715478#.YyxLJexBxqs'. Download the zipped directory 'wb97xd3.tar.gz' - 'https://zenodo.org/record/3715478/files/wb97xd3.tar.gz?download=1' is a direct link to the file.
 
 Unzip the data and run the NEB script on all:
 ```
