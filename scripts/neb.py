@@ -68,6 +68,7 @@ def main(args):  # pylint: disable=redefined-outer-name
 
     if converged:
         open(os.path.join(args.output, "converged"), "w")
+        print("Reaction converged ... ")
 
     fig = plot_mep(neb_tools)
     fig.savefig(os.path.join(args.output, "mep.png"))
