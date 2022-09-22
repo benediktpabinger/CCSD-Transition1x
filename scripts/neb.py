@@ -41,8 +41,8 @@ def main(args):  # pylint: disable=redefined-outer-name
         )
 
     print("Relaxing endpoints ... ")
-    # BFGS(atom_configs[0]).run()
-    # BFGS(atom_configs[-1]).run()
+    BFGS(atom_configs[0]).run()
+    BFGS(atom_configs[-1]).run()
 
     print("Interpolating band ... ")
     interpolate_band(atom_configs, args.transition_state)
