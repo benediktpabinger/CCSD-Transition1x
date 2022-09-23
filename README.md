@@ -94,7 +94,7 @@ The original data can be fetched here 'https://zenodo.org/record/3715478#.YyxLJe
 
 Unzip the data and run the NEB script on all:
 ```
-$ scripts/python neb.py --output {output_path} --reactant {reaction_path}/reactant.xyz --product {reaction_path}/product.xyz --transition-state {reaction_path}/transition-state.xyz --output {path_to_output} --orcabinary {path_to_orca_binary}
+$ python scripts/neb.py --output {output_path} --reactant {reaction_path}/reactant.xyz --product {reaction_path}/product.xyz --transition-state {reaction_path}/transition-state.xyz --output {path_to_output} --orcabinary {path_to_orca_binary}
 ```
 
 It is also possible to specify
