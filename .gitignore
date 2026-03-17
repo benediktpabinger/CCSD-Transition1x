@@ -21,8 +21,9 @@ data/*.h5
 data/*.tar.gz
 data/*.db
 
-# CCSD calculation outputs
+# CCSD calculation outputs — exclude ORCA files but keep JSON results
 ccsd_rxn*/
+!ccsd_rxn*/*.json
 logs/
 *.gbw
 *.densities
