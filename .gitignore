@@ -17,6 +17,9 @@ data/transition1x.h5
 data/transition1x.db
 data/formula_reaction_index.json
 data/Transition1x.h5
+data/*.h5
+data/*.tar.gz
+data/*.db
 
 # CCSD calculation outputs
 ccsd_rxn*/
