@@ -16,3 +16,11 @@ playground/*
 data/transition1x.h5
 data/transition1x.db
 data/formula_reaction_index.json
+data/Transition1x.h5
+
+# CCSD calculation outputs
+ccsd_rxn*/
+logs/
+*.gbw
+*.densities
+*.tmp
