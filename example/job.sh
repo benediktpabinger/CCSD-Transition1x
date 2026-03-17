@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --job-name=ccsd_job
 #SBATCH --partition=xeon24el8
-#SBATCH --array=0-9                  # 10 Jobs (0 bis 9)
+#SBATCH --array=0-19                 # 20 Jobs (0 bis 19)
 #SBATCH --time=02:00:00              # max 2 Stunden pro Job
 #SBATCH --mem=8GB
 #SBATCH --cpus-per-task=1
@@ -10,12 +10,12 @@
 # ============================================================
 # EINSTELLUNGEN — hier anpassen
 # ============================================================
-REACTION=${1:-rxn1961}   # Reaktion als Argument: sbatch job.sh rxn1234
-                         # oder Standard rxn1961 wenn kein Argument
+REACTION=${1:-rxn0103}   # Reaktion als Argument: sbatch job.sh rxn1234
+                         # oder Standard rxn0103 wenn kein Argument
 H5FILE=~/data/Transition1x.h5
 SPLIT=test
 BASIS=cc-pVDZ
-N_JOBS=10
+N_JOBS=20
 # ============================================================
 
 # --- Setup ---
@@ -28,7 +28,7 @@ module load Python/3.13.5-GCCcore-14.3.0
 module load ASE
 
 # Prevent OpenMP from spawning extra threads that conflict with MPI (ORCA exit 125)
-export OMP_NUM_THREADS=1
+export OMP_NUM_THREADS=4
 export MKL_NUM_THREADS=1
 
 # --- Anzahl Configs automatisch aus dem HDF5 lesen ---
