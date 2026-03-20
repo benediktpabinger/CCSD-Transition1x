@@ -31,7 +31,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from ase import Atoms
 from ase.calculators.orca import ORCA, OrcaProfile
-from ase.io import write
+from ase.io import read, write
 from ase.mep import NEB, NEBTools
 from ase.mep.neb import NEBOptimizer
 from ase.optimize.bfgs import BFGS
@@ -203,15 +203,23 @@ def main(args):
         os.makedirs(calc_dir, exist_ok=True)
         atoms.calc = make_mp2_calculator('orca', calc_dir, args.basis, args.nprocs)
 
-    # Relax endpoints with MP2
-    print("Relaxing reactant with MP2 ...")
-    BFGS(images[0], logfile=os.path.join(args.output, 'relax_r.log')).run(fmax=0.05)
+    # Relax endpoints with MP2 — skip if already done
+    r_xyz = os.path.join(args.output, 'reactant.xyz')
+    p_xyz = os.path.join(args.output, 'product.xyz')
 
-    print("Relaxing product with MP2 ...")
-    BFGS(images[-1], logfile=os.path.join(args.output, 'relax_p.log')).run(fmax=0.05)
+    if args.skip_relax and os.path.exists(r_xyz) and os.path.exists(p_xyz):
+        print("Skipping endpoint relaxation — loading existing reactant.xyz and product.xyz ...")
+        images[0].set_positions(read(r_xyz).get_positions())
+        images[-1].set_positions(read(p_xyz).get_positions())
+    else:
+        print("Relaxing reactant with MP2 ...")
+        BFGS(images[0], logfile=os.path.join(args.output, 'relax_r.log')).run(fmax=0.05)
 
-    write(os.path.join(args.output, 'reactant.xyz'), images[0])
-    write(os.path.join(args.output, 'product.xyz'), images[-1])
+        print("Relaxing product with MP2 ...")
+        BFGS(images[-1], logfile=os.path.join(args.output, 'relax_p.log')).run(fmax=0.05)
+
+        write(r_xyz, images[0])
+        write(p_xyz, images[-1])
 
     # NEB with NEBOptimizer — same as original Transition1x pipeline
     print("Running NEB (MP2) ...")
@@ -270,5 +278,7 @@ if __name__ == '__main__':
     parser.add_argument('--cineb-fmax', type=float, default=0.05)
     parser.add_argument('--steps', type=int, default=500)
     parser.add_argument('--parallel', action='store_true')
+    parser.add_argument('--skip-relax', action='store_true',
+                        help='Skip endpoint relaxation if reactant.xyz/product.xyz already exist')
     args = parser.parse_args()
     main(args)
