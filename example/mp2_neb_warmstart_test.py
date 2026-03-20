@@ -35,43 +35,43 @@ from ase.io import read, write
 from ase.mep import NEB, NEBTools
 from ase.mep.neb import NEBOptimizer
 from ase.optimize.bfgs import BFGS
-from transition1x import Dataloader
 
 
 def load_wB97x_images(h5file, reaction, split, n_images):
-    """Load the last n_images configs from the wB97x NEB path in H5.
+    """Load the final wB97x NEB iteration from H5 using h5py directly.
 
-    The H5 stores all subsampled NEB iterations concatenated along axis 0.
-    The last n_images entries correspond to the final converged NEB iteration.
+    H5 structure (from combine_dbs.py):
+      /{split}/{formula}/{rxn}/positions      — (N_configs, N_atoms, 3)
+      /{split}/{formula}/{rxn}/atomic_numbers — (N_atoms,)
+
+    combine_dbs.py stores:
+      - First NEB iteration:  all 10 images (R + 8 interior + P)
+      - Each later iteration: 8 interior images only (endpoints dropped)
+
+    So the final iteration is reconstructed as:
+      R = positions[0], P = positions[9], interior = positions[-8:]
     """
-    dl = Dataloader(h5file, split, only_final=False)
-    for mol in dl:
-        if mol['rxn'] == reaction:
-            positions = mol['positions']    # shape: (N, n_atoms, 3)
-            atomic_numbers = mol['atomic_numbers']  # shape: (n_atoms,)
+    with h5py.File(h5file, 'r') as f:
+        split_group = f[split]
+        for formula in split_group:
+            if reaction in split_group[formula]:
+                rxn_group = split_group[formula][reaction]
+                positions = rxn_group['positions'][:]        # (N_configs, N_atoms, 3)
+                atomic_numbers = rxn_group['atomic_numbers'][:]  # (N_atoms,)
+                total = positions.shape[0]
 
-            total = positions.shape[0]
-            if total < n_images:
-                raise ValueError(
-                    f"Only {total} configs in H5 for {reaction}, need {n_images}"
-                )
+                reactant_pos = positions[0]
+                product_pos  = positions[9]
+                interior_pos = positions[-8:]
 
-            # Reconstruct final NEB iteration:
-            # - endpoints (R, P) come from the first iteration (positions 0 and 9)
-            # - interior images come from the last iteration (positions[-8:])
-            # This is because combine_dbs.py drops endpoints for all iterations after the first.
-            reactant_pos = positions[0]
-            product_pos  = positions[9]
-            interior_pos = positions[-8:]
-
-            final_positions = [reactant_pos] + list(interior_pos) + [product_pos]
-            images = [
-                Atoms(numbers=atomic_numbers, positions=pos)
-                for pos in final_positions
-            ]
-            print(f"Loaded 10 wB97x images from H5 "
-                  f"(R + last 8 interior + P, from {total} total configs)")
-            return images
+                final_positions = [reactant_pos] + list(interior_pos) + [product_pos]
+                images = [
+                    Atoms(numbers=atomic_numbers, positions=pos)
+                    for pos in final_positions
+                ]
+                print(f"Loaded 10 wB97x images from H5 "
+                      f"(R + last 8 interior + P, from {total} total configs)")
+                return images
 
     raise ValueError(f"Reaction '{reaction}' not found in split '{split}' of {h5file}")
 
