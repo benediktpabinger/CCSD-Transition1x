@@ -26,7 +26,7 @@ from ase import Atoms
 from ase.calculators.orca import ORCA, OrcaProfile
 from ase.io import write
 from ase.mep import NEB, NEBTools
-from ase.optimize import FIRE
+from ase.optimize import LBFGS
 from ase.optimize.bfgs import BFGS
 from transition1x import Dataloader
 
@@ -55,7 +55,7 @@ def make_calculator(label, directory, basis, nprocs):
         profile=profile,
         label=label,
         directory=directory,
-        orcasimpleinput=f'CCSD {basis} TightSCF EnGrad',
+        orcasimpleinput=f'MP2 {basis} TightSCF EnGrad',
         orcablocks=f'%maxcore 4000\n%pal nprocs {nprocs} end',
     )
 
@@ -126,16 +126,27 @@ def main(args):
         os.makedirs(calc_dir, exist_ok=True)
         atoms.calc = make_calculator('orca', calc_dir, args.basis, args.nprocs)
 
-    # Relax endpoints with CCSD
-    print("Relaxing reactant with CCSD ...")
-    BFGS(images[0], logfile=os.path.join(args.output, 'relax_r.log')).run(fmax=0.05)
+    # Relax endpoints with MP2 (or load existing if --skip-relax)
+    r_xyz = os.path.join(args.output, 'reactant.xyz')
+    p_xyz = os.path.join(args.output, 'product.xyz')
 
-    print("Relaxing product with CCSD ...")
-    BFGS(images[-1], logfile=os.path.join(args.output, 'relax_p.log')).run(fmax=0.05)
+    if args.skip_relax and os.path.exists(r_xyz) and os.path.exists(p_xyz):
+        print("Loading previously relaxed endpoints ...")
+        from ase.io import read as ase_read
+        images[0] = ase_read(r_xyz)
+        images[-1] = ase_read(p_xyz)
+        for i, idx in enumerate([0, len(images) - 1]):
+            calc_dir = os.path.join(args.output, f'orca/img{idx}')
+            images[idx].calc = make_calculator('orca', calc_dir, args.basis, args.nprocs)
+    else:
+        print("Relaxing reactant with MP2 ...")
+        BFGS(images[0], logfile=os.path.join(args.output, 'relax_r.log')).run(fmax=0.05)
 
-    # Save relaxed endpoints as xyz
-    write(os.path.join(args.output, 'reactant.xyz'), images[0])
-    write(os.path.join(args.output, 'product.xyz'), images[-1])
+        print("Relaxing product with MP2 ...")
+        BFGS(images[-1], logfile=os.path.join(args.output, 'relax_p.log')).run(fmax=0.05)
+
+        write(r_xyz, images[0])
+        write(p_xyz, images[-1])
 
     # Interpolate intermediate images using wB97x TS as midpoint
     print("Interpolating band with IDPP (wB97x TS as midpoint) ...")
@@ -145,7 +156,7 @@ def main(args):
     print("Running NEB ...")
     neb = NEB(images, climb=False, parallel=args.parallel)
     neb_tools = NEBTools(images)
-    relax_neb = FIRE(neb, logfile=os.path.join(args.output, 'neb.log'))
+    relax_neb = LBFGS(neb, logfile=os.path.join(args.output, 'neb.log'), memory=10)
 
     db_writer = DBWriter(os.path.join(args.output, 'neb.db'), images)
     checker = CalculationChecker(neb)
@@ -191,6 +202,8 @@ if __name__ == '__main__':
     parser.add_argument('--neb-fmax', type=float, default=0.10)
     parser.add_argument('--cineb-fmax', type=float, default=0.05)
     parser.add_argument('--steps', type=int, default=500)
+    parser.add_argument('--skip-relax', action='store_true',
+                        help='Skip endpoint relaxation and load existing reactant.xyz/product.xyz')
     parser.add_argument('--parallel', action='store_true',
                         help='Parallel NEB via MPI — run with: mpirun -n <n_images-2> python ccsd_neb.py ... --parallel')
     args = parser.parse_args()

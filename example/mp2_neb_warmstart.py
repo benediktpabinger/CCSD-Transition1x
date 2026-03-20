@@ -1,18 +1,21 @@
 """
-MP2/cc-pVDZ NEB + CCSD/cc-pVDZ single-points (Option A).
+MP2/cc-pVDZ NEB warm-started from wB97x NEB images in Transition1x.h5.
+
+Differences from mp2_neb.py (IDPP version):
+  - Step 3 uses the final wB97x NEB iteration images directly as starting band
+    instead of IDPP interpolation from R/TS/P.
+  - This gives a better starting point: physically reasonable geometries already
+    close to the MP2 path, so fewer NEB steps needed.
 
 Pipeline:
-  1. Load R/TS/P from Transition1x.h5 as starting geometries
+  1. Load final wB97x NEB images from Transition1x.h5 (last n_images configs)
   2. Relax endpoints with MP2/BFGS (analytic gradients)
-  3. Run NEB → CI-NEB with MP2 (analytic gradients)
+  3. Run NEB → CI-NEB with MP2 using wB97x images as starting band
   4. Compute CCSD single-point energies on the final converged images
   5. Save neb.db + fmaxs.json (MP2 forces) + ccsd_singlepoints.json (CCSD energies)
 
-Serial mode:
-    python mp2_neb.py --h5file ~/data/Transition1x.h5 --reaction rxn0103 --output ~/neb_results/rxn0103
-
-Parallel NEB (one MPI rank per interior image):
-    mpirun -n <n_images-2> python mp2_neb.py ... --parallel
+Usage:
+    python mp2_neb_warmstart.py --h5file ~/data/Transition1x.h5 --reaction rxn0103 --output ~/neb_results/rxn0103
 """
 import argparse
 import json
@@ -21,6 +24,7 @@ import shutil
 import sys
 
 import ase.db
+import h5py
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -34,18 +38,45 @@ from ase.optimize.bfgs import BFGS
 from transition1x import Dataloader
 
 
+def load_wB97x_images(h5file, reaction, split, n_images):
+    """Load the last n_images configs from the wB97x NEB path in H5.
+
+    The H5 stores all subsampled NEB iterations concatenated along axis 0.
+    The last n_images entries correspond to the final converged NEB iteration.
+    """
+    dl = Dataloader(h5file, split, only_final=False)
+    for mol in dl:
+        if mol['rxn'] == reaction:
+            positions = mol['positions']    # shape: (N, n_atoms, 3)
+            atomic_numbers = mol['atomic_numbers']  # shape: (n_atoms,)
+
+            total = positions.shape[0]
+            if total < n_images:
+                raise ValueError(
+                    f"Only {total} configs in H5 for {reaction}, need {n_images}"
+                )
+
+            # Take last n_images — these are the final NEB iteration
+            final_positions = positions[-n_images:]
+            images = [
+                Atoms(numbers=atomic_numbers, positions=pos)
+                for pos in final_positions
+            ]
+            print(f"Loaded {n_images} wB97x images from H5 "
+                  f"(last {n_images} of {total} total configs)")
+            return images
+
+    raise ValueError(f"Reaction '{reaction}' not found in split '{split}' of {h5file}")
+
+
 def load_endpoints(h5file, reaction, split):
-    """Load reactant, transition state, and product from Transition1x H5."""
+    """Load reactant and product from Transition1x H5 (for verification)."""
     dl = Dataloader(h5file, split, only_final=True)
     for mol in dl:
         if mol['rxn'] == reaction:
             def to_atoms(d):
                 return Atoms(numbers=d['atomic_numbers'], positions=d['positions'])
-            return (
-                to_atoms(mol['reactant']),
-                to_atoms(mol['transition_state']),
-                to_atoms(mol['product']),
-            )
+            return to_atoms(mol['reactant']), to_atoms(mol['product'])
     raise ValueError(f"Reaction '{reaction}' not found in split '{split}' of {h5file}")
 
 
@@ -57,7 +88,6 @@ def get_orca_path():
 
 
 def make_mp2_calculator(label, directory, basis, nprocs):
-    """MP2 calculator with analytic gradients — used for NEB geometry optimization."""
     profile = OrcaProfile(command=get_orca_path())
     return ORCA(
         profile=profile,
@@ -69,7 +99,6 @@ def make_mp2_calculator(label, directory, basis, nprocs):
 
 
 def make_ccsd_calculator(label, directory, basis, nprocs):
-    """CCSD single-point calculator — used after NEB converges."""
     profile = OrcaProfile(command=get_orca_path())
     return ORCA(
         profile=profile,
@@ -80,18 +109,7 @@ def make_ccsd_calculator(label, directory, basis, nprocs):
     )
 
 
-def interpolate_band(images, ts):
-    """IDPP interpolation using wB97x TS as midpoint — same as original neb.py."""
-    middle_idx = len(images) // 2
-    images[middle_idx].set_positions(ts.get_positions())
-    first_band = NEB(images[:middle_idx + 1])
-    second_band = NEB(images[middle_idx:])
-    first_band.interpolate('idpp')
-    second_band.interpolate('idpp')
-
-
 def run_ccsd_singlepoints(images, output, basis, nprocs):
-    """Run CCSD single-point energies on the final converged NEB images."""
     print("\nRunning CCSD single-point energies on final images ...")
     results = []
     for i, atoms in enumerate(images):
@@ -168,14 +186,11 @@ def main(args):
 
     os.makedirs(args.output, exist_ok=True)
 
-    # Load wB97x endpoints from H5 as starting geometries
-    print(f"Loading endpoints for {args.reaction} from H5 ...")
-    reactant, ts, product = load_endpoints(args.h5file, args.reaction, args.split)
+    # Load final wB97x NEB images as starting band
+    print(f"Loading wB97x NEB images for {args.reaction} from H5 ...")
+    images = load_wB97x_images(args.h5file, args.reaction, args.split, args.n_images)
 
-    # Build image list
-    images = [reactant.copy() for _ in range(args.n_images - 1)] + [product.copy()]
-
-    # Assign MP2 calculators
+    # Assign MP2 calculators to all images
     for i, atoms in enumerate(images):
         calc_dir = os.path.join(args.output, f'orca/img{i}')
         os.makedirs(calc_dir, exist_ok=True)
@@ -191,11 +206,7 @@ def main(args):
     write(os.path.join(args.output, 'reactant.xyz'), images[0])
     write(os.path.join(args.output, 'product.xyz'), images[-1])
 
-    # Interpolate with wB97x TS as midpoint
-    print("Interpolating band with IDPP (wB97x TS as midpoint) ...")
-    interpolate_band(images, ts)
-
-    # Run NEB with MP2
+    # NEB with NEBOptimizer — same as original Transition1x pipeline
     print("Running NEB (MP2) ...")
     neb = NEB(images, climb=True, parallel=args.parallel)
     neb_tools = NEBTools(images)
@@ -210,7 +221,7 @@ def main(args):
     relax_neb.attach(lambda: fmaxs.append(neb_tools.get_fmax()))
     relax_neb.run(fmax=args.neb_fmax, steps=args.steps)
 
-    # CI-NEB
+    # CI-NEB — same optimizer object, preserves history
     print("Running CI-NEB (MP2) ...")
     neb.climb = True
     converged = relax_neb.run(fmax=args.cineb_fmax, steps=args.steps)
@@ -221,7 +232,6 @@ def main(args):
     else:
         print("WARNING: CI-NEB did not converge within step limit")
 
-    # Save NEB outputs — identical structure to original Transition1x pipeline
     json.dump(fmaxs, open(os.path.join(args.output, 'fmaxs.json'), 'w'))
 
     ts_out = max(images, key=lambda x: x.get_potential_energy())
@@ -241,7 +251,7 @@ def main(args):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='MP2 NEB + CCSD single-points (Option A)')
+    parser = argparse.ArgumentParser(description='MP2 NEB warm-started from wB97x images')
     parser.add_argument('--h5file', required=True, help='Path to Transition1x.h5')
     parser.add_argument('--reaction', required=True, help='Reaction name (e.g. rxn0103)')
     parser.add_argument('--split', default='test', choices=['train', 'val', 'test'])
@@ -252,7 +262,6 @@ if __name__ == '__main__':
     parser.add_argument('--neb-fmax', type=float, default=0.10)
     parser.add_argument('--cineb-fmax', type=float, default=0.05)
     parser.add_argument('--steps', type=int, default=500)
-    parser.add_argument('--parallel', action='store_true',
-                        help='Parallel NEB — run with: mpirun -n <n_images-2> python mp2_neb.py ... --parallel')
+    parser.add_argument('--parallel', action='store_true')
     args = parser.parse_args()
     main(args)
