@@ -236,7 +236,7 @@ if __name__ == '__main__':
     parser.add_argument('--n-threads', type=int, default=4,
                         help='OpenMP threads for PySCF integrals (set = --cpus-per-task)')
     parser.add_argument('--output', required=True, help='Output directory')
-    parser.add_argument('--neb-fmax', type=float, default=0.10)
+    parser.add_argument('--neb-fmax', type=float, default=0.15)
     parser.add_argument('--cineb-fmax', type=float, default=0.05)
     parser.add_argument('--steps', type=int, default=500)
     parser.add_argument('--skip-relax', action='store_true',
