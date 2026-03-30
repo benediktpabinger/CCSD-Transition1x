@@ -28,8 +28,8 @@ import numpy as np
 from ase import Atoms, units
 from ase.calculators.calculator import Calculator, all_changes
 from ase.io import read, write
-from ase.mep import NEB, NEBTools
-from ase.mep.neb import NEBOptimizer
+from ase.neb import NEB, NEBTools
+from ase.neb import NEBOptimizer
 from ase.optimize.bfgs import BFGS
 from pyscf import gto, scf, cc
 from pyscf.grad import ccsd as ccsd_grad

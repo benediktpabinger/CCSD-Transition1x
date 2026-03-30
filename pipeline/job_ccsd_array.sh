@@ -5,7 +5,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32GB
-#SBATCH --array=1-287%20
+#SBATCH --array=1-287%80
 #SBATCH --output=~/logs/ccsd_neb_%A_%a.log
 
 # Usage: sbatch ~/pipeline/job_ccsd_array.sh
