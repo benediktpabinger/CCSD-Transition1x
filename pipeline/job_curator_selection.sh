@@ -22,7 +22,7 @@ ROUND=1
 python ~/pipeline/run_curator_selection.py \
     --checkpoint ~/painn_results/checkpoints/best.ckpt \
     --db         ~/data/transition1x_train.db \
-    --n-select   50 \
+    --n-select   10 \
     --output     ~/curator_results/round${ROUND} \
     --batch-size 512 \
     --num-workers 0 \
