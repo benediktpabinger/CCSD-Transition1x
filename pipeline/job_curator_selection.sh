@@ -19,11 +19,12 @@ export OMP_NUM_THREADS=8
 
 ROUND=1
 
-python ~/pipeline/run_curator_selection.py \
+python -u ~/pipeline/run_curator_selection.py \
     --checkpoint ~/painn_results/checkpoints/best.ckpt \
     --db         ~/data/transition1x_train.db \
     --n-select   10 \
     --output     ~/curator_results/round${ROUND} \
     --batch-size 512 \
-    --num-workers 0 \
+    --num-workers 4 \
+    --max-configs 100000 \
     --gpu

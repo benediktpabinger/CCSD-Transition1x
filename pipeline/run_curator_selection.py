@@ -23,6 +23,7 @@ import json
 import os
 import sys
 
+import numpy as np
 import torch
 import ase.db
 import schnetpack as spk
@@ -151,7 +152,8 @@ def save_results(selected_indices, db_ids, db_path, output_dir):
         for rank, (pool_idx, db_id) in enumerate(zip(selected_indices, selected_db_ids)):
             row = db.get(db_id)
             atoms = row.toatoms()
-            e_dft = float(row.data.get('energy', float('nan')) if row.data else float('nan'))
+            e_raw = row.data.get('energy', float('nan')) if row.data else float('nan')
+            e_dft = float(np.asarray(e_raw).flat[0])
             results.append({
                 'rank':      rank,
                 'pool_idx':  pool_idx,
@@ -175,7 +177,15 @@ def save_results(selected_indices, db_ids, db_path, output_dir):
 
 
 def main(args):
-    device = torch.device('cuda' if args.gpu and torch.cuda.is_available() else 'cpu')
+    if args.gpu and torch.cuda.is_available():
+        try:
+            torch.cuda.init()
+            device = torch.device('cuda')
+        except RuntimeError as e:
+            print(f"CUDA init failed ({e}), falling back to CPU")
+            device = torch.device('cpu')
+    else:
+        device = torch.device('cpu')
     print(f"Device: {device}")
     os.makedirs(args.output, exist_ok=True)
 
