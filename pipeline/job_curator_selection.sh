@@ -17,7 +17,7 @@ module load Python/3.13.5-GCCcore-14.3.0
 
 export OMP_NUM_THREADS=8
 
-ROUND=1
+ROUND=2
 
 python -u ~/pipeline/run_curator_selection.py \
     --checkpoint ~/painn_results/checkpoints/best.ckpt \

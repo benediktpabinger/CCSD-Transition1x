@@ -87,8 +87,10 @@ def extract_features(model, db_path, batch_size, device, max_configs=None, num_w
             trn.CastTo32(),
         ],
     )
-    if max_configs:
-        full_dataset = torch.utils.data.Subset(full_dataset, list(range(min(max_configs, len(full_dataset)))))
+    if max_configs and max_configs < len(full_dataset):
+        rng = np.random.default_rng(seed=42)
+        indices = rng.choice(len(full_dataset), size=max_configs, replace=False).tolist()
+        full_dataset = torch.utils.data.Subset(full_dataset, indices)
 
     loader = AtomsLoader(
         full_dataset,
