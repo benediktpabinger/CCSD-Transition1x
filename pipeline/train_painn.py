@@ -149,7 +149,7 @@ def main(args):
         inference_mode=False,
     )
 
-    trainer.fit(task, datamodule=datamodule)
+    trainer.fit(task, datamodule=datamodule, ckpt_path=getattr(args, 'resume_from', None))
 
     print(f"\nDone. Best model: {args.output}/checkpoints/best.ckpt")
 
@@ -171,5 +171,6 @@ if __name__ == '__main__':
     parser.add_argument('--num-val',       type=int,   default=None)
     parser.add_argument('--num-workers',   type=int,   default=4)
     parser.add_argument('--gpu',           action='store_true')
+    parser.add_argument('--resume-from',   default=None,  help='Resume from checkpoint path')
     args = parser.parse_args()
     main(args)
