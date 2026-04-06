@@ -17,10 +17,10 @@ module load Python/3.13.5-GCCcore-14.3.0
 
 export OMP_NUM_THREADS=8
 
-ROUND=2
+ROUND=3
 
 python -u ~/pipeline/run_curator_selection.py \
-    --checkpoint ~/painn_results/checkpoints/best.ckpt \
+    --checkpoint ~/painn_results_v2/checkpoints/best.ckpt \
     --db         ~/data/transition1x_train.db \
     --n-select   10 \
     --output     ~/curator_results/round${ROUND} \

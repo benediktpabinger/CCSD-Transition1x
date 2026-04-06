@@ -25,6 +25,7 @@ import argparse
 import os
 
 import torch
+import torch.serialization
 import torchmetrics
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, EarlyStopping
@@ -149,7 +150,14 @@ def main(args):
         inference_mode=False,
     )
 
+    # PyTorch 2.6 changed weights_only default to True, which breaks Lightning checkpoint loading
+    torch.serialization.add_safe_globals([])  # trigger import; actual fix below
+    _orig_load = torch.load
+    torch.load = lambda *a, **kw: _orig_load(*a, **{**kw, 'weights_only': False})
+
     trainer.fit(task, datamodule=datamodule, ckpt_path=getattr(args, 'resume_from', None))
+
+    torch.load = _orig_load  # restore
 
     print(f"\nDone. Best model: {args.output}/checkpoints/best.ckpt")
 

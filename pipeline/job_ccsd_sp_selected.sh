@@ -11,7 +11,7 @@
 # CCSD(T)/cc-pVDZ single-points on 10 CURATOR-selected configs.
 # 10 parallel tasks (one per config).
 # After all finish, run gather step:
-#   python ~/pipeline/ccsd_sp_selected.py --round-dir ~/curator_results/round1 --gather
+#   python ~/pipeline/ccsd_sp_selected.py --round-dir ~/curator_results/round3 --gather
 # Usage: sbatch ~/pipeline/job_ccsd_sp_selected.sh
 
 module load Python/3.13.5-GCCcore-14.3.0
@@ -19,7 +19,7 @@ module load Python/3.13.5-GCCcore-14.3.0
 export OMP_NUM_THREADS=8
 
 python -u ~/pipeline/ccsd_sp_selected.py \
-    --round-dir ~/curator_results/round1 \
+    --round-dir ~/curator_results/round3 \
     --basis     cc-pVDZ \
     --n-threads 8 \
     --image-idx ${SLURM_ARRAY_TASK_ID}

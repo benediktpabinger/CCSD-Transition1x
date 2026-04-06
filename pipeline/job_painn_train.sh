@@ -22,7 +22,7 @@ module load Python/3.13.5-GCCcore-14.3.0
 export OMP_NUM_THREADS=8
 
 SRC_DB=~/data/transition1x_train.db
-SCRATCH=/scratch/$SLURM_JOB_ID
+SCRATCH=/tmp/painn_$SLURM_JOB_ID
 OUTPUT=~/painn_results_v2
 RESUME=~/painn_results_v2/checkpoints/best.ckpt
 
@@ -65,6 +65,6 @@ python ~/pipeline/train_painn.py \
     --n-interactions 3 \
     --energy-weight 0.01 \
     --forces-weight 0.99 \
-    --num-workers   8 \
+    --num-workers   4 \
     --gpu \
     ${RESUME_ARG}
