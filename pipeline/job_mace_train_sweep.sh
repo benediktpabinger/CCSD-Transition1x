@@ -59,6 +59,7 @@ mace_run_train \
     --batch_size=64 \
     --max_num_epochs=100 \
     --max_samples_per_epoch=100000 \
+    --max_valid_samples=10000 \
     --optimizer="adamw" \
     --weight_decay=0.0 \
     --clip_grad=10.0 \
