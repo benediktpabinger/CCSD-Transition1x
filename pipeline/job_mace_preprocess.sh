@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=mace_preprocess
-#SBATCH --partition=xeon24el8
-#SBATCH --time=06:00:00
+#SBATCH --partition=xeon24el8_512
+#SBATCH --time=12:00:00
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
-#SBATCH --mem=128GB
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=256GB
 #SBATCH --output=/home/energy/s242862/logs/mace_preprocess_%j.log
 
 # Convert Transition1x extxyz to MACE sharded HDF5 format.
@@ -29,12 +29,11 @@ mace_prepare_data \
     --work_dir         ${H5DIR} \
     --h5_prefix        t1x \
     --r_max            6.0 \
-    --num_process      16 \
+    --num_process      8 \
     --energy_key       energy \
     --forces_key       forces \
     --compute_statistics \
-    --E0s              "average" \
-    --shuffle          True
+    --E0s              "average"
 
 echo "Done. HDF5 files written to ${H5DIR}"
 ls -lh ${H5DIR}

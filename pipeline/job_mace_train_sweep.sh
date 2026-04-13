@@ -1,26 +1,25 @@
 #!/bin/bash
-#SBATCH --job-name=mace_scratch
+#SBATCH --job-name=mace_sweep
 #SBATCH --partition=h200
 #SBATCH --time=50:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=64GB
 #SBATCH --gres=gpu:1
-#SBATCH --output=/home/energy/s242862/logs/mace_scratch_%j.log
+#SBATCH --output=/home/energy/s242862/logs/mace_sweep_%j.log
 
-# Train MACE from scratch on Transition1x wB97x/6-31G(d).
-# Architecture matches MACE-OMol25 (1024 channels, L=3, r_max=6.0).
-# Run job_mace_preprocess.sh first to generate sharded HDF5 files.
+# MACE from scratch — LR schedule patience sweep.
+# Submit with: sbatch --export=PATIENCE=5 job_mace_train_sweep.sh
 #
-# Usage: sbatch /home/energy/s242862/pipeline/job_mace_train_scratch.sh
+# Sweep values: 3, 5, 10, 20, 50
 
 set -e
 
+PATIENCE=${PATIENCE:-5}
 TRAIN_H5=/home/energy/s242862/t1xtrain
 VAL_H5=/home/energy/s242862/t1xval
-TEST_H5=/home/energy/s242862/t1xtest
-RESULTS=/home/energy/s242862/mace_scratch_results
-NAME=mace_t1x_scratch
+RESULTS=/home/energy/s242862/mace_sweep_results
+NAME=mace_t1x_p${PATIENCE}
 
 mkdir -p /home/energy/s242862/logs
 mkdir -p ${RESULTS}
@@ -40,13 +39,7 @@ echo "GPU check:"
 nvidia-smi | head -14
 python3 -c "import torch; print('CUDA available:', torch.cuda.is_available())"
 
-# Check H5 files exist
-if [ ! -d "${TRAIN_H5}" ] || [ ! -d "${VAL_H5}" ]; then
-    echo "ERROR: HDF5 data not found. Run job_mace_preprocess.sh first."
-    exit 1
-fi
-
-echo "Starting MACE training from scratch..."
+echo "Starting MACE sweep: patience=${PATIENCE}"
 
 mace_run_train \
     --name="${NAME}" \
@@ -55,6 +48,7 @@ mace_run_train \
     --energy_key="energy" \
     --forces_key="forces" \
     --E0s="{1: -13.62222753701504, 6: -1029.4130839658328, 7: -1484.8710358098756, 8: -2041.8396277138045, 9: -2712.8213146878606}" \
+    --atomic_numbers="[1, 6, 7, 8, 9]" \
     --loss="huber" \
     --default_dtype="float32" \
     --num_channels=1024 \
@@ -62,14 +56,15 @@ mace_run_train \
     --r_max=6.0 \
     --num_interactions=2 \
     --num_radial_basis=16 \
-    --batch_size=32 \
+    --batch_size=64 \
     --max_num_epochs=100 \
+    --max_samples_per_epoch=100000 \
     --optimizer="adamw" \
     --weight_decay=0.0 \
     --clip_grad=10.0 \
     --lr=1e-3 \
     --scheduler="ReduceLROnPlateau" \
-    --scheduler_patience=5 \
+    --scheduler_patience=${PATIENCE} \
     --results_dir="${RESULTS}" \
     --device=cuda \
     --num_workers=4 \
