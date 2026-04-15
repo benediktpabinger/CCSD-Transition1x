@@ -126,8 +126,15 @@ RUN_TRAIN_VALID_PATCH = '''\
     # --- end patch ---
 '''
 
-# Anchor: the line right after valid_loaders dict is initialised
-VALID_LOADER_ANCHOR = "    valid_loaders = {heads[i]: None for i in range(len(heads))}"
+# Anchor: the closing line of the original valid_loaders for-loop.
+# The patch must go AFTER this loop, not before it — otherwise the loop
+# overwrites the subsampled loaders we just set.
+VALID_LOADER_ANCHOR = (
+    "            generator=torch.Generator().manual_seed(args.seed),\n"
+    "        )\n"
+    "\n"
+    "    loss_fn"
+)
 
 
 def patch_run_train():
@@ -146,10 +153,14 @@ def patch_run_train():
 
     if "max_valid_samples" not in text:
         assert VALID_LOADER_ANCHOR in text, "Cannot find valid_loaders anchor in run_train.py"
-        text = text.replace(
-            VALID_LOADER_ANCHOR,
-            VALID_LOADER_ANCHOR + "\n" + RUN_TRAIN_VALID_PATCH,
+        replacement = (
+            "            generator=torch.Generator().manual_seed(args.seed),\n"
+            "        )\n"
+            "\n"
+            + RUN_TRAIN_VALID_PATCH +
+            "\n    loss_fn"
         )
+        text = text.replace(VALID_LOADER_ANCHOR, replacement, 1)
         changed = True
         print("Applied max_valid_samples patch to run_train.py")
 
