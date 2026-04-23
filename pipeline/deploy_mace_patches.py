@@ -8,12 +8,14 @@ Edit pipeline/mace/arg_parser.py and pipeline/mace/run_train.py locally,
 then run this script to deploy them.
 """
 
+import os
+
 import paramiko
 import pathlib
 
 CLUSTER_HOST = "slid.fysik.dtu.dk"
 CLUSTER_USER = "s242862"
-CLUSTER_KEY  = None  # uses default SSH agent / known keys
+CLUSTER_KEY  = os.path.expanduser("~/.ssh/dtu_key")
 
 MACE_SITE = "/home/energy/s242862/.local/lib/python3.13/site-packages/mace"
 
@@ -28,7 +30,8 @@ LOCAL_BASE = pathlib.Path(__file__).parent
 def deploy():
     ssh = paramiko.SSHClient()
     ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-    ssh.connect(CLUSTER_HOST, username=CLUSTER_USER)
+    key = paramiko.Ed25519Key.from_private_key_file(CLUSTER_KEY)
+    ssh.connect(CLUSTER_HOST, username=CLUSTER_USER, pkey=key)
     sftp = ssh.open_sftp()
 
     for local_rel, remote_path in FILES.items():

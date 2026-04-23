@@ -896,7 +896,41 @@ def run(args) -> None:
                 start_epoch = opt_start_epoch
 
     if args.wandb:
+        import wandb as _wandb
         setup_wandb(args)
+        _wandb.config.update(
+            {
+                "r_max": args.r_max,
+                "num_radial_basis": args.num_radial_basis,
+                "num_cutoff_basis": args.num_cutoff_basis,
+                "num_interactions": args.num_interactions,
+                "hidden_irreps": str(getattr(args, "hidden_irreps", None)),
+                "MLP_irreps": str(args.MLP_irreps),
+                "max_ell": args.max_ell,
+                "gate": args.gate,
+                "radial_type": args.radial_type,
+                "interaction": args.interaction,
+                "loss": args.loss,
+                "huber_delta": getattr(args, "huber_delta", None),
+                "optimizer": args.optimizer,
+                "scheduler": args.scheduler,
+                "lr_factor": args.lr_factor,
+                "scheduler_patience": args.scheduler_patience,
+                "clip_grad": args.clip_grad,
+                "default_dtype": args.default_dtype,
+                "seed": args.seed,
+                "ema": args.ema,
+                "ema_decay": args.ema_decay if args.ema else None,
+                "max_samples_per_epoch": getattr(args, "max_samples_per_epoch", None),
+                "max_valid_samples": getattr(args, "max_valid_samples", None),
+                "valid_batch_size": args.valid_batch_size,
+                "eval_interval": args.eval_interval,
+                "mace_version": mace.__version__,
+            },
+            allow_val_change=True,
+        )
+
+
     if args.distributed:
         distributed_model = DDP(model, device_ids=[local_rank])
     else:
