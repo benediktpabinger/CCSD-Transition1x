@@ -59,7 +59,7 @@ def run_casscf_avas(xyz_path, label, output_dir, basis, avas_ao):
 
     mc = mcscf.CASSCF(mf, ncas, nelecas)
     mc.max_cycle_macro = 500
-    mc.level_shift = 0.1
+    mc.internal_rotation = True
     mc.kernel(mo)
 
     return mf, mc, ncas, nelecas
@@ -78,7 +78,7 @@ def run_nevpt2_with_mo(xyz_path, label, output_dir, basis, ncas, nelecas, mo_coe
 
     mc = mcscf.CASSCF(mf, ncas, nelecas)
     mc.max_cycle_macro = 500
-    mc.level_shift = 0.1
+    mc.internal_rotation = True
 
     # Project TS MOs onto this geometry's basis — tracks same physical orbitals
     mo_init = mcscf.project_init_guess(mc, mo_coeff_ref, prev_mol=mol_ref)
