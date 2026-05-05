@@ -7,7 +7,8 @@
 #SBATCH --mem=64GB
 #SBATCH --output=/home/energy/s242862/logs/nevpt2_pyscf_%j.log
 
-# AVAS -> CASSCF -> NEVPT2 using PySCF
+# AVAS -> CASSCF -> NEVPT2 using PySCF.
+# AVAS runs once at the TS; MOs are projected to reactant/product for a valid barrier.
 # Submit with: sbatch --export=REACTION=rxnXXXX job_nevpt2_pyscf.sh
 
 set -e
@@ -16,7 +17,7 @@ REACTION=${REACTION:-rxn0103}
 TS_XYZ=/home/energy/s242862/orca_neb_results/${REACTION}/transition_state.xyz
 R_XYZ=/home/energy/s242862/orca_neb_results/${REACTION}/reactant.xyz
 P_XYZ=/home/energy/s242862/orca_neb_results/${REACTION}/product.xyz
-OUTPUT=/home/energy/s242862/nevpt2_results/${REACTION}_pyscf_fixed
+OUTPUT=/home/energy/s242862/nevpt2_results/${REACTION}_pyscf_avas
 
 mkdir -p /home/energy/s242862/logs
 mkdir -p ${OUTPUT}
@@ -40,8 +41,6 @@ python3 /home/energy/s242862/Multireference_Benchmark/scripts/nevpt2_pyscf.py \
     --p_xyz    ${P_XYZ} \
     --output   ${OUTPUT} \
     --basis    def2-tzvp \
-    --avas_ao  'C 2pz' 'O 2pz' 'N 2p' \
-    --ncas     10 \
-    --nelecas  16
+    --avas_ao  'C 2pz' 'O 2pz' 'N 2p'
 
 echo "Done. Results in ${OUTPUT}/"
