@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=eval_mace
-#SBATCH --partition=h200
+#SBATCH --partition=sm3090_devel
 #SBATCH --time=1:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
@@ -14,14 +14,11 @@ module load Python/3.13.5-GCCcore-14.3.0
 
 mkdir -p /home/energy/s242862/logs
 
-for MODEL in p5 p10; do
-    echo "=== Evaluating mace_t1x_${MODEL} ==="
-    python3 /home/energy/s242862/pipeline/eval_mace.py \
-        --model   /home/energy/s242862/mace_t1x_${MODEL}_compiled.model \
-        --test    /home/energy/s242862/data/transition1x_test.xyz \
-        --neb-dir /home/energy/s242862/orca_neb_results \
-        --output  /home/energy/s242862/eval_mace_${MODEL}.json \
-        --n-test  10
-done
+echo "=== Evaluating mace_t1x_p5 (best checkpoint) ==="
+python3 /home/energy/s242862/pipeline/eval_mace.py \
+    --model   /home/energy/s242862/checkpoints/mace_t1x_p5_run-123.model \
+    --test    /home/energy/s242862/data/transition1x_test.xyz \
+    --output  /home/energy/s242862/eval_mace_p5_best.json \
+    --n-test  5000
 
 echo "Done."

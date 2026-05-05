@@ -28,3 +28,13 @@ logs/
 *.gbw
 *.densities
 *.tmp
+
+# Results data and plots — generated, not source
+barrier_comparison*.png
+barrier_comparison*.json
+barrier_errors*.png
+barrier_per_reaction*.png
+calculation_inventory.csv
+
+# Claude memory
+.claude/

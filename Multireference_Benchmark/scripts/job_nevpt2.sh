@@ -28,11 +28,6 @@ ORCA_CMD=$(which orca)
 echo "ORCA: $ORCA_CMD"
 echo "Reaction: $REACTION"
 
-# Run from local node scratch to avoid heavy I/O on network fileserver
-SCRATCH=/tmp/nevpt2_${SLURM_JOB_ID}
-mkdir -p ${SCRATCH}
-cd ${SCRATCH}
-
 python3 /home/energy/s242862/pipeline/nevpt2_sp.py \
     --reaction  ${REACTION} \
     --ts_xyz    ${TS_XYZ} \

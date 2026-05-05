@@ -747,11 +747,9 @@ def run(args) -> None:
         for head_name in list(valid_loaders.keys()):
             vset = valid_sets[head_name] if isinstance(valid_sets, dict) else valid_sets
             if vset is not None and len(vset) > 0:
-                _vsampler = torch.utils.data.RandomSampler(
-                    vset,
-                    num_samples=min(args.max_valid_samples, len(vset)),
-                    replacement=False,
-                )
+                _n = min(args.max_valid_samples, len(vset))
+                _indices = torch.randperm(len(vset), generator=torch.Generator().manual_seed(42))[:_n].tolist()
+                _vsampler = torch.utils.data.SubsetRandomSampler(_indices)
                 valid_loaders[head_name] = torch_geometric.dataloader.DataLoader(
                     dataset=vset,
                     batch_size=args.valid_batch_size,

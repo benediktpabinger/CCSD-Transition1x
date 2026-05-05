@@ -1,167 +1,193 @@
 """
-Compare ωB97M-V/def2-TZVP (ORCA NEB) barrier heights vs wB97x/6-31G(d) (Transition1x).
-
-For each converged reaction in orca_neb_results/ and orca_neb_val_results/:
-  - ORCA barrier: E(transition_state.xyz) - E(reactant.xyz)
-  - T1x barrier:  max(wB97x energies along IRC) - energies[0]
+Compare barrier heights from three sources for all converged NEB reactions:
+  1. Transition1x reference  (wB97X-D3/6-31G(d), optimised TS/reactant in HDF5)
+  2. ORCA NEB reference      (wB97M-V/def2-TZVP, last 10 images of neb.db)
+  3. MACE prediction         (trained on Transition1x, applied to NEB images)
 
 Usage:
     python compare_barriers.py \
-        --h5file ~/data/Transition1x.h5 \
-        --test-dir ~/orca_neb_results \
-        --val-dir  ~/orca_neb_val_results \
-        --output   ~/barrier_comparison.png
+        --neb-dir  ~/orca_neb_results \
+        --t1x-h5   ~/data/Transition1x.h5 \
+        --model    ~/mace_t1x_p10_ep194.model \
+        --output   ~/barrier_comparison_full.json \
+        --plot     ~/barrier_comparison_full.png
 """
 import argparse
-import os
 import json
+import os
 
 import h5py
 import numpy as np
+import ase.db
+from ase.io import read
+from mace.calculators import MACECalculator
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from ase.io import read
 
 
-def read_orca_barrier(rxn_dir):
-    """Returns (E_TS - E_reactant) in eV from ORCA NEB output."""
-    ts_file = os.path.join(rxn_dir, 'transition_state.xyz')
-    r_file  = os.path.join(rxn_dir, 'reactant.xyz')
-    if not os.path.exists(ts_file) or not os.path.exists(r_file):
-        return None
-    ts  = read(ts_file)
-    r   = read(r_file)
-    if ts.calc is None or r.calc is None:
-        # Read energy from comment line manually
-        with open(ts_file) as f:
-            lines = f.readlines()
-        # extxyz: second line has energy=...
-        e_ts = None
-        for tok in lines[1].split():
-            if tok.startswith('energy='):
-                e_ts = float(tok.split('=')[1])
-        with open(r_file) as f:
-            lines = f.readlines()
-        e_r = None
-        for tok in lines[1].split():
-            if tok.startswith('energy='):
-                e_r = float(tok.split('=')[1])
-        if e_ts is None or e_r is None:
-            return None
-        return e_ts - e_r
-    return ts.get_potential_energy() - r.get_potential_energy()
-
-
-def get_t1x_barrier(h5file, split, rxn_id):
-    """Returns E_TS - E_reactant in eV using the optimized TS/reactant subgroups."""
-    with h5py.File(h5file, 'r') as f:
-        grp = f[split]
-        for formula in grp:
-            if rxn_id in grp[formula]:
-                rxn = grp[formula][rxn_id]
-                e_ts  = float(rxn['transition_state']['wB97x_6-31G(d).energy'][0])
-                e_r   = float(rxn['reactant']['wB97x_6-31G(d).energy'][0])
-                return e_ts - e_r
+def find_t1x_barrier(h5, rxn_id):
+    """Forward barrier (meV) from HDF5 optimised TS and reactant energies."""
+    for split in ('test', 'val', 'train', 'data'):
+        if split not in h5:
+            continue
+        for formula in h5[split].keys():
+            if rxn_id in h5[split][formula]:
+                grp = h5[split][formula][rxn_id]
+                ts_e = float(grp['transition_state']['wB97x_6-31G(d).energy'][0])
+                r_e  = float(grp['reactant']['wB97x_6-31G(d).energy'][0])
+                return (ts_e - r_e) * 1000  # eV → meV
     return None
 
 
-def collect(neb_dir, h5file, split):
-    rxns = [d for d in os.listdir(neb_dir)
-            if os.path.isfile(os.path.join(neb_dir, d, 'converged'))]
-    orca, t1x, ids = [], [], []
-    for rxn in rxns:
-        b_orca = read_orca_barrier(os.path.join(neb_dir, rxn))
-        b_t1x  = get_t1x_barrier(h5file, split, rxn)
-        if b_orca is None or b_t1x is None:
-            continue
-        orca.append(b_orca)
-        t1x.append(b_t1x)
-        ids.append(rxn)
-        if len(ids) % 50 == 0:
-            print(f"  {split}: {len(ids)} reactions processed...")
-    return np.array(orca), np.array(t1x), ids
+def orca_and_images_from_db(db_path):
+    """ORCA forward barrier (meV) and last-10 NEB images from neb.db."""
+    with ase.db.connect(db_path) as db:
+        rows = list(db.select())
+    if len(rows) < 10:
+        return None, None
+    images = [row.toatoms() for row in rows[-10:]]
+    energies = [img.get_potential_energy() for img in images]
+    return (max(energies) - energies[0]) * 1000, images
+
+
+def mace_barrier_from_images(images, calc):
+    """MACE forward barrier (meV) evaluated on the NEB images."""
+    energies = []
+    for img in images:
+        atoms = img.copy()
+        atoms.calc = calc
+        energies.append(atoms.get_potential_energy())
+    return (max(energies) - energies[0]) * 1000
+
+
+def stats(pred, ref):
+    err = np.array(pred) - np.array(ref)
+    return {
+        'n':           len(err),
+        'rmse_meV':    float(np.sqrt(np.mean(err**2))),
+        'mae_meV':     float(np.mean(np.abs(err))),
+        'bias_meV':    float(np.mean(err)),
+        'max_err_meV': float(np.max(np.abs(err))),
+        'r2':          float(1 - np.sum(err**2) / np.sum((np.array(ref) - np.mean(ref))**2)),
+    }
 
 
 def main(args):
-    print("Collecting test split...")
-    orca_test, t1x_test, ids_test = collect(args.test_dir, args.h5file, 'test')
-    print(f"  {len(ids_test)} converged test reactions")
+    print(f"Loading MACE model: {args.model}")
+    device = 'cuda' if __import__('torch').cuda.is_available() else 'cpu'
+    print(f"Device: {device}")
+    calc = MACECalculator(model_paths=args.model, device=device, default_dtype='float32')
 
-    print("Collecting val split...")
-    orca_val, t1x_val, ids_val = collect(args.val_dir, args.h5file, 'val')
-    print(f"  {len(ids_val)} converged val reactions")
+    t1x_barriers, orca_barriers, mace_barriers, rxn_ids = [], [], [], []
+    skipped = []
 
-    orca_all = np.concatenate([orca_test, orca_val])
-    t1x_all  = np.concatenate([t1x_test,  t1x_val])
-    ids_all    = ids_test + ids_val
-    splits_all = ['test']*len(ids_test) + ['val']*len(ids_val)
+    with h5py.File(args.t1x_h5, 'r') as h5:
+        for rxn in sorted(os.listdir(args.neb_dir)):
+            d = os.path.join(args.neb_dir, rxn)
+            db_path = os.path.join(d, 'neb.db')
+            if not os.path.exists(os.path.join(d, 'converged')) or not os.path.exists(db_path):
+                continue
 
-    # Stats
-    delta = orca_all - t1x_all
-    mae   = np.mean(np.abs(delta))
-    rmse  = np.sqrt(np.mean(delta**2))
-    bias  = np.mean(delta)
-    ss_res = np.sum(delta**2)
-    ss_tot = np.sum((orca_all - np.mean(orca_all))**2)
-    r2 = 1 - ss_res / ss_tot
-    pearson_r = np.corrcoef(t1x_all, orca_all)[0, 1]
-    print(f"\n=== Barrier comparison (ωB97M-V vs wB97x) ===")
-    print(f"N reactions:  {len(orca_all)}")
-    print(f"MAE:          {mae*1000:.1f} meV  ({mae*23.06:.2f} kcal/mol)")
-    print(f"RMSE:         {rmse*1000:.1f} meV  ({rmse*23.06:.2f} kcal/mol)")
-    print(f"Bias (ωB97M-V - wB97x): {bias*1000:.1f} meV  ({bias*23.06:.2f} kcal/mol)")
-    print(f"Pearson r:    {pearson_r:.4f}")
-    print(f"R²:           {r2:.4f}")
-    print(f"T1x barrier range: {t1x_all.min():.2f} – {t1x_all.max():.2f} eV")
-    print(f"ORCA barrier range: {orca_all.min():.2f} – {orca_all.max():.2f} eV")
+            t1x_b = find_t1x_barrier(h5, rxn)
+            if t1x_b is None:
+                skipped.append((rxn, 'not found in T1x HDF5'))
+                continue
 
-    # Save raw data
-    out_json = os.path.splitext(args.output)[0] + '.json'
-    with open(out_json, 'w') as f:
-        json.dump({
-            'rxn_ids': ids_all,
-            'splits':  splits_all,
-            'orca_barriers_eV': orca_all.tolist(),
-            't1x_barriers_eV':  t1x_all.tolist(),
-        }, f, indent=2)
-    print(f"Raw data saved to {out_json}")
+            orca_b, images = orca_and_images_from_db(db_path)
+            if orca_b is None:
+                skipped.append((rxn, 'too few NEB images in db'))
+                continue
 
-    # Plot
-    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+            print(f"{rxn}  computing MACE...", flush=True)
+            try:
+                mace_b = mace_barrier_from_images(images, calc)
+            except Exception as e:
+                skipped.append((rxn, f'MACE error: {e}'))
+                continue
 
-    # Parity plot
-    ax = axes[0]
-    lim = [min(t1x_all.min(), orca_all.min()) - 0.1,
-           max(t1x_all.max(), orca_all.max()) + 0.1]
-    ax.scatter(t1x_all, orca_all, alpha=0.4, s=10, color='steelblue')
-    ax.plot(lim, lim, 'k--', lw=1, label='y=x')
-    ax.set_xlim(lim); ax.set_ylim(lim)
-    ax.set_xlabel('wB97x/6-31G(d) barrier [eV]')
-    ax.set_ylabel('ωB97M-V/def2-TZVP barrier [eV]')
-    ax.set_title(f'Barrier parity  (N={len(orca_all)}, MAE={mae*1000:.0f} meV)')
-    ax.legend()
+            t1x_barriers.append(t1x_b)
+            orca_barriers.append(orca_b)
+            mace_barriers.append(mace_b)
+            rxn_ids.append(rxn)
+            print(f"{rxn}  T1x={t1x_b:7.0f}  ORCA={orca_b:7.0f}  MACE={mace_b:7.0f}  meV", flush=True)
 
-    # Difference histogram
-    ax = axes[1]
-    ax.hist(delta * 1000, bins=50, color='steelblue', edgecolor='white', linewidth=0.3)
-    ax.axvline(0, color='k', lw=1, ls='--')
-    ax.axvline(bias * 1000, color='red', lw=1.5, ls='-', label=f'bias={bias*1000:.0f} meV')
-    ax.set_xlabel('Δ barrier [meV]  (ωB97M-V − wB97x)')
-    ax.set_ylabel('Count')
-    ax.set_title('Barrier difference distribution')
-    ax.legend()
+    if not rxn_ids:
+        print("No results — check paths.")
+        return
 
-    fig.tight_layout()
-    fig.savefig(args.output, dpi=150)
-    print(f"Plot saved to {args.output}")
+    t1x  = np.array(t1x_barriers)
+    orca = np.array(orca_barriers)
+    mace = np.array(mace_barriers)
+
+    s_orca_vs_t1x  = stats(orca, t1x)
+    s_mace_vs_t1x  = stats(mace, t1x)
+    s_mace_vs_orca = stats(mace, orca)
+
+    print("\n=== Summary ===")
+    print(f"Reactions included : {len(rxn_ids)}")
+    print(f"Reactions skipped  : {len(skipped)}")
+    header = f"{'Comparison':<25}  {'RMSE':>8}  {'MAE':>8}  {'Bias':>8}  {'MaxErr':>8}  {'R²':>6}"
+    print(header)
+    print("-" * len(header))
+    for label, s in [
+        ("ORCA vs T1x",  s_orca_vs_t1x),
+        ("MACE vs T1x",  s_mace_vs_t1x),
+        ("MACE vs ORCA", s_mace_vs_orca),
+    ]:
+        print(f"{label:<25}  {s['rmse_meV']:>7.1f}  {s['mae_meV']:>7.1f}  "
+              f"{s['bias_meV']:>+7.1f}  {s['max_err_meV']:>7.1f}  {s['r2']:>6.4f}  meV")
+
+    output = {
+        'n_included': len(rxn_ids),
+        'n_skipped':  len(skipped),
+        'skipped':    skipped,
+        'orca_vs_t1x':  s_orca_vs_t1x,
+        'mace_vs_t1x':  s_mace_vs_t1x,
+        'mace_vs_orca': s_mace_vs_orca,
+        'reactions': [
+            {'rxn': r, 't1x_meV': float(a), 'orca_meV': float(b), 'mace_meV': float(c)}
+            for r, a, b, c in zip(rxn_ids, t1x, orca, mace)
+        ],
+    }
+    with open(args.output, 'w') as f:
+        json.dump(output, f, indent=2)
+    print(f"\nSaved: {args.output}")
+
+    # ── Plot ────────────────────────────────────────────────────────────────────
+    fig, axes = plt.subplots(1, 3, figsize=(16, 5))
+    fig.suptitle('Barrier Height Comparison — all converged NEB reactions', fontsize=13, fontweight='bold')
+
+    plot_pairs = [
+        (t1x,  orca, 'T1x  wB97X-D3/6-31G(d)',       'ORCA  wB97M-V/def2-TZVP',   'steelblue',  s_orca_vs_t1x),
+        (t1x,  mace, 'T1x  wB97X-D3/6-31G(d)',       'MACE p10 (epoch 291)',        'darkorange', s_mace_vs_t1x),
+        (orca, mace, 'ORCA  wB97M-V/def2-TZVP', 'MACE p10 (epoch 291)',        'seagreen',   s_mace_vs_orca),
+    ]
+
+    for ax, (x, y, xlabel, ylabel, color, s) in zip(axes, plot_pairs):
+        ax.scatter(x, y, alpha=0.5, s=18, color=color, edgecolors='none')
+        lo = min(x.min(), y.min()) - 300
+        hi = max(x.max(), y.max()) + 300
+        ax.plot([lo, hi], [lo, hi], 'k--', lw=1)
+        ax.set_xlim(lo, hi); ax.set_ylim(lo, hi)
+        ax.set_xlabel(xlabel, fontsize=9)
+        ax.set_ylabel(ylabel, fontsize=9)
+        ax.set_title(
+            f"RMSE={s['rmse_meV']:.0f} meV  MAE={s['mae_meV']:.0f} meV\n"
+            f"bias={s['bias_meV']:+.0f} meV  R²={s['r2']:.3f}",
+            fontsize=9
+        )
+
+    plt.tight_layout()
+    plt.savefig(args.plot, dpi=150, bbox_inches='tight')
+    print(f"Saved plot: {args.plot}")
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--h5file',   required=True)
-    parser.add_argument('--test-dir', default='/home/energy/s242862/orca_neb_results')
-    parser.add_argument('--val-dir',  default='/home/energy/s242862/orca_neb_val_results')
-    parser.add_argument('--output',   default='/home/energy/s242862/barrier_comparison.png')
-    args = parser.parse_args()
-    main(args)
+    parser.add_argument('--neb-dir', default='/home/energy/s242862/orca_neb_results')
+    parser.add_argument('--t1x-h5',  default='/home/energy/s242862/data/Transition1x.h5')
+    parser.add_argument('--model',   default='/home/energy/s242862/mace_t1x_p10_ep194.model')
+    parser.add_argument('--output',  default='/home/energy/s242862/barrier_comparison_full.json')
+    parser.add_argument('--plot',    default='/home/energy/s242862/barrier_comparison_full.png')
+    main(parser.parse_args())

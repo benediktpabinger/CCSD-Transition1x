@@ -30,11 +30,6 @@ ORCA_CMD=$(which orca)
 echo "ORCA: $ORCA_CMD"
 echo "Reaction: $REACTION"
 
-# Run from local node scratch to avoid heavy I/O on network fileserver
-SCRATCH=/tmp/nevpt2_optts_${SLURM_JOB_ID}
-mkdir -p ${SCRATCH}
-cd ${SCRATCH}
-
 # ── Step 1: CASSCF OptTS ────────────────────────────────────────────────────
 cat > ${OUTPUT}/optts.inp << EOF
 # CASSCF TS optimisation starting from wB97M-V saddle point
