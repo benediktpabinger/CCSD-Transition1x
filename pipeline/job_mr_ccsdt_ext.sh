@@ -1,0 +1,41 @@
+#!/bin/bash
+#SBATCH --job-name=mr_ccsdt_ext
+#SBATCH --partition=xeon24el8
+#SBATCH --time=12:00:00
+#SBATCH --nodes=1
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=24
+#SBATCH --mem=120GB
+#SBATCH --array=0-19
+#SBATCH --output=/home/energy/s242862/logs/mr_ccsdt_ext_%A_%a.log
+
+# CCSD(T)/def2-TZVP on R, TS, P for 20 extended benchmark reactions.
+# Bottom 10 (lowest NFOD) + 10 evenly spaced through the middle.
+
+set -e
+
+module load Python/3.13.5-GCCcore-14.3.0
+mkdir -p /home/energy/s242862/logs
+
+REACTIONS=(
+    rxn9246 rxn4498 rxn1061 rxn4003 rxn4004 rxn4063 rxn4114 rxn4060 rxn1961 rxn1962
+    rxn0896 rxn1154 rxn5690 rxn4513 rxn7955 rxn4519 rxn4500 rxn2553 rxn8829 rxn1155
+)
+RXN=${REACTIONS[${SLURM_ARRAY_TASK_ID}]}
+
+OUT=/home/energy/s242862/mr_benchmark/results/${RXN}_ccsdt.json
+if [ -f "$OUT" ]; then
+    echo "Task ${SLURM_ARRAY_TASK_ID}: ${RXN} already done, skipping."
+    exit 0
+fi
+
+echo "Task ${SLURM_ARRAY_TASK_ID}: ${RXN}"
+
+export OMP_NUM_THREADS=12
+export MKL_NUM_THREADS=12
+export OPENBLAS_NUM_THREADS=12
+export BLAS_NUM_THREADS=12
+export NUMEXPR_NUM_THREADS=12
+export PYSCF_MAX_MEMORY=100000
+
+python3 /home/energy/s242862/pipeline/mr_benchmark_ccsdt.py ${RXN} --n-threads 12

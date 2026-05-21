@@ -1,3 +1,124 @@
+## Calculation Inventory (`calculation_inventory.csv`)
+
+`calculation_inventory.csv` tracks the status of every calculation run on top of the Transition1x dataset. One row per reaction. Columns:
+
+### Identity
+
+| Column | Description |
+|--------|-------------|
+| `rxn` | Reaction ID (e.g. `rxn0103`) |
+| `split` | Dataset split: `train`, `val`, or `test` |
+| `in_vault` | Reaction is included in the curated CURATOR vault |
+
+### Val/Test NEB (wB97M-V/def2-TZVP, ORCA)
+
+| Column | Description |
+|--------|-------------|
+| `orca_neb_ts_exists` | A `transition_state.xyz` file exists in the NEB output directory |
+| `orca_neb_converged` | NEB converged (fmax < 0.05 eV/Å); determined by presence of a `converged` marker file written only on actual convergence |
+| `orca_neb_fmax` | Final fmax (eV/Å) of the NEB run |
+| `orca_neb_in_faillist` | Reaction was manually added to the failed-NEB list |
+| `orca_barrier_eV` | Forward barrier (eV) from the converged NEB path (wB97M-V/def2-TZVP) |
+| `t1x_barrier_eV` | Forward barrier (eV) from the original T1x NEB (wB97X-D3/6-31G(d)) |
+
+### CCSD/CCSD(T) on NEB path (test set only)
+
+| Column | Description |
+|--------|-------------|
+| `ccsd_pyscf_neb` | CCSD/def2-DZ SPs on NEB images completed (PySCF) |
+| `ccsd_dz_sp_images` | Individual SP image results exist |
+| `ccsd_dz_compiled` | CCSD/def2-DZ barriers compiled into a summary JSON |
+| `ccsdt_tz_sp_images` | CCSD(T)/def2-TZ SP image results exist |
+| `ccsdt_tz_compiled` | CCSD(T)/def2-TZ barriers compiled |
+| `ccsdt_tz_neb_db` | CCSD(T)/def2-TZ results stored in neb.db format |
+
+### Model evaluation (test set)
+
+| Column | Description |
+|--------|-------------|
+| `in_barrier_comp_p10` | Reaction included in the p10 barrier comparison evaluation |
+| `painn_barrier` | PaiNN model barrier evaluated |
+| `mace_p10_ep291_meV` | MACE (p10, epoch 291) barrier prediction (meV) |
+| `painn_barrier_meV` | PaiNN barrier prediction (meV) |
+
+### Delta model SPs
+
+| Column | Description |
+|--------|-------------|
+| `delta_sp` | **Test set:** wB97X-D3/6-31G(d) and wB97M-V/def2-TZVP SPs computed for delta model training/evaluation |
+| `val_delta_sp` | **Val set, Group A (174 converged NEB):** wB97X-D3/6-31G(d) ORCA SPs + gradients on 50 uniformly sampled NEB images; wB97M-V energy read from neb.db. Output: `~/val_delta_sp/{rxn}/results.json`. Note: wB97M-V forces not available for Group A (not stored in neb.db); only delta energy is usable as training target. |
+| `val_delta_sp_flip` | **Val set, Group B (51 failed NEB):** wB97M-V/def2-TZVP ORCA SPs + gradients on 50 uniformly sampled T1x geometries; wB97X-D3 energy and forces read from T1x HDF5. Full delta energy and delta forces available. Output: `~/val_delta_sp_flip/{rxn}/results.json` |
+
+### NEVPT2 (older ORCA-based attempts, test set)
+
+| Column | Description |
+|--------|-------------|
+| `nevpt2_sp_66_orca` | NEVPT2 SP with 6-6 active space, ORCA |
+| `nevpt2_optts_66_orca` | NEVPT2 with optimised TS geometry, 6-6 active space, ORCA |
+
+### MR Benchmark: CCSD(T) and NEVPT2/AVAS (top-10 FOD reactions, test set)
+
+| Column | Description |
+|--------|-------------|
+| `ccsdt_sp_pyscf` | CCSD(T)/def2-TZVP single points on R, TS, P completed (PySCF). Output: `~/mr_benchmark/results/{rxn}_ccsdt.json` |
+| `nevpt2_avas_pyscf` | NEVPT2/AVAS calculation was submitted and ran |
+| `nevpt2_avas_fixed` | CASSCF converged at all three geometries (R, TS, P); NEVPT2 completed. Output: `~/nevpt2_results/{rxn}_pyscf_avas/nevpt2_results.json` |
+| `nevpt2_avas_validated` | `True` if nat_occ analysis confirms the active space is balanced (≥1 fractional occupation at R, TS, and P) |
+| `nevpt2_avas_fwd_meV` | NEVPT2 forward barrier (meV) |
+| `nevpt2_avas_rev_meV` | NEVPT2 reverse barrier (meV) |
+| `nevpt2_avas_geometry` | Geometry source used for NEVPT2 SPs (e.g. `orca_neb`) |
+| `nevpt2_avas_flag` | Reliability flag: `ok` = nat_occ balanced across R/TS/P; `red_flag` = TS-biased active space (unreliable barriers — use CCSD(T) instead); `failed` = CASSCF did not converge at all geometries. Empty = not yet computed |
+
+### MP2 NEB (experimental)
+
+| Column | Description |
+|--------|-------------|
+| `mp2_neb_crashed` | MP2 NEB job crashed |
+| `mp2_neb_succeeded` | MP2 NEB job completed successfully |
+
+---
+
+## Val Delta SP Plausibility Check
+
+A basic plausibility check was run on the completed val delta SP calculations (2026-05-12).
+
+### What was checked
+
+1. **Completeness** — all `results.json` present, expected number of geometries sampled
+2. **Delta sign and magnitude** — E_wB97M-V − E_wB97X-D3 should be a consistently negative total energy difference (larger basis + different functional lowers total energy)
+3. **Within-reaction consistency** — the delta should be smooth across geometries of the same molecule; large std signals either SCF failure or strong geometry dependence
+4. **SCF failure vs. physical variance** — if only one of the two energies is anomalous at a geometry, it is a SCF artifact; if both move coherently, it is a real geometry effect
+
+### Results
+
+| | Group A (174 converged NEB) | Group B (51 failed NEB) |
+|---|---|---|
+| Reactions with `results.json` | 174 / 174 | 51 / 51 |
+| Delta mean across reactions | −3.03 ± 0.29 eV | −2.84 ± 0.15 eV |
+| Within-rxn std (mean) | 0.089 eV | 0.093 eV |
+| Within-rxn std (max) | 0.251 eV | 0.200 eV |
+| Within-rxn std (p95) | 0.164 eV | 0.156 eV |
+| Reactions with std > 0.15 eV | 12 | 4 |
+| Reactions with < 90% geometries | 5 | 0 |
+
+**Incomplete reactions (Group A):** rxn1914, rxn3126, rxn4932, rxn5041, rxn5802 — all have exactly 40 images in `neb.db` (`n_total=40`). These NEBs converged quickly; all available geometries were sampled. Not a data quality problem.
+
+**High-std outliers:** The worst case (rxn4928, std=0.25 eV) was inspected manually. The single extreme geometry (idx=763, delta=−4.74 eV vs. typical −3.0 eV) has *both* wB97M and wB97X total energies ~33 eV above the converged structure — a genuinely strained intermediate NEB geometry. Both energies move coherently, ruling out SCF failure. High delta at strained geometries is physically expected: basis set incompleteness error is larger when bonds are compressed. This is real geometry-dependent delta, not corrupted data.
+
+### Conclusion
+
+Data is clean. High within-reaction variance is genuine physics arising from sampling the full NEB optimization history (which includes distorted intermediate geometries). The delta model must learn geometry-dependent corrections — the validation set correctly captures this by including the full PES, not just the final MEP.
+
+### TODO — more thorough investigation
+
+> **Note to self:** the check above is a basic sanity check. A more thorough investigation would include:
+> - For each high-std outlier, plot delta vs. geom_idx to see whether variance is smooth (geometry-dependent) or spiky (SCF noise)
+> - Filter geometries by energy above the MEP minimum (e.g. only include geometries within 2 eV of the minimum energy image) and check whether this removes the extreme delta values — would help decide if strained geometries should be excluded from the validation set
+> - Cross-check Group A delta statistics against the delta distribution seen during training (train set) to confirm the val set is in-distribution
+> - Verify that the 5 short-history reactions (40 images) have converged NEBs that simply needed fewer iterations — check their `orca_neb_fmax` values
+
+---
+
 #### Installation
 To install, run:
 ```

@@ -1,0 +1,15 @@
+import paramiko
+ssh = paramiko.SSHClient()
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh.connect('slid.fysik.dtu.dk', username='s242862', password='Butterbrot9797')
+def run(cmd):
+    _, out, _ = ssh.exec_command(cmd, get_pty=True)
+    return out.read().decode('utf-8', errors='replace').strip()
+print(run('squeue -u s242862 -h'))
+print()
+print('Result file:', run('ls -lh /home/energy/s242862/delta_head/eval_neb_results.json 2>/dev/null || echo missing'))
+print()
+log = run('ls -t /home/energy/s242862/logs/eval_delta_neb_*.log | head -1')
+print('Latest log:', log)
+print(run(f'tail -30 {log}'))
+ssh.close()
