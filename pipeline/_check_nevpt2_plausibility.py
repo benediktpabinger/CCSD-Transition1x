@@ -2,12 +2,17 @@
 NEVPT2 plausibility check for the 20 new benchmark reactions.
 Mirrors the analysis in multireference_screening.md.
 """
+import os, getpass
 import paramiko, json
 import numpy as np
 
+HOST = os.environ.get('SSH_HOST', 'slid.fysik.dtu.dk')
+USER = os.environ.get('SSH_USER')
+PASS = os.environ.get('SSH_PASS') or getpass.getpass(f'SSH password for {USER}@{HOST}: ')
+
 ssh = paramiko.SSHClient()
 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-ssh.connect('slid.fysik.dtu.dk', username='s242862', password='Butterbrot9797')
+ssh.connect(HOST, username=USER, password=PASS)
 
 def run(cmd):
     _, out, _ = ssh.exec_command(cmd, get_pty=True)

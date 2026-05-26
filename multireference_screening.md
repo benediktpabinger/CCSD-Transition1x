@@ -191,7 +191,7 @@ After CASSCF converges, natural orbital occupancies are computed from the 1-RDM.
 | rxn0346  | 2 (1.930, **0.077**) | 2 (1.724, **0.287**) | 2 (1.928, **0.080**) | Reliable — mild MR at R/P, strong at TS; minimal but consistent active space |
 | rxn1150  | **1** (0.051 only) | 4 (1.933, 1.900, 0.114, …) | 4 (1.938, 1.880, 0.128, …) | ⚠ Red flag — reactant essentially SR (0.051 barely above threshold); TS-biased active space; forward barrier unreliable |
 
-**Summary: 7 reliable, 2 red flag (rxn1320, rxn1150), 1 failed (rxn4113).**
+**Summary (top-10): 7 reliable, 2 red flag (rxn1320, rxn1150), 1 failed (rxn4113).**
 
 #### rxn1320 red flag: detail
 
@@ -204,6 +204,87 @@ Same failure mode. The only fractional occupation at the reactant is 0.051 — j
 #### rxn4113: CASSCF convergence failure at product
 
 CASSCF converged at TS and reactant but failed at the product geometry even after 1000 damped iterations. The product likely has a qualitatively different electronic structure (possibly a diradical or near-degenerate closed-shell / open-shell pair) that requires a different initial guess or a larger active space. The CCSD(T) barrier is used as reference. rxn4113 is excluded from the NEVPT2 benchmark.
+
+---
+
+## Full 30-Reaction Benchmark
+
+The benchmark was extended from the top-10 high-MR reactions to 30 reactions total, by adding 10 mid-MR and 10 low-MR reactions as controls. This allows the NEVPT2/CCSD(T) comparison to be interpreted in context: does NEVPT2 fail specifically where MR character is genuine (top-10), or also where there is little MR character (bottom-10)?
+
+**Groups:**
+- **Top 10 (high MR):** highest NFOD scores — reactions where single-reference DFT is expected to be most unreliable
+- **Middle 10 (mid MR):** intermediate NFOD — partial MR character
+- **Bottom 10 (low MR):** lowest NFOD scores — reactions where single-reference methods should be reliable
+
+### Reliability Criterion (5 flags)
+
+A reaction is flagged **RED FLAG** if any of the following apply; otherwise **Reliable**:
+
+| Flag | Condition | Interpretation |
+|------|-----------|----------------|
+| `0 frac@R` | Zero fractional occupations at reactant | Active space idle at R; NEVPT2 adds no correlation there |
+| `0 frac@TS` | Zero fractional occupations at TS | Active space idle at TS; main point of interest uncorrected |
+| `0 frac@P` | Zero fractional occupations at product | Active space idle at P; reverse barrier unreliable |
+| `neg rev` | Reverse barrier < 0 meV | Physically impossible; NEVPT2 energetics are wrong |
+| `\|NEV-CCT\| > 300 meV` | NEVPT2 and CCSD(T) forward barriers disagree by >300 meV | Secondary cross-check confirming a breakdown |
+
+A reaction is **MISSING** if no `nevpt2_results.json` exists on the cluster (CASSCF did not converge or job was not submitted).
+
+### Full Reliability Table
+
+All barriers in meV. Source: `full_benchmark_results.json`, `pipeline/_check_nevpt2_plausibility.py`.
+
+| Reaction | Group | Active Space | frac R/TS/P | NEVPT2 fwd | CCSD(T) fwd | diff | Status | Flags |
+|----------|-------|-------------|-------------|-----------|------------|------|--------|-------|
+| rxn7949  | High  | (16e,12o)   | 6/8/6       | 3254       | 3210        | +44  | Reliable | |
+| rxn8832  | High  | (18e,13o)   | 4/6/6       | 2540       | 2621        | −81  | Reliable | |
+| rxn1320  | High  | (16e,10o)   | 0/2/2       | 3147       | 3051        | +96  | Red flag | 0 frac@R |
+| rxn4113  | High  | —           | —           | —          | 5346        | —    | Failed   | CASSCF no conv. at P |
+| rxn8885  | High  | (14e,11o)   | 6/6/4       | 3643       | 3564        | +79  | Reliable | |
+| rxn7945  | High  | (16e,12o)   | 6/6/6       | 3943       | 3923        | +20  | Reliable | |
+| rxn7937  | High  | (16e,12o)   | 6/6/4       | 3764       | 3858        | −94  | Reliable | |
+| rxn6196  | High  | (14e,12o)   | 6/6/8       | 4181       | 4282        | −101 | Reliable | |
+| rxn0346  | High  | (14e,10o)   | 2/2/2       | 3213       | 3336        | −123 | Reliable | |
+| rxn1150  | High  | (14e,10o)   | 1/4/4       | 3362       | 3460        | −98  | Red flag | 0 frac@R (borderline) |
+| rxn0896  | Mid   | (16e,11o)   | 2/2/1       | 5145       | 5094        | +51  | Reliable | |
+| rxn1154  | Mid   | (14e,9o)    | 1/2/0       | 4295       | 3847        | +448 | Red flag | 0 frac@P; \|NEV-CCT\|=448meV |
+| rxn5690  | Mid   | (18e,12o)   | 4/4/4       | 3274       | 3346        | −73  | Red flag | neg rev (−72meV) |
+| rxn4513  | Mid   | (14e,9o)    | 2/0/0       | 1929       | 1936        | −7   | Red flag | 0 frac@TS; 0 frac@P |
+| rxn7955  | Mid   | (18e,14o)   | 6/6/6       | 3100       | 3080        | +19  | Reliable | |
+| rxn4519  | Mid   | —           | —           | —          | 4903        | —    | Missing  | |
+| rxn4500  | Mid   | —           | —           | —          | 4745        | —    | Missing  | |
+| rxn2553  | Mid   | (12e,8o)    | 2/2/2       | 2009       | 2011        | −2   | Reliable | |
+| rxn8829  | Mid   | (16e,13o)   | 4/4/4       | 2994       | 2938        | +56  | Reliable | |
+| rxn1155  | Mid   | (14e,8o)    | 0/0/2       | 2453       | 2797        | −344 | Red flag | 0 frac@R; 0 frac@TS; \|NEV-CCT\|=344meV |
+| rxn9246  | Low   | (14e,8o)    | 2/0/2       | 1433       | 1776        | −343 | Red flag | 0 frac@TS; \|NEV-CCT\|=343meV |
+| rxn4498  | Low   | —           | —           | —          | 3268        | —    | Missing  | |
+| rxn1061  | Low   | —           | —           | —          | 1144        | —    | Missing  | |
+| rxn4003  | Low   | —           | —           | —          | 1998        | —    | Missing  | |
+| rxn4004  | Low   | (18e,12o)   | 0/0/2       | 2185       | 2011        | +174 | Red flag | 0 frac@R; 0 frac@TS |
+| rxn4063  | Low   | (18e,11o)   | 0/0/0       | 2031       | 1956        | +75  | Red flag | 0 frac@R; 0 frac@TS; 0 frac@P |
+| rxn4114  | Low   | (14e,9o)    | 0/0/1       | 2434       | 2481        | −47  | Red flag | 0 frac@R; 0 frac@TS |
+| rxn4060  | Low   | (20e,12o)   | 0/0/0       | 1688       | 1871        | −184 | Red flag | 0 frac@R; 0 frac@TS; 0 frac@P |
+| rxn1961  | Low   | (14e,8o)    | 0/0/0       | 869        | 2269        | −1400| Red flag | 0 frac@R/TS/P; neg rev; \|NEV-CCT\|=1400meV |
+| rxn1962  | Low   | (14e,8o)    | 0/0/0       | 2019       | 2411        | −393 | Red flag | 0 frac@R/TS/P; \|NEV-CCT\|=393meV |
+
+**Summary by group:**
+
+| Group | Reliable | Red flag | Missing/Failed | Total |
+|-------|----------|----------|----------------|-------|
+| High MR (top 10) | 7 | 2 | 1 | 10 |
+| Mid MR (middle 10) | 4 | 4 | 2 | 10 |
+| Low MR (bottom 10) | 0 | 7 | 3 | 10 |
+| **All 30** | **11** | **13** | **6** | **30** |
+
+### Interpretation
+
+**Root cause of failures in low-MR reactions:** AVAS selects active orbitals by projecting onto π-type AOs at the TS. For low-MR reactions, the TS has no near-degenerate orbitals — all π orbitals are fully occupied or empty. The selected active space is physically idle everywhere: CASSCF converges to a solution that is essentially HF, and NEVPT2 adds negligible correlation. The method works by design only where genuine MR character exists.
+
+**Mid-MR reactions:** Mixed results. Four reactions are reliable (rxn0896, rxn7955, rxn2553, rxn8829), where moderate but genuine MR character exists at all three geometries. The failures arise from TS-biased active spaces (0 frac@P) or a marginally negative reverse barrier indicating a near-flat PES that NEVPT2 cannot resolve.
+
+**Practical conclusion:** Use NEVPT2 barriers only for the 7 reliable top-10 reactions. For all others (mid and low MR), use CCSD(T) as the high-level reference. Flag rxn1320 and rxn1150 (top-10 red flags) accordingly — CCSD(T) is the reference for those too.
+
+**NEVPT2 vs CCSD(T) for the 11 reliable reactions:** forward barrier spread −123 to +96 meV (top-10 subset); +2 to +56 meV (mid-MR subset). Consistent with NEVPT2 accuracy on moderately MR systems (~50–100 meV).
 
 ---
 
@@ -226,7 +307,12 @@ CASSCF converged at TS and reactant but failed at the product geometry even afte
 
 ## TODO
 
-- [ ] Compute all relevant levels of theory
+- [x] FOD screening of all 279 test reactions
+- [x] CCSD(T)/def2-TZVP for all 30 benchmark reactions
+- [x] NEVPT2/AVAS for top-10 high-MR reactions
+- [x] NEVPT2/AVAS for mid-10 and low-10 (reliability check only; CCSD(T) used as reference for unreliable cases)
+- [x] wB97X-D3 and wB97M-V single points on all 10-image NEB paths (30 reactions)
+- [x] MACE and MACE+delta evaluation on all 30 reactions
 
 ---
 
