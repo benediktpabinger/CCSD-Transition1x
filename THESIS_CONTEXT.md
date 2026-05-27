@@ -329,11 +329,11 @@ Near-degenerate orbitals (occupation ≈ 1) contribute most. Thresholds: < 0.05 
 
 The benchmark covers **30 reactions** from the T1x test split, grouped by MR character to allow method comparisons across the full MR spectrum:
 
-| Group | Reactions | Selection |
-|-------|-----------|-----------|
-| High MR (top 10) | rxn7949, rxn8832, rxn1320, rxn4113, rxn8885, rxn7945, rxn7937, rxn6196, rxn0346, rxn1150 | Highest NFOD scores |
-| Mid MR (middle 10) | rxn0896, rxn1154, rxn5690, rxn4513, rxn7955, rxn4519, rxn4500, rxn2553, rxn8829, rxn1155 | Intermediate NFOD |
-| Low MR (bottom 10) | rxn9246, rxn4498, rxn1061, rxn4003, rxn4004, rxn4063, rxn4114, rxn4060, rxn1961, rxn1962 | Lowest NFOD scores |
+| Group | Reactions | FOD Ranks | NFOD Range | Selection |
+|-------|-----------|-----------|------------|-----------|
+| High MR (top 10) | rxn7949, rxn8832, rxn1320, rxn4113, rxn8885, rxn7945, rxn7937, rxn6196, rxn0346, rxn1150 | 1–10 | 0.85–1.15 | Top 10 by NFOD |
+| Mid MR (middle 10) | rxn0896, rxn1154, rxn5690, rxn4513, rxn7955, rxn4519, rxn4500, rxn2553, rxn8829, rxn1155 | 11, 40, 68, 97, 126, 154, 183, 212, 240, 269 | 0.017–0.84 | Uniform sampling — one reaction every ~29 ranks across full range |
+| Low MR (bottom 10) | rxn9246, rxn4498, rxn1061, rxn4003, rxn4004, rxn4063, rxn4114, rxn4060, rxn1961, rxn1962 | 270–279 | 0.003–0.014 | Bottom 10 by NFOD |
 
 Zero overlap with delta head training or validation data.
 

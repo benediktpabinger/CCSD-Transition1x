@@ -211,10 +211,10 @@ CASSCF converged at TS and reactant but failed at the product geometry even afte
 
 The benchmark was extended from the top-10 high-MR reactions to 30 reactions total, by adding 10 mid-MR and 10 low-MR reactions as controls. This allows the NEVPT2/CCSD(T) comparison to be interpreted in context: does NEVPT2 fail specifically where MR character is genuine (top-10), or also where there is little MR character (bottom-10)?
 
-**Groups:**
-- **Top 10 (high MR):** highest NFOD scores — reactions where single-reference DFT is expected to be most unreliable
-- **Middle 10 (mid MR):** intermediate NFOD — partial MR character
-- **Bottom 10 (low MR):** lowest NFOD scores — reactions where single-reference methods should be reliable
+**Groups (selection from the 279-reaction FOD ranking):**
+- **Top 10 (high MR):** ranks 1–10 (NFOD 0.85–1.15) — highest NFOD, where single-reference DFT is expected to be most unreliable
+- **Middle 10 (mid MR):** uniformly sampled across the full ranking — one reaction every ~29 ranks (ranks 11, 40, 68, 97, 126, 154, 183, 212, 240, 269; NFOD 0.017–0.84), covering the entire NFOD spectrum
+- **Bottom 10 (low MR):** ranks 270–279 (NFOD 0.003–0.014) — lowest NFOD, where single-reference methods should be reliable
 
 ### Reliability Criterion (5 flags)
 
