@@ -38,11 +38,9 @@ from ase.optimize.bfgs import BFGS
 
 
 def make_esen_calc(checkpoint_path):
-    from fairchem.core import OCPCalculator
-    return OCPCalculator(
-        checkpoint_path=checkpoint_path,
-        cpu=False,
-    )
+    from fairchem.core import pretrained_mlip, FAIRChemCalculator
+    predict_unit = pretrained_mlip.load_predict_unit(checkpoint_path, device='cuda')
+    return FAIRChemCalculator(predict_unit)
 
 
 def load_wB97x_images(h5file, reaction, split):
@@ -97,12 +95,13 @@ class DBWriter:
 
 def assign_calcs(images, checkpoint_path):
     """Assign eSEN calculator to all images.
-    Unlike ORCA, one calculator instance can serve all images — eSEN
-    is stateless and GPU-batched, so sharing is safe and efficient.
+    Load model once, but wrap in a separate FAIRChemCalculator per image
+    as required by ASE NEB (each image must have its own calculator instance).
     """
-    calc = make_esen_calc(checkpoint_path)
+    from fairchem.core import pretrained_mlip, FAIRChemCalculator
+    predict_unit = pretrained_mlip.load_predict_unit(checkpoint_path, device='cuda')
     for atoms in images:
-        atoms.calc = calc
+        atoms.calc = FAIRChemCalculator(predict_unit)
 
 
 def main(args):
@@ -140,7 +139,7 @@ def main(args):
 
     # NEB
     print('Running NEB (eSEN / OMol25) ...')
-    neb = NEB(images, climb=False, parallel=False)
+    neb = NEB(images, climb=False, parallel=False, method='improvedtangent')
     neb_tools = NEBTools(images)
     relax_neb = NEBOptimizer(neb, logfile=os.path.join(args.output, 'neb.log'))
 

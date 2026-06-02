@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=esen_neb
-#SBATCH --partition=sm3090
+#SBATCH --partition=sm3090el8
 #SBATCH --time=1:00:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
