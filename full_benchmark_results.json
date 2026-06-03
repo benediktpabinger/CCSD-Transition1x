@@ -16,7 +16,10 @@
       "delta_fwd_meV": 3669.9,
       "esen_neb_fwd_meV": 2752.0,
       "esen_neb_rev_meV": 2884.0,
-      "esen_neb_fmax": 0.0888
+      "esen_neb_fmax": 0.0888,
+      "uma_neb_fwd_meV": 2797.1,
+      "uma_neb_rev_meV": 2929.7,
+      "uma_neb_fmax": 0.0913
     },
     {
       "rxn": "rxn8832",
@@ -34,7 +37,10 @@
       "delta_fwd_meV": 2959.0,
       "esen_neb_fwd_meV": 2527.0,
       "esen_neb_rev_meV": 1666.9,
-      "esen_neb_fmax": 0.0607
+      "esen_neb_fmax": 0.0607,
+      "uma_neb_fwd_meV": 2492.9,
+      "uma_neb_rev_meV": 1630.3,
+      "uma_neb_fmax": 0.0562
     },
     {
       "rxn": "rxn1320",
@@ -52,7 +58,10 @@
       "delta_fwd_meV": 3272.5,
       "esen_neb_fwd_meV": 2768.1,
       "esen_neb_rev_meV": 2849.2,
-      "esen_neb_fmax": 0.0443
+      "esen_neb_fmax": 0.0443,
+      "uma_neb_fwd_meV": 2765.9,
+      "uma_neb_rev_meV": 2847.2,
+      "uma_neb_fmax": 0.052
     },
     {
       "rxn": "rxn4113",
@@ -70,7 +79,10 @@
       "delta_fwd_meV": 5023.4,
       "esen_neb_fwd_meV": 5371.8,
       "esen_neb_rev_meV": 4429.4,
-      "esen_neb_fmax": 0.0545
+      "esen_neb_fmax": 0.0545,
+      "uma_neb_fwd_meV": 5400.6,
+      "uma_neb_rev_meV": 4460.3,
+      "uma_neb_fmax": 0.0836
     },
     {
       "rxn": "rxn8885",
@@ -88,7 +100,10 @@
       "delta_fwd_meV": 4066.4,
       "esen_neb_fwd_meV": 3262.9,
       "esen_neb_rev_meV": 2173.8,
-      "esen_neb_fmax": 0.4009
+      "esen_neb_fmax": 0.4009,
+      "uma_neb_fwd_meV": 3242.9,
+      "uma_neb_rev_meV": 2153.4,
+      "uma_neb_fmax": 0.2556
     },
     {
       "rxn": "rxn7945",
@@ -106,7 +121,10 @@
       "delta_fwd_meV": 3840.8,
       "esen_neb_fwd_meV": 3386.8,
       "esen_neb_rev_meV": 549.1,
-      "esen_neb_fmax": 0.0694
+      "esen_neb_fmax": 0.0694,
+      "uma_neb_fwd_meV": 3868.7,
+      "uma_neb_rev_meV": 1046.9,
+      "uma_neb_fmax": 0.0563
     },
     {
       "rxn": "rxn7937",
@@ -124,7 +142,10 @@
       "delta_fwd_meV": 3739.3,
       "esen_neb_fwd_meV": 3803.8,
       "esen_neb_rev_meV": 926.9,
-      "esen_neb_fmax": 0.0948
+      "esen_neb_fmax": 0.0948,
+      "uma_neb_fwd_meV": 3813.5,
+      "uma_neb_rev_meV": 916.6,
+      "uma_neb_fmax": 0.1461
     },
     {
       "rxn": "rxn6196",
@@ -142,7 +163,10 @@
       "delta_fwd_meV": 4285.2,
       "esen_neb_fwd_meV": 4220.8,
       "esen_neb_rev_meV": 764.3,
-      "esen_neb_fmax": 0.1159
+      "esen_neb_fmax": 0.1159,
+      "uma_neb_fwd_meV": 4224.5,
+      "uma_neb_rev_meV": 766.8,
+      "uma_neb_fmax": 0.1086
     },
     {
       "rxn": "rxn0346",
@@ -160,7 +184,10 @@
       "delta_fwd_meV": 3505.9,
       "esen_neb_fwd_meV": 3330.3,
       "esen_neb_rev_meV": 1361.2,
-      "esen_neb_fmax": 0.2607
+      "esen_neb_fmax": 0.2607,
+      "uma_neb_fwd_meV": 3325.3,
+      "uma_neb_rev_meV": 1359.3,
+      "uma_neb_fmax": 0.0613
     },
     {
       "rxn": "rxn1150",
@@ -178,7 +205,10 @@
       "delta_fwd_meV": 3683.6,
       "esen_neb_fwd_meV": 3595.0,
       "esen_neb_rev_meV": 634.4,
-      "esen_neb_fmax": 0.0552
+      "esen_neb_fmax": 0.0552,
+      "uma_neb_fwd_meV": 3610.2,
+      "uma_neb_rev_meV": 654.1,
+      "uma_neb_fmax": 0.0668
     },
     {
       "rxn": "rxn9246",
@@ -196,7 +226,10 @@
       "delta_fwd_meV": 1827.1,
       "esen_neb_fwd_meV": 1777.4,
       "esen_neb_rev_meV": 920.8,
-      "esen_neb_fmax": 0.0642
+      "esen_neb_fmax": 0.0642,
+      "uma_neb_fwd_meV": 1778.1,
+      "uma_neb_rev_meV": 922.6,
+      "uma_neb_fmax": 0.057
     },
     {
       "rxn": "rxn4498",
@@ -214,7 +247,10 @@
       "delta_fwd_meV": 3244.1,
       "esen_neb_fwd_meV": 3278.8,
       "esen_neb_rev_meV": 2323.3,
-      "esen_neb_fmax": 0.0548
+      "esen_neb_fmax": 0.0548,
+      "uma_neb_fwd_meV": 3295.7,
+      "uma_neb_rev_meV": 2340.8,
+      "uma_neb_fmax": 0.0556
     },
     {
       "rxn": "rxn1061",
@@ -232,7 +268,10 @@
       "delta_fwd_meV": 1209.0,
       "esen_neb_fwd_meV": 1133.3,
       "esen_neb_rev_meV": 1767.4,
-      "esen_neb_fmax": 0.0932
+      "esen_neb_fmax": 0.0932,
+      "uma_neb_fwd_meV": 1138.2,
+      "uma_neb_rev_meV": 1773.5,
+      "uma_neb_fmax": 0.0984
     },
     {
       "rxn": "rxn4003",
@@ -250,7 +289,10 @@
       "delta_fwd_meV": 1902.3,
       "esen_neb_fwd_meV": 1973.2,
       "esen_neb_rev_meV": 1251.1,
-      "esen_neb_fmax": 0.0538
+      "esen_neb_fmax": 0.0538,
+      "uma_neb_fwd_meV": 1973.5,
+      "uma_neb_rev_meV": 1253.1,
+      "uma_neb_fmax": 0.0605
     },
     {
       "rxn": "rxn4004",
@@ -268,7 +310,10 @@
       "delta_fwd_meV": 2219.7,
       "esen_neb_fwd_meV": 2089.0,
       "esen_neb_rev_meV": 1014.3,
-      "esen_neb_fmax": 0.1146
+      "esen_neb_fmax": 0.1146,
+      "uma_neb_fwd_meV": 2085.8,
+      "uma_neb_rev_meV": 1014.4,
+      "uma_neb_fmax": 0.1379
     },
     {
       "rxn": "rxn4063",
@@ -286,7 +331,10 @@
       "delta_fwd_meV": 1914.1,
       "esen_neb_fwd_meV": 1934.0,
       "esen_neb_rev_meV": 1267.9,
-      "esen_neb_fmax": 0.0444
+      "esen_neb_fmax": 0.0444,
+      "uma_neb_fwd_meV": 1934.2,
+      "uma_neb_rev_meV": 1269.1,
+      "uma_neb_fmax": 0.0453
     },
     {
       "rxn": "rxn4114",
@@ -304,7 +352,10 @@
       "delta_fwd_meV": 2474.6,
       "esen_neb_fwd_meV": 2474.8,
       "esen_neb_rev_meV": 1769.5,
-      "esen_neb_fmax": 0.0444
+      "esen_neb_fmax": 0.0444,
+      "uma_neb_fwd_meV": 2475.8,
+      "uma_neb_rev_meV": 1772.8,
+      "uma_neb_fmax": 0.0463
     },
     {
       "rxn": "rxn4060",
@@ -322,7 +373,10 @@
       "delta_fwd_meV": 1890.6,
       "esen_neb_fwd_meV": 1963.4,
       "esen_neb_rev_meV": 965.7,
-      "esen_neb_fmax": 0.0637
+      "esen_neb_fmax": 0.0637,
+      "uma_neb_fwd_meV": 1963.3,
+      "uma_neb_rev_meV": 965.5,
+      "uma_neb_fmax": 0.0574
     },
     {
       "rxn": "rxn1961",
@@ -340,7 +394,10 @@
       "delta_fwd_meV": 2373.5,
       "esen_neb_fwd_meV": 2244.7,
       "esen_neb_rev_meV": 1355.6,
-      "esen_neb_fmax": 0.0492
+      "esen_neb_fmax": 0.0492,
+      "uma_neb_fwd_meV": 2244.5,
+      "uma_neb_rev_meV": 1356.3,
+      "uma_neb_fmax": 0.0441
     },
     {
       "rxn": "rxn1962",
@@ -358,7 +415,10 @@
       "delta_fwd_meV": 2603.0,
       "esen_neb_fwd_meV": 2424.8,
       "esen_neb_rev_meV": 1416.5,
-      "esen_neb_fmax": 0.0582
+      "esen_neb_fmax": 0.0582,
+      "uma_neb_fwd_meV": 2422.9,
+      "uma_neb_rev_meV": 1415.6,
+      "uma_neb_fmax": 0.0555
     },
     {
       "rxn": "rxn0896",
@@ -376,7 +436,10 @@
       "delta_fwd_meV": 4451.2,
       "esen_neb_fwd_meV": 5209.2,
       "esen_neb_rev_meV": 1756.0,
-      "esen_neb_fmax": 0.071
+      "esen_neb_fmax": 0.071,
+      "uma_neb_fwd_meV": 5205.4,
+      "uma_neb_rev_meV": 1755.7,
+      "uma_neb_fmax": 0.0712
     },
     {
       "rxn": "rxn1154",
@@ -394,7 +457,10 @@
       "delta_fwd_meV": 3810.5,
       "esen_neb_fwd_meV": 3843.7,
       "esen_neb_rev_meV": 2874.7,
-      "esen_neb_fmax": 0.0967
+      "esen_neb_fmax": 0.0967,
+      "uma_neb_fwd_meV": 3840.6,
+      "uma_neb_rev_meV": 2870.5,
+      "uma_neb_fmax": 0.1042
     },
     {
       "rxn": "rxn5690",
@@ -412,7 +478,10 @@
       "delta_fwd_meV": 3474.6,
       "esen_neb_fwd_meV": 3465.3,
       "esen_neb_rev_meV": 728.3,
-      "esen_neb_fmax": 0.0514
+      "esen_neb_fmax": 0.0514,
+      "uma_neb_fwd_meV": 3472.3,
+      "uma_neb_rev_meV": 736.7,
+      "uma_neb_fmax": 0.0532
     },
     {
       "rxn": "rxn4513",
@@ -430,7 +499,10 @@
       "delta_fwd_meV": 1873.0,
       "esen_neb_fwd_meV": 1951.9,
       "esen_neb_rev_meV": 2759.0,
-      "esen_neb_fmax": 0.063
+      "esen_neb_fmax": 0.063,
+      "uma_neb_fwd_meV": 1948.1,
+      "uma_neb_rev_meV": 2751.8,
+      "uma_neb_fmax": 0.0721
     },
     {
       "rxn": "rxn7955",
@@ -448,7 +520,10 @@
       "delta_fwd_meV": 3097.7,
       "esen_neb_fwd_meV": 3021.8,
       "esen_neb_rev_meV": 85.3,
-      "esen_neb_fmax": 0.0511
+      "esen_neb_fmax": 0.0511,
+      "uma_neb_fwd_meV": 3013.7,
+      "uma_neb_rev_meV": 71.5,
+      "uma_neb_fmax": 0.0447
     },
     {
       "rxn": "rxn4519",
@@ -466,7 +541,10 @@
       "delta_fwd_meV": 4738.3,
       "esen_neb_fwd_meV": 4888.4,
       "esen_neb_rev_meV": 3421.3,
-      "esen_neb_fmax": 0.0514
+      "esen_neb_fmax": 0.0514,
+      "uma_neb_fwd_meV": 4892.5,
+      "uma_neb_rev_meV": 3422.7,
+      "uma_neb_fmax": 0.0512
     },
     {
       "rxn": "rxn4500",
@@ -484,7 +562,10 @@
       "delta_fwd_meV": 5059.6,
       "esen_neb_fwd_meV": 4862.1,
       "esen_neb_rev_meV": 2190.1,
-      "esen_neb_fmax": 0.0542
+      "esen_neb_fmax": 0.0542,
+      "uma_neb_fwd_meV": 4865.3,
+      "uma_neb_rev_meV": 2198.3,
+      "uma_neb_fmax": 0.0523
     },
     {
       "rxn": "rxn2553",
@@ -502,7 +583,10 @@
       "delta_fwd_meV": 2074.2,
       "esen_neb_fwd_meV": 1982.9,
       "esen_neb_rev_meV": 1254.6,
-      "esen_neb_fmax": 0.0587
+      "esen_neb_fmax": 0.0587,
+      "uma_neb_fwd_meV": 1981.5,
+      "uma_neb_rev_meV": 1255.0,
+      "uma_neb_fmax": 0.0613
     },
     {
       "rxn": "rxn8829",
@@ -520,7 +604,10 @@
       "delta_fwd_meV": 2996.1,
       "esen_neb_fwd_meV": 2901.7,
       "esen_neb_rev_meV": 4246.9,
-      "esen_neb_fmax": 0.0658
+      "esen_neb_fmax": 0.0658,
+      "uma_neb_fwd_meV": 2896.7,
+      "uma_neb_rev_meV": 4240.2,
+      "uma_neb_fmax": 0.0615
     },
     {
       "rxn": "rxn1155",
@@ -538,7 +625,10 @@
       "delta_fwd_meV": 2839.8,
       "esen_neb_fwd_meV": 2805.5,
       "esen_neb_rev_meV": 2053.9,
-      "esen_neb_fmax": 0.0507
+      "esen_neb_fmax": 0.0507,
+      "uma_neb_fwd_meV": 2801.9,
+      "uma_neb_rev_meV": 2055.3,
+      "uma_neb_fmax": 0.0541
     }
   ]
 }

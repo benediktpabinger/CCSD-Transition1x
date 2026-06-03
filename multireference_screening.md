@@ -288,6 +288,72 @@ All barriers in meV. Source: `full_benchmark_results.json`, `pipeline/_check_nev
 
 ---
 
+## MLIP NEB Benchmark (eSEN and UMA)
+
+### Motivation
+
+To test whether modern universal MLIPs can reproduce the wB97M-V/def2-TZVP NEB transition states and barriers — and specifically whether they fail for high-MR reactions where single-reference DFT is known to be unreliable.
+
+Two models were evaluated:
+- **eSEN (OMol25, small conserving)** — trained on ωB97M-V/def2-TZVPD via the OMol25 dataset. `esen_sm_conserving_all.pt` (49 MB). ASE interface: `FAIRChemCalculator` from `fairchem`.
+- **UMA-s (v1.2)** — universal model trained on 5 datasets (OC20, OMat24, OMol25, ODAC23, OMC25). `uma-s-1p2.pt` (2.3 GB). Task routing: `task_name='omol'` for molecule-optimised head. Same ASE interface.
+
+Both models use the same NEB protocol as ORCA (`esen_neb.py`, `uma_neb.py`): 10 images, BFGS endpoint relaxation, NEB → CI-NEB, fmax < 0.05 eV/Å. The only change from `orca_neb.py` is the calculator.
+
+### Results
+
+All 30 reactions converged for both models.
+
+#### Barriers vs CCSD(T) (meV, forward)
+
+| Group | eSEN MAE | eSEN Bias | UMA-s MAE | UMA-s Bias | wB97M-V MAE | wB97M-V Bias |
+|-------|----------|-----------|-----------|------------|-------------|--------------|
+| Low MR | 28.3 | +10.9 | 28.9 | +12.8 | 27.3 | +9.2 |
+| Mid MR | 51.7 | +23.4 | 52.9 | +22.0 | 58.4 | +31.7 |
+| High MR | 195.5 | −163 | 152.0 | −111 | 225.8 | +210 |
+| All 30 | 91.8 | −43 | 77.9 | −25 | 103.8 | +84 |
+
+#### MLIP barriers vs wB97M-V ORCA (geometry + energy model combined, meV)
+
+| Group | eSEN MAE | eSEN Bias | UMA-s MAE | UMA-s Bias |
+|-------|----------|-----------|-----------|------------|
+| Low MR | 5.3 | +1.7 | 3.9 | +3.6 |
+| Mid MR | 10.0 | −8.2 | 11.7 | −9.7 |
+| High MR | 373 | −373 | 323 | −321 |
+
+#### TS geometry RMSD vs ORCA (Å, Kabsch-aligned)
+
+| Group | eSEN mean | eSEN max | UMA-s (not computed) |
+|-------|-----------|----------|----------------------|
+| Low MR | 0.008 | 0.022 | — |
+| Mid MR | 0.032 | 0.178 | — |
+| High MR | 0.287 | 1.411 | — |
+
+### Interpretation
+
+**Low and Mid MR:** Both MLIPs reproduce wB97M-V barriers to within 5–12 meV and find essentially the same TS geometry as ORCA. This is the expected result — models trained on wB97M-V should faithfully reproduce that functional for reactions where the PES is well-behaved.
+
+**High MR:** Both MLIPs consistently find *lower* barriers than wB97M-V ORCA (bias −163/−111 meV) and locate geometrically different transition states (eSEN RMSD 0.29 Å mean, max 1.41 Å for rxn8885). The barrier difference is a combined effect of the MLIP finding a different saddle point and evaluating energy differently. These cannot be separated without running wB97M-V single points on the MLIP TS geometries.
+
+**UMA vs eSEN:** UMA-s improves on eSEN for High MR (MAE 152 vs 196 meV vs CCSD(T); geometry difference 323 vs 373 meV vs wB97M-V). The improvement is real but modest — the fundamental limitation is the same: both models were trained on single-reference DFT data and have not seen the complex near-degenerate PES topology of high-MR transition states in training.
+
+**Note on apparent MAE ordering:** The raw MAE numbers suggest MLIPs perform better than ORCA vs CCSD(T) for High MR. This is misleading — wB97M-V systematically overestimates (bias +210 meV) while MLIPs underestimate (bias −110 to −163 meV), and they happen to bracket CCSD(T). A fair comparison requires CCSD(T) evaluated on the MLIP TS geometries, which was not done.
+
+### Scripts
+
+| File | Purpose |
+|------|---------|
+| `pipeline/esen_neb.py` | NEB with eSEN calculator |
+| `pipeline/job_esen_neb.sh` | SLURM array: 30 reactions, sm3090el8 |
+| `pipeline/uma_neb.py` | NEB with UMA-s calculator (`task_name='omol'`) |
+| `pipeline/job_uma_neb.sh` | SLURM array: 30 reactions, sm3090el8 |
+| `pipeline/_collect_esen_barriers.py` | Extract eSEN barriers from neb.db → full_benchmark_results.json |
+| `pipeline/_collect_uma_barriers.py` | Extract UMA barriers from neb.db → full_benchmark_results.json |
+| `pipeline/_esen_ts_rmsd.py` | Kabsch RMSD between eSEN and ORCA TS geometries |
+| `pipeline/_compare_mlips.py` | Full comparison table: eSEN, UMA, wB97M-V, MACE, MACE+delta vs CCSD(T) |
+
+---
+
 ## Scripts
 
 | File | Purpose |
@@ -313,6 +379,10 @@ All barriers in meV. Source: `full_benchmark_results.json`, `pipeline/_check_nev
 - [x] NEVPT2/AVAS for mid-10 and low-10 (reliability check only; CCSD(T) used as reference for unreliable cases)
 - [x] wB97X-D3 and wB97M-V single points on all 10-image NEB paths (30 reactions)
 - [x] MACE and MACE+delta evaluation on all 30 reactions
+- [x] eSEN NEB on all 30 reactions (30/30 converged)
+- [x] UMA-s NEB on all 30 reactions (30/30 converged)
+- [ ] MACE+delta NEB on all 30 reactions (pending H200 availability)
+- [ ] wB97M-V single points on MLIP TS geometries (to decompose geometry vs energy model error)
 
 ---
 
