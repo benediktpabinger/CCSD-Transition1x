@@ -38,7 +38,7 @@ OUT_DIR   = f'{HOME}/delta_head'
 
 # Delta head irreps — match readouts[-1] of mace_t1x_p10
 HIDDEN_IRREPS = o3.Irreps("1024x0e + 1024x1o + 1024x2e + 1024x3o")
-MLP_IRREPS    = o3.Irreps("16x0e")
+MLP_IRREPS    = o3.Irreps("64x0e")
 NODE_FEATS_OFFSET = 1024   # skip first interaction's 1024x0e output
 
 
@@ -160,8 +160,13 @@ def main(args):
     n_params = sum(p.numel() for p in delta_head.parameters())
     print(f'Delta head: {n_params} parameters')
 
+    if args.resume:
+        state = torch.load(args.resume, map_location=device)
+        delta_head.load_state_dict(state)
+        print(f'Resumed from {args.resume}')
+
     optimizer = Adam(delta_head.parameters(), lr=args.lr)
-    scheduler = ReduceLROnPlateau(optimizer, patience=args.patience, factor=0.5, verbose=True)
+    scheduler = ReduceLROnPlateau(optimizer, patience=args.patience, factor=0.5)
 
     os.makedirs(OUT_DIR, exist_ok=True)
 
@@ -177,26 +182,38 @@ def main(args):
             'force_weight':  args.force_weight,
             'scheduler_patience': args.patience,
             'n_train':       len(train_data),
+            'train_samples': args.train_samples or len(train_data),
             'n_val_pool':    len(val_data),
             'hidden_irreps': str(HIDDEN_IRREPS),
             'MLP_irreps':    str(MLP_IRREPS),
+            'resume':        args.resume,
         },
     )
 
-    val_sample = random.sample(val_data, min(args.val_samples, len(val_data)))
-    print(f'Val sample fixed: {len(val_sample)} geoms')
+    val_sample   = random.sample(val_data, min(args.val_samples, len(val_data)))
+    val_f_sample = [s for s in val_data if s['delta_forces'] is not None]
+    print(f'Val sample fixed: {len(val_sample)} geoms | Force val: {len(val_f_sample)} geoms')
 
-    best_val_loss = float('inf')
+    best_force_loss = float('inf')
 
     for epoch in range(1, args.epochs + 1):
 
+        epoch_data = (random.sample(train_data, args.train_samples)
+                      if args.train_samples and args.train_samples < len(train_data)
+                      else train_data)
+
         train_loss, train_e, train_f = run_epoch(
-            train_data, model, delta_head, z_table, r_max, device,
+            epoch_data, model, delta_head, z_table, r_max, device,
             optimizer, args.batch_size, args.huber_delta, args.force_weight,
             training=True,
         )
         val_loss, val_e, val_f = run_epoch(
             val_sample, model, delta_head, z_table, r_max, device,
+            None, args.batch_size, args.huber_delta, args.force_weight,
+            training=False,
+        )
+        _, val_f_e, val_f_f = run_epoch(
+            val_f_sample, model, delta_head, z_table, r_max, device,
             None, args.batch_size, args.huber_delta, args.force_weight,
             training=False,
         )
@@ -212,16 +229,19 @@ def main(args):
             'val_loss':   val_loss,
             'val_e':      val_e,
             'val_f':      val_f,
+            'val_f_e':    val_f_e,
+            'val_f_f':    val_f_f,
             'lr':         lr,
         })
 
         print(f'Epoch {epoch:3d} | train={train_loss:.4f} (e={train_e:.4f} f={train_f:.4f}) '
-              f'| val={val_loss:.4f} (e={val_e:.4f} f={val_f:.4f}) | lr={lr:.2e}')
+              f'| val={val_loss:.4f} (e={val_e:.4f} f={val_f:.4f}) '
+              f'| fval_f={val_f_f:.4f} | lr={lr:.2e}')
 
-        if val_loss < best_val_loss:
-            best_val_loss = val_loss
-            torch.save(delta_head.state_dict(), f'{OUT_DIR}/delta_head.pt')
-            print(f'  -> Saved best model (val_loss={val_loss:.4f})')
+        if val_f_f < best_force_loss:
+            best_force_loss = val_f_f
+            torch.save(delta_head.state_dict(), f'{OUT_DIR}/delta_head_fw{args.force_weight:.2f}.pt')
+            print(f'  -> Saved best model (val_force_loss={val_f_f:.4f})')
 
         if lr < 1e-6:
             print('Learning rate below 1e-6, stopping.')
@@ -242,11 +262,13 @@ def main(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--epochs',        type=int,   default=200)
-    parser.add_argument('--batch-size',    type=int,   default=32)
+    parser.add_argument('--batch-size',    type=int,   default=64)
     parser.add_argument('--lr',            type=float, default=1e-3)
     parser.add_argument('--val-samples',   type=int,   default=1024)
     parser.add_argument('--huber-delta',   type=float, default=0.1)
     parser.add_argument('--force-weight',  type=float, default=1.0)
     parser.add_argument('--patience',      type=int,   default=10)
+    parser.add_argument('--train-samples', type=int,   default=0,    help='Geoms per epoch (0 = full dataset)')
+    parser.add_argument('--resume',        type=str,   default=None, help='Path to checkpoint .pt to fine-tune from')
     args = parser.parse_args()
     main(args)

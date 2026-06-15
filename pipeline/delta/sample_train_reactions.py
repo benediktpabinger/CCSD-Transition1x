@@ -47,7 +47,7 @@ def main(args):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--n-reactions', type=int, default=500)
+    parser.add_argument('--n-reactions', type=int, default=5000)
     parser.add_argument('--seed',        type=int, default=42)
     args = parser.parse_args()
     main(args)

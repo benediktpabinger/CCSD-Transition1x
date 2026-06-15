@@ -78,9 +78,12 @@ def load_results(json_path, need_forces_key=None):
 
 def process_train(rxns):
     records, missing = [], []
-    for rxn in rxns:
+    for i, rxn in enumerate(rxns):
         data = load_results(f'{TRAIN_SP}/{rxn}/results.json', need_forces_key='forces_wb97m_eV_per_ang')
         if data is None:
+            missing.append(rxn)
+            continue
+        if len(data['geometries']) < 15:
             missing.append(rxn)
             continue
         try:
@@ -98,6 +101,8 @@ def process_train(rxns):
                 'delta_eV':       float(g['delta_eV']),
                 'delta_forces':   np.array(g['delta_forces_eV_per_ang'], dtype=np.float32),
             })
+        if (i + 1) % 500 == 0:
+            print(f'  train: {i+1}/{len(rxns)} reactions, {len(records)} geoms so far...', flush=True)
     print(f'Train: {len(records)} geoms from {len(rxns)-len(missing)}/{len(rxns)} reactions'
           + (f' | missing: {missing[:3]}{"..." if len(missing)>3 else ""}' if missing else ''))
     return records
@@ -105,7 +110,7 @@ def process_train(rxns):
 
 def process_val_a(rxns):
     records, missing = [], []
-    for rxn in rxns:
+    for i, rxn in enumerate(rxns):
         data = load_results(f'{VAL_A_SP}/{rxn}/results.json')
         if data is None:
             missing.append(rxn)
@@ -123,8 +128,10 @@ def process_val_a(rxns):
                 'positions':      all_pos[idx].astype(np.float32),
                 'atomic_numbers': atomic_numbers,
                 'delta_eV':       float(g['delta_eV']),
-                'delta_forces':   None,  # wB97M-V forces not in neb.db
+                'delta_forces':   np.array(g['delta_forces_eV_per_ang'], dtype=np.float32) if 'delta_forces_eV_per_ang' in g else None,
             })
+        if (i + 1) % 50 == 0:
+            print(f'  val_a: {i+1}/{len(rxns)} reactions...', flush=True)
     print(f'Val A: {len(records)} geoms from {len(rxns)-len(missing)}/{len(rxns)} reactions')
     return records
 

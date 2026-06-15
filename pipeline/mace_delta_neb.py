@@ -45,9 +45,9 @@ from mace.tools import torch_geometric
 
 HOME             = '/home/energy/s242862'
 MODEL_PATH       = f'{HOME}/mace_t1x_p10_compiled.model'
-HEAD_PATH        = f'{HOME}/delta_head/delta_head.pt'
+HEAD_PATH        = f'{HOME}/delta_head/delta_head_fw1.00.pt'
 HIDDEN_IRREPS    = o3.Irreps("1024x0e + 1024x1o + 1024x2e + 1024x3o")
-MLP_IRREPS       = o3.Irreps("16x0e")
+MLP_IRREPS       = o3.Irreps("64x0e")
 NODE_FEATS_OFFSET = 1024
 
 
@@ -111,10 +111,7 @@ def load_models(device):
     delta_head.eval()
 
     from mace.tools import AtomicNumberTable
-    z_table = model.atomic_numbers if hasattr(model, 'atomic_numbers') else None
-    if z_table is None:
-        from mace.tools import AtomicNumberTable
-        z_table = AtomicNumberTable([1, 6, 7, 8, 9])
+    z_table = AtomicNumberTable([int(z) for z in model.atomic_numbers])
 
     r_max = float(model.r_max) if hasattr(model, 'r_max') else 6.0
 
@@ -169,7 +166,11 @@ def main(args):
         sys.exit(1)
 
     os.makedirs(args.output, exist_ok=True)
-    device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    # Remove stale neb.db so ASE doesn't append to a previous run's database
+    stale_db = os.path.join(args.output, 'neb.db')
+    if os.path.exists(stale_db):
+        os.remove(stale_db)
+    device = args.device or ('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Device: {device}')
 
     print('Loading MACE + delta head ...')
@@ -200,7 +201,10 @@ def main(args):
     print('Running NEB (MACE+delta) ...')
     neb = NEB(images, climb=False, parallel=False, method='improvedtangent')
     neb_tools = NEBTools(images)
-    relax_neb = NEBOptimizer(neb, logfile=os.path.join(args.output, 'neb.log'))
+    if args.optimizer == 'bfgs':
+        relax_neb = BFGS(neb, logfile=os.path.join(args.output, 'neb.log'))
+    else:
+        relax_neb = NEBOptimizer(neb, logfile=os.path.join(args.output, 'neb.log'))
 
     db_path   = os.path.join(args.output, 'neb.db')
     db_writer = DBWriter(db_path, images)
@@ -242,5 +246,7 @@ if __name__ == '__main__':
     parser.add_argument('--cineb-fmax',  type=float, default=0.05)
     parser.add_argument('--steps',       type=int,   default=500)
     parser.add_argument('--skip-relax',  action='store_true')
+    parser.add_argument('--optimizer',   default='ode', choices=['ode', 'bfgs'])
+    parser.add_argument('--device',      default=None, help='cuda or cpu (default: auto-detect)')
     args = parser.parse_args()
     main(args)

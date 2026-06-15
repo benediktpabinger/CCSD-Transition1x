@@ -23,11 +23,11 @@ MACE training on T1x takes days on multiple GPUs. The delta head trains in minut
 
 ---
 
-## 2. Data
+## 2. Data (Version 1)
 
 ### Training set
 - **500 reactions** randomly sampled from the T1x training split (`train_delta_rxns.txt`)
-- **10 geometries per reaction** — uniformly spaced along the T1x NEB trajectory, ensuring reactant, TS, and product regions are always covered
+- **10 geometries per reaction** — uniformly spaced along the T1x NEB trajectory
 - **wB97M-V/def2-TZVP** single-point energies and gradients computed with ORCA on the cluster (`pipeline/delta/train_delta_sp.py`, `pipeline/delta/job_train_delta_sp.sh`)
 - **wB97X-D3/6-31G(d)** energies and forces read directly from the T1x HDF5 file
 - **Target per geometry:** `delta_eV = E_wB97M-V − E_wB97X-D3`, `delta_forces = F_wB97M-V − F_wB97X-D3`
@@ -163,7 +163,219 @@ All four methods evaluated as single points on the same 10 final NEB images per 
 
 ---
 
-## 6. Scripts
+## 6. Version 2 — Scaled Training
+
+### Motivation
+
+Version 1 was a proof of concept: 500 reactions × 10 geometries = 5,000 training points. The v1 evaluation showed the head removes the systematic +77 meV energy bias and improves force directions, but eMAE barely improves (108 → 106 meV) and the head struggles on unseen reaction types. The root causes are data quantity and geometry coverage, not architecture — v2 addresses both.
+
+T1x has 9,561 training reactions with ~950 geometries each (9+ million total). V1 used ~0.05% of available data.
+
+---
+
+### 6.1 Data — What to relabel
+
+**Reactions: 5,000 (from 500)**
+
+5,000 reactions are sampled randomly from the T1x training split using `sample_train_reactions.py --n-reactions 5000 --seed 42`. This uses 52% of available training reactions, giving broad coverage of chemical space. The same random seed is used for reproducibility.
+
+Why 5,000 and not all 9,561? Each reaction requires 20 ORCA SP+gradient calculations. At ~10 min per geometry on 8 cores, 5,000 × 20 = 100,000 calculations takes ~3–4 days on the cluster. All 9,561 reactions would roughly double the compute cost with diminishing returns — 5,000 is a practical sweet spot.
+
+**Geometries per reaction: 20 (from 10)**
+
+Each reaction has ~950 geometries in the T1x HDF5 file representing the full NEB path from reactant to product. V1 sampled 10 uniformly — every ~95th frame. V2 uses 20 with stratified sampling (see below).
+
+**Stratified 4-segment sampling**
+
+V1 used `np.linspace(0, n-1, 10)` — purely uniform. This gave no guaranteed coverage of the transition state (TS) region, which is the most important geometry for barrier prediction.
+
+V2 splits the path into 4 segments using the TS index (`argmax(energies_wb97x)`) as a landmark, and draws 5 points from each segment:
+
+```
+Energy
+  |           TS
+  |          /\
+  |         /  \
+  |        /    \
+  |_______/      \________
+  R                       P
+  0      n//4   ts_idx   ts_idx+(n-ts_idx)//2   n-1
+  |        |       |              |               |
+  [  seg1  ][  seg2 ][   seg3    ][    seg4       ]
+    5 pts    5 pts     5 pts          5 pts
+```
+
+- **Seg 1** (R → n//4): reactant valley
+- **Seg 2** (n//4 → TS): approach to barrier
+- **Seg 3** (TS → midpoint of downhill): immediate post-TS region
+- **Seg 4** (midpoint → P): product valley
+
+Because segs 2 and 3 bracket the TS and are shorter in index space but still get 5 points each, sampling is denser near the barrier. The TS index is always a segment boundary, so it is always a sampled point. Sampling is index-based (not path-length-weighted) for simplicity — sufficient given the ~950 uniformly spaced T1x frames.
+
+**ORCA settings**
+
+`wB97M-V/def2-TZVP` with `EnGrad` (energy + gradient), `RIJCOSX` density fitting, `TightSCF`. Key change from v1: `nprocs 8` (was 1) — uses all 8 CPUs allocated per SLURM job, reducing per-SP walltime from ~10 min to ~2–3 min. All 100,000 geometries have both energy and force labels (delta forces = F_wB97M-V − F_wB97X-D3).
+
+---
+
+### 6.2 Architecture changes
+
+| Parameter | V1 | V2 | Reason |
+|---|---|---|---|
+| `MLP_IRREPS` | `16x0e` | `64x0e` | V1 head was severely capacity-limited — 16 scalar channels as a bottleneck after a 16384-dim input. 4× wider is justified by 20× more data and adds negligible compute overhead. |
+| `batch_size` | 32 | 64 | More data means larger batches give a better gradient estimate per step. Fits comfortably in GPU memory. |
+
+Everything else unchanged: `HIDDEN_IRREPS`, `NODE_FEATS_OFFSET`, frozen MACE backbone, SiLU activation.
+
+---
+
+### 6.3 Training — force weight sweep
+
+The training loss is:
+
+```
+loss = loss_energy + force_weight × loss_forces
+```
+
+Both terms use Huber loss with `delta=0.1 eV`. In v1, `force_weight=1.0` was used without tuning. In v2, all 100,000 training points have force labels, making the force loss a stronger signal — but the right balance between energy and force supervision is not obvious a priori.
+
+Three parallel training runs are submitted as a SLURM array (`job_train_delta_head.sh`, array 0–2):
+
+| Run | `force_weight` | Output |
+|---|---|---|
+| 0 | 0.5 | `delta_head_fw0.50.pt` |
+| 1 | 1.0 | `delta_head_fw1.00.pt` |
+| 2 | 2.0 | `delta_head_fw2.00.pt` |
+
+Each run trains for up to 200 epochs with `ReduceLROnPlateau` (patience=10, factor=0.5), stopping early when LR drops below 1e-6. All three are tracked in W&B (`transition1x-delta` project). The best checkpoint is selected by validation loss.
+
+Why 0.5 / 1.0 / 2.0? These span a 4× range around the neutral default. `force_weight < 1` prioritises energies (barrier heights). `force_weight > 1` prioritises force directions (NEB convergence). The three runs cost ~3 × 2h = 6h GPU time in parallel — cheap relative to the ORCA data collection.
+
+---
+
+### 6.4 Submission notes
+
+The DTU cluster (xeon24el8) limits array jobs to 1,000 tasks and 1,000 simultaneously submitted jobs. The 5,000 SP jobs are therefore split into 5 batches of 1,000, submitted sequentially as the queue clears:
+
+```bash
+sbatch --array=0-999 --export=OFFSET=0    pipeline/delta/job_train_delta_sp.sh  # rxn 1–1000
+sbatch --array=0-999 --export=OFFSET=1000 pipeline/delta/job_train_delta_sp.sh  # rxn 1001–2000
+sbatch --array=0-999 --export=OFFSET=2000 pipeline/delta/job_train_delta_sp.sh  # rxn 2001–3000
+sbatch --array=0-999 --export=OFFSET=3000 pipeline/delta/job_train_delta_sp.sh  # rxn 3001–4000
+sbatch --array=0-999 --export=OFFSET=4000 pipeline/delta/job_train_delta_sp.sh  # rxn 4001–5000
+```
+
+Each batch takes ~30–45 min wall time (1,000 reactions × 20 SPs × 2–3 min / 8 cores). The `OFFSET` variable shifts the reaction list index so each batch reads a different slice of `train_delta_rxns.txt`.
+
+The skip logic in `train_delta_sp.py` checks `n_sampled >= args.n_images` — any reaction already computed with 20+ geometries is skipped, so batches can be safely resubmitted on failure.
+
+---
+
+### 6.5 Full v2 workflow
+
+```
+1. sample_train_reactions.py --n-reactions 5000 --seed 42
+      → ~/ccsd_dataset/train_delta_rxns.txt
+
+2. sbatch job_train_delta_sp.sh (×5 batches, ~3–4 days total)
+      → ~/train_delta_sp/{rxn}/results.json  for all 5000 reactions
+
+3. python prepare_delta_data.py
+      → ~/delta_cache/train.pt   (~100k geometries)
+      → ~/delta_cache/val.pt
+
+4. sbatch job_train_delta_head.sh  (array 0–2, 3 parallel runs)
+      → ~/delta_head/delta_head_fw0.50.pt
+      → ~/delta_head/delta_head_fw1.00.pt
+      → ~/delta_head/delta_head_fw2.00.pt
+
+5. Compare W&B runs → select best force_weight → use that head
+```
+
+---
+
+### 6.6 Version 2 — Training details (as implemented)
+
+#### Data selection — 5000 reactions × 20 geoms
+
+5000 reactions sampled from the T1x train split (`sample_train_reactions.py --n-reactions 5000 --seed 42`). Seed fixed for reproducibility.
+
+20 geoms per reaction via **stratified 4-segment sampling** — the TS index (`argmax(wB97X energies)`) splits the path into 4 segments, 5 points drawn from each:
+
+```
+seg1: [0,       n//4)                          reactant valley
+seg2: [n//4,    ts_idx)                        approach to barrier
+seg3: [ts_idx,  ts_idx + (n-ts_idx)//2)       immediate post-TS
+seg4: [ts_idx + (n-ts_idx)//2,  n-1]          product valley
+```
+
+The TS is always a segment boundary and is therefore always sampled. Segs 2 and 3 bracket the TS and are shorter in index space but still receive 5 points each → denser coverage near the barrier. Edge case: if `ts_idx < n//4`, seg 2 runs backward → 16–17 unique points instead of 20.
+
+**Why stratified over uniform (v1):** uniform `linspace(0, n-1, 10)` gave no TS guarantee with only 10 points. With 20 points and 4 segments, the TS and both flanking regions are always represented.
+
+**ORCA:** `wB97M-V def2-TZVP def2/J RIJCOSX TightSCF EnGrad`, 8 nprocs, 4000 MB maxcore. All 20 geoms per reaction get energy + forces (unlike v1 where only energy was used for training). Scratch → `/home/scratch3/s242862` (not NFS — cluster admin requirement), `TMPDIR=/tmp`.
+
+**Actual result:** 4997 reactions × ~20 geoms = **80,592 training geoms**. 3 reactions filtered by `prepare_delta_data.py` for having < 15 sampled geometries (artefact of batch 1 running before the scratch fix, where some jobs wrote partial output).
+
+---
+
+#### Data processing — `prepare_delta_data.py`
+
+- Reads each `~/train_delta_sp/{rxn}/results.json`, loads positions from T1x HDF5, assembles `{rxn, geom_idx, positions, atomic_numbers, delta_eV, delta_forces}`.
+- Filters reactions with `< 15` geoms (catches partial runs).
+- Val A positions loaded from `neb.db` (NEB-optimised geometries, not T1x). Val B from T1x HDF5.
+- Val A force labels: reads `delta_forces_eV_per_ang` from `results.json` if present (populated by `compute_val_a_forces.py` for the last 10 images). Entries without force labels store `delta_forces: None`.
+- Outputs `~/delta_cache/train.pt` and `~/delta_cache/val.pt` — Python lists of dicts, loadable with `torch.load`.
+
+---
+
+#### Architecture change: `MLP_irreps` 16x0e → 64x0e
+
+V1 bottlenecked a 16384-dim input through 16 scalar channels — severely capacity-limited. V2 uses 64 channels (4× wider). Justified by 20× more training data; adds negligible compute overhead at inference.
+
+---
+
+#### Training parameters
+
+| Parameter | Value |
+|-----------|-------|
+| Epochs | 200 (early stop when lr < 1e-6) |
+| Batch size | 64 |
+| Optimizer | Adam, lr=1e-3 |
+| Scheduler | ReduceLROnPlateau(patience=10, factor=0.5) |
+| Loss | Huber(delta_e) + force_weight × Huber(delta_f), δ=0.1 eV |
+| Force weight | sweep: 0.5, 1.0, 2.0 (3 parallel runs) |
+| W&B | project `transition1x-delta` — logs train_loss, train_e, train_f, val_loss, val_e, val_f, val_f_e, val_f_f, lr per epoch |
+
+---
+
+#### Validation design — two passes per epoch
+
+Val A originally had no force labels (neb.db only stores energy). Val B had forces but only 51 reactions — insufficient diversity for reliable force quality assessment. To get meaningful force validation on NEB-like geometries, wB97M-V EnGrad was computed for the **last 10 NEB images of all 174 Val A reactions** (`compute_val_a_forces.py`, job 10485544). This yields ~1,740 force-labeled Val A geoms on converged MEP geometries — the most representative of actual inference conditions.
+
+Two val passes each epoch:
+
+```python
+val_sample   = random.sample(val_data, 1024)                              # fixed at epoch 1
+val_f_sample = [s for s in val_data if s['delta_forces'] is not None]    # ~2240 geoms
+```
+
+- `val_sample` → `val_loss` → drives `ReduceLROnPlateau`
+- `val_f_sample` → `val_f_f` → drives **checkpoint saving**
+
+**Why two separate val sets?** The LR scheduler needs a stable, broad signal to decide when the model has stopped improving — `val_loss` on the 1024-geom mixed sample provides this, covering diverse reactions and geometry types (energy-only and force-labeled alike). `val_f_sample` is more targeted (NEB-path geometries only) but noisier epoch-to-epoch; using it for the scheduler would cause premature LR reductions. The split keeps concerns separate: the scheduler asks "is the model still converging?" while checkpoint saving asks "is the model good for NEB forces?"
+
+**Why checkpoint by force loss, not val_loss:** `val_loss` is dominated by the energy term both in magnitude and in the ratio of energy-only to force-labeled geoms in `val_sample`. The energy offset (~3 eV) converges quickly; force quality matters more for NEB. Saving by `val_f_f` on the dedicated force val set selects the checkpoint that best predicts force directions on NEB-path geometries.
+
+---
+
+#### `--resume` support
+
+`train_delta_head.py` accepts `--resume <path.pt>` — loads the state dict and continues training from that checkpoint. Allows iterative fine-tuning if a first run converges but isn't good enough, without restarting from scratch.
+
+---
+
+## 7. Scripts
 
 | File | Purpose |
 |------|---------|

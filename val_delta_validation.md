@@ -75,6 +75,39 @@ Consistent with the wB97X-D3/6-31G(d) level used for the MR benchmark SPs (`mr_b
 
 ---
 
+## Group A Force Labels: Last 10 NEB Images
+
+**Script:** `pipeline/delta/compute_val_a_forces.py`  
+**Job:** `pipeline/delta/job_compute_val_a_forces.sh` (SLURM array 0–173, job 10485544)  
+**Output:** adds `forces_wb97m_eV_per_ang` and `delta_forces_eV_per_ang` to existing `~/val_delta_sp/{rxn}/results.json`
+
+### Why forces only for the last 10 images
+
+Force computation requires `EnGrad` (energy + gradient), roughly 2–3× more expensive than a single-point. Running EnGrad for all 50 geometries per reaction would triple the cost. The last 10 images of `neb.db` are the final converged MEP — these are the geometries closest to actual inference conditions (the delta model is applied to NEB paths). Restricting force labels to this slice gives the most signal per compute dollar.
+
+This yields **1,740 force-labeled Val A geometries** (174 reactions × 10 images), stored alongside the 8,700 energy-only geoms from the full history.
+
+### What it computes
+
+For each of the last 10 geometries in `results.json`:
+1. Loads atomic positions from `neb.db` using the stored `geom_idx`
+2. Runs ORCA **wB97M-V/def2-TZVP EnGrad**
+3. Reads wB97X-D3 forces already stored in `results.json` (from the original SP run)
+4. Saves `delta_forces = forces_wB97M-V − forces_wB97X-D3` (eV/Å)
+
+Skips geometries that already have `forces_wb97m_eV_per_ang` (idempotent).
+
+### ORCA keywords
+
+```
+! wB97M-V def2-TZVP def2/J RIJCOSX TightSCF EnGrad
+%pal nprocs 8 end
+%maxcore 4000
+%scf maxiter 200 end
+```
+
+---
+
 ## Group B: 51 Failed NEB Reactions (Flip Approach)
 
 **Script:** `pipeline/val_delta_sp_flip.py`  
@@ -132,11 +165,14 @@ Identical to the keywords used in `orca_neb.py` for the val NEB run, ensuring co
 
 ## Summary
 
-| Group | Reactions | Geometries/rxn | Total SPs | SP level | Ref energy source |
-|-------|-----------|----------------|-----------|----------|-------------------|
-| A (converged NEB) | 174 | 50 from neb.db | 8,700 | wB97X-D3/6-31G(d) | neb.db (wB97M-V) |
-| B (failed NEB) | 51 | 50 from T1x | 2,550 | wB97M-V/def2-TZVP | T1x (wB97X-D3) |
-| **Total** | **225** | **50** | **11,250** | | |
+| Group | Reactions | Geoms/rxn | Total geoms | Forces labeled | SP level |
+|-------|-----------|-----------|-------------|----------------|----------|
+| A (converged NEB) — energy | 174 | 50 from neb.db history | 8,700 | — | wB97X-D3/6-31G(d) |
+| A (converged NEB) — forces | 174 | last 10 of neb.db | 1,740 | 1,740 | wB97M-V/def2-TZVP EnGrad |
+| B (failed NEB) | 51 | 50 from T1x | 2,550 | ~500 | wB97M-V/def2-TZVP |
+| **Total** | **225** | | **12,990** | **~2,240** | |
+
+Force-labeled geometries used for dedicated force validation during training (`val_f_sample` in `train_delta_head.py`): all val geoms where `delta_forces is not None`, ~2,240 total from 184 reactions (174 Val A + ~10 Val B that happened to have forces).
 
 ---
 
@@ -144,10 +180,12 @@ Identical to the keywords used in `orca_neb.py` for the val NEB run, ensuring co
 
 | File | Purpose |
 |------|---------|
-| `pipeline/val_delta_sp.py` | Group A: wB97X-D3 SPs on NEB geometries |
+| `pipeline/val_delta_sp.py` | Group A: wB97X-D3 SPs on NEB geometries (energy only) |
 | `pipeline/job_val_delta_sp.sh` | SLURM array for Group A (174 reactions) |
-| `pipeline/val_delta_sp_flip.py` | Group B: wB97M-V SPs on T1x geometries |
+| `pipeline/val_delta_sp_flip.py` | Group B: wB97M-V SPs on T1x geometries (energy + forces) |
 | `pipeline/job_val_delta_sp_flip.sh` | SLURM array for Group B (51 reactions) |
+| `pipeline/delta/compute_val_a_forces.py` | Group A forces: wB97M-V EnGrad on last 10 NEB images |
+| `pipeline/delta/job_compute_val_a_forces.sh` | SLURM array for Group A forces (174 reactions) |
 
 Reaction lists:
 - `ccsd_dataset/val_converged.txt` — 174 converged reactions (ordered as in val_reactions.txt)
