@@ -102,12 +102,12 @@ class MACEDeltaCalculator(Calculator):
         }
 
 
-def load_models(device):
+def load_models(device, head_path=None):
     model = torch.jit.load(MODEL_PATH, map_location=device)
     model.eval()
 
     delta_head = NonLinearReadoutBlock(HIDDEN_IRREPS, MLP_IRREPS, gate=F.silu).to(device)
-    delta_head.load_state_dict(torch.load(HEAD_PATH, map_location=device))
+    delta_head.load_state_dict(torch.load(head_path or HEAD_PATH, map_location=device))
     delta_head.eval()
 
     from mace.tools import AtomicNumberTable
@@ -174,7 +174,7 @@ def main(args):
     print(f'Device: {device}')
 
     print('Loading MACE + delta head ...')
-    model, delta_head, z_table, r_max = load_models(device)
+    model, delta_head, z_table, r_max = load_models(device, head_path=args.head)
 
     print(f'Loading wB97x NEB images for {args.reaction} ...')
     images = load_wB97x_images(args.h5file, args.reaction, args.split)
@@ -247,6 +247,7 @@ if __name__ == '__main__':
     parser.add_argument('--steps',       type=int,   default=500)
     parser.add_argument('--skip-relax',  action='store_true')
     parser.add_argument('--optimizer',   default='ode', choices=['ode', 'bfgs'])
+    parser.add_argument('--head',        default=None, help='path to delta head checkpoint (default: delta_head_fw1.00.pt)')
     parser.add_argument('--device',      default=None, help='cuda or cpu (default: auto-detect)')
     args = parser.parse_args()
     main(args)

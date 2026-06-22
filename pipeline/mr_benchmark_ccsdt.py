@@ -1,9 +1,13 @@
 """
 MR benchmark Step 3: CCSD(T)/def2-TZVP single points on R, TS, P.
-Geometries: ORCA NEB wB97M-V/def2-TZVP optimised stationary points.
+Geometries: ORCA NEB wB97M-V/def2-TZVP optimised stationary points by default,
+or any other NEB result directory via --geom-dir (e.g. UMA-S or MACE+delta
+TS/R/P geometries, to test geometry quality independent of the PES used to
+find them).
 
 Usage:
     python mr_benchmark_ccsdt.py <rxn> [--n-threads 24]
+    python mr_benchmark_ccsdt.py <rxn> --geom-dir ~/uma_neb_results/<rxn> --tag uma_s
 """
 import argparse
 import json
@@ -57,8 +61,9 @@ def run_ccsdt(atoms, basis, n_threads):
 
 def main(args):
     rxn     = args.rxn
-    neb_rxn = f'{NEB_DIR}/{rxn}'
+    neb_rxn = args.geom_dir or f'{NEB_DIR}/{rxn}'
     os.makedirs(OUT_DIR, exist_ok=True)
+    suffix  = f'_{args.tag}' if args.tag else ''
 
     geometries = {
         'reactant':         f'{neb_rxn}/reactant.xyz',
@@ -87,7 +92,7 @@ def main(args):
         results['barrier_rev_meV'] = round(rev, 1)
         print(f'{rxn}: fwd={fwd:.0f} meV  rev={rev:.0f} meV')
 
-    out_path = f'{OUT_DIR}/{rxn}_ccsdt.json'
+    out_path = f'{OUT_DIR}/{rxn}_ccsdt{suffix}.json'
     with open(out_path, 'w') as f:
         json.dump(results, f, indent=2)
     print(f'Saved: {out_path}')
@@ -98,5 +103,10 @@ if __name__ == '__main__':
     parser.add_argument('rxn')
     parser.add_argument('--basis',     default='def2-TZVP')
     parser.add_argument('--n-threads', type=int, default=24)
+    parser.add_argument('--geom-dir',  default=None,
+                        help='Directory with reactant.xyz/transition_state.xyz/product.xyz '
+                             '(default: orca_neb_results/<rxn>)')
+    parser.add_argument('--tag',       default=None,
+                        help='Suffix for output filename, e.g. "uma_s" -> <rxn>_ccsdt_uma_s.json')
     args = parser.parse_args()
     main(args)

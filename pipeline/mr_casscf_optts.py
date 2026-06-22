@@ -79,9 +79,79 @@ def run_casscf(mf, ncas, nelecas, mo_init, max_cycle, conv_tol=1e-7):
     mc.conv_tol          = conv_tol
     mc.conv_tol_grad     = conv_tol ** 0.5
     mc.kernel(mo_init)
+    mc.solver_used = 'mc1step'
+    if not mc.converged:
+        print(f'  mc1step not converged (ncas={ncas}, nelecas={nelecas}); retrying with mc2step ...', flush=True)
+        mc.mc2step(mo_init)
+        mc.solver_used = 'mc2step'
     if not mc.converged:
         raise RuntimeError(f'CASSCF not converged (ncas={ncas}, nelecas={nelecas})')
     return mc
+
+
+def prune_active_space(mf, ncas, nelecas, mo_init, occ_low=0.02, occ_high=1.98, min_ncas=2):
+    """Drop AVAS-selected active orbitals whose natural occupation (from a
+    cheap CASCI diagonalization, no orbital optimisation) is near 0 or 2 —
+    these are marginal/intruder orbitals that cause CASSCF macro-iteration
+    oscillation instead of contributing real multireference character.
+
+    Safety: if pruning would leave fewer than min_ncas orbitals, it is
+    skipped entirely and the original (unpruned) AVAS space is returned.
+    This guards against reactions where ALL active orbitals sit just
+    outside the occupation window (weak but real, distributed MR character)
+    rather than a few genuinely degenerate/intruder orbitals — pruning
+    those away would leave nothing (or a degenerate space) and break a
+    case that previously converged fine unpruned.
+
+    Returns: (ncas, nelecas, mo, info) where info records what happened.
+    """
+    ncore = (mf.mol.nelectron - nelecas) // 2
+    mc0 = mcscf.CASCI(mf, ncas, nelecas)
+    mc0.kernel(mo_init)
+    info = {'attempted': True, 'pruned': False, 'orig_ncas': int(ncas), 'orig_nelecas': int(nelecas)}
+    if not mc0.converged:
+        print('  CASCI diagnostic did not converge; skipping active-space pruning', flush=True)
+        info['skipped_reason'] = 'CASCI diagnostic not converged'
+        return ncas, nelecas, mo_init, info
+
+    dm1 = mc0.fcisolver.make_rdm1(mc0.ci, ncas, nelecas)
+    occ, u = np.linalg.eigh(dm1)
+    occ = occ[::-1]
+    u   = u[:, ::-1]
+    mo_active_no = mo_init[:, ncore:ncore + ncas] @ u
+
+    high = [i for i, o in enumerate(occ) if o > occ_high]
+    low  = [i for i, o in enumerate(occ) if o < occ_low]
+    keep = [i for i, o in enumerate(occ) if occ_low <= o <= occ_high]
+
+    if not high and not low:
+        info['skipped_reason'] = 'nothing to prune'
+        return ncas, nelecas, mo_init, info
+
+    if len(keep) < min_ncas:
+        print(f'  Pruning would leave only {len(keep)} active orbitals '
+              f'(occ={[round(o,3) for o in occ]}); skipping pruning, keeping original AVAS space', flush=True)
+        info['skipped_reason'] = f'would leave only {len(keep)} orbitals (< min_ncas={min_ncas})'
+        info['occ_at_skip'] = [round(float(o), 4) for o in occ]
+        return ncas, nelecas, mo_init, info
+
+    print(f'  Pruning active space: dropping {len(high)} near-doubly-occ '
+          f'(occ={[round(occ[i],3) for i in high]}) and {len(low)} near-empty '
+          f'(occ={[round(occ[i],3) for i in low]}) orbitals', flush=True)
+
+    mo_core      = mo_init[:, :ncore]
+    mo_virt      = mo_init[:, ncore + ncas:]
+    new_core_ext = mo_active_no[:, high]
+    new_active   = mo_active_no[:, keep]
+    new_virt_ext = mo_active_no[:, low]
+
+    new_mo      = np.hstack([mo_core, new_core_ext, new_active, new_virt_ext, mo_virt])
+    new_ncas    = new_active.shape[1]
+    new_nelecas = nelecas - 2 * len(high)
+    print(f'  Active space after pruning: ({new_nelecas}e, {new_ncas}o)', flush=True)
+    info.update({'pruned': True, 'n_dropped_high': len(high), 'n_dropped_low': len(low),
+                 'new_ncas': int(new_ncas), 'new_nelecas': int(new_nelecas)})
+    return new_ncas, new_nelecas, new_mo, info
 
 
 def project_and_run(mol, ncas, nelecas, mo_ref, mol_ref, max_cycle):
@@ -131,6 +201,11 @@ def main(args):
     print(f'AVAS target AOs: {args.avas_ao}', flush=True)
     ncas, nelecas, mo_avas = avas.avas(mf_ts, args.avas_ao, threshold=args.avas_threshold, canonicalize=True)
     print(f'AVAS selected: ({nelecas}e, {ncas}o)', flush=True)
+    avas_ncas, avas_nelecas = ncas, nelecas
+
+    prune_info = {'attempted': False}
+    if not args.no_prune:
+        ncas, nelecas, mo_avas, prune_info = prune_active_space(mf_ts, ncas, nelecas, mo_avas)
 
     mc_ts = run_casscf(mf_ts, ncas, nelecas, mo_avas, args.max_cycle)
 
@@ -169,8 +244,15 @@ def main(args):
         'reaction':            rxn,
         'basis':               args.basis,
         'avas_ao':             args.avas_ao,
+        'avas_threshold':      args.avas_threshold,
+        'avas_ncas':           int(avas_ncas),
+        'avas_nelecas':        int(avas_nelecas),
+        'prune_enabled':       not args.no_prune,
+        'prune_info':          prune_info,
         'ncas':                int(ncas),
         'nelecas':             int(nelecas),
+        'solver_used_ts':      getattr(mc_ts, 'solver_used', None),
+        'solver_used_ts_opt':  getattr(mc_opt, 'solver_used', None),
         'ts_geometry':         ts_opt_xyz,
         'barrier_forward_meV': round(fwd, 3),
         'barrier_reverse_meV': round(rev, 3),
@@ -196,5 +278,7 @@ if __name__ == '__main__':
     parser.add_argument('--avas-ao',        nargs='+',
                         default=['C 2pz', 'N 2p', 'O 2pz', 'F 2pz'])
     parser.add_argument('--avas-threshold', type=float, default=0.4)
+    parser.add_argument('--no-prune', action='store_true',
+                        help='disable post-AVAS active-space occupation pruning')
     args = parser.parse_args()
     main(args)
