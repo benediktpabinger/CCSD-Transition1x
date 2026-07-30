@@ -71,7 +71,7 @@ def run_rhf(mol):
     return mf
 
 
-def run_casscf(mf, ncas, nelecas, mo_init, max_cycle, conv_tol=1e-7):
+def run_casscf(mf, ncas, nelecas, mo_init, max_cycle, conv_tol):
     mc = mcscf.CASSCF(mf, ncas, nelecas)
     mc.max_cycle_macro   = max_cycle
     mc.max_stepsize      = 0.05
@@ -154,12 +154,12 @@ def prune_active_space(mf, ncas, nelecas, mo_init, occ_low=0.02, occ_high=1.98, 
     return new_ncas, new_nelecas, new_mo, info
 
 
-def project_and_run(mol, ncas, nelecas, mo_ref, mol_ref, max_cycle):
+def project_and_run(mol, ncas, nelecas, mo_ref, mol_ref, max_cycle, conv_tol):
     """RHF + CASSCF at mol, initialising from projected MOs of mol_ref."""
     mf = run_rhf(mol)
     mc_tmp = mcscf.CASSCF(mf, ncas, nelecas)
     mo_init = mcscf.project_init_guess(mc_tmp, mo_ref, prev_mol=mol_ref)
-    mc = run_casscf(mf, ncas, nelecas, mo_init, max_cycle)
+    mc = run_casscf(mf, ncas, nelecas, mo_init, max_cycle, conv_tol)
     return mf, mc
 
 
@@ -207,7 +207,7 @@ def main(args):
     if not args.no_prune:
         ncas, nelecas, mo_avas, prune_info = prune_active_space(mf_ts, ncas, nelecas, mo_avas)
 
-    mc_ts = run_casscf(mf_ts, ncas, nelecas, mo_avas, args.max_cycle)
+    mc_ts = run_casscf(mf_ts, ncas, nelecas, mo_avas, args.max_cycle, args.conv_tol)
 
     # ── 2. CASSCF OptTS (geometric eigenvector-following) ────────────────────
     print(f'\n{rxn}: CASSCF OptTS ...', flush=True)
@@ -220,7 +220,7 @@ def main(args):
     # ── 3. CASSCF+NEVPT2 at optimised TS (project MOs from step 1) ──────────
     print(f'\n{rxn}: CASSCF+NEVPT2 at optimised TS ...', flush=True)
     mf_opt, mc_opt = project_and_run(
-        mol_opt, ncas, nelecas, mc_ts.mo_coeff, mf_ts.mol, args.max_cycle
+        mol_opt, ncas, nelecas, mc_ts.mo_coeff, mf_ts.mol, args.max_cycle, args.conv_tol
     )
     ts_result = nevpt2_result(mf_opt, mc_opt, 'ts', ncas, nelecas)
 
@@ -230,7 +230,7 @@ def main(args):
         print(f'\n{rxn}: projected CASSCF+NEVPT2 at {label} ...', flush=True)
         mol_ep = xyz_to_mol(xyz_path, args.basis, max_memory)
         mf_ep, mc_ep = project_and_run(
-            mol_ep, ncas, nelecas, mc_opt.mo_coeff, mf_opt.mol, args.max_cycle
+            mol_ep, ncas, nelecas, mc_opt.mo_coeff, mf_opt.mol, args.max_cycle, args.conv_tol
         )
         results[label] = nevpt2_result(mf_ep, mc_ep, label, ncas, nelecas)
 
@@ -280,5 +280,9 @@ if __name__ == '__main__':
     parser.add_argument('--avas-threshold', type=float, default=0.4)
     parser.add_argument('--no-prune', action='store_true',
                         help='disable post-AVAS active-space occupation pruning')
+    parser.add_argument('--conv-tol', type=float, default=1e-7,
+                        help='CASSCF energy convergence tolerance (conv_tol_grad = sqrt(conv_tol)). '
+                             'Loosen (e.g. 1e-6) if the geometric OptTS Scanner raises '
+                             '"Nuclear gradients not converged" at some step.')
     args = parser.parse_args()
     main(args)

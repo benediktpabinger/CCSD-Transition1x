@@ -1,0 +1,2854 @@
+{
+  "rxn7949": {
+    "top_disp": [
+      [
+        8,
+        "H",
+        2.574
+      ],
+      [
+        7,
+        "H",
+        2.413
+      ],
+      [
+        6,
+        "N",
+        1.761
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          3,
+          "C",
+          5
+        ],
+        "len_R": 2.538,
+        "len_P": 1.466,
+        "delta": 1.073
+      },
+      {
+        "atoms": [
+          "C",
+          4,
+          "C",
+          5
+        ],
+        "len_R": 1.442,
+        "len_P": 2.461,
+        "delta": 1.018
+      },
+      {
+        "atoms": [
+          "C",
+          2,
+          "C",
+          3
+        ],
+        "len_R": 1.504,
+        "len_P": 2.497,
+        "delta": 0.993
+      }
+    ],
+    "fod_total": 1.1455,
+    "fod_sphere_2p5ang": 1.1279,
+    "sphere_frac": 0.985,
+    "atom_fod_ranked": [
+      {
+        "atom": "C",
+        "idx": 3,
+        "fod": 0.2718
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.236
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "fod": 0.2308
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "fod": 0.1113
+      },
+      {
+        "atom": "H",
+        "idx": 10,
+        "fod": 0.0507
+      }
+    ],
+    "fod_max_val": 0.07453,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "H",
+        "idx": 8,
+        "dist_ang": 2.96
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 1.61
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 3.04
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 1.49
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 1.61
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "dist_ang": 1.94
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 2.34
+      }
+    ]
+  },
+  "rxn8832": {
+    "top_disp": [
+      [
+        8,
+        "H",
+        1.338
+      ],
+      [
+        11,
+        "H",
+        1.272
+      ],
+      [
+        2,
+        "C",
+        0.979
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          1,
+          "C",
+          6
+        ],
+        "len_R": 2.558,
+        "len_P": 1.482,
+        "delta": 1.077
+      },
+      {
+        "atoms": [
+          "C",
+          1,
+          "C",
+          2
+        ],
+        "len_R": 1.469,
+        "len_P": 2.467,
+        "delta": 0.999
+      },
+      {
+        "atoms": [
+          "C",
+          4,
+          "C",
+          6
+        ],
+        "len_R": 1.507,
+        "len_P": 2.342,
+        "delta": 0.836
+      }
+    ],
+    "fod_total": 0.9986,
+    "fod_sphere_2p5ang": 0.9742,
+    "sphere_frac": 0.976,
+    "atom_fod_ranked": [
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.2694
+      },
+      {
+        "atom": "N",
+        "idx": 0,
+        "fod": 0.2178
+      },
+      {
+        "atom": "C",
+        "idx": 6,
+        "fod": 0.1498
+      },
+      {
+        "atom": "O",
+        "idx": 3,
+        "fod": 0.1133
+      },
+      {
+        "atom": "H",
+        "idx": 8,
+        "fod": 0.0482
+      }
+    ],
+    "fod_max_val": 0.07485,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "H",
+        "idx": 8,
+        "dist_ang": 4.91
+      },
+      {
+        "atom": "H",
+        "idx": 11,
+        "dist_ang": 3.91
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 2.42
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "N",
+        "idx": 0,
+        "dist_ang": 0.59
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 1.04
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 2.42
+      },
+      {
+        "atom": "H",
+        "idx": 10,
+        "dist_ang": 2.8
+      }
+    ]
+  },
+  "rxn1320": {
+    "top_disp": [
+      [
+        6,
+        "H",
+        1.979
+      ],
+      [
+        7,
+        "H",
+        1.722
+      ],
+      [
+        0,
+        "O",
+        1.225
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          2,
+          "H",
+          6
+        ],
+        "len_R": 2.888,
+        "len_P": 1.087,
+        "delta": 1.801
+      },
+      {
+        "atoms": [
+          "O",
+          0,
+          "H",
+          6
+        ],
+        "len_R": 0.963,
+        "len_P": 2.561,
+        "delta": 1.598
+      },
+      {
+        "atoms": [
+          "C",
+          1,
+          "C",
+          2
+        ],
+        "len_R": 1.542,
+        "len_P": 2.948,
+        "delta": 1.407
+      }
+    ],
+    "fod_total": 0.9665,
+    "fod_sphere_2p5ang": 0.8415,
+    "sphere_frac": 0.871,
+    "atom_fod_ranked": [
+      {
+        "atom": "C",
+        "idx": 2,
+        "fod": 0.226
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "fod": 0.2054
+      },
+      {
+        "atom": "N",
+        "idx": 5,
+        "fod": 0.1215
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.114
+      },
+      {
+        "atom": "O",
+        "idx": 3,
+        "fod": 0.0846
+      }
+    ],
+    "fod_max_val": 0.06594,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "H",
+        "idx": 6,
+        "dist_ang": 2.68
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 2.3
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "dist_ang": 2.38
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 0.32
+      },
+      {
+        "atom": "H",
+        "idx": 9,
+        "dist_ang": 0.83
+      },
+      {
+        "atom": "H",
+        "idx": 8,
+        "dist_ang": 1.31
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 1.53
+      }
+    ]
+  },
+  "rxn4113": {
+    "top_disp": [
+      [
+        0,
+        "O",
+        2.661
+      ],
+      [
+        2,
+        "N",
+        1.854
+      ],
+      [
+        6,
+        "H",
+        1.706
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "O",
+          0,
+          "C",
+          3
+        ],
+        "len_R": 3.476,
+        "len_P": 1.43,
+        "delta": 2.046
+      },
+      {
+        "atoms": [
+          "N",
+          2,
+          "C",
+          3
+        ],
+        "len_R": 1.45,
+        "len_P": 3.483,
+        "delta": 2.033
+      },
+      {
+        "atoms": [
+          "O",
+          0,
+          "C",
+          1
+        ],
+        "len_R": 1.196,
+        "len_P": 1.363,
+        "delta": 0.167
+      }
+    ],
+    "fod_total": 0.957,
+    "fod_sphere_2p5ang": 0.9329,
+    "sphere_frac": 0.975,
+    "atom_fod_ranked": [
+      {
+        "atom": "C",
+        "idx": 3,
+        "fod": 0.245
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.2342
+      },
+      {
+        "atom": "N",
+        "idx": 2,
+        "fod": 0.2079
+      },
+      {
+        "atom": "O",
+        "idx": 5,
+        "fod": 0.1014
+      },
+      {
+        "atom": "H",
+        "idx": 8,
+        "fod": 0.0382
+      }
+    ],
+    "fod_max_val": 0.07711,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "O",
+        "idx": 0,
+        "dist_ang": 1.76
+      },
+      {
+        "atom": "N",
+        "idx": 2,
+        "dist_ang": 1.61
+      },
+      {
+        "atom": "H",
+        "idx": 6,
+        "dist_ang": 1.86
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 1.25
+      },
+      {
+        "atom": "N",
+        "idx": 2,
+        "dist_ang": 1.61
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "dist_ang": 1.76
+      },
+      {
+        "atom": "H",
+        "idx": 6,
+        "dist_ang": 1.86
+      }
+    ]
+  },
+  "rxn8885": {
+    "top_disp": [
+      [
+        2,
+        "O",
+        1.509
+      ],
+      [
+        5,
+        "C",
+        1.094
+      ],
+      [
+        6,
+        "N",
+        0.986
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          1,
+          "O",
+          2
+        ],
+        "len_R": 1.415,
+        "len_P": 2.667,
+        "delta": 1.252
+      },
+      {
+        "atoms": [
+          "C",
+          1,
+          "N",
+          6
+        ],
+        "len_R": 2.636,
+        "len_P": 1.57,
+        "delta": 1.066
+      },
+      {
+        "atoms": [
+          "O",
+          2,
+          "C",
+          5
+        ],
+        "len_R": 2.369,
+        "len_P": 1.324,
+        "delta": 1.046
+      }
+    ],
+    "fod_total": 0.9213,
+    "fod_sphere_2p5ang": 0.7833,
+    "sphere_frac": 0.85,
+    "atom_fod_ranked": [
+      {
+        "atom": "N",
+        "idx": 6,
+        "fod": 0.2888
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "fod": 0.2164
+      },
+      {
+        "atom": "O",
+        "idx": 2,
+        "fod": 0.1584
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.1118
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "fod": 0.0401
+      }
+    ],
+    "fod_max_val": 0.09614,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "O",
+        "idx": 2,
+        "dist_ang": 3.09
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "dist_ang": 0.85
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 0.3
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 0.3
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "dist_ang": 0.85
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 2.34
+      },
+      {
+        "atom": "O",
+        "idx": 2,
+        "dist_ang": 3.09
+      }
+    ]
+  },
+  "rxn7945": {
+    "top_disp": [
+      [
+        0,
+        "O",
+        1.584
+      ],
+      [
+        6,
+        "N",
+        1.514
+      ],
+      [
+        11,
+        "H",
+        1.394
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          2,
+          "N",
+          6
+        ],
+        "len_R": 3.612,
+        "len_P": 1.517,
+        "delta": 2.096
+      },
+      {
+        "atoms": [
+          "C",
+          2,
+          "C",
+          4
+        ],
+        "len_R": 1.521,
+        "len_P": 2.381,
+        "delta": 0.86
+      },
+      {
+        "atoms": [
+          "C",
+          4,
+          "C",
+          5
+        ],
+        "len_R": 1.442,
+        "len_P": 1.329,
+        "delta": 0.114
+      }
+    ],
+    "fod_total": 0.901,
+    "fod_sphere_2p5ang": 0.8839,
+    "sphere_frac": 0.981,
+    "atom_fod_ranked": [
+      {
+        "atom": "N",
+        "idx": 6,
+        "fod": 0.2695
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.2153
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "fod": 0.1657
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.0608
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "fod": 0.0415
+      }
+    ],
+    "fod_max_val": 0.067,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "O",
+        "idx": 0,
+        "dist_ang": 3.35
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 1.79
+      },
+      {
+        "atom": "H",
+        "idx": 11,
+        "dist_ang": 2.51
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "C",
+        "idx": 5,
+        "dist_ang": 1.34
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 1.79
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 1.95
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 2.45
+      }
+    ]
+  },
+  "rxn7937": {
+    "top_disp": [
+      [
+        6,
+        "N",
+        2.96
+      ],
+      [
+        11,
+        "H",
+        2.611
+      ],
+      [
+        7,
+        "H",
+        2.009
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          3,
+          "N",
+          6
+        ],
+        "len_R": 3.574,
+        "len_P": 1.529,
+        "delta": 2.045
+      },
+      {
+        "atoms": [
+          "C",
+          3,
+          "C",
+          4
+        ],
+        "len_R": 1.497,
+        "len_P": 2.407,
+        "delta": 0.911
+      },
+      {
+        "atoms": [
+          "C",
+          4,
+          "C",
+          5
+        ],
+        "len_R": 1.442,
+        "len_P": 1.331,
+        "delta": 0.112
+      }
+    ],
+    "fod_total": 0.8754,
+    "fod_sphere_2p5ang": 0.8403,
+    "sphere_frac": 0.96,
+    "atom_fod_ranked": [
+      {
+        "atom": "N",
+        "idx": 6,
+        "fod": 0.2662
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.2032
+      },
+      {
+        "atom": "C",
+        "idx": 3,
+        "fod": 0.1572
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.0468
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "fod": 0.0377
+      }
+    ],
+    "fod_max_val": 0.06705,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 1.92
+      },
+      {
+        "atom": "H",
+        "idx": 11,
+        "dist_ang": 2.51
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 3.45
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "C",
+        "idx": 5,
+        "dist_ang": 1.45
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 1.92
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 1.95
+      },
+      {
+        "atom": "H",
+        "idx": 9,
+        "dist_ang": 2.3
+      }
+    ]
+  },
+  "rxn6196": {
+    "top_disp": [
+      [
+        2,
+        "C",
+        2.326
+      ],
+      [
+        6,
+        "N",
+        1.662
+      ],
+      [
+        8,
+        "H",
+        1.605
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          2,
+          "C",
+          5
+        ],
+        "len_R": 1.468,
+        "len_P": 4.123,
+        "delta": 2.654
+      },
+      {
+        "atoms": [
+          "C",
+          2,
+          "H",
+          10
+        ],
+        "len_R": 1.093,
+        "len_P": 3.424,
+        "delta": 2.332
+      },
+      {
+        "atoms": [
+          "C",
+          5,
+          "H",
+          10
+        ],
+        "len_R": 2.083,
+        "len_P": 1.079,
+        "delta": 1.004
+      }
+    ],
+    "fod_total": 0.8671,
+    "fod_sphere_2p5ang": 0.6847,
+    "sphere_frac": 0.79,
+    "atom_fod_ranked": [
+      {
+        "atom": "C",
+        "idx": 2,
+        "fod": 0.3326
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.1622
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "fod": 0.1535
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.0453
+      },
+      {
+        "atom": "H",
+        "idx": 10,
+        "fod": 0.0426
+      }
+    ],
+    "fod_max_val": 0.06391,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 1.08
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 2.59
+      },
+      {
+        "atom": "H",
+        "idx": 8,
+        "dist_ang": 1.35
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 1.08
+      },
+      {
+        "atom": "H",
+        "idx": 8,
+        "dist_ang": 1.35
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 1.36
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "dist_ang": 1.61
+      }
+    ]
+  },
+  "rxn0346": {
+    "top_disp": [
+      [
+        9,
+        "H",
+        1.894
+      ],
+      [
+        10,
+        "H",
+        1.375
+      ],
+      [
+        5,
+        "C",
+        1.165
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          5,
+          "H",
+          10
+        ],
+        "len_R": 1.092,
+        "len_P": 2.78,
+        "delta": 1.689
+      },
+      {
+        "atoms": [
+          "C",
+          2,
+          "C",
+          5
+        ],
+        "len_R": 1.503,
+        "len_P": 2.679,
+        "delta": 1.176
+      },
+      {
+        "atoms": [
+          "C",
+          2,
+          "H",
+          10
+        ],
+        "len_R": 2.206,
+        "len_P": 1.086,
+        "delta": 1.12
+      }
+    ],
+    "fod_total": 0.8463,
+    "fod_sphere_2p5ang": 0.8066,
+    "sphere_frac": 0.953,
+    "atom_fod_ranked": [
+      {
+        "atom": "C",
+        "idx": 5,
+        "fod": 0.2817
+      },
+      {
+        "atom": "N",
+        "idx": 1,
+        "fod": 0.2227
+      },
+      {
+        "atom": "O",
+        "idx": 4,
+        "fod": 0.0991
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.0837
+      },
+      {
+        "atom": "H",
+        "idx": 10,
+        "fod": 0.0541
+      }
+    ],
+    "fod_max_val": 0.08083,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "H",
+        "idx": 9,
+        "dist_ang": 2.95
+      },
+      {
+        "atom": "H",
+        "idx": 10,
+        "dist_ang": 3.09
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "dist_ang": 2.52
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "N",
+        "idx": 1,
+        "dist_ang": 0.25
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 1.22
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "dist_ang": 1.41
+      },
+      {
+        "atom": "H",
+        "idx": 6,
+        "dist_ang": 1.91
+      }
+    ]
+  },
+  "rxn1150": {
+    "top_disp": [
+      [
+        10,
+        "H",
+        1.83
+      ],
+      [
+        3,
+        "N",
+        1.694
+      ],
+      [
+        8,
+        "H",
+        0.903
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "N",
+          3,
+          "H",
+          10
+        ],
+        "len_R": 1.007,
+        "len_P": 3.085,
+        "delta": 2.078
+      },
+      {
+        "atoms": [
+          "C",
+          2,
+          "N",
+          3
+        ],
+        "len_R": 1.469,
+        "len_P": 3.204,
+        "delta": 1.736
+      },
+      {
+        "atoms": [
+          "C",
+          2,
+          "H",
+          10
+        ],
+        "len_R": 2.267,
+        "len_P": 1.09,
+        "delta": 1.177
+      }
+    ],
+    "fod_total": 0.8459,
+    "fod_sphere_2p5ang": 0.6652,
+    "sphere_frac": 0.786,
+    "atom_fod_ranked": [
+      {
+        "atom": "N",
+        "idx": 3,
+        "fod": 0.4051
+      },
+      {
+        "atom": "O",
+        "idx": 5,
+        "fod": 0.2087
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.0531
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "fod": 0.0428
+      },
+      {
+        "atom": "H",
+        "idx": 10,
+        "fod": 0.0405
+      }
+    ],
+    "fod_max_val": 0.10764,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "H",
+        "idx": 10,
+        "dist_ang": 1.15
+      },
+      {
+        "atom": "N",
+        "idx": 3,
+        "dist_ang": 1.04
+      },
+      {
+        "atom": "H",
+        "idx": 8,
+        "dist_ang": 3.15
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "N",
+        "idx": 3,
+        "dist_ang": 1.04
+      },
+      {
+        "atom": "H",
+        "idx": 10,
+        "dist_ang": 1.15
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 1.31
+      },
+      {
+        "atom": "O",
+        "idx": 5,
+        "dist_ang": 1.75
+      }
+    ]
+  },
+  "rxn0896": {
+    "top_disp": [
+      [
+        5,
+        "O",
+        2.285
+      ],
+      [
+        7,
+        "H",
+        1.363
+      ],
+      [
+        10,
+        "H",
+        1.207
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "N",
+          2,
+          "O",
+          5
+        ],
+        "len_R": 3.837,
+        "len_P": 1.474,
+        "delta": 2.364
+      },
+      {
+        "atoms": [
+          "C",
+          1,
+          "C",
+          4
+        ],
+        "len_R": 2.405,
+        "len_P": 1.443,
+        "delta": 0.962
+      },
+      {
+        "atoms": [
+          "C",
+          1,
+          "N",
+          2
+        ],
+        "len_R": 1.251,
+        "len_P": 1.466,
+        "delta": 0.215
+      }
+    ],
+    "fod_total": 0.8399,
+    "fod_sphere_2p5ang": 0.8267,
+    "sphere_frac": 0.984,
+    "atom_fod_ranked": [
+      {
+        "atom": "O",
+        "idx": 5,
+        "fod": 0.2824
+      },
+      {
+        "atom": "N",
+        "idx": 2,
+        "fod": 0.2196
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "fod": 0.1073
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.0863
+      },
+      {
+        "atom": "O",
+        "idx": 3,
+        "fod": 0.0673
+      }
+    ],
+    "fod_max_val": 0.13184,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "O",
+        "idx": 5,
+        "dist_ang": 2.2
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 3.25
+      },
+      {
+        "atom": "H",
+        "idx": 10,
+        "dist_ang": 2.52
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "O",
+        "idx": 3,
+        "dist_ang": 1.74
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 1.85
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 2.16
+      },
+      {
+        "atom": "O",
+        "idx": 5,
+        "dist_ang": 2.2
+      }
+    ]
+  },
+  "rxn4518": {
+    "top_disp": [
+      [
+        5,
+        "O",
+        1.662
+      ],
+      [
+        8,
+        "H",
+        1.581
+      ],
+      [
+        6,
+        "H",
+        1.521
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "N",
+          0,
+          "O",
+          5
+        ],
+        "len_R": 3.332,
+        "len_P": 1.431,
+        "delta": 1.901
+      },
+      {
+        "atoms": [
+          "N",
+          0,
+          "C",
+          1
+        ],
+        "len_R": 1.439,
+        "len_P": 2.924,
+        "delta": 1.485
+      },
+      {
+        "atoms": [
+          "C",
+          1,
+          "C",
+          4
+        ],
+        "len_R": 1.542,
+        "len_P": 1.335,
+        "delta": 0.207
+      }
+    ],
+    "fod_total": 0.833,
+    "fod_sphere_2p5ang": 0.811,
+    "sphere_frac": 0.974,
+    "atom_fod_ranked": [
+      {
+        "atom": "N",
+        "idx": 0,
+        "fod": 0.296
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "fod": 0.1935
+      },
+      {
+        "atom": "O",
+        "idx": 5,
+        "fod": 0.1149
+      },
+      {
+        "atom": "O",
+        "idx": 3,
+        "fod": 0.0573
+      },
+      {
+        "atom": "H",
+        "idx": 6,
+        "fod": 0.0443
+      }
+    ],
+    "fod_max_val": 0.13402,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "O",
+        "idx": 5,
+        "dist_ang": 2.91
+      },
+      {
+        "atom": "H",
+        "idx": 8,
+        "dist_ang": 2.76
+      },
+      {
+        "atom": "H",
+        "idx": 6,
+        "dist_ang": 0.71
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "H",
+        "idx": 6,
+        "dist_ang": 0.71
+      },
+      {
+        "atom": "N",
+        "idx": 0,
+        "dist_ang": 1.06
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 1.26
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 1.96
+      }
+    ]
+  },
+  "rxn3107": {
+    "top_disp": [
+      [
+        4,
+        "C",
+        1.329
+      ],
+      [
+        5,
+        "N",
+        1.205
+      ],
+      [
+        9,
+        "H",
+        0.96
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          2,
+          "O",
+          3
+        ],
+        "len_R": 1.406,
+        "len_P": 2.647,
+        "delta": 1.241
+      },
+      {
+        "atoms": [
+          "C",
+          2,
+          "N",
+          5
+        ],
+        "len_R": 2.616,
+        "len_P": 1.565,
+        "delta": 1.052
+      },
+      {
+        "atoms": [
+          "O",
+          3,
+          "C",
+          4
+        ],
+        "len_R": 2.345,
+        "len_P": 1.321,
+        "delta": 1.024
+      }
+    ],
+    "fod_total": 0.7996,
+    "fod_sphere_2p5ang": 0.7731,
+    "sphere_frac": 0.967,
+    "atom_fod_ranked": [
+      {
+        "atom": "N",
+        "idx": 5,
+        "fod": 0.2672
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "fod": 0.2366
+      },
+      {
+        "atom": "O",
+        "idx": 3,
+        "fod": 0.1387
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.0367
+      },
+      {
+        "atom": "H",
+        "idx": 9,
+        "fod": 0.0364
+      }
+    ],
+    "fod_max_val": 0.08394,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 0.66
+      },
+      {
+        "atom": "N",
+        "idx": 5,
+        "dist_ang": 0.5
+      },
+      {
+        "atom": "H",
+        "idx": 9,
+        "dist_ang": 2.64
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "N",
+        "idx": 5,
+        "dist_ang": 0.5
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 0.66
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 2.12
+      },
+      {
+        "atom": "H",
+        "idx": 9,
+        "dist_ang": 2.64
+      }
+    ]
+  },
+  "rxn8837": {
+    "top_disp": [
+      [
+        0,
+        "N",
+        1.408
+      ],
+      [
+        8,
+        "H",
+        1.228
+      ],
+      [
+        11,
+        "H",
+        1.196
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "N",
+          0,
+          "C",
+          6
+        ],
+        "len_R": 3.576,
+        "len_P": 1.464,
+        "delta": 2.112
+      },
+      {
+        "atoms": [
+          "C",
+          4,
+          "C",
+          6
+        ],
+        "len_R": 1.507,
+        "len_P": 2.339,
+        "delta": 0.832
+      },
+      {
+        "atoms": [
+          "C",
+          1,
+          "C",
+          2
+        ],
+        "len_R": 1.469,
+        "len_P": 1.695,
+        "delta": 0.226
+      }
+    ],
+    "fod_total": 0.795,
+    "fod_sphere_2p5ang": 0.7784,
+    "sphere_frac": 0.979,
+    "atom_fod_ranked": [
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.2029
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "fod": 0.1744
+      },
+      {
+        "atom": "C",
+        "idx": 6,
+        "fod": 0.1037
+      },
+      {
+        "atom": "O",
+        "idx": 3,
+        "fod": 0.0846
+      },
+      {
+        "atom": "N",
+        "idx": 0,
+        "fod": 0.068
+      }
+    ],
+    "fod_max_val": 0.07876,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "N",
+        "idx": 0,
+        "dist_ang": 1.15
+      },
+      {
+        "atom": "H",
+        "idx": 8,
+        "dist_ang": 4.24
+      },
+      {
+        "atom": "H",
+        "idx": 11,
+        "dist_ang": 3.52
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 0.31
+      },
+      {
+        "atom": "N",
+        "idx": 0,
+        "dist_ang": 1.15
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 1.55
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 2.18
+      }
+    ]
+  },
+  "rxn7060": {
+    "top_disp": [
+      [
+        0,
+        "O",
+        4.806
+      ],
+      [
+        5,
+        "C",
+        1.598
+      ],
+      [
+        6,
+        "N",
+        1.48
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "O",
+          0,
+          "C",
+          1
+        ],
+        "len_R": 1.19,
+        "len_P": 5.08,
+        "delta": 3.89
+      },
+      {
+        "atoms": [
+          "O",
+          0,
+          "C",
+          5
+        ],
+        "len_R": 4.481,
+        "len_P": 1.169,
+        "delta": 3.313
+      },
+      {
+        "atoms": [
+          "C",
+          3,
+          "N",
+          6
+        ],
+        "len_R": 2.603,
+        "len_P": 1.437,
+        "delta": 1.166
+      }
+    ],
+    "fod_total": 0.7817,
+    "fod_sphere_2p5ang": 0.7702,
+    "sphere_frac": 0.985,
+    "atom_fod_ranked": [
+      {
+        "atom": "C",
+        "idx": 1,
+        "fod": 0.2862
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "fod": 0.2184
+      },
+      {
+        "atom": "C",
+        "idx": 3,
+        "fod": 0.1109
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.0328
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "fod": 0.0303
+      }
+    ],
+    "fod_max_val": 0.09377,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "O",
+        "idx": 0,
+        "dist_ang": 1.31
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "dist_ang": 3.17
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 4.18
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 0.24
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "dist_ang": 1.31
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 1.47
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 1.49
+      }
+    ]
+  },
+  "rxn8827": {
+    "top_disp": [
+      [
+        9,
+        "H",
+        1.769
+      ],
+      [
+        0,
+        "N",
+        1.686
+      ],
+      [
+        5,
+        "C",
+        0.96
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "N",
+          0,
+          "C",
+          5
+        ],
+        "len_R": 3.89,
+        "len_P": 1.455,
+        "delta": 2.436
+      },
+      {
+        "atoms": [
+          "C",
+          4,
+          "C",
+          5
+        ],
+        "len_R": 1.484,
+        "len_P": 2.574,
+        "delta": 1.09
+      },
+      {
+        "atoms": [
+          "O",
+          3,
+          "C",
+          4
+        ],
+        "len_R": 1.435,
+        "len_P": 1.29,
+        "delta": 0.145
+      }
+    ],
+    "fod_total": 0.7564,
+    "fod_sphere_2p5ang": 0.7419,
+    "sphere_frac": 0.981,
+    "atom_fod_ranked": [
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.1921
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "fod": 0.139
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "fod": 0.1236
+      },
+      {
+        "atom": "O",
+        "idx": 3,
+        "fod": 0.0934
+      },
+      {
+        "atom": "N",
+        "idx": 0,
+        "fod": 0.0599
+      }
+    ],
+    "fod_max_val": 0.06848,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "H",
+        "idx": 9,
+        "dist_ang": 3.53
+      },
+      {
+        "atom": "N",
+        "idx": 0,
+        "dist_ang": 1.37
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "dist_ang": 2.64
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 1.24
+      },
+      {
+        "atom": "N",
+        "idx": 0,
+        "dist_ang": 1.37
+      },
+      {
+        "atom": "H",
+        "idx": 10,
+        "dist_ang": 2.06
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 2.21
+      }
+    ]
+  },
+  "rxn4522": {
+    "top_disp": [
+      [
+        3,
+        "O",
+        2.32
+      ],
+      [
+        5,
+        "O",
+        1.799
+      ],
+      [
+        9,
+        "H",
+        1.694
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "O",
+          3,
+          "C",
+          4
+        ],
+        "len_R": 1.369,
+        "len_P": 3.343,
+        "delta": 1.974
+      },
+      {
+        "atoms": [
+          "N",
+          0,
+          "O",
+          3
+        ],
+        "len_R": 3.288,
+        "len_P": 1.426,
+        "delta": 1.862
+      },
+      {
+        "atoms": [
+          "N",
+          0,
+          "C",
+          1
+        ],
+        "len_R": 1.439,
+        "len_P": 2.889,
+        "delta": 1.45
+      }
+    ],
+    "fod_total": 0.7303,
+    "fod_sphere_2p5ang": 0.7248,
+    "sphere_frac": 0.993,
+    "atom_fod_ranked": [
+      {
+        "atom": "N",
+        "idx": 0,
+        "fod": 0.2117
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "fod": 0.1678
+      },
+      {
+        "atom": "O",
+        "idx": 3,
+        "fod": 0.134
+      },
+      {
+        "atom": "O",
+        "idx": 5,
+        "fod": 0.0608
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.0379
+      }
+    ],
+    "fod_max_val": 0.0853,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "O",
+        "idx": 3,
+        "dist_ang": 2.83
+      },
+      {
+        "atom": "O",
+        "idx": 5,
+        "dist_ang": 2.9
+      },
+      {
+        "atom": "H",
+        "idx": 9,
+        "dist_ang": 3.29
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "H",
+        "idx": 6,
+        "dist_ang": 0.59
+      },
+      {
+        "atom": "N",
+        "idx": 0,
+        "dist_ang": 0.82
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 1.48
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 1.56
+      }
+    ]
+  },
+  "rxn7936": {
+    "top_disp": [
+      [
+        0,
+        "O",
+        3.433
+      ],
+      [
+        5,
+        "C",
+        1.347
+      ],
+      [
+        6,
+        "N",
+        1.235
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "O",
+          0,
+          "N",
+          6
+        ],
+        "len_R": 4.722,
+        "len_P": 1.209,
+        "delta": 3.514
+      },
+      {
+        "atoms": [
+          "O",
+          0,
+          "C",
+          1
+        ],
+        "len_R": 1.2,
+        "len_P": 2.865,
+        "delta": 1.665
+      },
+      {
+        "atoms": [
+          "C",
+          1,
+          "C",
+          5
+        ],
+        "len_R": 2.981,
+        "len_P": 1.343,
+        "delta": 1.638
+      }
+    ],
+    "fod_total": 0.7262,
+    "fod_sphere_2p5ang": 0.6433,
+    "sphere_frac": 0.886,
+    "atom_fod_ranked": [
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.2735
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "fod": 0.1462
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "fod": 0.1175
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "fod": 0.0835
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "fod": 0.024
+      }
+    ],
+    "fod_max_val": 0.10872,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "O",
+        "idx": 0,
+        "dist_ang": 2.41
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "dist_ang": 2.62
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 2.82
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 1.84
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 1.98
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "dist_ang": 2.41
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "dist_ang": 2.62
+      }
+    ]
+  },
+  "rxn1147": {
+    "top_disp": [
+      [
+        9,
+        "H",
+        2.195
+      ],
+      [
+        0,
+        "O",
+        1.391
+      ],
+      [
+        8,
+        "H",
+        1.095
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          1,
+          "C",
+          2
+        ],
+        "len_R": 1.545,
+        "len_P": 3.316,
+        "delta": 1.771
+      },
+      {
+        "atoms": [
+          "C",
+          1,
+          "O",
+          5
+        ],
+        "len_R": 2.536,
+        "len_P": 1.427,
+        "delta": 1.109
+      },
+      {
+        "atoms": [
+          "C",
+          4,
+          "O",
+          5
+        ],
+        "len_R": 1.201,
+        "len_P": 1.445,
+        "delta": 0.244
+      }
+    ],
+    "fod_total": 0.7248,
+    "fod_sphere_2p5ang": 0.7199,
+    "sphere_frac": 0.993,
+    "atom_fod_ranked": [
+      {
+        "atom": "C",
+        "idx": 2,
+        "fod": 0.1783
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "fod": 0.1451
+      },
+      {
+        "atom": "O",
+        "idx": 5,
+        "fod": 0.1331
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.067
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.052
+      }
+    ],
+    "fod_max_val": 0.06629,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "H",
+        "idx": 9,
+        "dist_ang": 3.76
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "dist_ang": 2.91
+      },
+      {
+        "atom": "H",
+        "idx": 8,
+        "dist_ang": 3.78
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "O",
+        "idx": 5,
+        "dist_ang": 0.56
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 1.0
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 2.15
+      },
+      {
+        "atom": "N",
+        "idx": 3,
+        "dist_ang": 2.28
+      }
+    ]
+  },
+  "rxn0101": {
+    "top_disp": [
+      [
+        5,
+        "O",
+        2.738
+      ],
+      [
+        0,
+        "N",
+        1.885
+      ],
+      [
+        6,
+        "H",
+        1.73
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          4,
+          "O",
+          5
+        ],
+        "len_R": 1.427,
+        "len_P": 3.494,
+        "delta": 2.067
+      },
+      {
+        "atoms": [
+          "N",
+          0,
+          "C",
+          4
+        ],
+        "len_R": 3.473,
+        "len_P": 1.444,
+        "delta": 2.029
+      },
+      {
+        "atoms": [
+          "C",
+          1,
+          "O",
+          5
+        ],
+        "len_R": 1.364,
+        "len_P": 1.207,
+        "delta": 0.157
+      }
+    ],
+    "fod_total": 0.713,
+    "fod_sphere_2p5ang": 0.6956,
+    "sphere_frac": 0.976,
+    "atom_fod_ranked": [
+      {
+        "atom": "O",
+        "idx": 5,
+        "fod": 0.1856
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.18
+      },
+      {
+        "atom": "N",
+        "idx": 0,
+        "fod": 0.1263
+      },
+      {
+        "atom": "O",
+        "idx": 3,
+        "fod": 0.096
+      },
+      {
+        "atom": "H",
+        "idx": 10,
+        "fod": 0.0367
+      }
+    ],
+    "fod_max_val": 0.07175,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "O",
+        "idx": 5,
+        "dist_ang": 2.0
+      },
+      {
+        "atom": "N",
+        "idx": 0,
+        "dist_ang": 1.96
+      },
+      {
+        "atom": "H",
+        "idx": 6,
+        "dist_ang": 2.31
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 1.59
+      },
+      {
+        "atom": "N",
+        "idx": 0,
+        "dist_ang": 1.96
+      },
+      {
+        "atom": "O",
+        "idx": 5,
+        "dist_ang": 2.0
+      },
+      {
+        "atom": "H",
+        "idx": 6,
+        "dist_ang": 2.31
+      }
+    ]
+  },
+  "rxn10005": {
+    "top_disp": [
+      [
+        4,
+        "C",
+        1.727
+      ],
+      [
+        5,
+        "O",
+        1.137
+      ],
+      [
+        9,
+        "H",
+        0.956
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          4,
+          "N",
+          6
+        ],
+        "len_R": 1.388,
+        "len_P": 3.273,
+        "delta": 1.885
+      },
+      {
+        "atoms": [
+          "O",
+          3,
+          "C",
+          4
+        ],
+        "len_R": 1.355,
+        "len_P": 3.229,
+        "delta": 1.874
+      },
+      {
+        "atoms": [
+          "N",
+          2,
+          "O",
+          3
+        ],
+        "len_R": 1.422,
+        "len_P": 1.184,
+        "delta": 0.238
+      }
+    ],
+    "fod_total": 0.6938,
+    "fod_sphere_2p5ang": 0.664,
+    "sphere_frac": 0.957,
+    "atom_fod_ranked": [
+      {
+        "atom": "O",
+        "idx": 3,
+        "fod": 0.205
+      },
+      {
+        "atom": "N",
+        "idx": 2,
+        "fod": 0.1748
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.1176
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "fod": 0.0647
+      },
+      {
+        "atom": "O",
+        "idx": 5,
+        "fod": 0.0459
+      }
+    ],
+    "fod_max_val": 0.07963,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 1.61
+      },
+      {
+        "atom": "O",
+        "idx": 5,
+        "dist_ang": 2.52
+      },
+      {
+        "atom": "H",
+        "idx": 9,
+        "dist_ang": 3.14
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "O",
+        "idx": 3,
+        "dist_ang": 0.75
+      },
+      {
+        "atom": "N",
+        "idx": 2,
+        "dist_ang": 1.43
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 1.61
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 2.11
+      }
+    ]
+  },
+  "rxn10054": {
+    "top_disp": [
+      [
+        3,
+        "O",
+        2.517
+      ],
+      [
+        8,
+        "H",
+        1.655
+      ],
+      [
+        7,
+        "H",
+        1.38
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          2,
+          "O",
+          3
+        ],
+        "len_R": 1.442,
+        "len_P": 4.097,
+        "delta": 2.655
+      },
+      {
+        "atoms": [
+          "C",
+          4,
+          "C",
+          6
+        ],
+        "len_R": 1.507,
+        "len_P": 2.516,
+        "delta": 1.009
+      },
+      {
+        "atoms": [
+          "O",
+          3,
+          "C",
+          4
+        ],
+        "len_R": 1.435,
+        "len_P": 1.2,
+        "delta": 0.235
+      }
+    ],
+    "fod_total": 0.6939,
+    "fod_sphere_2p5ang": 0.6724,
+    "sphere_frac": 0.969,
+    "atom_fod_ranked": [
+      {
+        "atom": "C",
+        "idx": 6,
+        "fod": 0.2039
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.1768
+      },
+      {
+        "atom": "O",
+        "idx": 3,
+        "fod": 0.1231
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "fod": 0.0432
+      },
+      {
+        "atom": "H",
+        "idx": 8,
+        "fod": 0.0341
+      }
+    ],
+    "fod_max_val": 0.06049,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "O",
+        "idx": 3,
+        "dist_ang": 0.17
+      },
+      {
+        "atom": "H",
+        "idx": 8,
+        "dist_ang": 2.12
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 1.97
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "O",
+        "idx": 3,
+        "dist_ang": 0.17
+      },
+      {
+        "atom": "C",
+        "idx": 2,
+        "dist_ang": 1.38
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 1.41
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 1.97
+      }
+    ]
+  },
+  "rxn7957": {
+    "top_disp": [
+      [
+        7,
+        "H",
+        2.488
+      ],
+      [
+        6,
+        "N",
+        1.345
+      ],
+      [
+        1,
+        "C",
+        1.267
+      ]
+    ],
+    "top_bond": [
+      {
+        "atoms": [
+          "C",
+          1,
+          "H",
+          7
+        ],
+        "len_R": 1.108,
+        "len_P": 4.346,
+        "delta": 3.239
+      },
+      {
+        "atoms": [
+          "C",
+          5,
+          "H",
+          7
+        ],
+        "len_R": 2.703,
+        "len_P": 1.08,
+        "delta": 1.622
+      },
+      {
+        "atoms": [
+          "C",
+          4,
+          "N",
+          6
+        ],
+        "len_R": 2.591,
+        "len_P": 1.529,
+        "delta": 1.062
+      }
+    ],
+    "fod_total": 0.6834,
+    "fod_sphere_2p5ang": 0.6536,
+    "sphere_frac": 0.956,
+    "atom_fod_ranked": [
+      {
+        "atom": "N",
+        "idx": 6,
+        "fod": 0.2246
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "fod": 0.1531
+      },
+      {
+        "atom": "O",
+        "idx": 0,
+        "fod": 0.1019
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "fod": 0.0584
+      },
+      {
+        "atom": "H",
+        "idx": 7,
+        "fod": 0.0454
+      }
+    ],
+    "fod_max_val": 0.07364,
+    "fod_max_dist_to_top_disp": [
+      {
+        "atom": "H",
+        "idx": 7,
+        "dist_ang": 3.31
+      },
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 0.65
+      },
+      {
+        "atom": "C",
+        "idx": 1,
+        "dist_ang": 3.78
+      }
+    ],
+    "fod_max_nearest_atoms": [
+      {
+        "atom": "N",
+        "idx": 6,
+        "dist_ang": 0.65
+      },
+      {
+        "atom": "C",
+        "idx": 5,
+        "dist_ang": 0.93
+      },
+      {
+        "atom": "C",
+        "idx": 4,
+        "dist_ang": 2.26
+      },
+      {
+        "atom": "H",
+        "idx": 11,
+        "dist_ang": 2.79
+      }
+    ]
+  }
+}

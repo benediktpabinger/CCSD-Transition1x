@@ -1,0 +1,275 @@
+{
+  "n_reactions": 30,
+  "reactions": [
+    {
+      "rxn": "rxn7949",
+      "emae_mace_meV": 77.4,
+      "emae_delta_meV": 59.8,
+      "emae_wb97x_meV": 73.1,
+      "fmae_mace_meVA": 214.1,
+      "fmae_delta_meVA": 82.5,
+      "fmae_wb97x_meVA": 208.8
+    },
+    {
+      "rxn": "rxn8832",
+      "emae_mace_meV": 109.3,
+      "emae_delta_meV": 92.6,
+      "emae_wb97x_meV": 42.7,
+      "fmae_mace_meVA": 183.9,
+      "fmae_delta_meVA": 102.3,
+      "fmae_wb97x_meVA": 170.2
+    },
+    {
+      "rxn": "rxn1320",
+      "emae_mace_meV": 82.6,
+      "emae_delta_meV": 82.8,
+      "emae_wb97x_meV": 69.3,
+      "fmae_mace_meVA": 136.3,
+      "fmae_delta_meVA": 73.2,
+      "fmae_wb97x_meVA": 129.5
+    },
+    {
+      "rxn": "rxn4113",
+      "emae_mace_meV": 91.9,
+      "emae_delta_meV": 57.8,
+      "emae_wb97x_meV": 107.6,
+      "fmae_mace_meVA": 107.9,
+      "fmae_delta_meVA": 72.1,
+      "fmae_wb97x_meVA": 115.4
+    },
+    {
+      "rxn": "rxn8885",
+      "emae_mace_meV": 47.3,
+      "emae_delta_meV": 140.4,
+      "emae_wb97x_meV": 52.5,
+      "fmae_mace_meVA": 160.8,
+      "fmae_delta_meVA": 82.0,
+      "fmae_wb97x_meVA": 176.1
+    },
+    {
+      "rxn": "rxn7945",
+      "emae_mace_meV": 61.2,
+      "emae_delta_meV": 135.5,
+      "emae_wb97x_meV": 68.5,
+      "fmae_mace_meVA": 171.8,
+      "fmae_delta_meVA": 96.2,
+      "fmae_wb97x_meVA": 181.1
+    },
+    {
+      "rxn": "rxn7937",
+      "emae_mace_meV": 68.2,
+      "emae_delta_meV": 80.8,
+      "emae_wb97x_meV": 82.2,
+      "fmae_mace_meVA": 186.5,
+      "fmae_delta_meVA": 94.6,
+      "fmae_wb97x_meVA": 185.4
+    },
+    {
+      "rxn": "rxn6196",
+      "emae_mace_meV": 133.3,
+      "emae_delta_meV": 22.6,
+      "emae_wb97x_meV": 112.6,
+      "fmae_mace_meVA": 199.4,
+      "fmae_delta_meVA": 116.3,
+      "fmae_wb97x_meVA": 210.9
+    },
+    {
+      "rxn": "rxn0346",
+      "emae_mace_meV": 121.8,
+      "emae_delta_meV": 34.8,
+      "emae_wb97x_meV": 135.6,
+      "fmae_mace_meVA": 128.2,
+      "fmae_delta_meVA": 64.5,
+      "fmae_wb97x_meVA": 137.7
+    },
+    {
+      "rxn": "rxn1150",
+      "emae_mace_meV": 94.0,
+      "emae_delta_meV": 27.6,
+      "emae_wb97x_meV": 95.0,
+      "fmae_mace_meVA": 115.4,
+      "fmae_delta_meVA": 86.8,
+      "fmae_wb97x_meVA": 109.0
+    },
+    {
+      "rxn": "rxn9246",
+      "emae_mace_meV": 85.1,
+      "emae_delta_meV": 17.9,
+      "emae_wb97x_meV": 80.6,
+      "fmae_mace_meVA": 122.0,
+      "fmae_delta_meVA": 55.9,
+      "fmae_wb97x_meVA": 129.3
+    },
+    {
+      "rxn": "rxn4498",
+      "emae_mace_meV": 50.2,
+      "emae_delta_meV": 56.2,
+      "emae_wb97x_meV": 130.3,
+      "fmae_mace_meVA": 128.8,
+      "fmae_delta_meVA": 84.2,
+      "fmae_wb97x_meVA": 135.6
+    },
+    {
+      "rxn": "rxn1061",
+      "emae_mace_meV": 57.0,
+      "emae_delta_meV": 66.6,
+      "emae_wb97x_meV": 47.0,
+      "fmae_mace_meVA": 123.7,
+      "fmae_delta_meVA": 63.3,
+      "fmae_wb97x_meVA": 129.6
+    },
+    {
+      "rxn": "rxn4003",
+      "emae_mace_meV": 70.7,
+      "emae_delta_meV": 32.6,
+      "emae_wb97x_meV": 64.6,
+      "fmae_mace_meVA": 82.8,
+      "fmae_delta_meVA": 44.2,
+      "fmae_wb97x_meVA": 86.5
+    },
+    {
+      "rxn": "rxn4004",
+      "emae_mace_meV": 102.6,
+      "emae_delta_meV": 28.8,
+      "emae_wb97x_meV": 59.5,
+      "fmae_mace_meVA": 101.2,
+      "fmae_delta_meVA": 62.2,
+      "fmae_wb97x_meVA": 98.7
+    },
+    {
+      "rxn": "rxn4063",
+      "emae_mace_meV": 78.7,
+      "emae_delta_meV": 45.6,
+      "emae_wb97x_meV": 75.5,
+      "fmae_mace_meVA": 78.9,
+      "fmae_delta_meVA": 53.6,
+      "fmae_wb97x_meVA": 78.4
+    },
+    {
+      "rxn": "rxn4114",
+      "emae_mace_meV": 67.7,
+      "emae_delta_meV": 35.1,
+      "emae_wb97x_meV": 74.2,
+      "fmae_mace_meVA": 88.8,
+      "fmae_delta_meVA": 56.3,
+      "fmae_wb97x_meVA": 95.9
+    },
+    {
+      "rxn": "rxn4060",
+      "emae_mace_meV": 145.8,
+      "emae_delta_meV": 99.0,
+      "emae_wb97x_meV": 73.4,
+      "fmae_mace_meVA": 104.6,
+      "fmae_delta_meVA": 59.2,
+      "fmae_wb97x_meVA": 99.2
+    },
+    {
+      "rxn": "rxn1961",
+      "emae_mace_meV": 66.1,
+      "emae_delta_meV": 15.8,
+      "emae_wb97x_meV": 69.1,
+      "fmae_mace_meVA": 89.0,
+      "fmae_delta_meVA": 57.6,
+      "fmae_wb97x_meVA": 91.5
+    },
+    {
+      "rxn": "rxn1962",
+      "emae_mace_meV": 136.0,
+      "emae_delta_meV": 77.9,
+      "emae_wb97x_meV": 132.8,
+      "fmae_mace_meVA": 122.4,
+      "fmae_delta_meVA": 83.9,
+      "fmae_wb97x_meVA": 127.1
+    },
+    {
+      "rxn": "rxn0896",
+      "emae_mace_meV": 207.4,
+      "emae_delta_meV": 181.6,
+      "emae_wb97x_meV": 56.7,
+      "fmae_mace_meVA": 131.4,
+      "fmae_delta_meVA": 90.3,
+      "fmae_wb97x_meVA": 112.0
+    },
+    {
+      "rxn": "rxn1154",
+      "emae_mace_meV": 120.3,
+      "emae_delta_meV": 24.2,
+      "emae_wb97x_meV": 159.4,
+      "fmae_mace_meVA": 177.3,
+      "fmae_delta_meVA": 106.0,
+      "fmae_wb97x_meVA": 165.7
+    },
+    {
+      "rxn": "rxn5690",
+      "emae_mace_meV": 159.8,
+      "emae_delta_meV": 54.6,
+      "emae_wb97x_meV": 79.5,
+      "fmae_mace_meVA": 162.0,
+      "fmae_delta_meVA": 106.5,
+      "fmae_wb97x_meVA": 179.5
+    },
+    {
+      "rxn": "rxn4513",
+      "emae_mace_meV": 122.6,
+      "emae_delta_meV": 128.8,
+      "emae_wb97x_meV": 122.6,
+      "fmae_mace_meVA": 128.5,
+      "fmae_delta_meVA": 75.0,
+      "fmae_wb97x_meVA": 131.4
+    },
+    {
+      "rxn": "rxn7955",
+      "emae_mace_meV": 121.9,
+      "emae_delta_meV": 33.7,
+      "emae_wb97x_meV": 113.8,
+      "fmae_mace_meVA": 180.7,
+      "fmae_delta_meVA": 72.2,
+      "fmae_wb97x_meVA": 188.2
+    },
+    {
+      "rxn": "rxn4519",
+      "emae_mace_meV": 62.8,
+      "emae_delta_meV": 61.8,
+      "emae_wb97x_meV": 89.7,
+      "fmae_mace_meVA": 141.0,
+      "fmae_delta_meVA": 74.6,
+      "fmae_wb97x_meVA": 137.3
+    },
+    {
+      "rxn": "rxn4500",
+      "emae_mace_meV": 281.9,
+      "emae_delta_meV": 131.0,
+      "emae_wb97x_meV": 219.7,
+      "fmae_mace_meVA": 174.0,
+      "fmae_delta_meVA": 80.5,
+      "fmae_wb97x_meVA": 160.0
+    },
+    {
+      "rxn": "rxn2553",
+      "emae_mace_meV": 185.0,
+      "emae_delta_meV": 27.3,
+      "emae_wb97x_meV": 180.4,
+      "fmae_mace_meVA": 142.7,
+      "fmae_delta_meVA": 70.9,
+      "fmae_wb97x_meVA": 152.7
+    },
+    {
+      "rxn": "rxn8829",
+      "emae_mace_meV": 163.4,
+      "emae_delta_meV": 13.7,
+      "emae_wb97x_meV": 112.9,
+      "fmae_mace_meVA": 172.1,
+      "fmae_delta_meVA": 63.6,
+      "fmae_wb97x_meVA": 175.0
+    },
+    {
+      "rxn": "rxn1155",
+      "emae_mace_meV": 56.7,
+      "emae_delta_meV": 43.4,
+      "emae_wb97x_meV": 66.4,
+      "fmae_mace_meVA": 109.6,
+      "fmae_delta_meVA": 61.0,
+      "fmae_wb97x_meVA": 109.5
+    }
+  ]
+}

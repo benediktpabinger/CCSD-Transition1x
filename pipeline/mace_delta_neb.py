@@ -82,19 +82,23 @@ class MACEDeltaCalculator(Calculator):
             e_mace = out_mace['energy']
             f_mace = out_mace['forces']
 
-            # Delta correction via autograd
-            batch2 = torch_geometric.Batch.from_data_list([data]).to(self.device)
-            batch2.positions.requires_grad_(True)
-            bd2 = {key: batch2[key] for key in batch2.keys}
-            out2 = self.model(bd2, training=False, compute_force=False,
-                              compute_virials=False, compute_stress=False)
-            node_feats  = out2['node_feats'][:, NODE_FEATS_OFFSET:]
-            per_atom    = self.delta_head(node_feats).squeeze(-1)
-            per_struct  = per_atom.sum()
-            delta_forces = -torch.autograd.grad(per_struct, bd2['positions'])[0]
+            if self.delta_head is None:
+                energy = e_mace.item()
+                forces = f_mace.detach().cpu().numpy()
+            else:
+                # Delta correction via autograd
+                batch2 = torch_geometric.Batch.from_data_list([data]).to(self.device)
+                batch2.positions.requires_grad_(True)
+                bd2 = {key: batch2[key] for key in batch2.keys}
+                out2 = self.model(bd2, training=False, compute_force=False,
+                                  compute_virials=False, compute_stress=False)
+                node_feats  = out2['node_feats'][:, NODE_FEATS_OFFSET:]
+                per_atom    = self.delta_head(node_feats).squeeze(-1)
+                per_struct  = per_atom.sum()
+                delta_forces = -torch.autograd.grad(per_struct, bd2['positions'])[0]
 
-        energy = (e_mace + per_struct).item()
-        forces = (f_mace + delta_forces).detach().cpu().numpy()
+                energy = (e_mace + per_struct).item()
+                forces = (f_mace + delta_forces).detach().cpu().numpy()
 
         self.results = {
             'energy': energy,
@@ -102,13 +106,16 @@ class MACEDeltaCalculator(Calculator):
         }
 
 
-def load_models(device, head_path=None):
+def load_models(device, head_path=None, no_delta=False):
     model = torch.jit.load(MODEL_PATH, map_location=device)
     model.eval()
 
-    delta_head = NonLinearReadoutBlock(HIDDEN_IRREPS, MLP_IRREPS, gate=F.silu).to(device)
-    delta_head.load_state_dict(torch.load(head_path or HEAD_PATH, map_location=device))
-    delta_head.eval()
+    if no_delta:
+        delta_head = None
+    else:
+        delta_head = NonLinearReadoutBlock(HIDDEN_IRREPS, MLP_IRREPS, gate=F.silu).to(device)
+        delta_head.load_state_dict(torch.load(head_path or HEAD_PATH, map_location=device))
+        delta_head.eval()
 
     from mace.tools import AtomicNumberTable
     z_table = AtomicNumberTable([int(z) for z in model.atomic_numbers])
@@ -173,8 +180,8 @@ def main(args):
     device = args.device or ('cuda' if torch.cuda.is_available() else 'cpu')
     print(f'Device: {device}')
 
-    print('Loading MACE + delta head ...')
-    model, delta_head, z_table, r_max = load_models(device, head_path=args.head)
+    print('Loading bare MACE ...' if args.no_delta else 'Loading MACE + delta head ...')
+    model, delta_head, z_table, r_max = load_models(device, head_path=args.head, no_delta=args.no_delta)
 
     print(f'Loading wB97x NEB images for {args.reaction} ...')
     images = load_wB97x_images(args.h5file, args.reaction, args.split)
@@ -198,7 +205,7 @@ def main(args):
         BFGS(images[-1], logfile=os.path.join(args.output, 'relax_p.log')).run(fmax=0.05)
         write(p_xyz, images[-1])
 
-    print('Running NEB (MACE+delta) ...')
+    print('Running NEB (bare MACE) ...' if args.no_delta else 'Running NEB (MACE+delta) ...')
     neb = NEB(images, climb=False, parallel=False, method='improvedtangent')
     neb_tools = NEBTools(images)
     if args.optimizer == 'bfgs':
@@ -248,6 +255,7 @@ if __name__ == '__main__':
     parser.add_argument('--skip-relax',  action='store_true')
     parser.add_argument('--optimizer',   default='ode', choices=['ode', 'bfgs'])
     parser.add_argument('--head',        default=None, help='path to delta head checkpoint (default: delta_head_fw1.00.pt)')
+    parser.add_argument('--no-delta',    action='store_true', help='use bare MACE only, skip delta correction head entirely')
     parser.add_argument('--device',      default=None, help='cuda or cpu (default: auto-detect)')
     args = parser.parse_args()
     main(args)

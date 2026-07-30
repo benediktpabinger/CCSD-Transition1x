@@ -82,7 +82,13 @@ RHF → RCCSD → CCSD(T) with PySCF on R, TS, P. Straightforward single-referen
 
 ---
 
-## Step 4: NEVPT2/AVAS
+## Step 4: NEVPT2/AVAS — Single Points on ORCA NEB Geometries
+
+> **Scope of this section:** NEVPT2 evaluated as single points on the ORCA NEB
+> geometries (AVAS threshold=0.2, no geometry optimisation). This covers the original
+> 30-reaction benchmark (top-10, mid-10, low-10 by FOD). A separate CASSCF OptTS
+> calculation (threshold=0.4, `--no-prune`, 23 reactions) is documented in
+> **Step 5** below and in `active_space_quality_analysis.md`.
 
 ### Approach
 
@@ -96,13 +102,17 @@ AVAS (Atomic Valence Active Space, Sayfutyarova et al. 2017) automates active sp
 - The converged TS MO coefficients are projected onto the R and P geometries using `mcscf.project_init_guess`. This ensures R, TS, and P share the same physical orbital space, making the barriers meaningful (they reflect the same electrons and orbitals throughout).
 - Running AVAS independently at R, TS, P could select different active spaces, making the energy differences unphysical.
 
-**AO targets and threshold:**
+**AO targets and threshold (this section — SP benchmark):**
 ```
 Target AOs:  C 2pz, N 2p, O 2pz, F 2pz
-Threshold:   0.2
+Threshold:   0.2          ← larger active spaces than the OptTS calculation
 ```
 
 This follows the approach validated end-to-end for rxn0103, which gave a manageable (16e, 10o) active space and a physically sensible barrier. Active spaces across the 10 reactions range from (14e, 10o) to (18e, 13o).
+
+> **Threshold note:** The OptTS calculation (Step 5) uses threshold=0.4 → smaller
+> active spaces. Active space sizes between the two calculations are not directly
+> comparable (e.g. rxn7949 is (16e,12o) here vs (16e,10o) in OptTS).
 
 `2pz` (m=0 component of p) preferentially targets π-type orbitals. For the 10 MR reactions identified by FOD — all organic H/C/N/O/F molecules — MR character is dominated by near-degenerate π and π* orbitals at the TS. Using all three p components (`2p`) selects the entire carbon σ-skeleton as well, producing active spaces of (32–34e, 22–26o) that are intractable for FCI-based CASSCF.
 
@@ -147,7 +157,11 @@ Each reaction's AVAS selects a different (nelecas, ncas). Reactions with larger 
 
 ---
 
-## Results
+## Results (Step 4 — SP on ORCA Geometries, threshold=0.2)
+
+> These results are single-point evaluations on ORCA NEB geometries. They are the
+> reference for the 30-reaction benchmark. For NEVPT2 at CASSCF-optimised geometries,
+> see Step 5 and `active_space_quality_analysis.md`.
 
 ### Barrier Table: CCSD(T) vs NEVPT2
 
@@ -282,9 +296,294 @@ All barriers in meV. Source: `full_benchmark_results.json`, `pipeline/_check_nev
 
 **Mid-MR reactions:** Mixed results. Four reactions are reliable (rxn0896, rxn7955, rxn2553, rxn8829), where moderate but genuine MR character exists at all three geometries. The failures arise from TS-biased active spaces (0 frac@P) or a marginally negative reverse barrier indicating a near-flat PES that NEVPT2 cannot resolve.
 
-**Practical conclusion:** Use NEVPT2 barriers only for the 7 reliable top-10 reactions. For all others (mid and low MR), use CCSD(T) as the high-level reference. Flag rxn1320 and rxn1150 (top-10 red flags) accordingly — CCSD(T) is the reference for those too.
+**Practical conclusion (Step 4 SP benchmark):** Use NEVPT2 barriers only for the 7 reliable top-10 reactions. For all others (mid and low MR), use CCSD(T) as the high-level reference. Flag rxn1320 and rxn1150 (top-10 red flags) accordingly — CCSD(T) is the reference for those two as well.
 
 **NEVPT2 vs CCSD(T) for the 11 reliable reactions:** forward barrier spread −123 to +96 meV (top-10 subset); +2 to +56 meV (mid-MR subset). Consistent with NEVPT2 accuracy on moderately MR systems (~50–100 meV).
+
+**Step 5 OptTS benchmark (separate):** The 23-reaction CASSCF OptTS benchmark provides a CASSCF-level geometry reference independent of DFT. 8 reactions have reliable CASSCF OptTS geometries with consistent NEVPT2 barriers (Step 5 "reliable" class). An additional 3+7+1 reactions have valid geometries with varying energy caveats. See Step 5 and `active_space_quality_analysis.md` for the full classification.
+
+---
+
+## Step 5: CASSCF OptTS + NEVPT2 at CASSCF-Optimised Geometries
+
+### Motivation
+
+The Step 4 NEVPT2 SPs are evaluated at the ORCA DFT geometries. A stronger test is
+to ask: where does CASSCF itself locate the TS, and does that geometry match DFT?
+If CASSCF finds a different saddle point, the NEVPT2 barrier at the ORCA geometry
+is not the CASSCF-level answer.
+
+This step optimises the TS at the CASSCF+NEVPT2 level (CASSCF eigenvector-following,
+then NEVPT2 SP at the converged geometry) and compares the CASSCF TS geometry to
+the ORCA NEB TS via Kabsch RMSD.
+
+### Settings (different from Step 4)
+
+```
+AO targets : C 2pz, N 2p, O 2pz, F 2pz   (same AOs)
+Threshold  : 0.4                           (larger → smaller active space)
+--no-prune : pruning disabled              (pruning collapsed 8/10 to CAS(2,2) in first batch)
+Basis      : def2-TZVP
+Code       : mr_casscf_optts.py (geomeTRIC eigenvector-following, transition=True)
+```
+
+Convergence: mc1step → mc2step fallback. Conv_tol loosened to 1e-6 for 3 reactions
+(rxn0896, rxn10005, rxn1283) in a retry job.
+
+### Two separate reaction sets — Step 4 (30) vs Step 5 (26/23)
+
+**Step 5 does not use the same 30 reactions as Step 4.** The two benchmarks
+cover deliberately different subsets:
+
+| Benchmark | n | Selection | Geometry reference |
+|-----------|---|-----------|-------------------|
+| Step 4 SP | 30 | FOD top-10 + uniform mid-sample + bottom-10 | ORCA DFT NEB TS |
+| Step 5 OptTS | 26 → 23 converged | FOD ranks 1–26 (top 26 by NFOD) | CASSCF-optimised TS |
+
+The **next-HIGH** reactions (ranks 11–26) are the highest-NFOD reactions
+below the top-10, not the Mid-MR group from Step 4 (which was a uniform
+sample across ranks 11–270) and not the Low-MR group (ranks 270–279).
+Step 4 showed that NEVPT2/AVAS is unreliable for Low-MR reactions (0/10
+reliable) and mixed for Mid-MR (4/10 reliable), because the AVAS active
+space is idle where genuine MR character is absent. Running CASSCF OptTS
+on those reactions would waste compute and produce unreliable references.
+The next-HIGH group retains substantial MR character throughout and is
+the most natural extension of the CASSCF reference set.
+
+### Reactions attempted
+
+26 total (FOD ranks 1–26):
+- **High(orig)**: rxn7949, rxn8832, rxn1320, rxn4113, rxn8885, rxn7945, rxn7937,
+  rxn6196, rxn0346, rxn1150 (ranks 1–10, same as Step 4 top-10)
+- **next-HIGH**: rxn0896, rxn4518, rxn3107, rxn8837, rxn7060, rxn5691, rxn1283,
+  rxn8827, rxn4522, rxn7936, rxn1147, rxn0894, rxn0101, rxn10005, rxn10054, rxn7957
+  (ranks 11–26)
+
+### Outcomes
+
+| Result | Count | Reactions |
+|---|---|---|
+| OptTS converged | 23 | all except rxn5691, rxn1283, rxn0894 |
+| Failed — first run, no retry | 2 | rxn5691 (idx 5), rxn0894 (idx 11) |
+| Failed — retry also failed | 1 | rxn1283 (cycle 68, conv_tol=1e-6 retry) |
+
+Convergence rate: 23/26 = 88.5%.
+
+### Reliability classification
+
+The 23 converged reactions are classified by:
+1. **RMSD** (CASSCF OptTS vs ORCA NEB TS, Kabsch alignment)
+2. **NOON pattern at R/TS/P** (do fractional occupations peak at the TS as expected?)
+3. **n<0.05 at TS** (intruder orbitals)
+
+Full table with all NOON data, NEVPT2(OptTS) barriers, and per-reaction remarks:
+→ See **`active_space_quality_analysis.md`**
+
+Summary:
+
+| Class | Count | Criterion |
+|---|---|---|
+| Reliable | 8 | RMSD < 0.30 Å, no intruder, consistent MR pattern |
+| Reliable* | 3 | RMSD < 0.30 Å, geometry valid; NEVPT2 energy biased (0@R or CAS(2,2)) |
+| Caveat | 7 | Intruder orbital OR anomalous MR pattern (R>TS or P>TS) |
+| Borderline | 1 | RMSD 0.43 Å unexplained despite coherent active space |
+| Excl-geo | 3 | RMSD > 0.50 Å — CASSCF found different saddle point |
+| Excl-nevpt2 | 1 | rxn4113: 0@R → NEVPT2 barrier biased; use CCSD(T)=5346 meV |
+| Failed | 3 | No converged OptTS |
+
+### Key findings
+
+- **Reliable reactions (8):** CASSCF and DFT locate essentially the same TS (RMSD 0.048–0.287 Å). NEVPT2(OptTS) barriers agree with CCSD(T) to within ±100 meV for 5/8 cases where CCSD(T) is available.
+- **Problematic cases:**
+  - rxn1150: 0 frac@R → NEVPT2(opt)=1679 meV vs CCSD(T)=3460 meV (Δ=−1781 meV). Use CCSD(T).
+  - rxn10054: NEVPT2(opt)=−30 meV (essentially no barrier). CASSCF found a non-representative saddle point.
+  - rxn4113: 0 frac@R → barrier biased despite OptTS succeeding; use CCSD(T)=5346 meV.
+- **Large deviations (excl-geo):** rxn4518 (0.65 Å), rxn0101 (0.71 Å), rxn4522 (0.86 Å). All have small effective active spaces; rxn4518 shows extreme singlet biradical at CASSCF TS (occ 1.012/0.991) that DFT does not reach.
+- **Important note on NEVPT2(OptTS) vs Step 4:** These are different calculations at different geometries. NEVPT2(OptTS) for rxn7949 = 4812 meV; NEVPT2(SP at ORCA TS) = 3254 meV. The difference reflects the CASSCF and DFT TSs being on different parts of the PES. Neither is "wrong" — they correspond to different levels of geometry optimisation.
+
+### NEVPT2(OptTS) barriers — all 23 reactions
+
+All barriers in meV. Evaluated at CASSCF OptTS geometry (ORCA R and P geometries
+used as reference points with projected MOs). CCSD(T) where available is the
+Step 3 single point on ORCA geometries.
+
+| Reaction | Class | CAS | frac R/TS/P | TS-Paar | RMSD [Å] | NEVPT2(opt) | CCSD(T) |
+|---|---|---|---|---|---|---|---|
+| rxn7949 | reliable | (16e,10o) | 4/4/4 | 1.938/0.066 | 0.073 | 4812 | 3210 |
+| rxn8832 | reliable | (16e,10o) | 4/4/4 | 1.920/0.085 | 0.287 | 2340 | 2621 |
+| rxn1320 | reliable* | (2e,2o) | 2/2/2 | 1.922/0.078 | 0.195 | 3872 | 3051 |
+| rxn4113 | excl-nevpt2 | (16e,10o) | 0/2/2 | 1.930/0.084 | 0.056 | 5308¹ | 5346 |
+| rxn8885 | reliable | (12e,9o) | 6/6/4 | 1.945/0.054 | 0.151 | 3709 | 3564 |
+| rxn7945 | reliable | (14e,10o) | 6/6/6 | 1.949/0.060 | 0.052 | 3920 | 3923 |
+| rxn7937 | caveat | (14e,10o) | 4/4/4 | 1.947/0.064 | 0.048 | 3809 | 3858 |
+| rxn6196 | reliable | (14e,10o) | 6/6/6 | 1.943/0.056 | 0.079 | 4346 | 4282 |
+| rxn0346 | caveat | (14e,9o) | 2/2/2 | 1.749/0.261 | 0.153 | 3237 | 3336 |
+| rxn1150 | reliable* | (12e,8o) | 0/3/4 | 1.940/0.061 | 0.161 | 1679¹ | 3460 |
+| rxn0896 | caveat | (14e,9o) | 2/2/1 | 1.378/0.623 | 0.230 | 2484 | 5094² |
+| rxn4518 | excl-geo | (14e,9o) | 2/2/2 | 1.012/0.991 | 0.653 | 3693 | — |
+| rxn3107 | reliable | (14e,8o) | 2/2/2 | 1.935/0.070 | 0.106 | 4743 | — |
+| rxn8837 | borderline | (18e,11o) | 4/4/4 | 1.932/0.073 | 0.427 | 3842 | — |
+| rxn7060 | caveat | (16e,11o) | 6/4/2 | 1.930/0.080 | 0.197 | 3919 | — |
+| rxn8827 | caveat | (16e,10o) | 2/2/2 | 1.928/0.079 | 0.064 | 4003 | — |
+| rxn4522 | excl-geo | (14e,9o) | 1/3/1 | 1.043/0.051 | 0.858 | 5123 | — |
+| rxn7936 | reliable | (18e,11o) | 2/4/2 | 1.946/0.058 | 0.070 | 6127 | — |
+| rxn1147 | reliable* | (14e,8o) | 0/2/2 | 1.755/0.251 | 0.070 | 2114 | — |
+| rxn0101 | excl-geo | (14e,9o) | 2/2/1 | 1.948/0.054 | 0.711 | 2330 | — |
+| rxn10005 | caveat | (20e,13o) | 2/4/4 | 1.940/0.060 | 0.247 | 3452 | — |
+| rxn10054 | caveat | (16e,10o) | 2/2/4 | 1.944/0.061 | 0.328 | −30¹ | — |
+| rxn7957 | reliable | (14e,9o) | 4/4/2 | 1.923/0.081 | 0.074 | 3023 | — |
+
+¹ Unreliable: 0@R (rxn4113, rxn1150) or negative barrier (rxn10054) — see `active_space_quality_analysis.md`.
+² CCSD(T) from original 30-reaction SP benchmark at ORCA geometry with threshold=0.2 active space — not directly comparable to OptTS calculation.
+
+Failed (no OptTS): rxn5691, rxn1283, rxn0894.
+
+---
+
+## Step 6: RKS Stability and Broken-Symmetry Analysis
+
+### Motivation
+
+Steps 1–5 quantify multireference character with FOD, CASSCF/NEVPT2 and CCSD(T).
+Step 6 asks a narrower, cheaper question that is directly relevant to every DFT
+number in this project: **is the closed-shell RKS solution used for the reference
+NEB even a stable SCF solution at the transition state?**
+
+If it is not, the RKS reference geometries and barriers describe a saddle point of
+a potential energy surface that the electronic structure does not actually sit on.
+
+### Method
+
+At each ORCA NEB TS geometry, RKS wB97M-V/def2-TZVP (PySCF), then
+
+```python
+mo_i, mo_e, int_stable, ext_stable = mf.stability(
+    internal=True, external=True, return_status=True)
+```
+
+This diagonalises the **orbital-rotation Hessian** (not the geometric one) in two
+subspaces:
+
+- **internal** — rotations preserving the RKS form. λ_min < 0 would mean a *lower
+  closed-shell* solution exists, i.e. the SCF converged to the wrong minimum.
+- **external** — rotations breaking spin restriction (RKS → UKS). λ_min < 0 means
+  letting α and β orbitals differ lowers the energy: diradical character.
+
+λ_min_ext is not a yes/no flag but a magnitude — the curvature along the
+spin-symmetry-breaking direction.
+
+**Broken-symmetry follow-through.** Where externally unstable, the instability
+eigenvector seeds a UKS calculation (Route 1). Fallback if that collapses:
+triplet-seeded β-HOMO flip (Route 2). Collapse criterion ⟨S²⟩ < 0.3.
+
+### Results (26 reactions = top-26 by N_FOD)
+
+| | count |
+|---|---|
+| internally unstable | **0 / 26** |
+| externally unstable | **18 / 26** |
+| BS collapses (both routes) | 0 |
+
+All 18 BS solutions were found by Route 1; Route 2 was never needed. Zero internal
+instabilities means the RKS reference calculations are themselves sound — the
+issue is purely spin symmetry.
+
+ΔE_BS and ⟨S²⟩ track λ_min_ext monotonically over more than an order of magnitude
+(−648 meV at λ = −0.078 down to −8 meV at λ = −0.008): a continuous diradical
+onset, not a threshold effect. The 8 stable cases cluster at λ_min_ext = +0.001
+to +0.008 (marginally stable); only rxn0101 (+0.071) is robustly closed-shell.
+
+Full 26-row table (λ_min_int, λ_min_ext, ΔE_BS, ⟨S²⟩, spin populations, reactive
+atoms): **`rks_stability_bs_26rxn.md`**.
+
+### Key finding: the RKS TS geometries are not stationary on the BS surface
+
+Evaluating the **nuclear gradient of the converged BS solution at the RKS TS
+geometry** (11 reactions, eV/Å):
+
+| | RKS max\|∇E\| | BS max\|∇E\| | ratio |
+|---|---|---|---|
+| range | 0.013 – 0.179 | 0.386 – 2.637 | **3.6× – 62.7×** |
+
+The RKS geometries are converged saddle points on the RKS surface, but carry
+forces of up to 2.6 eV/Å on the BS surface. **The RKS barriers for these
+reactions are therefore not the BS barriers, and the discrepancy is not bounded
+by ΔE_BS.** The ratio does not track ΔE_BS: rxn1283 and rxn8885 lower the energy
+by only ~45 meV yet carry the largest BS forces (~62×), while rxn7949 lowers it
+by −560 meV for 16×. Energy lowering at fixed geometry is a poor proxy for how
+far the geometry will relax.
+
+Only ⟨S²⟩ acts as a threshold indicator: the two most weakly polarised cases
+(rxn4113 ⟨S²⟩=0.14, rxn6196 0.22) are the only ones with modest ratios (4.9×,
+3.6×). Above ⟨S²⟩ ≈ 0.33 the BS forces are uniformly large with no useful ordering.
+
+### Cross-validation
+
+**Independent code.** ORCA 5.0.4 (`%scf STABPerform true; STABRestartUHFifUnstable
+true`) reproduces the PySCF result: for rxn1320, ⟨S²⟩ = 0.779 (ORCA/def2-SVP) vs
+0.785 (PySCF/def2-TZVP), same spin localisation pattern (sign is arbitrary in BS).
+
+**OMol25 protocol.** OMol25 (arXiv:2505.08762) breaks spin symmetry differently —
+*"rotate by 20° between the HOMO and LUMO in the β space"* — and reports that
+<5 % of Transition1x has ⟨S²⟩ > 0.001. Since the MLIPs benchmarked here are
+trained on that data, it matters whether that protocol finds the same states.
+
+Tested directly on all 26 reactions at OMol25 settings (wB97M-V/def2-TZVPD,
+DEFGRID3, thresh 1e-12, tcut 1e-13):
+
+| | OMol25 20° rotation | stability-following |
+|---|---|---|
+| rxn7949 | ⟨S²⟩ 0.893370 | 0.893417 |
+| rxn1320 | 0.791817 | 0.791820 |
+| rxn8885 | 0.466086 | 0.466193 |
+| rxn4113 | 0.118779 | 0.117803 |
+
+**Identical, without exception** — energies agree to ~1e-8 Ha across all 26,
+including the weakest case (rxn4113, ΔE_BS = −5.9 meV). Exactly 8 reactions give
+⟨S²⟩ = 0.000000 in both, and they are precisely the 8 that the PySCF stability
+analysis classified as externally stable. Two codes, two basis sets, two
+different methods, same 18/8 split.
+
+**Conclusion:** the OMol25 training data *does* contain these broken-symmetry
+states. The <5 % figure is a selection effect — the 26 reactions here are the top
+26 of 279 by N_FOD — not a failure of their protocol. Whether the MLIPs actually
+learned the states is a separate, still-open question.
+
+**Basis/grid sensitivity.** ΔE_BS at def2-TZVP vs def2-TZVPD+DEFGRID3 differs by
+**≤10 meV** (typically <6), e.g. rxn4518 −648.5 → −643.0, rxn1320 −339.2 →
+−343.1. Negligible against effect sizes of 6–650 meV. Caveat: for the weakest
+cases the *relative* shift is large (rxn4113 loses 30 % of its ΔE_BS), so
+statements about marginally unstable reactions are basis-sensitive.
+
+### Methodological pitfalls (recorded to save the next person the time)
+
+1. **Plain DIIS destroys the BS solution.** First attempts collapsed all 8
+   reactions to closed-shell (ΔE = 0, ⟨S²⟩ = 0). Second-order Newton
+   (`mf.newton()`) is required to hold the symmetry-broken solution through
+   convergence. *(In ORCA this is not an issue — its default SCF holds it.)*
+2. **PySCF does not return the stability eigenvalues.** They go to the logger
+   bound to `mol.stdout` at build time; a `sys.stdout` redirect does not capture
+   them. They must be parsed from the job log afterwards.
+3. **Seed UKS from `mf_rks.to_uks()`, not a fresh `dft.UKS(mol)`.** The latter has
+   `mo_occ = None`, and `make_rdm1(mo_ext, mo_occ)` then raises.
+4. **Carrying BS across geometries needs a density matrix, not MO coefficients.**
+   MOs converged at geometry A are orthonormal w.r.t. S(A); handing them to a SCF
+   at geometry B corrupts the density silently — measured on H2O for a 0.15 Å
+   step: electron count 10.000 → 10.056, energy 654 meV too low, ⟨S²⟩ negative.
+   Pass `dm0` instead. Negative ⟨S²⟩ is the diagnostic that this has happened.
+5. **wB97M-V has no analytic Hessian in either PySCF or ORCA 5.0.4** (VV10
+   non-local correlation; ORCA fails with *"The CPSCF equations can not yet handle
+   non-local correlation"*). Numerical Hessians must be forced explicitly —
+   `%geom Calc_Hess true; NumHess true end` in ORCA.
+
+### Scripts
+
+| Script | Purpose |
+|---|---|
+| `rks_stab_bs_grad.py` | RKS + stability + BS + nuclear gradients (per reaction) |
+| `bs_uks.py` | Route 1 / Route 2 broken-symmetry search |
+| `bs_tsopt_batch.py` | BS-UKS transition-state optimisation (SLURM array) |
+| `omol25_settings.sh` | OMol25-level RKS / 20°-rotation / stability comparison |
 
 ---
 
