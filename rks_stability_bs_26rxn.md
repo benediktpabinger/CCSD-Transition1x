@@ -486,18 +486,63 @@ physics — each is easy to hit again.
    optimization failed to converge in N iterations"*. Use
    `geometric_solver.kernel()`, which returns `(converged, mol)`.
 
+## Full benchmark: unified stability pipeline (45 reactions × 4 geometries)
+
+Job 10691631, `pipeline/stability_pipeline.py`. Extends the analysis above from
+18 to all 45 benchmark reactions (top-26 by N_FOD, mid-9, low-10; rxn0896 is
+rank 11 and in both top-26 and mid, hence 45 not 46) and to all four geometry
+sources: **180 calculations, 179 complete, 0 crashes.** wB97M-V/def2-TZVP.
+
+Per calculation: RKS + gradient → RKS stability → broken symmetry (Route 1,
+Route 2 fallback) + BS gradient + spin populations → stability *of the BS
+solution* → follow an internal instability once. Orbitals retained throughout,
+so no re-convergence is needed by any follow-up analysis.
+
+### External instability tracks N_FOD
+
+| group | calculations | externally unstable | reactions with ≥1 unstable geometry |
+|---|---|---|---|
+| high | 104 | 67 (64 %) | 19 / 26 |
+| mid | 36 | 4 (11 %) | 1 / 9 |
+| low | 40 | **0** | **0 / 10** |
+
+The low-MR control group is clean across all 40 geometries — not one RKS
+solution there breaks spin symmetry. This is the missing confirmation at the
+bottom end of the N_FOD screen: reactions the descriptor rates as
+single-reference are single-reference by the orbital-Hessian criterion too. The
+mid group is nearly clean (one reaction, rxn5690, at ΔE_BS = −1.3 meV).
+
+ΔE_BS over the 71 unstable rows spans three orders of magnitude: **−3992 meV**
+(rxn0894/eSEN, ⟨S²⟩ = 1.03) to **−0.9 meV** (rxn10054/eSEN, ⟨S²⟩ = 0.066),
+median −310 meV.
+
+### Robustness
+
+- **BS solution found in 71 / 71** externally unstable cases.
+- **Route 1 sufficed every time** — the Route 2 triplet-seeded fallback built for
+  rxn8837/UMA-S was never invoked. That row is now well-behaved via Route 1
+  (ΔE_BS = −3474.5 meV at ⟨S²⟩ = 1.01, against +3421 meV at ⟨S²⟩ = 0 before),
+  so the earlier failure was not a property of the geometry.
+- **No Davidson breakdowns.** The `LAMBDA_MAX = 1.0` guard flagged nothing; the
+  two nonsense λ_min_ext values from the earlier run (−3.2e7, −3.0e3) did not
+  recur.
+- **70 / 71 BS solutions are internally stable.** The exception, rxn1283/UMA-M,
+  is marginal at λ_min_int = −0.00087.
+
+### Remaining gap
+
+**rxn0894 / UMA-M: RKS still does not converge.** The `level_shift = 0.2` retry
+added for exactly this case fired and did not help — the log shows the retry
+line and no subsequent energy. This is the one row of 180 without data. A
+different initial guess (rather than a level shift) is the next thing to try.
+
 ## Outstanding
 
 - Whether the MLIPs learned the broken-symmetry states that OMol25's training data
   demonstrably contains — see cross-validation section 2.
 - ORCA cross-check of the 6 non-converged TS optimizations, to separate genuine
   physical BS loss from a PySCF-specific artefact.
-- Two rows still unusable and worth a retry with a different guess or a level
-  shift: rxn0894/UMA-M (RKS not converged) and rxn8837/UMA-S (Newton ran into a
-  higher solution, ΔE_BS = +3421 meV at ⟨S²⟩ = 0).
-- The two λ_min_ext Davidson breakdowns (rxn0894/eSEN, rxn8837/UMA-M) could be
-  retried with a tighter `stability` convergence setting if the GHF/GKS question
-  matters; the internal stability of those rows is unaffected.
+- rxn0894/UMA-M (RKS not converged) — see above; the level-shift retry failed.
 
 ## Related: NEB reference at OMol25 settings
 
