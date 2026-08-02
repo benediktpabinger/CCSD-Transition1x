@@ -1,0 +1,452 @@
+﻿==============================================================================
+SCHRITT 1 — Zusammenstellung
+==============================================================================
+Zeilen gesamt        : 225  (45 Reaktionen x 5 Modelle)
+Zeilen mit RMSD      : 225
+Zeilen ohne RMSD     : 0
+je Modell vorhanden  : {'UMA-S': 45, 'UMA-M': 45, 'eSEN': 45, 'MACE': 45, 'MACE+delta': 45}
+
+==============================================================================
+SCHRITT 2 — Aufteilung nach externer Stabilitaet der Referenz
+==============================================================================
+                              n   median     mean      min       Q1       Q3      max    >0.3
+extern STABIL (gepoolt)     130   0.0127   0.0424   0.0004   0.0030   0.0437   0.4776       4
+extern INSTABIL (gepoolt)    95   0.1811   0.3545   0.0064   0.0850   0.3195   2.8203      30
+
+-- UMA-S --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  stabil                     26   0.0051   0.0176   0.0004   0.0019   0.0184   0.1434       0
+  instabil                   19   0.2106   0.3878   0.0143   0.1432   0.3507   2.7070       9
+-- UMA-M --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  stabil                     26   0.0050   0.0147   0.0005   0.0020   0.0141   0.1296       0
+  instabil                   19   0.2142   0.4503   0.0133   0.1676   0.3414   2.3660       7
+-- eSEN --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  stabil                     26   0.0054   0.0302   0.0005   0.0016   0.0181   0.4272       1
+  instabil                   19   0.2622   0.4812   0.0173   0.1499   0.3481   2.4819       8
+-- MACE --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  stabil                     26   0.0172   0.0554   0.0029   0.0071   0.0817   0.3572       1
+  instabil                   19   0.0868   0.2484   0.0064   0.0279   0.1676   2.8203       2
+-- MACE+delta --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  stabil                     26   0.0613   0.0942   0.0051   0.0265   0.1116   0.4776       2
+  instabil                   19   0.1395   0.2046   0.0253   0.0689   0.2601   0.6786       4
+
+==============================================================================
+SCHRITT 3a — Aufteilung nach FOD-Gruppe
+==============================================================================
+                              n   median     mean      min       Q1       Q3      max    >0.3
+high (gepoolt)              130   0.1164   0.2729   0.0018   0.0355   0.2880   2.8203      32
+mid (gepoolt)                45   0.0083   0.0625   0.0008   0.0021   0.0928   0.4776       2
+low (gepoolt)                50   0.0089   0.0179   0.0004   0.0024   0.0209   0.0985       0
+
+-- UMA-S --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  high                       26   0.1432   0.2854   0.0018   0.0310   0.3132   2.7070       9
+  mid                         9   0.0029   0.0375   0.0008   0.0015   0.0141   0.1657       0
+  low                        10   0.0036   0.0067   0.0004   0.0010   0.0111   0.0192       0
+-- UMA-M --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  high                       26   0.1743   0.3289   0.0021   0.0290   0.2989   2.3660       7
+  mid                         9   0.0021   0.0353   0.0008   0.0013   0.0083   0.1678       0
+  low                        10   0.0037   0.0067   0.0005   0.0009   0.0089   0.0195       0
+-- eSEN --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  high                       26   0.1821   0.3672   0.0044   0.0386   0.3260   2.4819       9
+  mid                         9   0.0023   0.0330   0.0009   0.0014   0.0136   0.1782       0
+  low                        10   0.0043   0.0082   0.0005   0.0009   0.0144   0.0223       0
+-- MACE --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  high                       26   0.0855   0.1994   0.0064   0.0228   0.1273   2.8203       2
+  mid                         9   0.0101   0.0911   0.0056   0.0076   0.0886   0.3572       1
+  low                        10   0.0121   0.0154   0.0029   0.0042   0.0239   0.0398       0
+-- MACE+delta --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  high                       26   0.1300   0.1835   0.0253   0.0550   0.2552   0.6786       5
+  mid                         9   0.0512   0.1156   0.0089   0.0160   0.1320   0.4776       1
+  low                        10   0.0499   0.0527   0.0051   0.0292   0.0756   0.0985       0
+
+==============================================================================
+SCHRITT 3b — N_FOD-Schwellensweep (gepoolt ueber alle Modelle)
+==============================================================================
+ Schwelle  n oben  med oben  n unten  med unten  Verhaeltnis
+     0.10     160    0.1001       65     0.0062        16.19
+     0.15     155    0.1021       70     0.0061        16.74
+     0.20     150    0.1090       75     0.0083        13.06
+     0.25     145    0.1159       80     0.0076        15.15
+     0.30     145    0.1159       80     0.0076        15.15
+     0.35     140    0.1250       85     0.0070        17.91
+     0.40     140    0.1250       85     0.0070        17.91
+     0.45     135    0.1204       90     0.0083        14.45
+     0.50     135    0.1204       90     0.0083        14.45
+     0.55     135    0.1204       90     0.0083        14.45
+     0.60     130    0.1164       95     0.0089        13.12
+     0.65     130    0.1164       95     0.0089        13.12
+     0.70     115    0.1341      110     0.0098        13.71
+     0.75      90    0.1125      135     0.0156         7.22
+     0.80      65    0.0981      160     0.0221         4.43
+     0.85      40    0.1090      185     0.0264         4.12
+     0.90      30    0.1641      195     0.0302         5.43
+     0.95      20    0.1670      205     0.0371         4.50
+     1.00       5    0.1984      220     0.0399         4.97
+     1.05       5    0.1984      220     0.0399         4.97
+     1.10       5    0.1984      220     0.0399         4.97
+
+beste Trennung bei N_FOD = 0.35  (Verhaeltnis 17.91)
+
+==============================================================================
+SCHRITT 4 — Trennguete
+==============================================================================
+Praediktor A: ext_stable (binaer)
+  Median stabil   0.0127   Median instabil 0.1811   Verhaeltnis 14.25
+  Ueberlappung: 6 von 130 "gut"-Zeilen ueber dem Median der "schlecht"-Gruppe
+               4 von 95 "schlecht"-Zeilen unter dem Median der "gut"-Gruppe
+
+Praediktor B: N_FOD > 0.35
+  Median unten    0.0070   Median oben     0.1250   Verhaeltnis 17.91
+  Ueberlappung: 3 von 85 "gut"-Zeilen ueber dem Median der "schlecht"-Gruppe
+               11 von 140 "schlecht"-Zeilen unter dem Median der "gut"-Gruppe
+
+AUC fuer die Vorhersage RMSD > 0.3 A   (Positive: 34 von 225 Zeilen)
+  ext_stable (binaer)      0.7710
+  N_FOD (kontinuierlich)   0.6963
+  -lambda_min_ext (kont.)  0.8496   (n=225)
+
+               AUC ext  AUC N_FOD  AUC -lmin
+UMA-S           0.8611     0.7407     0.9321
+UMA-M           0.8421     0.7481     0.9211
+eSEN            0.7917     0.7716     0.8858
+MACE            0.6310     0.4683     0.6984
+MACE+delta      0.6410     0.6154     0.7222
+
+==============================================================================
+SCHRITT 5 — nur die High-MR-Gruppe
+==============================================================================
+                              n   median     mean      min       Q1       Q3      max    >0.3
+stabil (gepoolt)             40   0.0383   0.0619   0.0018   0.0112   0.0750   0.4272       2
+instabil (gepoolt)           90   0.1996   0.3667   0.0064   0.0848   0.3278   2.8203      30
+
+-- UMA-S --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  stabil                      8   0.0211   0.0273   0.0018   0.0078   0.0436   0.0740       0
+  instabil                   18   0.2559   0.4002   0.0143   0.1423   0.3566   2.7070       9
+-- UMA-M --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  stabil                      8   0.0133   0.0206   0.0021   0.0058   0.0335   0.0565       0
+  instabil                   18   0.2253   0.4660   0.0133   0.1709   0.3511   2.3660       7
+-- eSEN --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  stabil                      8   0.0165   0.0729   0.0044   0.0061   0.0515   0.4272       1
+  instabil                   18   0.2794   0.4980   0.0173   0.1420   0.3573   2.4819       8
+-- MACE --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  stabil                      8   0.0792   0.0656   0.0070   0.0337   0.0959   0.1101       0
+  instabil                   18   0.0979   0.2589   0.0064   0.0228   0.1679   2.8203       2
+-- MACE+delta --
+                              n   median     mean      min       Q1       Q3      max    >0.3
+  stabil                      8   0.0966   0.1230   0.0265   0.0595   0.1573   0.3280       1
+  instabil                   18   0.1517   0.2103   0.0253   0.0606   0.2605   0.6786       4
+
+Extern STABILE Reaktionen innerhalb der High-Gruppe:
+rxn          N_FOD       UMA-S       UMA-M        eSEN        MACE  MACE+delta
+rxn7945     0.9033      0.0438      0.0323      0.4272      0.0952      0.3280
+rxn7937     0.8775      0.0435      0.0371      0.0494      0.0842      0.1528
+rxn1150     0.8466      0.0091      0.0067      0.0067      0.0163      0.0774
+rxn0896     0.8404      0.0201      0.0119      0.0189      0.0981      0.1159
+rxn7936     0.7271      0.0018      0.0021      0.0044      0.0742      0.0628
+rxn0101     0.7132      0.0740      0.0565      0.0577      0.1101      0.1708
+rxn10005    0.6951      0.0038      0.0033      0.0045      0.0395      0.0497
+rxn10054    0.6949      0.0220      0.0148      0.0141      0.0070      0.0265
+
+==============================================================================
+SCHRITT 6 — Kontrolle gegen die korrigierte (BS) Referenz
+==============================================================================
+bestaetigte BS-TS (genau 1 imaginaere Frequenz): 8  -> rxn0346 rxn0894 rxn1147 rxn1320 rxn4518 rxn5691 rxn7949 rxn8827
+
+rxn       Modell        vs RKS-ref   vs BS-TS   kleiner
+rxn0346   UMA-S             0.1415     0.0370     BS-TS
+rxn0346   UMA-M             0.1675     0.0098     BS-TS
+rxn0346   eSEN              0.1341     0.0472     BS-TS
+rxn0346   MACE              0.0064     0.1713   RKS-ref
+rxn0346   MACE+delta        0.0259     0.1875   RKS-ref
+rxn0894   UMA-S             0.5302     0.2960     BS-TS
+rxn0894   UMA-M             2.3660     2.4674   RKS-ref
+rxn0894   eSEN              2.4819     2.5684   RKS-ref
+rxn0894   MACE              2.8203     2.8029     BS-TS
+rxn0894   MACE+delta        0.5940     0.3305     BS-TS
+rxn1147   UMA-S             0.3389     0.2563     BS-TS
+rxn1147   UMA-M             0.3219     0.2487     BS-TS
+rxn1147   eSEN              0.3298     0.2505     BS-TS
+rxn1147   MACE              0.1308     0.0767     BS-TS
+rxn1147   MACE+delta        0.3356     0.2652     BS-TS
+rxn1320   UMA-S             0.3624     1.1341   RKS-ref
+rxn1320   UMA-M             0.3608     1.1284   RKS-ref
+rxn1320   eSEN              0.3664     1.1246   RKS-ref
+rxn1320   MACE              0.0705     1.1099   RKS-ref
+rxn1320   MACE+delta        0.0524     1.0925   RKS-ref
+rxn4518   UMA-S             0.8171     1.1130   RKS-ref
+rxn4518   UMA-M             0.8070     1.0879   RKS-ref
+rxn4518   eSEN              0.8480     1.1361   RKS-ref
+rxn4518   MACE              0.2129     0.7324   RKS-ref
+rxn4518   MACE+delta        0.6786     0.5277     BS-TS
+rxn5691   UMA-S             0.3014     0.6390   RKS-ref
+rxn5691   UMA-M             0.2073     0.5324   RKS-ref
+rxn5691   eSEN              0.2966     0.6300   RKS-ref
+rxn5691   MACE              0.0067     0.6206   RKS-ref
+rxn5691   MACE+delta        0.0271     0.6339   RKS-ref
+rxn7949   UMA-S             0.1624     0.6837   RKS-ref
+rxn7949   UMA-M             0.2008     0.6805   RKS-ref
+rxn7949   eSEN              0.1984     0.6869   RKS-ref
+rxn7949   MACE              0.1683     0.5671   RKS-ref
+rxn7949   MACE+delta        0.2424     0.5270   RKS-ref
+rxn8827   UMA-S             0.2106     0.1549     BS-TS
+rxn8827   UMA-M             0.2363     0.1263     BS-TS
+rxn8827   eSEN              0.2622     0.0989     BS-TS
+rxn8827   MACE              0.0868     0.3818   RKS-ref
+rxn8827   MACE+delta        0.4069     0.5427   RKS-ref
+
+                              n   median     mean      min       Q1       Q3      max    >0.3
+vs RKS-Referenz              40   0.2523   0.4579   0.0064   0.1571   0.3765   2.8203      18
+vs BS-TS                     40   0.5549   0.6927   0.0098   0.2500   1.0891   2.8029      26
+
+BS-TS naeher in 15 von 40 Zeilen
+
+  UMA-S        BS-TS naeher in 4/8   median vs RKS 0.3202  vs BS 0.4675
+  UMA-M        BS-TS naeher in 3/8   median vs RKS 0.2791  vs BS 0.6065
+  eSEN         BS-TS naeher in 3/8   median vs RKS 0.3132  vs BS 0.6584
+  MACE         BS-TS naeher in 2/8   median vs RKS 0.1088  vs BS 0.5938
+  MACE+delta   BS-TS naeher in 3/8   median vs RKS 0.2890  vs BS 0.5273
+
+==============================================================================
+ANHANG — Zeilentabelle aus Schritt 1
+==============================================================================
+rxn       grp      N_FOD       ext   lmin_extModell           RMSD
+rxn7949   high    1.1465  instabil   -0.06315  UMA-S          0.1624
+rxn7949   high    1.1465  instabil   -0.06315  UMA-M          0.2008
+rxn7949   high    1.1465  instabil   -0.06315  eSEN           0.1984
+rxn7949   high    1.1465  instabil   -0.06315  MACE           0.1683
+rxn7949   high    1.1465  instabil   -0.06315  MACE+delta     0.2424
+rxn8832   high    0.9997  instabil   -0.04925  UMA-S          0.1449
+rxn8832   high    0.9997  instabil   -0.04925  UMA-M          0.1811
+rxn8832   high    0.9997  instabil   -0.04925  eSEN           0.1658
+rxn8832   high    0.9997  instabil   -0.04925  MACE           0.1091
+rxn8832   high    0.9997  instabil   -0.04925  MACE+delta     0.1204
+rxn1320   high    0.9678  instabil   -0.04801  UMA-S          0.3624
+rxn1320   high    0.9678  instabil   -0.04801  UMA-M          0.3608
+rxn1320   high    0.9678  instabil   -0.04801  eSEN           0.3664
+rxn1320   high    0.9678  instabil   -0.04801  MACE           0.0705
+rxn1320   high    0.9678  instabil   -0.04801  MACE+delta     0.0524
+rxn4113   high    0.9596  instabil   -0.00846  UMA-S          0.0143
+rxn4113   high    0.9596  instabil   -0.00846  UMA-M          0.7401
+rxn4113   high    0.9596  instabil   -0.00846  eSEN           0.0173
+rxn4113   high    0.9596  instabil   -0.00846  MACE           0.0121
+rxn4113   high    0.9596  instabil   -0.00846  MACE+delta     0.2101
+rxn8885   high    0.9225  instabil   -0.01109  UMA-S          0.4925
+rxn8885   high    0.9225  instabil   -0.01109  UMA-M          0.0661
+rxn8885   high    0.9225  instabil   -0.01109  eSEN           1.4110
+rxn8885   high    0.9225  instabil   -0.01109  MACE           0.0093
+rxn8885   high    0.9225  instabil   -0.01109  MACE+delta     0.0253
+rxn7945   high    0.9033    stabil    0.00434  UMA-S          0.0438
+rxn7945   high    0.9033    stabil    0.00434  UMA-M          0.0323
+rxn7945   high    0.9033    stabil    0.00434  eSEN           0.4272
+rxn7945   high    0.9033    stabil    0.00434  MACE           0.0952
+rxn7945   high    0.9033    stabil    0.00434  MACE+delta     0.3280
+rxn7937   high    0.8775    stabil    0.00733  UMA-S          0.0435
+rxn7937   high    0.8775    stabil    0.00733  UMA-M          0.0371
+rxn7937   high    0.8775    stabil    0.00733  eSEN           0.0494
+rxn7937   high    0.8775    stabil    0.00733  MACE           0.0842
+rxn7937   high    0.8775    stabil    0.00733  MACE+delta     0.1528
+rxn6196   high    0.8689  instabil   -0.00687  UMA-S          0.0845
+rxn6196   high    0.8689  instabil   -0.00687  UMA-M          0.0929
+rxn6196   high    0.8689  instabil   -0.00687  eSEN           0.0933
+rxn6196   high    0.8689  instabil   -0.00687  MACE           0.0381
+rxn6196   high    0.8689  instabil   -0.00687  MACE+delta     0.1089
+rxn0346   high    0.8474  instabil   -0.02719  UMA-S          0.1415
+rxn0346   high    0.8474  instabil   -0.02719  UMA-M          0.1675
+rxn0346   high    0.8474  instabil   -0.02719  eSEN           0.1341
+rxn0346   high    0.8474  instabil   -0.02719  MACE           0.0064
+rxn0346   high    0.8474  instabil   -0.02719  MACE+delta     0.0259
+rxn1150   high    0.8466    stabil    0.00498  UMA-S          0.0091
+rxn1150   high    0.8466    stabil    0.00498  UMA-M          0.0067
+rxn1150   high    0.8466    stabil    0.00498  eSEN           0.0067
+rxn1150   high    0.8466    stabil    0.00498  MACE           0.0163
+rxn1150   high    0.8466    stabil    0.00498  MACE+delta     0.0774
+rxn0896   high    0.8404    stabil    0.00347  UMA-S          0.0201
+rxn0896   high    0.8404    stabil    0.00347  UMA-M          0.0119
+rxn0896   high    0.8404    stabil    0.00347  eSEN           0.0189
+rxn0896   high    0.8404    stabil    0.00347  MACE           0.0981
+rxn0896   high    0.8404    stabil    0.00347  MACE+delta     0.1159
+rxn4518   high    0.8332  instabil   -0.07780  UMA-S          0.8171
+rxn4518   high    0.8332  instabil   -0.07780  UMA-M          0.8070
+rxn4518   high    0.8332  instabil   -0.07780  eSEN           0.8480
+rxn4518   high    0.8332  instabil   -0.07780  MACE           0.2129
+rxn4518   high    0.8332  instabil   -0.07780  MACE+delta     0.6786
+rxn3107   high    0.8006  instabil   -0.01255  UMA-S          0.0268
+rxn3107   high    0.8006  instabil   -0.01255  UMA-M          0.0279
+rxn3107   high    0.8006  instabil   -0.01255  eSEN           0.0350
+rxn3107   high    0.8006  instabil   -0.01255  MACE           0.1669
+rxn3107   high    0.8006  instabil   -0.01255  MACE+delta     0.1395
+rxn8837   high    0.7983  instabil   -0.04401  UMA-S          2.7070
+rxn8837   high    0.7983  instabil   -0.04401  UMA-M          1.8117
+rxn8837   high    0.7983  instabil   -0.04401  eSEN           1.4388
+rxn8837   high    0.7983  instabil   -0.04401  MACE           0.1962
+rxn8837   high    0.7983  instabil   -0.04401  MACE+delta     0.2595
+rxn7060   high    0.7881  instabil   -0.00790  UMA-S          0.0435
+rxn7060   high    0.7881  instabil   -0.00790  UMA-M          0.0133
+rxn7060   high    0.7881  instabil   -0.00790  eSEN           0.0539
+rxn7060   high    0.7881  instabil   -0.00790  MACE           0.0773
+rxn7060   high    0.7881  instabil   -0.00790  MACE+delta     0.0855
+rxn5691   high    0.7777  instabil   -0.02902  UMA-S          0.3014
+rxn5691   high    0.7777  instabil   -0.02902  UMA-M          0.2073
+rxn5691   high    0.7777  instabil   -0.02902  eSEN           0.2966
+rxn5691   high    0.7777  instabil   -0.02902  MACE           0.0067
+rxn5691   high    0.7777  instabil   -0.02902  MACE+delta     0.0271
+rxn1283   high    0.7688  instabil   -0.01389  UMA-S          0.3011
+rxn1283   high    0.7688  instabil   -0.01389  UMA-M          0.2612
+rxn1283   high    0.7688  instabil   -0.01389  eSEN           0.3147
+rxn1283   high    0.7688  instabil   -0.01389  MACE           0.0177
+rxn1283   high    0.7688  instabil   -0.01389  MACE+delta     0.0493
+rxn8827   high    0.7599  instabil   -0.01096  UMA-S          0.2106
+rxn8827   high    0.7599  instabil   -0.01096  UMA-M          0.2363
+rxn8827   high    0.7599  instabil   -0.01096  eSEN           0.2622
+rxn8827   high    0.7599  instabil   -0.01096  MACE           0.0868
+rxn8827   high    0.7599  instabil   -0.01096  MACE+delta     0.4069
+rxn4522   high    0.7308  instabil   -0.03247  UMA-S          0.3171
+rxn4522   high    0.7308  instabil   -0.03247  UMA-M          0.3114
+rxn4522   high    0.7308  instabil   -0.03247  eSEN           0.3117
+rxn4522   high    0.7308  instabil   -0.03247  MACE           0.4141
+rxn4522   high    0.7308  instabil   -0.03247  MACE+delta     0.2608
+rxn7936   high    0.7271    stabil    0.00814  UMA-S          0.0018
+rxn7936   high    0.7271    stabil    0.00814  UMA-M          0.0021
+rxn7936   high    0.7271    stabil    0.00814  eSEN           0.0044
+rxn7936   high    0.7271    stabil    0.00814  MACE           0.0742
+rxn7936   high    0.7271    stabil    0.00814  MACE+delta     0.0628
+rxn1147   high    0.7254  instabil   -0.02450  UMA-S          0.3389
+rxn1147   high    0.7254  instabil   -0.02450  UMA-M          0.3219
+rxn1147   high    0.7254  instabil   -0.02450  eSEN           0.3298
+rxn1147   high    0.7254  instabil   -0.02450  MACE           0.1308
+rxn1147   high    0.7254  instabil   -0.02450  MACE+delta     0.3356
+rxn0894   high    0.7160  instabil   -0.04014  UMA-S          0.5302
+rxn0894   high    0.7160  instabil   -0.04014  UMA-M          2.3660
+rxn0894   high    0.7160  instabil   -0.04014  eSEN           2.4819
+rxn0894   high    0.7160  instabil   -0.04014  MACE           2.8203
+rxn0894   high    0.7160  instabil   -0.04014  MACE+delta     0.5940
+rxn0101   high    0.7132    stabil    0.07143  UMA-S          0.0740
+rxn0101   high    0.7132    stabil    0.07143  UMA-M          0.0565
+rxn0101   high    0.7132    stabil    0.07143  eSEN           0.0577
+rxn0101   high    0.7132    stabil    0.07143  MACE           0.1101
+rxn0101   high    0.7132    stabil    0.07143  MACE+delta     0.1708
+rxn10005  high    0.6951    stabil    0.00335  UMA-S          0.0038
+rxn10005  high    0.6951    stabil    0.00335  UMA-M          0.0033
+rxn10005  high    0.6951    stabil    0.00335  eSEN           0.0045
+rxn10005  high    0.6951    stabil    0.00335  MACE           0.0395
+rxn10005  high    0.6951    stabil    0.00335  MACE+delta     0.0497
+rxn10054  high    0.6949    stabil    0.00131  UMA-S          0.0220
+rxn10054  high    0.6949    stabil    0.00131  UMA-M          0.0148
+rxn10054  high    0.6949    stabil    0.00131  eSEN           0.0141
+rxn10054  high    0.6949    stabil    0.00131  MACE           0.0070
+rxn10054  high    0.6949    stabil    0.00131  MACE+delta     0.0265
+rxn7957   high    0.6845  instabil   -0.02396  UMA-S          0.2065
+rxn7957   high    0.6845  instabil   -0.02396  UMA-M          0.2142
+rxn7957   high    0.6845  instabil   -0.02396  eSEN           0.2049
+rxn7957   high    0.6845  instabil   -0.02396  MACE           0.1169
+rxn7957   high    0.6845  instabil   -0.02396  MACE+delta     0.1640
+rxn1154   mid     0.5664    stabil    0.03271  UMA-S          0.1434
+rxn1154   mid     0.5664    stabil    0.03271  UMA-M          0.1296
+rxn1154   mid     0.5664    stabil    0.03271  eSEN           0.0928
+rxn1154   mid     0.5664    stabil    0.03271  MACE           0.2760
+rxn1154   mid     0.5664    stabil    0.03271  MACE+delta     0.2139
+rxn5690   mid     0.4334  instabil   -0.00268  UMA-S          0.1657
+rxn5690   mid     0.4334  instabil   -0.00268  UMA-M          0.1678
+rxn5690   mid     0.4334  instabil   -0.00268  eSEN           0.1782
+rxn5690   mid     0.4334  instabil   -0.00268  MACE           0.0596
+rxn5690   mid     0.4334  instabil   -0.00268  MACE+delta     0.1021
+rxn4513   mid     0.3073    stabil    0.05820  UMA-S          0.0025
+rxn4513   mid     0.3073    stabil    0.05820  UMA-M          0.0021
+rxn4513   mid     0.3073    stabil    0.05820  eSEN           0.0023
+rxn4513   mid     0.3073    stabil    0.05820  MACE           0.0076
+rxn4513   mid     0.3073    stabil    0.05820  MACE+delta     0.0235
+rxn7955   mid     0.2191    stabil    0.07485  UMA-S          0.0015
+rxn7955   mid     0.2191    stabil    0.07485  UMA-M          0.0012
+rxn7955   mid     0.2191    stabil    0.07485  eSEN           0.0014
+rxn7955   mid     0.2191    stabil    0.07485  MACE           0.0070
+rxn7955   mid     0.2191    stabil    0.07485  MACE+delta     0.0150
+rxn4519   mid     0.1545    stabil    0.09009  UMA-S          0.0141
+rxn4519   mid     0.1545    stabil    0.09009  UMA-M          0.0083
+rxn4519   mid     0.1545    stabil    0.09009  eSEN           0.0136
+rxn4519   mid     0.1545    stabil    0.09009  MACE           0.0886
+rxn4519   mid     0.1545    stabil    0.09009  MACE+delta     0.1320
+rxn4500   mid     0.1061    stabil    0.07882  UMA-S          0.0008
+rxn4500   mid     0.1061    stabil    0.07882  UMA-M          0.0008
+rxn4500   mid     0.1061    stabil    0.07882  eSEN           0.0009
+rxn4500   mid     0.1061    stabil    0.07882  MACE           0.3572
+rxn4500   mid     0.1061    stabil    0.07882  MACE+delta     0.4776
+rxn2553   mid     0.0760    stabil    0.12428  UMA-S          0.0011
+rxn2553   mid     0.0760    stabil    0.12428  UMA-M          0.0013
+rxn2553   mid     0.0760    stabil    0.12428  eSEN           0.0013
+rxn2553   mid     0.0760    stabil    0.12428  MACE           0.0101
+rxn2553   mid     0.0760    stabil    0.12428  MACE+delta     0.0512
+rxn8829   mid     0.0478    stabil    0.11405  UMA-S          0.0029
+rxn8829   mid     0.0478    stabil    0.11405  UMA-M          0.0020
+rxn8829   mid     0.0478    stabil    0.11405  eSEN           0.0016
+rxn8829   mid     0.0478    stabil    0.11405  MACE           0.0056
+rxn8829   mid     0.0478    stabil    0.11405  MACE+delta     0.0089
+rxn1155   mid     0.0167    stabil    0.13380  UMA-S          0.0060
+rxn1155   mid     0.0167    stabil    0.13380  UMA-M          0.0047
+rxn1155   mid     0.0167    stabil    0.13380  eSEN           0.0048
+rxn1155   mid     0.0167    stabil    0.13380  MACE           0.0083
+rxn1155   mid     0.0167    stabil    0.13380  MACE+delta     0.0160
+rxn9246   low     0.0142    stabil    0.15454  UMA-S          0.0043
+rxn9246   low     0.0142    stabil    0.15454  UMA-M          0.0054
+rxn9246   low     0.0142    stabil    0.15454  eSEN           0.0060
+rxn9246   low     0.0142    stabil    0.15454  MACE           0.0094
+rxn9246   low     0.0142    stabil    0.15454  MACE+delta     0.0264
+rxn4498   low     0.0124    stabil    0.17434  UMA-S          0.0029
+rxn4498   low     0.0124    stabil    0.17434  UMA-M          0.0020
+rxn4498   low     0.0124    stabil    0.17434  eSEN           0.0027
+rxn4498   low     0.0124    stabil    0.17434  MACE           0.0259
+rxn4498   low     0.0124    stabil    0.17434  MACE+delta     0.0377
+rxn1061   low     0.0120    stabil    0.14174  UMA-S          0.0160
+rxn1061   low     0.0120    stabil    0.14174  UMA-M          0.0195
+rxn1061   low     0.0120    stabil    0.14174  eSEN           0.0214
+rxn1061   low     0.0120    stabil    0.14174  MACE           0.0181
+rxn1061   low     0.0120    stabil    0.14174  MACE+delta     0.0401
+rxn4003   low     0.0100    stabil    0.17509  UMA-S          0.0192
+rxn4003   low     0.0100    stabil    0.17509  UMA-M          0.0193
+rxn4003   low     0.0100    stabil    0.17509  eSEN           0.0223
+rxn4003   low     0.0100    stabil    0.17509  MACE           0.0398
+rxn4003   low     0.0100    stabil    0.17509  MACE+delta     0.0597
+rxn4004   low     0.0095    stabil    0.15292  UMA-S          0.0089
+rxn4004   low     0.0095    stabil    0.15292  UMA-M          0.0090
+rxn4004   low     0.0095    stabil    0.15292  eSEN           0.0156
+rxn4004   low     0.0095    stabil    0.15292  MACE           0.0302
+rxn4004   low     0.0095    stabil    0.15292  MACE+delta     0.0787
+rxn4063   low     0.0080    stabil    0.18308  UMA-S          0.0004
+rxn4063   low     0.0080    stabil    0.18308  UMA-M          0.0005
+rxn4063   low     0.0080    stabil    0.18308  eSEN           0.0007
+rxn4063   low     0.0080    stabil    0.18308  MACE           0.0034
+rxn4063   low     0.0080    stabil    0.18308  MACE+delta     0.0985
+rxn4114   low     0.0079    stabil    0.17696  UMA-S          0.0006
+rxn4114   low     0.0079    stabil    0.17696  UMA-M          0.0005
+rxn4114   low     0.0079    stabil    0.17696  eSEN           0.0006
+rxn4114   low     0.0079    stabil    0.17696  MACE           0.0035
+rxn4114   low     0.0079    stabil    0.17696  MACE+delta     0.0051
+rxn4060   low     0.0067    stabil    0.16458  UMA-S          0.0119
+rxn4060   low     0.0067    stabil    0.16458  UMA-M          0.0086
+rxn4060   low     0.0067    stabil    0.16458  eSEN           0.0109
+rxn4060   low     0.0067    stabil    0.16458  MACE           0.0148
+rxn4060   low     0.0067    stabil    0.16458  MACE+delta     0.0664
+rxn1961   low     0.0043    stabil    0.17749  UMA-S          0.0004
+rxn1961   low     0.0043    stabil    0.17749  UMA-M          0.0005
+rxn1961   low     0.0043    stabil    0.17749  eSEN           0.0005
+rxn1961   low     0.0043    stabil    0.17749  MACE           0.0029
+rxn1961   low     0.0043    stabil    0.17749  MACE+delta     0.0180
+rxn1962   low     0.0026    stabil    0.18280  UMA-S          0.0023
+rxn1962   low     0.0026    stabil    0.18280  UMA-M          0.0020
+rxn1962   low     0.0026    stabil    0.18280  eSEN           0.0018
+rxn1962   low     0.0026    stabil    0.18280  MACE           0.0062
+rxn1962   low     0.0026    stabil    0.18280  MACE+delta     0.0963
+
+
