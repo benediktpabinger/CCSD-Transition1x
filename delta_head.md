@@ -1,6 +1,17 @@
 # Delta Learning Head
 
-End-to-end documentation of the delta correction head trained on top of frozen MACE.
+Method documentation for the delta correction head trained on top of frozen MACE:
+motivation, architecture, data, and training.
+
+**Results are not in this document.** All evaluation numbers — energies, forces, barriers, NEB
+geometry, the comparison against OMol25 models — live in
+[`delta_head_v2_metric_definitions.md`](delta_head_v2_metric_definitions.md), with machine-readable
+values in `delta_head_v2_eval_numbers.json`.
+
+Everything below describes the **v2 head** (`delta_head_fw2.00.pt`, `64x0e`, 5,000 reactions),
+which is the head in use. Where v1 details are retained for context they are explicitly marked;
+v1 results have been removed rather than carried forward, since two of their headline conclusions
+are contradicted by v2. Git history holds the original text.
 
 ---
 
@@ -23,23 +34,43 @@ MACE training on T1x takes days on multiple GPUs. The delta head trains in minut
 
 ---
 
-## 2. Data (Version 1)
+## 2. Data
 
-### Training set
-- **500 reactions** randomly sampled from the T1x training split (`train_delta_rxns.txt`)
-- **10 geometries per reaction** — uniformly spaced along the T1x NEB trajectory
-- **wB97M-V/def2-TZVP** single-point energies and gradients computed with ORCA on the cluster (`pipeline/delta/train_delta_sp.py`, `pipeline/delta/job_train_delta_sp.sh`)
-- **wB97X-D3/6-31G(d)** energies and forces read directly from the T1x HDF5 file
-- **Target per geometry:** `delta_eV = E_wB97M-V − E_wB97X-D3`, `delta_forces = F_wB97M-V − F_wB97X-D3`
+### Training set (v2)
+
+- **5,000 reactions** sampled from the T1x training split
+  (`sample_train_reactions.py --n-reactions 5000 --seed 42`); 4,997 survive filtering
+- **20 geometries per reaction** via stratified 4-segment sampling around the TS — see §6.1
+- **wB97M-V/def2-TZVP** energies **and gradients** for every geometry (ORCA EnGrad)
+- **wB97X-D3/6-31G(d)** energies and forces read from the T1x HDF5 file
+- **Target per geometry:** `delta_eV = E_wB97M-V − E_wB97X-D3`,
+  `delta_forces = F_wB97M-V − F_wB97X-D3`
+- **Actual total: 80,592 training geometries**, all carrying both energy and force labels
+
+*v1 for context: 500 reactions × 10 uniformly spaced geometries = 5,000 points, energy-only
+supervision except on val Group B. v2 is ~16× more data with full force supervision.*
 
 ### Validation set
-- **Group A (174 reactions):** converged NEB reactions from T1x val split. wB97M-V energies from `neb.db`; wB97X-D3 SPs + gradients computed with ORCA. Delta energy available; delta forces not available (wB97M-V forces not stored in `neb.db`).
-- **Group B (51 reactions):** failed NEB reactions from T1x val split. wB97M-V SPs + gradients computed with ORCA on T1x geometries; wB97X-D3 read from T1x HDF5. Full delta energy and delta forces available.
+
+- **Group A (174 reactions):** converged NEB reactions from the T1x val split. wB97M-V energies
+  from `neb.db`; wB97X-D3 SPs + gradients from ORCA. Force labels were added for the last 10 NEB
+  images of all 174 reactions by `compute_val_a_forces.py`, giving ~1,740 force-labelled geometries
+  on converged MEP structures.
+- **Group B (51 reactions):** failed NEB reactions from the T1x val split. wB97M-V SPs + gradients
+  computed on T1x geometries; wB97X-D3 from T1x HDF5. Full delta energy and delta forces.
+- **Totals:** 10,600 validation geometries, of which 2,240 carry force labels.
 
 ### Benchmark set (evaluation only)
-- **30 reactions** from the T1x test split — 10 high MR, 10 mid MR, 10 low MR (see `multireference_screening.md`)
+
+- **30 reactions** from the T1x test split — 10 high MR, 10 mid MR, 10 low MR
+  (see `multireference_screening.md`)
 - **Zero overlap** with training or validation sets (verified against all three lists)
-- Single-point energies and forces computed for all four methods on the 10 final NEB images per reaction (`pipeline/delta/eval_benchmark_sp.py`)
+- A 22-reaction **RKS-stable subset** of these 30 is used for the comparison against OMol25 models;
+  see the results document.
+
+⚠ The training data is sampled from **T1x wB97X-D3 path geometries**, while evaluation is on
+**ORCA wB97M-V path geometries**. Both are reaction-path structures, so the shift is mild and
+arguably closer to deployment — but this is not an in-distribution evaluation.
 
 ---
 
@@ -75,91 +106,87 @@ delta_total  [scalar, eV]
 
 | Parameter | Value |
 |-----------|-------|
-| MACE model | `mace_t1x_p10_compiled.model` |
-| Delta head | `delta_head.pt` |
+| MACE model | `mace_t1x_p10_compiled.model` (frozen) |
+| Delta head | `delta_head_fw2.00.pt` |
 | `NODE_FEATS_OFFSET` | 1024 |
 | `HIDDEN_IRREPS` | `"1024x0e + 1024x1o + 1024x2e + 1024x3o"` |
-| `MLP_IRREPS` | `"16x0e"` |
+| `MLP_IRREPS` | `"64x0e"` *(v1 used `16x0e` — see §6.2)* |
 | Input to head | `node_feats[:, 1024:]` — 16384-dim higher-order irreps |
 | Output | per-atom scalar summed to total delta energy |
+| Trainable parameters | 65,600 |
+
+Forces are obtained by **analytic autograd through the head**, not finite differences, so the
+corrected surface is conservative by construction:
+
+```python
+delta_f = -torch.autograd.grad(per_struct.sum(), positions)[0]
+f_corrected = f_mace + delta_f
+```
 
 **Why `[:, 1024:]` and not all features?**
 The first 1024 features are scalar (0e irreps). The remaining 16384 features are higher-order (1o, 2e, 3o) and encode directional/angular information about the local chemical environment. These are more sensitive to geometry changes and better suited for predicting a geometry-dependent correction.
 
 ---
 
-## 4. Training
+## 4. Training — overview
 
-- MACE weights are **frozen** throughout — only the head is trained
-- Loss: delta energy MSE (+ delta forces where available, Group B val data)
+- MACE weights are **frozen** throughout; only the head is trained
+- Loss: `Huber(delta_e) + force_weight × Huber(delta_f)`, δ = 0.1 eV — every training geometry
+  carries both labels in v2
+- `force_weight` selected by sweep over {0.5, 1.0, 2.0}; **fw = 2.0 chosen** on lowest validation
+  force loss (`val_f_f` = 0.0037 eV/Å). See §6.3.
 - Hardware: H100 or H200 GPU required (MACE compiled model uses TorchScript targeting sm_90a)
 - Training script: `pipeline/delta/train_delta_head.py`
 - SLURM job: `pipeline/delta/job_train_delta_head.sh`
+
+Full as-implemented detail — sampling, data processing, training parameters, the two-pass
+validation design — is in §6.
 
 ---
 
 ## 5. Evaluation
 
-### Method
+**Results live in [`delta_head_v2_metric_definitions.md`](delta_head_v2_metric_definitions.md).**
+That document carries every number together with its exact metric definition, the source line that
+produced it, and its caveats — energies, forces, barriers against wB97M-V and CCSD(T), NEB-driven
+geometry, MR-tier stratification, and the fixed-geometry comparison against the OMol25 models
+(UMA-S, UMA-M, eSEN). Machine-readable values are in `delta_head_v2_eval_numbers.json`.
 
-All four methods evaluated as single points on the same 10 final NEB images per reaction (wB97M-V/def2-TZVP optimised geometries). Barriers computed as `max(E_relative)` over the 10-image profile. Results stored in `eval_benchmark_sp.json` and `full_benchmark_results.json`.
+**Protocol, in brief.** All methods are evaluated as single points on the same 10 final images of
+each converged ORCA wB97M-V/def2-TZVP CI-NEB band. Barriers are `max(E_relative)` over that
+10-image profile. Energies are compared as **image-0-anchored relative profiles**, each method
+anchored to its own first image, so constant offsets between levels of theory cancel.
 
-**Comparisons:**
-- **Q1:** Does MACE track wB97X-D3 (its training target)?
-  `e_mace_eV` vs `e_wb97x_eV`
-- **Q2a:** Does MACE+delta track wB97M-V better than MACE alone?
-  `e_mace_eV` vs `e_wb97m_eV`  and  `e_delta_eV` vs `e_wb97m_eV`
+The two questions it answers:
 
-### Results (30-reaction benchmark)
+- **Q1** — does MACE track wB97X-D3, its own training target?
+- **Q2** — does MACE+delta track wB97M-V better than MACE alone?
 
-**Energy — relative profiles (meV), all 30 reactions:**
+Raw per-image data: `eval_benchmark_sp_fw2_full.json` (30-reaction benchmark),
+`eval_sp_rks_stable.json` (RKS-stable subset with OMol25 models).
 
-| Method vs reference | Bias | eMAE | R² |
-|---|---|---|---|
-| MACE vs wB97X-D3 | — | ~55 | ~0.99 |
-| MACE vs wB97M-V | +77 | 108 | 0.973 |
-| MACE+delta vs wB97M-V | −5 | 106 | 0.967 |
-| wB97X-D3 vs wB97M-V | — | ~95 | — |
+### Scope limitations of the correction
 
-**Forces (eV/Å):**
+These are properties of the approach and are not fixed by scaling:
 
-| Method vs reference | Cosine similarity | Force MAE |
-|---|---|---|
-| MACE vs wB97M-V | 0.324 | 139 |
-| MACE+delta vs wB97M-V | 0.412 | 134 |
+1. **It does not fix multireference errors.** The head corrects the wB97X-D3 → wB97M-V functional
+   and basis gap, not the DFT → CCSD(T) gap. Where the wB97X-D3 training labels are themselves
+   unreliable — strongly MR reactions such as rxn7949 and rxn8832 — the head has nothing to learn
+   from and cannot repair the underlying data. This is the single most important boundary on what
+   delta-learning can deliver here.
 
-**Barrier heights (meV), forward, vs CCSD(T):**
+2. **It corrects the systematic offset, not the reaction-to-reaction variance.** The head removes
+   the bulk of MACE's systematic bias, but the residual scatter — over- and under-correcting by
+   different amounts on different reactions — is not predictable from the features it sees.
 
-| Method | MAE (all 30) | MAE (High MR) | MAE (Low MR) |
-|---|---|---|---|
-| wB97M-V (NEB) | — | — | — |
-| wB97X-D3 (NEB) | ~95 | — | — |
-| MACE | ~108 | ~350 | ~80 |
-| MACE+delta | ~106 | — | — |
+3. **Geometry dependence.** The delta is smooth within a reaction but varies between reactions
+   (~0.09 eV std). Generalising a geometry-dependent correction to unseen reactions is the core
+   difficulty, and it is where the remaining error lives.
 
-### Interpretation
-
-**Energy bias:** MACE has a +77 meV systematic bias on forward barriers vs wB97M-V. The delta head removes this almost perfectly (−5 meV). This is the primary success.
-
-**eMAE barely improves (108 → 106 meV):** The bias is gone but reaction-to-reaction variance is added — the head corrects by different amounts per reaction, sometimes overshooting.
-
-**Force cosine similarity (0.324 → 0.412):** Delta meaningfully improves force directions toward wB97M-V. Important for NEB, which relies on forces to optimise the path.
-
-**R² slightly worse (0.973 → 0.967):** Energy profile shape is marginally less smooth after correction.
-
-**Pattern by MR group:**
-- High MR / Mid MR: delta helps most — genuine functional gap exists and the head corrects it
-- Low MR: delta overcorrects — the true gap is small, but the head still applies a correction, adding variance
-
-### Limitations
-
-1. **Does not fix MR errors.** For rxn7949 and rxn8832, MACE barriers are 500–700 meV above CCSD(T). This is a training-data quality problem (wB97X-D3 labels are wrong for strongly MR systems). The delta head corrects the wB97X-D3→wB97M-V gap, not the DFT→CCSD(T) gap.
-
-2. **Force supervision is limited.** Only Group B (51 reactions) provides delta forces for training. Expanding force supervision would likely improve force MAE and cosine similarity further.
-
-3. **Head capacity may be insufficient.** The MLP outputs `16x0e` — a small scalar readout. A larger head or one that also outputs force corrections explicitly might close more of the gap.
-
-4. **Geometry dependence.** The delta is smooth within a reaction but varies between reactions (~0.09 eV std). The head must generalise this geometry-dependent correction to unseen reactions — which it does reasonably, but imperfectly.
+4. **Improving pointwise energies does not imply a better optimisation surface.** A learned
+   correction can sharpen energies and forces at fixed geometries while roughening the landscape
+   an optimiser has to traverse. See the NEB-driven results, and the practical consequence for how
+   the head should be deployed.
 
 ---
 
@@ -167,7 +194,11 @@ All four methods evaluated as single points on the same 10 final NEB images per 
 
 ### Motivation
 
-Version 1 was a proof of concept: 500 reactions × 10 geometries = 5,000 training points. The v1 evaluation showed the head removes the systematic +77 meV energy bias and improves force directions, but eMAE barely improves (108 → 106 meV) and the head struggles on unseen reaction types. The root causes are data quantity and geometry coverage, not architecture — v2 addresses both.
+Version 1 was a proof of concept: 500 reactions × 10 geometries = 5,000 training points, with a
+`16x0e` readout bottlenecking a 16384-dimensional input. It removed MACE's systematic energy bias
+but left the error magnitude essentially unchanged, and force supervision was available on only 51
+validation reactions. The limits were data quantity, geometry coverage, and head capacity — v2
+addresses all three.
 
 T1x has 9,561 training reactions with ~950 geometries each (9+ million total). V1 used ~0.05% of available data.
 
@@ -377,31 +408,58 @@ val_f_sample = [s for s in val_data if s['delta_forces'] is not None]    # ~2240
 
 ## 7. Scripts
 
+**Data generation and training**
+
 | File | Purpose |
 |------|---------|
-| `pipeline/delta/train_delta_sp.py` | Compute wB97M-V SPs on 500 training reactions |
-| `pipeline/delta/job_train_delta_sp.sh` | SLURM job for training SPs |
+| `pipeline/delta/sample_train_reactions.py` | Sample the 5,000 training reactions (seed 42) |
+| `pipeline/delta/train_delta_sp.py` | wB97M-V EnGrad SPs on training reactions |
+| `pipeline/delta/job_train_delta_sp.sh` | SLURM array job for training SPs (5 × 1,000) |
+| `pipeline/delta/compute_val_a_forces.py` | Add force labels to val Group A NEB images |
 | `pipeline/delta/prepare_delta_data.py` | Assemble delta targets from SP results + T1x HDF5 |
 | `pipeline/delta/train_delta_head.py` | Train the delta head (frozen MACE + MLP) |
-| `pipeline/delta/job_train_delta_head.sh` | SLURM job for training |
-| `pipeline/delta/eval_benchmark_sp.py` | Compute all 4 methods on 30-reaction benchmark |
-| `pipeline/delta/job_eval_benchmark_sp.sh` | SLURM job for benchmark eval |
-| `pipeline/delta/analyze_full_benchmark.py` | Combine all results into `full_benchmark_results.json` |
-| `pipeline/_analyze_benchmark_full.py` | Local analysis: energy/force metrics, barrier comparison |
-| `pipeline/_check_nevpt2_plausibility.py` | NEVPT2 reliability check (bottom/middle 20 reactions) |
+| `pipeline/delta/job_train_delta_head.sh` | SLURM job, array 0–2 for the force-weight sweep |
 
-**Result files:**
-- `eval_benchmark_sp.json` — per-image energies and forces for all 4 methods, all 30 reactions
-- `full_benchmark_results.json` — per-reaction barrier heights, RMSD, NEVPT2 reliability flags
+**Evaluation**
+
+| File | Purpose |
+|------|---------|
+| `pipeline/delta/eval_benchmark_sp_fw2.py` | v2 fixed-geometry eval, 30-reaction benchmark |
+| `pipeline/delta/job_eval_benchmark_sp_fw2.sh` | SLURM job for the above |
+| `pipeline/delta/eval_sp_rks_stable.py` | 7-method comparison incl. UMA/eSEN, RKS-stable subset |
+| `pipeline/delta/job_eval_sp_rks_stable.sh` | SLURM job for the above |
+| `pipeline/mace_delta_neb.py` | NEB driven by MACE or MACE+delta |
+| `pipeline/delta/analyze_full_benchmark.py` | Combine results into `full_benchmark_results.json` |
+| `pipeline/_analyze_benchmark_full.py` | Local analysis: energy/force metrics, barrier comparison |
+
+**Result files**
+
+| File | Contents |
+|------|----------|
+| `eval_benchmark_sp_fw2_full.json` | v2 per-image energies + forces, 30 reactions × 10 images |
+| `eval_sp_rks_stable.json` | 7 methods × 22 RKS-stable reactions, per-image energies + forces |
+| `full_benchmark_results.json` | Per-reaction barriers (fixed-geometry and NEB-driven), all methods |
+| `delta_head_v2_eval_numbers.json` | Aggregated metrics, keyed by step/method/metric |
+
+*`eval_benchmark_sp.json` is the superseded v1 evaluation, retained only as a cross-check —
+its bare-MACE columns match v2 to 0.05 meV, confirming the frozen base model is unchanged.*
 
 ---
 
-## 7. Key File Paths (cluster)
+## 8. Key File Paths (cluster)
 
 | Resource | Path |
 |----------|------|
-| MACE model | `~/mace_t1x_p10_compiled.model` |
-| Delta head weights | `~/delta_head/delta_head.pt` |
-| Training SP results | `~/delta_cache/` |
-| Benchmark eval results | `~/delta_head/eval_benchmark_sp.json` |
+| MACE model (frozen) | `~/mace_t1x_p10_compiled.model` |
+| **Delta head weights (in use)** | `~/delta_head/delta_head_fw2.00.pt` |
+| Sweep checkpoints | `~/delta_head/delta_head_fw0.50.pt`, `delta_head_fw1.00.pt` |
+| v1 head (superseded) | `~/delta_head/delta_head.pt` |
+| Training SP results | `~/train_delta_sp/{rxn}/results.json` |
+| Prepared training cache | `~/delta_cache/train.pt`, `~/delta_cache/val.pt` |
+| Benchmark eval (v2) | `~/delta_head/eval_benchmark_sp_fw2_full.json` |
+| RKS-stable eval | `~/delta_head/eval_sp_rks_stable.json` |
 | Full benchmark JSON | `~/delta_head/full_benchmark_results.json` |
+| ORCA reference NEB bands | `~/orca_neb_results/{rxn}/neb.db` |
+| wB97X-D3 EnGrad SPs | `~/mr_benchmark/orca_engrad/{rxn}/geom_NNNN/` |
+| MACE+delta NEB (fw2) | `~/mace_delta_neb_results_fw2/{rxn}/` |
+| OMol25 checkpoints | `~/checkpoints/uma-s-1p2.pt`, `uma-m-1p1.pt`, `esen_sm_conserving_all.pt` |

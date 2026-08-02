@@ -1,0 +1,306 @@
+{
+ "barriers": {
+  "rxn7949": {
+   "fwd": 3857.4,
+   "rev": 3884.8,
+   "fmax": 0.1014
+  },
+  "rxn8832": {
+   "fwd": 2925.8,
+   "rev": 1764.6,
+   "fmax": 0.062
+  },
+  "rxn1320": {
+   "fwd": 3360.4,
+   "rev": 3681.6,
+   "fmax": 0.0652
+  },
+  "rxn4113": {
+   "fwd": 5525.4,
+   "rev": 4490.2,
+   "fmax": 0.1246
+  },
+  "rxn8885": {
+   "fwd": 3659.2,
+   "rev": 2619.1,
+   "fmax": 0.0852
+  },
+  "rxn7945": {
+   "fwd": 3837.9,
+   "rev": 793.0,
+   "fmax": 0.0649
+  },
+  "rxn7937": {
+   "fwd": 3849.6,
+   "rev": 734.4,
+   "fmax": 0.1081
+  },
+  "rxn6196": {
+   "fwd": 4358.4,
+   "rev": 710.9,
+   "fmax": 0.0847
+  },
+  "rxn0346": {
+   "fwd": 3665.0,
+   "rev": 1519.5,
+   "fmax": 0.0649
+  },
+  "rxn1150": {
+   "fwd": 3677.7,
+   "rev": 822.3,
+   "fmax": 0.0515
+  },
+  "rxn9246": {
+   "fwd": 1964.8,
+   "rev": 1012.7,
+   "fmax": 0.0585
+  },
+  "rxn4498": {
+   "fwd": 3398.4,
+   "rev": 2383.8,
+   "fmax": 0.0379
+  },
+  "rxn1061": {
+   "fwd": 1268.6,
+   "rev": 2002.0,
+   "fmax": 0.1468
+  },
+  "rxn4003": {
+   "fwd": 2089.8,
+   "rev": 1218.8,
+   "fmax": 0.0546
+  },
+  "rxn4004": {
+   "fwd": 2303.7,
+   "rev": 1110.4,
+   "fmax": 0.0696
+  },
+  "rxn4063": {
+   "fwd": 2060.5,
+   "rev": 1235.4,
+   "fmax": 0.0499
+  },
+  "rxn4114": {
+   "fwd": 2612.3,
+   "rev": 1800.8,
+   "fmax": 0.0259
+  },
+  "rxn4060": {
+   "fwd": 2230.5,
+   "rev": 995.1,
+   "fmax": 0.0669
+  },
+  "rxn1961": {
+   "fwd": 2364.3,
+   "rev": 1369.6,
+   "fmax": 0.0466
+  },
+  "rxn1962": {
+   "fwd": 2643.1,
+   "rev": 1356.0,
+   "fmax": 0.1194
+  },
+  "rxn0896": {
+   "fwd": 4588.9,
+   "rev": 1499.0,
+   "fmax": 0.0658
+  },
+  "rxn1154": {
+   "fwd": 3553.7,
+   "rev": 2467.8,
+   "fmax": 0.1295
+  },
+  "rxn5690": {
+   "fwd": 3587.9,
+   "rev": 636.7,
+   "fmax": 0.0856
+  },
+  "rxn4513": {
+   "fwd": 2053.7,
+   "rev": 2614.3,
+   "fmax": 0.096
+  },
+  "rxn7955": {
+   "fwd": 3241.2,
+   "rev": 121.1,
+   "fmax": 0.0579
+  },
+  "rxn4519": {
+   "fwd": 5024.4,
+   "rev": 3526.4,
+   "fmax": 0.0514
+  },
+  "rxn4500": {
+   "fwd": 5047.9,
+   "rev": 1865.2,
+   "fmax": 0.1168
+  },
+  "rxn2553": {
+   "fwd": 2258.8,
+   "rev": 1133.8,
+   "fmax": 0.0503
+  },
+  "rxn8829": {
+   "fwd": 3183.6,
+   "rev": 4348.6,
+   "fmax": 0.0492
+  },
+  "rxn1155": {
+   "fwd": 2922.9,
+   "rev": 2037.1,
+   "fmax": 0.057
+  }
+ },
+ "convergence": {
+  "rxn7949": {
+   "marker": true,
+   "fmax_log": 0.0954,
+   "steps": 476
+  },
+  "rxn8832": {
+   "marker": true,
+   "fmax_log": 0.0475,
+   "steps": 75
+  },
+  "rxn1320": {
+   "marker": true,
+   "fmax_log": 0.0499,
+   "steps": 35
+  },
+  "rxn4113": {
+   "marker": true,
+   "fmax_log": 0.0402,
+   "steps": 4
+  },
+  "rxn8885": {
+   "marker": true,
+   "fmax_log": 0.0416,
+   "steps": 4
+  },
+  "rxn7945": {
+   "marker": true,
+   "fmax_log": 0.05,
+   "steps": 117
+  },
+  "rxn7937": {
+   "marker": true,
+   "fmax_log": 0.1004,
+   "steps": 450
+  },
+  "rxn6196": {
+   "marker": true,
+   "fmax_log": 0.05,
+   "steps": 22
+  },
+  "rxn0346": {
+   "marker": true,
+   "fmax_log": 0.05,
+   "steps": 7
+  },
+  "rxn1150": {
+   "marker": true,
+   "fmax_log": 0.0498,
+   "steps": 18
+  },
+  "rxn9246": {
+   "marker": true,
+   "fmax_log": 0.0488,
+   "steps": 1
+  },
+  "rxn4498": {
+   "marker": true,
+   "fmax_log": 0.0366,
+   "steps": 23
+  },
+  "rxn1061": {
+   "marker": true,
+   "fmax_log": 0.1023,
+   "steps": 445
+  },
+  "rxn4003": {
+   "marker": true,
+   "fmax_log": 0.0481,
+   "steps": 272
+  },
+  "rxn4004": {
+   "marker": true,
+   "fmax_log": 0.055,
+   "steps": 453
+  },
+  "rxn4063": {
+   "marker": true,
+   "fmax_log": 0.0409,
+   "steps": 2
+  },
+  "rxn4114": {
+   "marker": true,
+   "fmax_log": 0.0225,
+   "steps": 3
+  },
+  "rxn4060": {
+   "marker": true,
+   "fmax_log": 0.05,
+   "steps": 345
+  },
+  "rxn1961": {
+   "marker": true,
+   "fmax_log": 0.0459,
+   "steps": 2
+  },
+  "rxn1962": {
+   "marker": true,
+   "fmax_log": 0.0459,
+   "steps": 1
+  },
+  "rxn0896": {
+   "marker": true,
+   "fmax_log": 0.0497,
+   "steps": 93
+  },
+  "rxn1154": {
+   "marker": true,
+   "fmax_log": 0.108,
+   "steps": 457
+  },
+  "rxn5690": {
+   "marker": true,
+   "fmax_log": 0.0477,
+   "steps": 99
+  },
+  "rxn4513": {
+   "marker": true,
+   "fmax_log": 0.05,
+   "steps": 6
+  },
+  "rxn7955": {
+   "marker": true,
+   "fmax_log": 0.0485,
+   "steps": 8
+  },
+  "rxn4519": {
+   "marker": true,
+   "fmax_log": 0.0497,
+   "steps": 218
+  },
+  "rxn4500": {
+   "marker": true,
+   "fmax_log": 0.1043,
+   "steps": 468
+  },
+  "rxn2553": {
+   "marker": true,
+   "fmax_log": 0.0357,
+   "steps": 3
+  },
+  "rxn8829": {
+   "marker": true,
+   "fmax_log": 0.0445,
+   "steps": 9
+  },
+  "rxn1155": {
+   "marker": true,
+   "fmax_log": 0.0499,
+   "steps": 26
+  }
+ }
+}

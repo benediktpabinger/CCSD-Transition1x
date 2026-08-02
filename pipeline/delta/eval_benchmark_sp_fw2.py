@@ -39,7 +39,7 @@ MODEL      = f'{HOME}/mace_t1x_p10_compiled.model'
 HEAD_PATH  = f'{HOME}/delta_head/delta_head_fw2.00.pt'
 NEB_DIR    = f'{HOME}/orca_neb_results'
 ENGRAD_DIR = f'{HOME}/mr_benchmark/orca_engrad'
-OUT_PATH   = f'{HOME}/delta_head/eval_benchmark_sp_fw2.json'
+OUT_PATH   = f'{HOME}/delta_head/eval_benchmark_sp_fw2_full.json'
 
 N_IMAGES = 10
 EH_BOHR_TO_EV_ANG = 51.42208619
@@ -240,12 +240,25 @@ def main():
 
         rows.append({
             'rxn': rxn,
+            # Summary metrics
             'emae_mace_meV':   round(emae_mace,  1),
             'emae_delta_meV':  round(emae_delta, 1),
             'emae_wb97x_meV':  round(emae_wb97x, 1),
             'fmae_mace_meVA':  round(fm_mace,  1) if fm_mace  is not None else None,
             'fmae_delta_meVA': round(fm_delta, 1) if fm_delta is not None else None,
             'fmae_wb97x_meVA': round(fm_wb97x, 1) if fm_wb97x is not None else None,
+            # Per-image raw data (eV for energies, eV/Ang for forces).
+            # Mirrors eval_benchmark_sp.py:259-267 so that bias, R2, cosine
+            # similarity and fixed-geometry barriers are recomputable for v2
+            # exactly as they already are for v1.
+            'e_wb97m_eV':   e_wb97m.tolist(),
+            'e_wb97x_eV':   e_wb97x.tolist(),
+            'e_mace_eV':    e_mace.tolist(),
+            'e_delta_eV':   e_delta.tolist(),
+            'f_wb97m_eV_per_ang':  [f.tolist() if f is not None else None for f in f_wb97m],
+            'f_wb97x_eV_per_ang':  [f.tolist() if f is not None else None for f in f_wb97x_list],
+            'f_mace_eV_per_ang':   [f.tolist() for f in f_mace_list],
+            'f_delta_eV_per_ang':  [f.tolist() for f in f_delta_list],
         })
 
     ref = np.array(all_e_wb97m)

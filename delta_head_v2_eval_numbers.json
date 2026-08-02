@@ -1,0 +1,677 @@
+﻿{
+    "generated_by":  "compute_eval.ps1",
+    "data_sources":  [
+                         "eval_benchmark_sp_fw2.json",
+                         "eval_benchmark_sp.json (v1)",
+                         "full_benchmark_results.json",
+                         "rmsd_vs_orca_high_mr.json"
+                     ],
+    "step0_head_selection":  {
+                                 "selected_fw":  2,
+                                 "selection_criterion":  "lowest val_f_f (force loss on NEB-like geometry sample)",
+                                 "sweep":  [
+                                               {
+                                                   "fw":  0.5,
+                                                   "val_e_Huber":  0.0109,
+                                                   "val_f_f_Huber":  0.005,
+                                                   "selected":  false
+                                               },
+                                               {
+                                                   "fw":  1,
+                                                   "val_e_Huber":  0.0112,
+                                                   "val_f_f_Huber":  0.0039,
+                                                   "selected":  false
+                                               },
+                                               {
+                                                   "fw":  2,
+                                                   "val_e_Huber":  0.0112,
+                                                   "val_f_f_Huber":  0.0037,
+                                                   "selected":  true
+                                               }
+                                           ],
+                                 "n_training_geoms":  80592,
+                                 "n_training_rxns":  4997,
+                                 "n_val_geoms":  10600,
+                                 "n_val_geoms_w_forces":  2240,
+                                 "epochs_to_early_stop":  "130-138",
+                                 "final_val_e_eV":  0.0112,
+                                 "final_val_f_f_eV_per_A":  0.0037,
+                                 "architecture":  {
+                                                      "block":  "NonLinearReadoutBlock",
+                                                      "input":  "node_feats[:,1024:] (higher-order irreps from interaction 2; dim=16384)",
+                                                      "MLP_irreps_v2":  "64x0e",
+                                                      "trainable_params":  65600,
+                                                      "frozen_base":  "MACE ScaleShiftMACE p10-compiled (all parameters frozen)"
+                                                  }
+                             },
+    "step1_energy_fixed_geom":  {
+                                    "metric":  "Per-reaction eMAE (meV) on image-0-anchored relative energy profiles: rel(e)=(e-e[0])*1000, each method anchored to ITS OWN image 0. Macro-averaged over 30 reactions. Source line: eval_benchmark_sp_fw2.py:215,219-221",
+                                    "source":  "eval_benchmark_sp_fw2.json (fw=2.0)",
+                                    "MACE_eMAE_meV":  107.6,
+                                    "MACE_delta_eMAE_meV":  63.7,
+                                    "wB97X_D3_eMAE_meV":  94.9,
+                                    "bias_R2_from_delta_head_md":  {
+                                                                       "STATUS":  "SUPERSEDED - v2 values now computed from eval_benchmark_sp_fw2_full.json",
+                                                                       "bias_definition":  "pooled signed mean error over 300 image-0-anchored points",
+                                                                       "R2_definition":  "per-reaction 1 - SSR/SST, then averaged over 30 reactions",
+                                                                       "v2":  {
+                                                                                  "MACE_bias":  77.4,
+                                                                                  "MACE_R2":  0.9734,
+                                                                                  "delta_bias":  -3.9,
+                                                                                  "delta_R2":  0.9899,
+                                                                                  "wB97X_bias":  84.8,
+                                                                                  "wB97X_R2":  0.9781
+                                                                              },
+                                                                       "v1_superseded":  {
+                                                                                             "MACE_bias":  77.4,
+                                                                                             "MACE_R2":  0.9734,
+                                                                                             "delta_bias":  -5,
+                                                                                             "delta_R2":  0.9672
+                                                                                         },
+                                                                       "REVERSAL":  "delta_head.md Sec.5 says \u0027R2 slightly worse (0.973 -\u003e 0.967)\u0027. That is v1. For v2, R2 IMPROVES: 0.9734 -\u003e 0.9899."
+                                                                   },
+                                    "by_tier":  {
+                                                    "high":  {
+                                                                 "n":  10,
+                                                                 "MACE_eMAE_meV":  88.7,
+                                                                 "MACE_delta_eMAE_meV":  73.5,
+                                                                 "wB97X_eMAE_meV":  83.9
+                                                             },
+                                                    "mid":  {
+                                                                "n":  10,
+                                                                "MACE_eMAE_meV":  148.2,
+                                                                "MACE_delta_eMAE_meV":  70,
+                                                                "wB97X_eMAE_meV":  120.1
+                                                            },
+                                                    "low":  {
+                                                                "n":  10,
+                                                                "MACE_eMAE_meV":  86,
+                                                                "MACE_delta_eMAE_meV":  47.6,
+                                                                "wB97X_eMAE_meV":  80.7
+                                                            }
+                                                },
+                                    "anchor":  "image 0, per-method self-anchored (NOT profile minimum). Cancels constant offsets; image-0 error is identically zero for every method.",
+                                    "aggregation":  "macro-average over reactions; equals pooled here because every reaction has exactly 10 images",
+                                    "v1_vs_v2_resolved":  {
+                                                              "RESOLUTION":  "NOT a file disagreement. delta_head.md Sec.5 reports the v1 head; eval_benchmark_sp_fw2.json reports v2.",
+                                                              "v1":  {
+                                                                         "checkpoint":  "delta_head.pt",
+                                                                         "MLP_irreps":  "16x0e",
+                                                                         "eMAE_MACE":  107.6,
+                                                                         "eMAE_delta":  105.8,
+                                                                         "fMAE_MACE":  138.9,
+                                                                         "fMAE_delta":  133.8
+                                                                     },
+                                                              "v2":  {
+                                                                         "checkpoint":  "delta_head_fw2.00.pt",
+                                                                         "MLP_irreps":  "64x0e",
+                                                                         "eMAE_MACE":  107.6,
+                                                                         "eMAE_delta":  63.7,
+                                                                         "fMAE_MACE":  138.9,
+                                                                         "fMAE_delta":  76.4
+                                                                     },
+                                                              "control":  "bare-MACE columns identical across both files, as expected for an unchanged frozen base model",
+                                                              "doc_106_is":  "v1 value 105.8 rounded"
+                                                          }
+                                },
+    "step2_forces_fixed_geom":  {
+                                    "metric":  "Per-reaction fMAE: per image, mean |F_pred - F_ref| over ALL force COMPONENTS (natoms x 3), averaged over 10 images, x1000. Macro-averaged over reactions. Source: eval_benchmark_sp_fw2.py:163-166",
+                                    "source":  "eval_benchmark_sp_fw2.json (fw=2.0)",
+                                    "MACE_fMAE_meV_per_A":  138.9,
+                                    "MACE_delta_fMAE_meV_per_A":  76.4,
+                                    "cosine_similarity_from_doc":  {
+                                                                       "STATUS":  "SUPERSEDED - v2 computed",
+                                                                       "definition":  "per-atom cosine between predicted and reference force 3-vectors, atoms with |F|\u003c1e-6 skipped; pooled over 3490 atoms",
+                                                                       "v2":  {
+                                                                                  "MACE":  0.3223,
+                                                                                  "MACE_delta":  0.5134,
+                                                                                  "wB97X_D3":  0.3216
+                                                                              },
+                                                                       "v1_superseded":  {
+                                                                                             "MACE":  0.324,
+                                                                                             "MACE_delta":  0.412
+                                                                                         },
+                                                                       "note":  "wB97X-D3 cosine (0.3216) ~ MACE cosine (0.3223): MACE faithfully reproduces its training level\u0027s force directions; the delta head is what moves them toward wB97M-V."
+                                                                   },
+                                    "by_tier":  {
+                                                    "high":  {
+                                                                 "n":  10,
+                                                                 "MACE_fMAE":  160.4,
+                                                                 "MACE_delta_fMAE":  87
+                                                             },
+                                                    "mid":  {
+                                                                "n":  10,
+                                                                "MACE_fMAE":  151.9,
+                                                                "MACE_delta_fMAE":  80.1
+                                                            },
+                                                    "low":  {
+                                                                "n":  10,
+                                                                "MACE_fMAE":  104.2,
+                                                                "MACE_delta_fMAE":  62
+                                                            }
+                                                },
+                                    "component_convention":  "per Cartesian COMPONENT, not per-atom vector norm. A norm convention would be ~sqrt(3)x larger.",
+                                    "aggregation_note":  {
+                                                             "macro_average_used_here":  {
+                                                                                             "MACE":  138.9,
+                                                                                             "MACE_delta":  76.4,
+                                                                                             "definition":  "mean of the 30 per-reaction values; each reaction weight 1/30"
+                                                                                         },
+                                                             "pooled_in_benchmark_doc":  {
+                                                                                             "MACE":  138.5,
+                                                                                             "MACE_delta":  76,
+                                                                                             "definition":  "all error components concatenated across reactions, one mean; weights by atom count (eval_benchmark_sp_fw2.py:259-261)"
+                                                                                         },
+                                                             "note":  "Both correct for their own convention; gap 0.4 meV/A. Not a disagreement."
+                                                         },
+                                    "delta_force_derivation":  "analytic autograd through the head (eval_benchmark_sp_fw2.py:146), not finite differences; f_delta is a true conservative gradient"
+                                },
+    "step3a_barriers_vs_wb97m":  {
+                                     "metric":  "Forward barrier = max_i (E(i) - E(0)) over the 10-image band; reverse = fwd - (E(9)-E(0)). Source: _collect_uma_m_and_fw2_barriers.py:30-41. Reported bias = mean signed error over 30 reactions; MAE = mean absolute error. Reference: neb_wb97m_fwd_meV",
+                                     "source":  "full_benchmark_results.json",
+                                     "MACE":  {
+                                                  "bias_meV":  114.1,
+                                                  "MAE_meV":  168.4,
+                                                  "n":  30
+                                              },
+                                     "MACE_delta":  {
+                                                        "bias_meV":  -33.6,
+                                                        "MAE_meV":  124.3,
+                                                        "n":  30
+                                                    },
+                                     "wB97X_D3":  {
+                                                      "bias_meV":  148.2,
+                                                      "MAE_meV":  151.3,
+                                                      "n":  30
+                                                  },
+                                     "by_tier":  {
+                                                     "high":  {
+                                                                  "MACE":  {
+                                                                               "bias_meV":  21.2,
+                                                                               "MAE_meV":  81.2,
+                                                                               "n":  10
+                                                                           },
+                                                                  "MACE_delta":  {
+                                                                                     "bias_meV":  -70.4,
+                                                                                     "MAE_meV":  150.9,
+                                                                                     "n":  10
+                                                                                 },
+                                                                  "wB97X_D3":  {
+                                                                                   "bias_meV":  123.7,
+                                                                                   "MAE_meV":  124.4,
+                                                                                   "n":  10
+                                                                               }
+                                                              },
+                                                     "mid":  {
+                                                                 "MACE":  {
+                                                                              "bias_meV":  151.2,
+                                                                              "MAE_meV":  254,
+                                                                              "n":  10
+                                                                          },
+                                                                 "MACE_delta":  {
+                                                                                    "bias_meV":  -60,
+                                                                                    "MAE_meV":  135.8,
+                                                                                    "n":  10
+                                                                                },
+                                                                 "wB97X_D3":  {
+                                                                                  "bias_meV":  185,
+                                                                                  "MAE_meV":  193.4,
+                                                                                  "n":  10
+                                                                              }
+                                                             },
+                                                     "low":  {
+                                                                 "MACE":  {
+                                                                              "bias_meV":  169.9,
+                                                                              "MAE_meV":  169.9,
+                                                                              "n":  10
+                                                                          },
+                                                                 "MACE_delta":  {
+                                                                                    "bias_meV":  38.2,
+                                                                                    "MAE_meV":  86.4,
+                                                                                    "n":  10
+                                                                                },
+                                                                 "wB97X_D3":  {
+                                                                                  "bias_meV":  136,
+                                                                                  "MAE_meV":  136,
+                                                                                  "n":  10
+                                                                              }
+                                                             }
+                                                 },
+                                     "discretization_caveat":  "Barrier is the max over 10 DISCRETE images, not an interpolated or optimized saddle; all methods biased low by the same discretization (largely cancels in Step 3a where geometries are shared)",
+                                     "HEAD_VERSION":  "v2 (recomputed from eval_benchmark_sp_fw2_full.json)",
+                                     "v1_superseded":  {
+                                                           "MACE_delta_bias":  -30.7,
+                                                           "MACE_delta_MAE":  140.9
+                                                       }
+                                 },
+    "step3b_barriers_vs_ccsdt":  {
+                                     "metric":  "Forward barrier = max_i (E(i) - E(0)) over the 10-image band; reverse = fwd - (E(9)-E(0)). Source: _collect_uma_m_and_fw2_barriers.py:30-41. Reference: ccsdt_fwd_meV (CCSD(T)/def2-TZVP single points on the same fixed ORCA geometries)",
+                                     "source":  "full_benchmark_results.json (ccsdt_fwd_meV)",
+                                     "MACE":  {
+                                                  "bias_meV":  197.7,
+                                                  "MAE_meV":  226,
+                                                  "n":  30
+                                              },
+                                     "MACE_delta":  {
+                                                        "bias_meV":  50,
+                                                        "MAE_meV":  141.7,
+                                                        "n":  30
+                                                    },
+                                     "wB97M_V_NEB":  {
+                                                         "bias_meV":  83.6,
+                                                         "MAE_meV":  103.8,
+                                                         "n":  30
+                                                     },
+                                     "wB97X_D3_NEB":  {
+                                                          "bias_meV":  231.8,
+                                                          "MAE_meV":  231.8,
+                                                          "n":  30
+                                                      },
+                                     "by_tier":  {
+                                                     "high":  {
+                                                                  "MACE":  {
+                                                                               "bias_meV":  231.1,
+                                                                               "MAE_meV":  238.8,
+                                                                               "n":  10
+                                                                           },
+                                                                  "MACE_delta":  {
+                                                                                     "bias_meV":  139.5,
+                                                                                     "MAE_meV":  175.5,
+                                                                                     "n":  10
+                                                                                 },
+                                                                  "wB97M_V_NEB":  {
+                                                                                      "bias_meV":  210,
+                                                                                      "MAE_meV":  225.8,
+                                                                                      "n":  10
+                                                                                  },
+                                                                  "wB97X_D3_NEB":  {
+                                                                                       "bias_meV":  333.6,
+                                                                                       "MAE_meV":  333.6,
+                                                                                       "n":  10
+                                                                                   }
+                                                              },
+                                                     "mid":  {
+                                                                 "MACE":  {
+                                                                              "bias_meV":  182.9,
+                                                                              "MAE_meV":  260,
+                                                                              "n":  10
+                                                                          },
+                                                                 "MACE_delta":  {
+                                                                                    "bias_meV":  -28.3,
+                                                                                    "MAE_meV":  146.8,
+                                                                                    "n":  10
+                                                                                },
+                                                                 "wB97M_V_NEB":  {
+                                                                                     "bias_meV":  31.7,
+                                                                                     "MAE_meV":  58.4,
+                                                                                     "n":  10
+                                                                                 },
+                                                                 "wB97X_D3_NEB":  {
+                                                                                      "bias_meV":  216.7,
+                                                                                      "MAE_meV":  216.7,
+                                                                                      "n":  10
+                                                                                  }
+                                                             },
+                                                     "low":  {
+                                                                 "MACE":  {
+                                                                              "bias_meV":  179,
+                                                                              "MAE_meV":  179,
+                                                                              "n":  10
+                                                                          },
+                                                                 "MACE_delta":  {
+                                                                                    "bias_meV":  47.4,
+                                                                                    "MAE_meV":  102.8,
+                                                                                    "n":  10
+                                                                                },
+                                                                 "wB97M_V_NEB":  {
+                                                                                     "bias_meV":  9.2,
+                                                                                     "MAE_meV":  27.3,
+                                                                                     "n":  10
+                                                                                 },
+                                                                 "wB97X_D3_NEB":  {
+                                                                                      "bias_meV":  145.2,
+                                                                                      "MAE_meV":  145.2,
+                                                                                      "n":  10
+                                                                                  }
+                                                             }
+                                                 },
+                                     "reference_caveat":  "CCSD(T) is single-reference, so it is least trustworthy on the high-MR tier - exactly where MR character was the selection criterion. NEVPT2/CASSCF exists as the separate gold standard.",
+                                     "HEAD_VERSION":  "v2 (recomputed from eval_benchmark_sp_fw2_full.json)",
+                                     "v1_superseded":  {
+                                                           "delta_bias":  52.9,
+                                                           "delta_MAE":  159.4
+                                                       }
+                                 },
+    "step4_neb_driven":  {
+                             "neb_fw2_barrier_vs_wb97m":  {
+                                                              "metric":  "NEB-driven forward barrier (meV); delta_fw2_neb_fwd_meV vs neb_wb97m_fwd_meV",
+                                                              "n":  30,
+                                                              "bias_meV":  -117.1,
+                                                              "MAE_meV":  173.6
+                                                          },
+                             "neb_fw2_barrier_vs_ccsdt":  {
+                                                              "n":  30,
+                                                              "bias_meV":  -33.5,
+                                                              "MAE_meV":  167.6
+                                                          },
+                             "neb_fw2_by_tier":  {
+                                                     "high":  {
+                                                                  "bias_meV":  -226,
+                                                                  "MAE_meV":  272.1,
+                                                                  "n":  10
+                                                              },
+                                                     "mid":  {
+                                                                 "bias_meV":  -131.4,
+                                                                 "MAE_meV":  159.4,
+                                                                 "n":  10
+                                                             },
+                                                     "low":  {
+                                                                 "bias_meV":  6.1,
+                                                                 "MAE_meV":  89.3,
+                                                                 "n":  10
+                                                             }
+                                                 },
+                             "rmsd_vs_orca_high10":  {
+                                                         "source":  "rmsd_vs_orca_high_mr.json",
+                                                         "n":  10,
+                                                         "MACE_bare_mean_A":  0.0609,
+                                                         "MACE_bare_median_A":  0.0705,
+                                                         "MACE_delta_mean_A":  0.1365,
+                                                         "MACE_delta_median_A":  0.1212
+                                                     },
+                             "rmsd_vs_orca_all30_from_doc":  {
+                                                                 "source":  "mace_delta_neb_benchmark.md (no local per-reaction JSON for bare MACE NEB on all 30)",
+                                                                 "FLAG":  "Aggregates from benchmark document, not recomputed from JSON",
+                                                                 "all_mean_A":  {
+                                                                                    "MACE_bare":  0.056,
+                                                                                    "MACE_delta_fw2":  0.101
+                                                                                },
+                                                                 "high_mean_A":  {
+                                                                                     "MACE_bare":  0.061,
+                                                                                     "MACE_delta_fw2":  0.134
+                                                                                 },
+                                                                 "mid_mean_A":  {
+                                                                                    "MACE_bare":  0.092,
+                                                                                    "MACE_delta_fw2":  0.116
+                                                                                },
+                                                                 "low_mean_A":  {
+                                                                                    "MACE_bare":  0.015,
+                                                                                    "MACE_delta_fw2":  0.053
+                                                                                },
+                                                                 "bare_wins_n":  28,
+                                                                 "bare_wins_out_of":  30
+                                                             },
+                             "convergence":  {
+                                                 "STATUS":  "RESOLVED from cluster (marker files + neb.log)",
+                                                 "benchmark30_marker_written":  "30/30",
+                                                 "benchmark30_strict_fmax_le_0p05":  "24/30",
+                                                 "step_limited":  [
+                                                                      "rxn7937",
+                                                                      "rxn7949",
+                                                                      "rxn4500",
+                                                                      "rxn1061",
+                                                                      "rxn4004",
+                                                                      "rxn4060"
+                                                                  ],
+                                                 "by_tier_strict":  {
+                                                                        "high":  "8/10",
+                                                                        "mid":  "9/10",
+                                                                        "low":  "7/10"
+                                                                    },
+                                                 "finding":  "6 reactions wrote a converged marker but terminated with fmax 0.064-0.132 eV/A after 447-772 steps (500-step budget; ASE nsteps carries across both NEB phases). Clean runs max 434 steps - no overlap.",
+                                                 "caveat":  "rxn7949 and rxn7937 are high-MR reactions; their NEB barriers rest on non-converged bands.",
+                                                 "all45_context":  "43/45 markers; 35/45 strict; rxn0894 and rxn1147 failed outright (not in the 30)"
+                                             },
+                             "rmsd_definition":  {
+                                                     "formula":  "Kabsch RMSD: centroid-align both, optimal rotation via SVD of covariance with diag(1,1,det) enforcing a PROPER rotation (reflections excluded), RMSD = sqrt(mean_a |R*p_a - q_a|^2)",
+                                                     "source":  "_ts_rmsd_fw2_remote.py:17-24",
+                                                     "units":  "Angstrom",
+                                                     "which_geometry":  "transition_state.xyz = highest-energy image of each method\u0027s own final band (mace_delta_neb.py:236); a discrete band maximum, not an optimized saddle",
+                                                     "limitation":  "atom order assumed to correspond; no permutation matching. Safe here (common T1x ancestry) but invalid for independently generated structures."
+                                                 },
+                             "neb_protocol":  "endpoints BFGS to fmax=0.05; 10-image band from T1x wB97X-D3 path; plain NEB to fmax=0.15 (improvedtangent); then climb=True, CI-NEB to fmax=0.05; 500-step cap; ODE optimizer (mace_delta_neb.py:199-234)",
+                             "mace_bare_neb":  {
+                                                   "source":  "~/mace_bare_neb_results/\u003crxn\u003e/neb.db ; extraction identical to fw2 (max(E(i)-E(0)) over last 10 images)",
+                                                   "local_copy":  "bare_mace_neb_barriers.json",
+                                                   "vs_wb97m":  {
+                                                                    "bias_meV":  69.1,
+                                                                    "MAE_meV":  164.7,
+                                                                    "n":  30
+                                                                },
+                                                   "vs_ccsdt":  {
+                                                                    "bias_meV":  152.7,
+                                                                    "MAE_meV":  212.2,
+                                                                    "n":  30
+                                                                },
+                                                   "by_tier_vs_wb97m_MAE":  {
+                                                                                "high":  94.4,
+                                                                                "mid":  233.8,
+                                                                                "low":  166
+                                                                            },
+                                                   "convergence":  {
+                                                                       "markers":  "30/30",
+                                                                       "strict":  "24/30",
+                                                                       "not_strict":  [
+                                                                                          "rxn7949",
+                                                                                          "rxn7937",
+                                                                                          "rxn1061",
+                                                                                          "rxn4004",
+                                                                                          "rxn1154",
+                                                                                          "rxn4500"
+                                                                                      ]
+                                                                   },
+                                                   "NOTE":  "Previously listed as unavailable - the directory is mace_bare_neb_results, not mace_neb_results."
+                                               },
+                             "optimisation_cost":  {
+                                                       "CORRECTION":  "mace_delta_neb_benchmark.md quotes 15.9x more iterations. That is a MEAN OF PER-REACTION RATIOS, inflated by reactions where bare MACE converged in 1-4 steps (rxn1962 gives 221x, rxn9246 86x, rxn4063 62x).",
+                                                       "mean_of_ratios":  15.93,
+                                                       "median_ratio":  2.18,
+                                                       "ratio_of_totals":  1.29,
+                                                       "total_steps_bare":  4142,
+                                                       "total_steps_delta":  5352,
+                                                       "delta_slower_in":  "25/30 reactions",
+                                                       "recommendation":  "Quote median 2.18x or total 1.29x, not 15.9x. Directional claim is solid.",
+                                                       "convergence_note":  "Both methods 30/30 markers and 24/30 strict; 5 of 6 step-limited reactions are shared. Step-limitation is a property of those reactions, not of the correction."
+                                                   }
+                         },
+    "step5_stratification":  {
+                                 "tier_definition":  "FOD (fractional occupation number weighted density) ranking, PBE/def2-SVP at T_el=5000K, N_FOD = sum|n_i - n0_i| (Grimme \u0026 Hansen). high=ranks 1-10 (strongest MR), mid=11-20, low=21-30. n=10 each.",
+                                 "eMAE_profile":  {
+                                                      "high":  {
+                                                                   "n":  10,
+                                                                   "MACE_eMAE_meV":  88.7,
+                                                                   "MACE_delta_eMAE_meV":  73.5,
+                                                                   "wB97X_eMAE_meV":  83.9
+                                                               },
+                                                      "mid":  {
+                                                                  "n":  10,
+                                                                  "MACE_eMAE_meV":  148.2,
+                                                                  "MACE_delta_eMAE_meV":  70,
+                                                                  "wB97X_eMAE_meV":  120.1
+                                                              },
+                                                      "low":  {
+                                                                  "n":  10,
+                                                                  "MACE_eMAE_meV":  86,
+                                                                  "MACE_delta_eMAE_meV":  47.6,
+                                                                  "wB97X_eMAE_meV":  80.7
+                                                              }
+                                                  },
+                                 "fMAE_forces":  {
+                                                     "high":  {
+                                                                  "n":  10,
+                                                                  "MACE_fMAE":  160.4,
+                                                                  "MACE_delta_fMAE":  87
+                                                              },
+                                                     "mid":  {
+                                                                 "n":  10,
+                                                                 "MACE_fMAE":  151.9,
+                                                                 "MACE_delta_fMAE":  80.1
+                                                             },
+                                                     "low":  {
+                                                                 "n":  10,
+                                                                 "MACE_fMAE":  104.2,
+                                                                 "MACE_delta_fMAE":  62
+                                                             }
+                                                 },
+                                 "barrier_vs_wb97m":  {
+                                                          "high":  {
+                                                                       "MACE":  {
+                                                                                    "bias_meV":  21.2,
+                                                                                    "MAE_meV":  81.2,
+                                                                                    "n":  10
+                                                                                },
+                                                                       "MACE_delta":  {
+                                                                                          "bias_meV":  -70.4,
+                                                                                          "MAE_meV":  150.9,
+                                                                                          "n":  10
+                                                                                      },
+                                                                       "wB97X_D3":  {
+                                                                                        "bias_meV":  123.7,
+                                                                                        "MAE_meV":  124.4,
+                                                                                        "n":  10
+                                                                                    }
+                                                                   },
+                                                          "mid":  {
+                                                                      "MACE":  {
+                                                                                   "bias_meV":  151.2,
+                                                                                   "MAE_meV":  254,
+                                                                                   "n":  10
+                                                                               },
+                                                                      "MACE_delta":  {
+                                                                                         "bias_meV":  -60,
+                                                                                         "MAE_meV":  135.8,
+                                                                                         "n":  10
+                                                                                     },
+                                                                      "wB97X_D3":  {
+                                                                                       "bias_meV":  185,
+                                                                                       "MAE_meV":  193.4,
+                                                                                       "n":  10
+                                                                                   }
+                                                                  },
+                                                          "low":  {
+                                                                      "MACE":  {
+                                                                                   "bias_meV":  169.9,
+                                                                                   "MAE_meV":  169.9,
+                                                                                   "n":  10
+                                                                               },
+                                                                      "MACE_delta":  {
+                                                                                         "bias_meV":  38.2,
+                                                                                         "MAE_meV":  86.4,
+                                                                                         "n":  10
+                                                                                     },
+                                                                      "wB97X_D3":  {
+                                                                                       "bias_meV":  136,
+                                                                                       "MAE_meV":  136,
+                                                                                       "n":  10
+                                                                                   }
+                                                                  }
+                                                      },
+                                 "barrier_vs_ccsdt":  {
+                                                          "high":  {
+                                                                       "MACE":  {
+                                                                                    "bias_meV":  231.1,
+                                                                                    "MAE_meV":  238.8,
+                                                                                    "n":  10
+                                                                                },
+                                                                       "MACE_delta":  {
+                                                                                          "bias_meV":  139.5,
+                                                                                          "MAE_meV":  175.5,
+                                                                                          "n":  10
+                                                                                      },
+                                                                       "wB97M_V_NEB":  {
+                                                                                           "bias_meV":  210,
+                                                                                           "MAE_meV":  225.8,
+                                                                                           "n":  10
+                                                                                       },
+                                                                       "wB97X_D3_NEB":  {
+                                                                                            "bias_meV":  333.6,
+                                                                                            "MAE_meV":  333.6,
+                                                                                            "n":  10
+                                                                                        }
+                                                                   },
+                                                          "mid":  {
+                                                                      "MACE":  {
+                                                                                   "bias_meV":  182.9,
+                                                                                   "MAE_meV":  260,
+                                                                                   "n":  10
+                                                                               },
+                                                                      "MACE_delta":  {
+                                                                                         "bias_meV":  -28.3,
+                                                                                         "MAE_meV":  146.8,
+                                                                                         "n":  10
+                                                                                     },
+                                                                      "wB97M_V_NEB":  {
+                                                                                          "bias_meV":  31.7,
+                                                                                          "MAE_meV":  58.4,
+                                                                                          "n":  10
+                                                                                      },
+                                                                      "wB97X_D3_NEB":  {
+                                                                                           "bias_meV":  216.7,
+                                                                                           "MAE_meV":  216.7,
+                                                                                           "n":  10
+                                                                                       }
+                                                                  },
+                                                          "low":  {
+                                                                      "MACE":  {
+                                                                                   "bias_meV":  179,
+                                                                                   "MAE_meV":  179,
+                                                                                   "n":  10
+                                                                               },
+                                                                      "MACE_delta":  {
+                                                                                         "bias_meV":  47.4,
+                                                                                         "MAE_meV":  102.8,
+                                                                                         "n":  10
+                                                                                     },
+                                                                      "wB97M_V_NEB":  {
+                                                                                          "bias_meV":  9.2,
+                                                                                          "MAE_meV":  27.3,
+                                                                                          "n":  10
+                                                                                      },
+                                                                      "wB97X_D3_NEB":  {
+                                                                                           "bias_meV":  145.2,
+                                                                                           "MAE_meV":  145.2,
+                                                                                           "n":  10
+                                                                                       }
+                                                                  }
+                                                      },
+                                 "neb_barrier":  {
+                                                     "high":  {
+                                                                  "bias_meV":  -226,
+                                                                  "MAE_meV":  272.1,
+                                                                  "n":  10
+                                                              },
+                                                     "mid":  {
+                                                                 "bias_meV":  -131.4,
+                                                                 "MAE_meV":  159.4,
+                                                                 "n":  10
+                                                             },
+                                                     "low":  {
+                                                                 "bias_meV":  6.1,
+                                                                 "MAE_meV":  89.3,
+                                                                 "n":  10
+                                                             }
+                                                 },
+                                 "method":  "Reactions grouped by the \u0027group\u0027 field in full_benchmark_results.json; each metric recomputed within the group using the identical formula. No definition changes between tiers.",
+                                 "statistical_caveat":  "n=10 per tier is small; barrier MAEs are outlier-sensitive and no confidence intervals were computed. Tier differences below the spread of individual reaction errors are not resolved.",
+                                 "HEAD_VERSION":  "all tiers now v2"
+                             },
+    "cannot_compute":  [
+                           "Reverse barrier for MACE+delta at fixed geometry -- delta_rev_meV not written",
+                           "OMol25 training-set overlap with T1x -- unchecked"
+                       ],
+    "companion_document":  "delta_head_v2_metric_definitions.md",
+    "scope":  "CASSCF/NEVPT2 (OptTS geometry benchmark) comparisons REMOVED as out of scope. FOD-based MR stratification retained (grouping, not an MR-method comparison). CCSD(T) retained (single-reference).",
+    "VERSION_PROVENANCE":  {
+                               "STATUS":  "ALL METRICS NOW v2 (delta_head_fw2.00.pt, 64x0e). Resolved 2026-08-01 via job 10693015.",
+                               "step1_eMAE":  "v2",
+                               "step1_bias_R2":  "v2",
+                               "step2_fMAE":  "v2",
+                               "step2_cosine":  "v2",
+                               "step3a_barriers":  "v2",
+                               "step4_neb":  "v2",
+                               "step5_tiers":  "v2",
+                               "step3b_vs_ccsdt":  "v2 - complete",
+                               "step4_rmsd_vs_orca":  "v2 CONFIRMED - fresh Kabsch recompute gives fw2 mean 0.1344 A vs doc 0.134; local JSON is fw2",
+                               "drift_check":  "new run vs June run agrees to max 0.2 meV across all summary metrics - no meaningful drift"
+                           }
+}
