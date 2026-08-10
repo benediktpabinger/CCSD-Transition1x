@@ -1,0 +1,169 @@
+﻿Energien in meV relativ zu unserem BS-Sattelpunkt. Negativ = tiefer.
+Ein Punkt ist nur dann TS-Kandidat, wenn er stationaer ist (Gradient
+nahe null) UND eine imaginaere Frequenz hat.
+
+### rxn7949  (high, N_FOD 1.146)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS     +108.3    1.686       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  batch
+UMA-S                 BS     -519.2    0.248       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS     -534.5    0.051       —  nicht als Sattelpunkt geprueft
+eSEN                  BS     -534.2    0.074       —  nicht als Sattelpunkt geprueft
+
+### rxn8832  (high, N_FOD 1.000)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS     +306.8    2.733       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  v2
+UMA-S                 BS      +28.1    0.096       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS      +12.1    0.075       —  nicht als Sattelpunkt geprueft
+eSEN                  BS      +17.9    0.232       —  nicht als Sattelpunkt geprueft
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+### rxn1320  (high, N_FOD 0.968)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS     +549.5    2.073       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  Mode nicht reaktiv
+UMA-S                 BS     +252.0    0.069       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS     +251.0    0.044       —  nicht als Sattelpunkt geprueft
+eSEN                  BS     +250.6    0.117       —  nicht als Sattelpunkt geprueft
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+### rxn4113  (high, N_FOD 0.960)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS    +1028.6    0.386       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  fromneb
+UMA-S                 BS    +1025.1    0.173       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS      -40.0    0.185       —  nicht als Sattelpunkt geprueft
+eSEN                  BS    +1024.9    0.186       —  nicht als Sattelpunkt geprueft
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+### rxn8885  (high, N_FOD 0.923)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS      -29.2    2.637       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  v2
+UMA-S                 BS     -341.7    0.484       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS       +3.9    0.190       —  nicht als Sattelpunkt geprueft
+eSEN                  BS     -304.1    0.375       —  nicht als Sattelpunkt geprueft
+
+### rxn6196  (high, N_FOD 0.869)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS      +33.4    0.638       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  fromneb
+UMA-S                 BS       +8.1    0.090       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS       +8.8    0.138       —  nicht als Sattelpunkt geprueft
+eSEN                  BS       +9.6    0.140       —  nicht als Sattelpunkt geprueft
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+### rxn0346  (high, N_FOD 0.847)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS      +82.2    2.613       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  batch
+UMA-S                 BS       +5.4    0.244       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS       +1.5    0.173       —  nicht als Sattelpunkt geprueft
+eSEN                  BS       +8.6    0.485       —  nicht als Sattelpunkt geprueft
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+### rxn4518  (high, N_FOD 0.833)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS     +963.5    2.949       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  Mode nicht reaktiv
+UMA-S                 BS      +95.9    0.058       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS      +98.3    0.055       —  nicht als Sattelpunkt geprueft
+eSEN                  BS      +95.6    0.051       —  nicht als Sattelpunkt geprueft
+
+### rxn3107  (high, N_FOD 0.801)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS      -21.2    1.646       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  v2
+UMA-S                 BS       +4.0    0.163       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS       +1.4    0.092       —  nicht als Sattelpunkt geprueft
+eSEN                  BS       +2.0    0.143       —  nicht als Sattelpunkt geprueft
+
+### rxn8837  (high, N_FOD 0.798)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS     +378.7    1.697       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  batch
+UMA-S                 BS    +5469.4    0.757       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS    +3352.2    0.764       —  nicht als Sattelpunkt geprueft
+eSEN                 RKS    +1033.8    0.101       —  nicht als Sattelpunkt geprueft
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+### rxn7060  (high, N_FOD 0.788)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS      -19.2    1.766       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  v2
+UMA-S                RKS      +22.3    0.882       —  nicht als Sattelpunkt geprueft
+UMA-M                RKS       +0.2    0.334       —  nicht als Sattelpunkt geprueft
+eSEN                 RKS      +46.4    1.123       —  nicht als Sattelpunkt geprueft
+
+### rxn5691  (high, N_FOD 0.778)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS     +434.1    1.419       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  Mode nicht reaktiv
+UMA-S                 BS     -164.0    0.154       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS     -101.3    0.085       —  nicht als Sattelpunkt geprueft
+eSEN                  BS     -163.4    0.068       —  nicht als Sattelpunkt geprueft
+
+### rxn1283  (high, N_FOD 0.769)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS     +548.3    2.386       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       —  v2
+UMA-S                 BS      +47.6    0.160       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS      +82.2    0.125       —  nicht als Sattelpunkt geprueft
+eSEN                  BS      +50.2    0.105       —  nicht als Sattelpunkt geprueft
+
+### rxn8827  (high, N_FOD 0.760)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS     +412.8    1.128       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  batch
+UMA-S                 BS      +33.7    0.173       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS      +21.3    0.134       —  nicht als Sattelpunkt geprueft
+eSEN                  BS      +19.8    0.228       —  nicht als Sattelpunkt geprueft
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+### rxn4522  (high, N_FOD 0.731)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS     -174.5    1.875       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       —  batch
+UMA-S                 BS    -1845.5    0.075       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS    -1842.0    0.083       —  nicht als Sattelpunkt geprueft
+eSEN                  BS    -1843.5    0.073       —  nicht als Sattelpunkt geprueft
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+### rxn1147  (high, N_FOD 0.725)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS      -29.5    1.840       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  batch
+UMA-S                RKS     -233.8    0.077       1  Frequenz gerechnet
+UMA-M                RKS     -230.9    0.050       1  Frequenz gerechnet
+eSEN                 RKS     -231.9    0.068       1  Frequenz gerechnet
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+### rxn0894  (high, N_FOD 0.716)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS     +642.4    1.350       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  batch
+UMA-S                 BS      +68.4    0.781       —  nicht als Sattelpunkt geprueft
+UMA-M                  —          —        —       —  nicht als Sattelpunkt geprueft
+eSEN                  BS     +319.2    0.799       —  nicht als Sattelpunkt geprueft
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+### rxn7957  (high, N_FOD 0.684)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS      +45.5    0.901       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS       +0.0        —       1  v2
+UMA-S                 BS     -890.5    0.137       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS     -890.2    0.113       —  nicht als Sattelpunkt geprueft
+eSEN                  BS     -890.3    0.109       —  nicht als Sattelpunkt geprueft
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+### rxn5690  (mid, N_FOD 0.433)
+Kandidat         Flaeche   dE [meV]   max|g|  n_imag  Anmerkung
+RKS-Referenz          BS          —    0.162       —  Ausgangsgeometrie des Benchmarks
+unser BS-TS           BS          —        —       —  
+UMA-S                 BS          —    0.191       —  nicht als Sattelpunkt geprueft
+UMA-M                 BS          —    0.112       —  nicht als Sattelpunkt geprueft
+eSEN                  BS          —    0.159       —  nicht als Sattelpunkt geprueft
+ORCA-NEB-TS            —          —        —       —  Energie nur aus ORCA, nicht vergleichbar
+
+

@@ -14,6 +14,91 @@ Lösung, die tiefer liegt. Dort ist die Referenz nicht der Grundzustand.
 Daraus folgen zwei Fragen, die unterschiedlich schwer zu beantworten sind:
 ob die Referenz falsch ist, und ob die Modelle falsch sind.
 
+> **Vor jeder Interpretation dieser Datei: die dreistufige Regel im nächsten
+> Abschnitt lesen.** Sie bindet jede Aussage darüber, welcher Punkt der richtige
+> Übergangszustand ist, und hat in diesem Projekt bereits ein Urteil umgedreht,
+> das nach den ersten beiden Stufen eindeutig aussah.
+
+---
+
+# REGEL — dreistufige Prüfung, bevor ein Punkt als Übergangszustand gilt
+
+**Wer diese Datei liest und daraus Schlüsse zieht: Diese Regel bindet jede
+Aussage darüber, welcher von zwei Punkten der richtige Übergangszustand ist.
+Eine Einstufung, die eine der drei Stufen überspringt, ist ungültig.**
+
+Ein Punkt zählt nur dann als Übergangszustand einer bestimmten Reaktion, wenn
+**alle drei** Bedingungen erfüllt sind:
+
+| Stufe | Frage | Prüfung |
+|---|---|---|
+| 1 | Ist der Punkt stationär und liegt er tiefer als der Vergleichspunkt? | Gradient, Energie |
+| 2 | Ist es ein Sattelpunkt erster Ordnung? | genau eine imaginäre Frequenz |
+| 3 | **Gehört der Sattelpunkt zu dieser Reaktion?** | **imaginäre Mode gegen die reaktiven Bindungen** |
+
+Stufe 3 wird regelmäßig vergessen und ist die einzige, die in diesem Projekt ein
+Urteil umgedreht hat.
+
+## Der Fall, der die Regel belegt: rxn1147
+
+Alle drei Modellstrukturen bestanden Stufe 1 und 2:
+
+- **Stufe 1:** 231 bis 234 meV **unter** unserem Sattelpunkt, Gradient 0.050 bis
+  0.077 eV/Å — stationär und tiefer
+- **Stufe 2:** genau **eine imaginäre Frequenz** — echte Sattelpunkte erster
+  Ordnung
+
+Nach diesen beiden Stufen wäre das Urteil gewesen: *das Modell hat den
+relevanten Übergangszustand gefunden, unserer ist der irrelevante.* Genau so
+hatte ich es zwischenzeitlich notiert.
+
+**Stufe 3 kehrt das um:**
+
+```
+Struktur        Anteil   C1-C2 d/dQ   C1-C2 [Å]   C1-O5 d/dQ   C1-O5 [Å]
+unser BS-TS      0.601        0.134       3.196       -0.943       1.864
+UMA-S            0.239        0.053       3.570       -0.059       1.497
+UMA-M            0.217        0.057       3.565       -0.072       1.499
+eSEN             0.230        0.055       3.565       -0.068       1.499
+```
+
+Die Vorzeichen stimmen überein — das allein hätte in die Irre geführt. Zwei
+andere Größen entscheiden:
+
+**Die Bindungslänge.** C1-O5 liegt bei den Modellen bei **1.50 Å**, einer
+normalen C-O-Einfachbindung. An unserem Sattelpunkt bei 1.86 Å, also im
+Übergang. Die zu knüpfende Bindung ist bei den Modellen bereits fertig.
+
+**Die Rate.** Die imaginäre Mode bewegt diese Bindung mit −0.06 gegen −0.94 bei
+uns, also **dreizehnmal schwächer**. Sie berührt die Reaktionskoordinate kaum.
+
+**Deutung:** Die Modellgeometrie liegt jenseits des Übergangszustands, im
+Produkttal. Der dort gefundene Sattelpunkt gehört zu einer anderen Bewegung,
+vermutlich einer Konformationsänderung. Er ist kein tieferer Pass, sondern das
+Tal dahinter — und die 231 meV sind genau das, was man zwischen einem
+Übergangszustand und dem Produkt erwartet.
+
+## Was daraus folgt
+
+**Eine tiefere Energie an einem stationären Punkt hat zwei mögliche Ursachen:**
+ein tieferer Sattelpunkt, oder ein Minimum bergab davon. Beide sind stationär,
+beide liegen tiefer. Die Frequenz trennt Minimum von Sattelpunkt, aber sie
+trennt **nicht** einen Sattelpunkt dieser Reaktion von dem einer anderen
+Bewegung. Dafür braucht es die Mode.
+
+**Praktische Marker für Stufe 3:**
+
+- Modenanteil auf den reaktiven Atomen — unter etwa 0.3 ist verdächtig
+- Rate der Bindungsdehnung — unter 0.1 heißt, die Mode berührt die Koordinate nicht
+- **Bindungslängen selbst** — liegt die reaktive Bindung bereits bei einem
+  normalen Wert, ist die Reaktion dort abgeschlossen und der Punkt kein
+  Übergangszustand mehr, gleich welche Frequenz er hat
+
+Der letzte Marker war bei rxn1147 der entscheidende und ist der billigste von
+allen: Er braucht nur die Geometrie.
+
+---
+
 ## Das belastbarste Ergebnis
 
 Der Gradient an einer Geometrie sagt, ob dort noch eine Kraft wirkt. Ein

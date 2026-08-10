@@ -1,0 +1,28 @@
+﻿rxn      Gr     unser TS     bester Modellkandidat  Urteil
+--------------------------------------------------------------------------------------------------------
+rxn8832  high bestaetigt                         —  unser TS        bestaetigt, kein Modellkandidat tiefer und stationaer
+rxn4113  high bestaetigt                         —  unser TS        bestaetigt, kein Modellkandidat tiefer und stationaer
+rxn8885  high bestaetigt                         —  unser TS        bestaetigt, kein Modellkandidat tiefer und stationaer
+rxn6196  high bestaetigt                         —  unser TS        bestaetigt, kein Modellkandidat tiefer und stationaer
+rxn0346  high bestaetigt                         —  unser TS        bestaetigt, kein Modellkandidat tiefer und stationaer
+rxn3107  high bestaetigt                         —  unser TS        bestaetigt, kein Modellkandidat tiefer und stationaer
+rxn8837  high bestaetigt                         —  unser TS        bestaetigt, kein Modellkandidat tiefer und stationaer
+rxn7060  high bestaetigt                         —  unser TS        bestaetigt, kein Modellkandidat tiefer und stationaer
+rxn8827  high bestaetigt                         —  unser TS        bestaetigt, kein Modellkandidat tiefer und stationaer
+rxn0894  high bestaetigt                         —  unser TS        bestaetigt, kein Modellkandidat tiefer und stationaer
+rxn1147  high bestaetigtUMA-S -234 meV (g 0.077, 1 imag)  MODELL          UMA-S ist bestaetigter Sattelpunkt und liegt 234 meV tiefer
+rxn7949  high bestaetigtUMA-M -535 meV (g 0.051, Freq fehlt)  offen           UMA-M 535 meV tiefer bei Gradient 0.051 — Frequenz fehlt
+rxn7957  high bestaetigtUMA-S -890 meV (g 0.137, Freq fehlt)  offen           UMA-S 890 meV tiefer bei Gradient 0.137 — Frequenz fehlt
+rxn5691  high falsche ModeeSEN -163 meV (g 0.068, Freq fehlt)  Modell besser?  unser Sattelpunkt falsche Mode, eSEN liegt 163 meV tiefer bei Gradient 0.068
+rxn4522  high     keinerUMA-S -1845 meV (g 0.075, Freq fehlt)  Modell besser?  unser Sattelpunkt unbestaetigt, UMA-S liegt 1845 meV tiefer bei Gradient 0.075
+rxn1320  high falsche Mode                         —  ungeklaert      unser Sattelpunkt hat die falsche Mode
+rxn4518  high falsche Mode                         —  ungeklaert      unser Sattelpunkt hat die falsche Mode
+rxn1283  high     keiner                         —  ungeklaert      unser Sattelpunkt unbestaetigt, kein Modellkandidat
+rxn5690  mid      keiner                         —  ungeklaert      unser Sattelpunkt unbestaetigt, kein Modellkandidat
+
+  unser TS         10   rxn8832 rxn4113 rxn8885 rxn6196 rxn0346 rxn3107 rxn8837 rxn7060 rxn8827 rxn0894
+  MODELL            1   rxn1147
+  offen             2   rxn7949 rxn7957
+  Modell besser?    2   rxn5691 rxn4522
+  ungeklaert        4   rxn1320 rxn4518 rxn1283 rxn5690
+
