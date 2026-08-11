@@ -205,6 +205,43 @@ lag schlicht kein Modell tiefer — das ist kein gewonnener Vergleich, sondern e
 nicht stattgefundener. Nur bei zweien haben wir einen tieferen Modellpunkt aktiv
 entkräftet, und zwar über den Gradienten, nicht über die Mode.
 
+### Und die acht zerfallen noch einmal
+
+Von den acht ohne tieferen Konkurrenten liegen **sechs so dicht beieinander,
+dass von zwei verschiedenen Punkten keine Rede ist**:
+
+```
+rxn7060   +0 meV      rxn8827  +20 meV
+rxn3107   +1 meV      ---------------------
+rxn0346   +2 meV      rxn0894  +68 meV
+rxn6196   +8 meV      rxn8837 +1034 meV
+rxn8832  +12 meV
+```
+
+Bei den oberen sechs sitzt das nächste Modell zwischen 0 und 20 meV über
+unserem Punkt. Dort ist niemand richtiger — beide Seiten haben denselben
+Übergangszustand gefunden. Diese sechs als Sieg zu zählen, überzeichnet.
+
+Echte Überlegenheit unserer Referenz bleibt bei **sechs** Reaktionen:
+
+| Grund | Reaktionen |
+|---|---|
+| direkter Vergleich gewonnen | rxn7949, rxn1147 |
+| Modell liegt tiefer, ist aber nicht stationär | rxn4113, rxn8885 |
+| Modell liegt deutlich höher | rxn0894 (+68 meV), rxn8837 (+1034 meV) |
+
+**Die ehrliche Bilanz über die 19 lautet damit:**
+
+| | n |
+|---|---|
+| unsere Referenz nachweislich besser | **6** |
+| Modelle nachweislich besser | **3** |
+| beide Seiten auf demselben Punkt, kein Unterschied | **6** |
+| offen | **4** |
+
+Und auch bei den sechs heißt „besser als die Modelle" nicht „richtig" — ein
+tieferer Sattelpunkt anderswo lässt sich nie ausschließen.
+
 ## Vollständige Zuverlässigkeitsliste
 
 ```
@@ -371,6 +408,83 @@ UNRESOLVED        4   rxn1320 rxn4518 rxn1283 rxn5690
 
 Als Abbildung: `ts_reliability_table.png`, nach Ausgang gruppiert, jede Zeile mit
 dem Beleg, der sie entschieden hat.
+
+---
+
+# Gegenprüfung in einem zweiten Code
+
+Bis hierher stammte jede Zahl aus PySCF. Die numerischen Hesse-Matrizen tragen
+jedes Stufe-2- und jedes Stufe-3-Urteil in diesem Dokument und waren gegen
+nichts geprüft. ORCA 5.0.4 rechnet dieselben vier strittigen Strukturen bei
+wB97M-V/def2-TZVP nach — anderer Code, anderes Integrationsgitter, andere
+VV10-Implementierung, andere Auslenkung (0.005 statt 0.01 Bohr).
+
+## Die Hesse-Matrizen
+
+```
+Struktur          imag. Frequenz ORCA / PySCF   Modenüberlapp   Modenanteil
+rxn1147 unserer        -581.13 / -590.84          0.999655      0.601 / 0.601
+rxn1147 UMA-S          -252.90 / -253.49          0.999927      0.242 / 0.241
+rxn7957 unserer        -670.84 / -677.04          0.999355      0.272 / 0.275
+rxn7957 UMA-M          -696.27 / -690.26          0.999709      0.750 / 0.744
+```
+
+Genau eine imaginäre Mode in beiden Codes bei allen vier. Die reaktiven
+Bindungsraten — die Zahlen, mit denen rxn1147 und rxn7957 entschieden wurden —
+stimmen auf drei Stellen:
+
+```
+rxn1147 UMA-S   C1-O5 rate  0.059 / 0.058   bei 1.497 Å
+rxn7957 UMA-M   C1-H7 rate  1.015 / 1.012   bei 1.866 Å
+rxn7957 unserer C5-H7 rate  0.061 / 0.061   bei 1.120 Å
+```
+
+Über alle realen Moden liegt die mittlere Abweichung bei 1.5 bis 2.9 cm⁻¹. Eine
+Ausnahme gehört genannt: bei rxn1147/UMA-S weicht die weichste reale Mode um
+44 cm⁻¹ ab (68.5 gegen 24.1). Eine sehr flache Torsion, bei der die numerische
+Differenzierung stark auf die Schrittweite reagiert. Die Reaktionsmode ist
+davon nicht betroffen.
+
+## Was das nebenbei beweist
+
+**ORCA hält die Symmetriebrechung über die Auslenkungen.** Das war die
+eigentliche Frage, und ORCA beantwortet sie nicht direkt: `NumFreq` schreibt ein
+reduziertes Protokoll, die SCF-Ausgabe jedes der 66 Punkte landet in
+`numfreq.lastscf` und wird überschrieben. Die geplante ⟨S²⟩-Spur gibt es nicht.
+Die Übereinstimmung der Hesse-Matrizen ist der stärkere Ersatz: ein Punkt, der
+auf die geschlossenschalige Lösung springt, verdirbt seine Spalte, und bei einem
+Modenüberlapp von 0.9994 ist keiner gesprungen. Damit ist auch klar, dass das
+Problem des BS-NEB nicht an ORCA lag, sondern an `BrokenSym` in einem Verfahren
+mit unabhängigen Bildern.
+
+## Die Geometrien und die Energien
+
+```
+Struktur          Gradient ORCA   Gradient PySCF
+rxn1147 unserer      0.0097            —          eV/Å
+rxn1147 UMA-S        0.0814          0.077
+rxn7957 unserer      0.0108            —
+rxn7957 UMA-M        0.1108          0.113
+rxn8885 neu          0.0061            —
+```
+
+**Unsere auf der PySCF-Fläche optimierten Sattelpunkte sind auch für ORCA
+stationär**, auf etwa 0.01 eV/Å, während die Modellgeometrien 8- bis 11-mal
+weiter davon entfernt liegen. Und die Gradienten an den Modellgeometrien stimmen
+zwischen beiden Codes auf 2 bis 4 meV/Å — das referenzfreie Gradientenmaß im
+nächsten Abschnitt steht damit nicht mehr auf einem Code allein.
+
+Die Energiedifferenzen, die als Schiedsrichter dienen, ebenfalls:
+
+```
+rxn1147   UMA-S gegen unseren   ORCA -233.5 meV   PySCF -234 meV
+rxn7957   UMA-M gegen unseren   ORCA -890.1 meV   PySCF -890 meV
+```
+
+Und die spingebrochenen Lösungen selbst: ⟨S²⟩ 0.455824 gegen 0.455834 bei
+rxn1147, 1.028296 gegen 1.028274 an der neuen rxn8885-Struktur.
+
+Rohausgabe in `hess_cross_check.txt`, erzeugt von `pipeline/hess_compare.py`.
 
 ---
 
@@ -750,7 +864,7 @@ Konformations- vom Chemiefehler trennt, nicht als Leistungsurteil.
 
 # Verworfen
 
-## Die Endpunktprüfung ist untauglich
+## Die Endpunktprüfung ist untauglich — und was an ihre Stelle tritt
 
 Gebaut als Ersatz für einen IRC: entlang der imaginären Mode in beide Richtungen
 auslenken, relaxieren, sehen wo man landet. Sie liefert **falsch-negative**
@@ -773,9 +887,35 @@ verloren, und das Ergebnis hängt nur noch davon ab, auf welcher Seite des
 tatsächlichen Grats der ausgelenkte Punkt lag.
 
 **Folge:** fünf auf dieser Grundlage vorgenommene Aufwertungen — rxn0346,
-rxn0894, rxn3107, rxn7957, rxn8827 — sind zurückgenommen. Ein echter IRC
-(massengewichteter steilster Abstieg, kleine Schritte) hätte diesen Fehlermodus
-nicht; PySCF hat keinen, ORCA hat einen, bräuchte aber seine eigene Hesse-Matrix.
+rxn0894, rxn3107, rxn7957, rxn8827 — sind zurückgenommen.
+
+### Der Ersatz: ORCAs IRC
+
+Ein echter IRC hat diesen Fehlermodus nicht. Er ist definitionsgemäß der Weg des
+steilsten Abstiegs in massengewichteten Koordinaten, mit kleinen festen
+Schritten, und verlässt den Talboden nicht.
+
+Warum ORCA und nicht selbst geschrieben: die Definition hinzuschreiben ist
+leicht, sie mit einem Euler-Integrator in einem gekrümmten Tal ohne Abdriften
+zu integrieren nicht. Ein ungeprüfter eigener Integrator wäre genau das, was die
+Endpunktprüfung schon war. (`pipeline/bs_irc2.py` enthält eine solche
+Implementierung als Rückfalloption, ausdrücklich als ungeprüft gekennzeichnet;
+sie kommt nur zum Zug, wenn der getestete Code die Aufgabe nicht kann.)
+
+Die Voraussetzungen dafür sind im Abschnitt *Gegenprüfung* nachgewiesen: unsere
+Geometrien sind auch für ORCA stationär, und die Symmetriebrechung hält über die
+Auslenkungen. `InitHess read` liest die bereits gerechnete `numfreq.hess`.
+
+**Was der IRC beantworten soll:** ob der Pfad, der von unserem Sattelpunkt
+bergab führt, durch die Modellstruktur **hindurchläuft**. Tut er das, liegt sie
+hinter dem Übergangszustand, und die Entscheidung hängt nicht mehr an meinem
+Satz „eine Bindung bei 1.497 Å ist fertig". Die Rivalen liegen nur 0.26 Å
+(rxn1147) und 0.20 Å (rxn7957) entfernt, also fällt die Antwort in den ersten
+Schritten. Ausgewertet mit `pipeline/irc_bond_trace.py`, das nicht den Endpunkt
+ausgibt, sondern die Bindungsspur und den kleinsten Abstand des Pfades zur
+Rivalenstruktur.
+
+**Stand:** läuft (Job 10727328, vier Läufe, 60 Schritte je Richtung).
 
 ## Die `tight`-Reparatur ist gescheitert
 
@@ -859,17 +999,25 @@ erst jenseits des Coulson-Fischer-Punkts ein.
 
 # Offene Punkte
 
-**Zwei Frequenzrechnungen.** Die Reparaturläufe haben zwei neue Strukturen
-erzeugt, für die noch keine vorliegt:
+**Zwei Frequenzrechnungen** (laufen, Job 10726344, in der ORCA-Kette). Die
+Reparaturläufe haben zwei Strukturen erzeugt, für die noch keine vorliegt.
+Beide wurden von einer Modellgeometrie aus gestartet, nachdem die Optimierung
+von der Referenz aus gescheitert war:
 
-| rxn | gestartet von | Ergebnis | Abstand zur bisherigen Struktur |
-|---|---|---|---|
-| rxn8885 | eSEN-Geometrie | konvergiert, ⟨S²⟩ 1.028 | **1.475 Å** — ein völlig anderer Punkt |
-| rxn1283 | UMA-S-Geometrie | konvergiert, ⟨S²⟩ 1.004 | 0.376 Å — überhaupt zum ersten Mal konvergiert |
+| rxn | Ergebnis | gegen die bisherige Struktur |
+|---|---|---|
+| rxn8885 | konvergiert, ⟨S²⟩ 1.028, Gradient 0.0061 eV/Å | **1.475 Å entfernt, 425 meV tiefer** |
+| rxn1283 | konvergiert, ⟨S²⟩ 1.004 | 0.376 Å, 9 meV höher — erstmals überhaupt konvergiert |
 
-rxn8885 steht in der Urteilstabelle derzeit als „unsere Referenz", gestützt auf
-eine Struktur bei ⟨S²⟩ = 0.153. Die neue bei 1.028 ist das vermutete zweite
-Becken; das Urteil kann sich ändern. Je Rechnung etwa 2–3 h.
+**rxn8885 kann eine Urteilszeile umdrehen.** Die Reaktion steht derzeit als
+„unsere Referenz", gestützt auf eine mit `BS_LOST` markierte Struktur bei
+⟨S²⟩ = 0.153, unter der UMA-S 342 meV tiefer liegt. Die neue Struktur bei
+⟨S²⟩ = 1.028 ist das vermutete zweite Becken und liegt 425 meV unter der alten
+— gegen sie läge UMA-S dann **84 meV darüber**. Aus „ein Modell liegt tiefer,
+ist aber nicht stationär" würde „kein Modell liegt tiefer". Vorausgesetzt, die
+neue Struktur trägt genau eine imaginäre Frequenz auf der reaktiven Mode.
+
+rxn1283 würde einen der vier offenen Fälle schließen. Je Rechnung etwa 2–3 h.
 
 **Strukturelle Grenzen, keine Lücken, die man schließen könnte:**
 
