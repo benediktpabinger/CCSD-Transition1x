@@ -99,13 +99,36 @@ def main(rx, src, rival=None):
         if g and os.path.exists(g):
             refs[rival] = read_xyz(g)[1]
 
-    cands = sorted(glob.glob(f'{W}/*IRC_Full_trj.xyz')
-                   or glob.glob(f'{W}/*IRC*trj.xyz'))
-    if not cands:
+    # Full path if both halves are done, otherwise whichever half exists. A
+    # single half is not enough to conclude anything: the rival typically sits
+    # on one side only, so the missing branch is the one that would show it.
+    full = sorted(glob.glob(f'{W}/*IRC_Full_trj.xyz'))
+    fwd = sorted(glob.glob(f'{W}/*IRC_F_trj.xyz'))
+    bwd = sorted(glob.glob(f'{W}/*IRC_B_trj.xyz'))
+    if full:
+        cands, frames = full, read_multi_xyz(full[0])
+        complete = True
+    elif fwd or bwd:
+        # Both halves start at the saddle and walk outwards, so concatenating
+        # them as written puts the saddle in the middle twice and inserts a
+        # jump that is not on any path. Reversing the backward branch first
+        # gives one continuous path: valley - saddle - valley.
+        b = read_multi_xyz(bwd[0])[::-1] if bwd else []
+        f = read_multi_xyz(fwd[0]) if fwd else []
+        frames = b + f
+        cands = bwd + fwd
+        complete = bool(b) and bool(f)
+    else:
         print(f'{W}: no IRC trajectory'); return 1
-    frames = read_multi_xyz(cands[0])
     print(f'=== {rx} [{src}]   {len(frames)} points from '
-          f'{os.path.basename(cands[0])}')
+          + ', '.join(os.path.basename(c) for c in cands)
+          + (f'   (backward branch reversed, saddle at index {len(b)})'
+             if not full and bwd else ''))
+    if not complete:
+        print('    INCOMPLETE: only one branch is on disk. The rival usually')
+        print('    lies on one side of the saddle, so the missing branch is')
+        print('    exactly the one that would run through it. Nothing here')
+        print('    can be concluded yet.')
     print(f'    reactive bonds: ' + ', '.join(nm for _, _, nm in pairs))
     hdr = '    idx  ' + '  '.join(f'{nm:>9}' for _, _, nm in pairs)
     hdr += '  ' + '  '.join(f'{k[:9]:>9}' for k in refs)
@@ -126,13 +149,23 @@ def main(rx, src, rival=None):
               f'of {len(frames) - 1}')
     if rival and rival in best:
         v, i = best[rival]
-        mid = len(frames) // 2
-        side = 'forward' if i > mid else 'backward'
-        print(f'\n    the {rival} structure sits {v:.4f} A from the path, on '
-              f'the {side} branch')
-        print('    a small value means it lies on this reaction path downhill '
-              'of this saddle,\n    and is therefore not a transition state '
-              'of this reaction')
+        d0 = kabsch(frames[0][1], refs[rival])
+        print(f'\n    {rival}: {d0:.4f} A from the saddle at the start of the '
+              f'path, {v:.4f} A at closest (point {i})')
+        if not complete:
+            print('    verdict withheld: one branch missing')
+        elif v < 0.10 and i > 2:
+            print(f'    ON THE PATH. The descent from this saddle runs through '
+                  f'the {rival} structure,\n    so that structure lies past the '
+                  f'transition state and is not one itself.')
+        elif v >= d0 - 0.01:
+            print(f'    OFF THE PATH. The path only moves away from {rival} '
+                  f'({d0:.3f} -> {v:.3f} A at\n    closest), so the two are on '
+                  f'separate descents and the energy comparison\n    between '
+                  f'them does not decide which is the transition state.')
+        else:
+            print(f'    inconclusive: the path approaches {rival} to '
+                  f'{v:.4f} A but does not pass through it')
     return 0
 
 

@@ -18,7 +18,13 @@ Two separate problems, two remedies.
     remedy is a different starting point, not a different step size: begin at
     the model geometry where the breaking is strongest, as was done for rxn4113.
 
+The `tight` remedy failed: all three reconverged to the same structure they came
+from, rxn1320 to within 0.0009 A. The wrong saddle is where the optimisation
+robustly goes from the reference, not an artefact of step size. Only `frommodel`
+has ever produced a different answer -- three times out of three tried.
+
 Usage: python bs_tsopt_retry.py <rxn> <mode>     mode = tight | frommodel
+Environment: TSOPT_OUT overrides the output directory.
 """
 import glob
 import json
@@ -32,7 +38,9 @@ from pyscf import dft, gto
 from pyscf.geomopt import geometric_solver
 
 HOME = '/home/energy/s242862'
-OUTDIR = f'{HOME}/bs_tsopt_retry'
+# configurable so a second sweep does not overwrite the first: the tight runs
+# for rxn1320, rxn4518 and rxn5691 already occupy bs_tsopt_retry/
+OUTDIR = os.environ.get('TSOPT_OUT', f'{HOME}/bs_tsopt_retry')
 BASIS = 'def2-tzvp'
 XC = 'wb97m_v'
 BOHR = 0.529177210903

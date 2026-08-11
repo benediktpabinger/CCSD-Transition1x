@@ -1,0 +1,74 @@
+GRADIENT SCREEN OVER EVERY MODEL GEOMETRY
+==============================================================================
+A confirmed saddle of ours measures 0.006 to 0.011 eV/A in ORCA.
+
+bucket      range eV/A      simple     MR   meaning
+stationary  0.00 - 0.05         22      2   a stationary point is right here
+near        0.05 - 0.15         51     29   one is very close; Hessian informative
+off         0.15 - 0.30          4     15   not stationary
+far off     > 0.30               1     10   not stationary, badly
+
+simple: n=78  median 0.066  Q1 0.049  Q3 0.096  max 0.591
+
+MR: n=56  median 0.138  Q1 0.082  Q3 0.200  max 1.123
+
+
+WORK LIST: geometries where a Hessian would say something
+==============================================================================
+cut at 0.15 eV/A -- above that the point is not stationary and the
+answer is already known
+
+  already computed        13
+  to compute              91   (18 MR, 73 simple)
+  not stationary, skip    30   (25 MR, 5 simple)
+
+MR geometries to compute, by gradient:
+  rxn1320  UMA-M    0.044  BS
+  rxn4518  eSEN     0.051  BS
+  rxn4518  UMA-M    0.055  BS
+  rxn4518  UMA-S    0.058  BS
+  rxn1320  UMA-S    0.069  BS
+  rxn8832  UMA-M    0.075  BS
+  rxn6196  UMA-S    0.090  BS
+  rxn3107  UMA-M    0.092  BS
+  rxn8832  UMA-S    0.096  BS
+  rxn8837  eSEN     0.101  RKS
+  rxn1283  eSEN     0.105  BS
+  rxn5690  UMA-M    0.112  BS
+  rxn1320  eSEN     0.117  BS
+  rxn1283  UMA-M    0.125  BS
+  rxn8827  UMA-M    0.134  BS
+  rxn6196  UMA-M    0.138  BS
+  rxn6196  eSEN     0.140  BS
+  rxn3107  eSEN     0.143  BS
+
+simple geometries to compute: 73
+  (three models per reaction agree to 0.0045 A median there, so one per
+   reaction is enough as a control group)
+  rxn10005 UMA-M    0.030  RKS
+  rxn1962  eSEN     0.032  RKS
+  rxn7937  UMA-M    0.033  RKS
+  rxn4519  UMA-M    0.035  RKS
+  rxn4114  UMA-S    0.036  RKS
+  rxn1155  UMA-M    0.038  RKS
+  rxn4060  UMA-M    0.038  RKS
+  rxn4003  UMA-S    0.040  RKS
+  rxn7955  UMA-M    0.041  RKS
+  rxn8829  UMA-M    0.042  RKS
+  rxn1154  UMA-M    0.044  RKS
+  rxn1061  UMA-M    0.046  RKS
+  rxn1961  UMA-M    0.047  RKS
+  rxn2553  UMA-S    0.049  RKS
+  rxn4004  UMA-M    0.058  RKS
+  rxn7945  UMA-S    0.059  RKS
+  rxn0896  UMA-S    0.064  RKS
+  rxn7936  UMA-M    0.065  RKS
+  rxn10054 UMA-M    0.066  BS
+  rxn9246  UMA-M    0.070  RKS
+  rxn1150  UMA-M    0.071  RKS
+  rxn4498  UMA-M    0.075  RKS
+  rxn4063  UMA-S    0.082  RKS
+  rxn0101  UMA-M    0.097  RKS
+  rxn4500  UMA-M    0.102  RKS
+  rxn4513  eSEN     0.150  RKS
+  -> 26 distinct reactions

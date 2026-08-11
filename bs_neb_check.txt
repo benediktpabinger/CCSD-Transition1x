@@ -1,0 +1,63 @@
+THE ORCA BS-NEB-TS STRUCTURES
+========================================================================================================
+Distances in A. "ours" is the PySCF BS transition state, whose origin is
+given in the last column. The NEB never used it as a starting point.
+
+rxn      phase      ours   UMA-S   UMA-M   eSEN   closest to    reactive bonds        ours from
+--------------------------------------------------------------------------------------------------------
+rxn0346  NEB-TS    0.176   0.145   0.172   0.138   eSEN          C5-H10 1.85 C2-C5 1.65batch
+rxn0894  NEB-TS    1.142   1.149   1.763   1.918   ours          C4-H8 1.68 C0-H8 4.23 batch
+rxn1147  NEB-TS    0.022   0.246   0.240   0.241   ours          C1-C2 3.21 C1-O5 1.87 batch
+rxn1150  NEB-TS        -   0.091   0.092   0.093   UMA-S         -                     -
+rxn1283  CI        0.348   0.765   0.782   0.754   ours          C4-O5 3.94 O2-O5 3.58 v2
+rxn1320  NEB-TS    1.072   0.378   0.376   0.381   UMA-M         C2-H6 1.98 O0-H6 0.99 batch
+rxn3107  CI        0.873   0.903   0.895   0.890   ours          C2-O3 2.06 C2-N5 2.48 v2
+rxn4113  NEB-TS    0.008   0.930   1.142   0.927   ours          O0-C3 3.71 N2-C3 3.15 fromneb
+rxn4518  no converged structure
+rxn4522  NEB-TS    0.495   0.638   0.638   0.636   ours          O3-C4 2.93 N0-O3 2.92 batch
+rxn5690  NEB-TS        -   0.395   0.395   0.413   UMA-M         C3-H8 1.18 C1-C4 1.78 -
+rxn5691  CI        0.598   0.271   0.201   0.264   UMA-M         O0-N6 2.21 C4-N6 2.17 batch
+rxn6196  NEB-TS    0.134   0.119   0.126   0.125   UMA-S         C2-C5 1.89 C2-H10 1.93fromneb
+rxn7060  no converged structure
+rxn7936  CI            -   0.006   0.005   0.007   UMA-M         -                     -
+rxn7945  NEB-TS        -   0.656   0.660   0.792   UMA-S         -                     -
+rxn7949  no converged structure
+rxn7957  NEB-TS    0.019   0.201   0.209   0.203   ours          C1-H7 2.48 C5-H7 1.12 v2
+rxn8827  NEB-TS    0.366   0.226   0.252   0.278   UMA-S         N0-C5 1.96 C4-C5 2.32 batch
+rxn8832  NEB-TS    0.107   0.198   0.154   0.175   ours          C1-C6 1.74 C1-C2 1.48 v2
+rxn8837  NEB-TS    0.003   2.810   2.109   1.822   ours          N0-C6 2.05 C4-C6 2.33 batch
+rxn8885  no converged structure
+
+Which side the independent NEB lands nearer to (0.05 A tolerance):
+  ours       6   rxn1147 rxn1283 rxn4113 rxn4522 rxn7957 rxn8837
+  model      3   rxn1320 rxn5691 rxn8827
+  neither    5   rxn0346 rxn0894 rxn3107 rxn6196 rxn8832
+
+<S^2> WITH THE HIGH-SPIN REFERENCE SEPARATED OUT
+========================================================================================================
+BrokenSym converges the triplet first; those values sit near 2.0 and are
+not part of the path. Only the remainder describes the band.
+
+rxn        n_HS  n_BS   BS min   BS max  BS mean  BS>0.3
+rxn0346       1    15    0.000    0.000    0.000       0
+rxn0894       1    29    0.000    1.037    0.428      12
+rxn1147       1    28    0.000    0.509    0.188      11
+rxn1150       1    20    0.000    0.000    0.000       0
+rxn1283       1    62    0.000    0.000    0.000       0
+rxn1320       1    53    0.000    0.000    0.000       0
+rxn3107       1    72    0.000    0.454    0.201      28
+rxn4113       1    35    0.000    0.982    0.693      25
+rxn4518       1    11    0.000    0.000    0.000       0
+rxn4522       1    23    0.000    0.950    0.490      12
+rxn5690       1    61    0.000    0.000    0.000       0
+rxn5691       1    61    0.000    1.017    0.716      48
+rxn6196       1    76    0.000    0.000    0.000       0
+rxn7060       1    16    0.000    0.000    0.000       0
+rxn7936       1    61    0.000    0.000    0.000       0
+rxn7945       1    41    0.000    0.000    0.000       0
+rxn7949       1    13    0.000    0.000    0.000       0
+rxn7957       1    24    0.000    0.727    0.288      10
+rxn8827       1    20    0.000    0.000    0.000       0
+rxn8832       1    24    0.000    1.008    0.584      14
+rxn8837       1    29    0.000    1.039    0.677      19
+rxn8885       1    10    0.000    0.000    0.000       0

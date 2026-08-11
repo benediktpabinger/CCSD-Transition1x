@@ -1,0 +1,86 @@
+IS THE MODEL GEOMETRY THE SAME STRUCTURE AS OURS?
+================================================================================================
+same = RMSD < 0.05 A and both reactive bonds agree to 0.03 A
+where they are the same, our frequency already covers the model and no
+Hessian at the model geometry is needed
+
+rxn      group     model     RMSD      d1      d2   dE meV  freq   verdict
+------------------------------------------------------------------------------------------------
+rxn8837  A ours    UMA-S    2.809   4.127   0.852           NO     different
+rxn8837  A ours    UMA-M    2.109   2.105   1.047           NO     different
+rxn8837  A ours    eSEN     1.822   1.936   1.052           NO     different
+rxn7949  A ours    UMA-S    0.684   0.518   0.025           yes    different
+rxn7949  A ours    UMA-M    0.681   0.564   0.026           yes    different
+rxn7949  A ours    eSEN     0.687   0.570   0.026           yes    different
+rxn1147  A ours    UMA-S    0.256   0.374   0.367           yes    different
+rxn1147  A ours    UMA-M    0.249   0.369   0.365           yes    different
+rxn1147  A ours    eSEN     0.250   0.369   0.366           yes    different
+rxn4113  A ours    UMA-S    0.924   1.434   0.636           NO     different
+rxn4113  A ours    UMA-M    1.138   0.233   0.422           NO     different
+rxn4113  A ours    eSEN     0.921   1.422   0.616           NO     different
+rxn8885  A ours    UMA-S    0.492   1.240   0.092           NO     different
+rxn8885  A ours    UMA-M    0.053   0.004   0.001           NO     different
+rxn8885  A ours    eSEN     1.423   3.480   0.081           NO     different
+rxn0894  A ours    UMA-S    0.296   0.025   0.205           NO     different
+rxn0894  A ours    UMA-M    2.467   5.437   8.135           NO     different
+rxn0894  A ours    eSEN     2.568   5.678   8.456           NO     different
+rxn5691  B models  UMA-S    0.639   0.055   0.042           yes    different
+rxn5691  B models  UMA-M    0.532   0.102   0.020           yes    different
+rxn5691  B models  eSEN     0.630   0.061   0.042           yes    different
+rxn4522  B models  UMA-S    0.338   0.462   0.813           yes    different
+rxn4522  B models  UMA-M    0.332   0.461   0.817           yes    different
+rxn4522  B models  eSEN     0.333   0.459   0.796           yes    different
+rxn7957  B models  UMA-S    0.203   0.575   0.050           yes    different
+rxn7957  B models  UMA-M    0.212   0.596   0.070           yes    different
+rxn7957  B models  eSEN     0.204   0.578   0.053           yes    different
+rxn7060  C same?   UMA-S    0.039   0.022   0.003           NO     SAME structure
+rxn7060  C same?   UMA-M    0.010   0.004   0.002           NO     SAME structure
+rxn7060  C same?   eSEN     0.052   0.024   0.006           NO     different
+rxn3107  C same?   UMA-S    0.045   0.008   0.001           NO     SAME structure
+rxn3107  C same?   UMA-M    0.027   0.006   0.000           NO     SAME structure
+rxn3107  C same?   eSEN     0.023   0.007   0.002           NO     SAME structure
+rxn0346  C same?   UMA-S    0.037   0.044   0.012           NO     different
+rxn0346  C same?   UMA-M    0.010   0.010   0.015           NO     SAME structure
+rxn0346  C same?   eSEN     0.047   0.073   0.031           NO     different
+rxn6196  C same?   UMA-S    0.070   0.010   0.008           NO     different
+rxn6196  C same?   UMA-M    0.071   0.014   0.040           NO     different
+rxn6196  C same?   eSEN     0.073   0.015   0.039           NO     different
+rxn8832  C same?   UMA-S    0.157   0.007   0.000           NO     different
+rxn8832  C same?   UMA-M    0.107   0.004   0.002           NO     different
+rxn8832  C same?   eSEN     0.133   0.014   0.002           NO     different
+rxn8827  C same?   UMA-S    0.155   0.009   0.018           NO     different
+rxn8827  C same?   UMA-M    0.126   0.004   0.015           NO     different
+rxn8827  C same?   eSEN     0.099   0.011   0.012           NO     different
+rxn1320  D open    UMA-S    1.134   0.753   0.002           NO     different
+rxn1320  D open    UMA-M    1.128   0.758   0.002           NO     different
+rxn1320  D open    eSEN     1.125   0.751   0.001           NO     different
+rxn4518  D open    UMA-S    1.113   0.342   1.210           NO     different
+rxn4518  D open    UMA-M    1.088   0.390   1.190           NO     different
+rxn4518  D open    eSEN     1.136   0.224   1.358           NO     different
+rxn1283  D open    UMA-S    0.694   0.406   0.987           NO     different
+rxn1283  D open    UMA-M    0.683   0.193   1.025           NO     different
+rxn1283  D open    eSEN     0.680   0.400   0.921           NO     different
+rxn5690  D open    no saddle of ours to compare against
+
+model geometries identical to ours (no Hessian needed): 6
+    rxn7060 UMA-S
+    rxn7060 UMA-M
+    rxn3107 UMA-S
+    rxn3107 UMA-M
+    rxn3107 eSEN
+    rxn0346 UMA-M
+
+model geometries genuinely different and untested: 36
+    rxn8837  UMA-S UMA-M eSEN
+    rxn4113  UMA-S UMA-M eSEN
+    rxn8885  UMA-S UMA-M eSEN
+    rxn0894  UMA-S UMA-M eSEN
+    rxn7060  eSEN
+    rxn0346  UMA-S eSEN
+    rxn6196  UMA-S UMA-M eSEN
+    rxn8832  UMA-S UMA-M eSEN
+    rxn8827  UMA-S UMA-M eSEN
+    rxn1320  UMA-S UMA-M eSEN
+    rxn4518  UMA-S UMA-M eSEN
+    rxn1283  UMA-S UMA-M eSEN
+    rxn5690  UMA-S UMA-M eSEN

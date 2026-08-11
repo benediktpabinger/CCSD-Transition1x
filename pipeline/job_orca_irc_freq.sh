@@ -18,7 +18,9 @@
 #   1. Is our geometry stationary in ORCA's world?  It was optimised on the
 #      PySCF surface, with a different grid and a different VV10 implementation.
 #      A large gradient here means it is not a saddle for ORCA and the IRC would
-#      start from a point that is not on any path. ! EnGrad prints it.
+#      start from a point that is not on any path. Stage 1b prints it -- it has
+#      to be its own run, because ORCA allows no RunTyp but SinglePoint next to
+#      a stability analysis.
 #
 #   2. Does the broken-symmetry solution survive the 6N displacements?  This is
 #      what destroyed the BS-NEB: `BrokenSym` re-derives the broken guess at
@@ -75,10 +77,13 @@ cp $G start.xyz
 head -1 start.xyz
 
 # ---------------------------------------------------------------------------
-# Stage 1: broken-symmetry single point plus gradient.
+# Stage 1a: broken-symmetry single point.
+# The stability analysis has to stand alone: ORCA refuses any RunTyp other than
+# SinglePoint alongside STABPerform ("Only RunTyp == SinglePoint possible with
+# Stability Analysis"), so the gradient cannot be asked for in the same input.
 # ---------------------------------------------------------------------------
 cat > bs_sp.inp <<'EOF'
-! UKS wB97M-V def2-TZVP def2/J RIJCOSX TightSCF EnGrad
+! UKS wB97M-V def2-TZVP def2/J RIJCOSX TightSCF
 %pal nprocs 12 end
 %maxcore 3000
 %scf
@@ -90,24 +95,52 @@ end
 EOF
 
 echo ""
-echo "=== Stage 1: BS single point + gradient ==="
+echo "=== Stage 1a: BS single point ==="
 $ORCA bs_sp.inp > bs_sp.out 2> bs_sp.err
-echo "stage1 rc=$?"
+echo "stage1a rc=$?"
 grep -E 'FINAL SINGLE POINT ENERGY|Expectation value of <S\*\*2>|is unstable|is stable|ORCA finished by error' bs_sp.out | tail -8
 
 S2=$(grep 'Expectation value of <S\*\*2>' bs_sp.out | tail -1 | awk '{print $NF}')
-echo "S2_after_stage1 = $S2"
+echo "S2_after_stage1a = $S2"
 
+if [ ! -f bs_sp.gbw ]; then echo "NO GBW - stopping"; exit 1; fi
+cp bs_sp.gbw bs_start.gbw
+
+# ---------------------------------------------------------------------------
+# Stage 1b: gradient at the same geometry, reading those orbitals.
+# This is the first question: our geometry was optimised on the PySCF surface,
+# so is it stationary for ORCA at all?
+# ---------------------------------------------------------------------------
+cat > engrad.inp <<'EOF'
+! UKS wB97M-V def2-TZVP def2/J RIJCOSX TightSCF EnGrad MORead
+%moinp "bs_start.gbw"
+%pal nprocs 12 end
+%maxcore 3000
+%scf
+  MaxIter 300
+end
+* xyzfile 0 1 start.xyz
+EOF
+
+echo ""
+echo "=== Stage 1b: gradient ==="
+$ORCA engrad.inp > engrad.out 2> engrad.err
+echo "stage1b rc=$?"
+grep 'Expectation value of <S\*\*2>' engrad.out | tail -1
 echo "--- Cartesian gradient at the start geometry ---"
-awk '/CARTESIAN GRADIENT/{f=1} f{print} /Norm of the Cartesian gradient/{if(f)exit}' \
-    bs_sp.out | tail -25
+awk '/CARTESIAN GRADIENT/{f=1} f{print} /Difference to translation invariance/{if(f)exit}' \
+    engrad.out | tail -20
+echo "--- largest component ---"
+awk '/CARTESIAN GRADIENT/{f=1;next} f&&NF==6{v=$4<0?-$4:$4; if(v>m)m=v;
+     v=$5<0?-$5:$5; if(v>m)m=v; v=$6<0?-$6:$6; if(v>m)m=v}
+     /Difference to translation/{if(f){printf "  max |dE/dx| = %.6f Eh/Bohr = %.4f eV/A\n", m, m*51.42208; exit}}' \
+    engrad.out
 
 # ---------------------------------------------------------------------------
 # Stage 2: numerical frequencies, reading the broken-symmetry orbitals.
 # No STABPerform here -- redoing the stability analysis at every displacement
 # would be both ruinous and free to jump to a different solution.
 # ---------------------------------------------------------------------------
-cp bs_sp.gbw bs_start.gbw
 cat > numfreq.inp <<'EOF'
 ! UKS wB97M-V def2-TZVP def2/J RIJCOSX TightSCF NumFreq MORead
 %moinp "bs_start.gbw"
