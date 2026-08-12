@@ -1,0 +1,72 @@
+============================================================================
+1  HOW OFTEN DOES A MODEL LAND ON A FIRST-ORDER SADDLE?
+============================================================================
+stationary means gradient < 0.15 eV/A; our confirmed saddles are
+at 0.006 to 0.011. A point that is not stationary is not a saddle,
+whatever its Hessian says.
+
+multireference     n  stationary   1 imag   both   share
+UMA-S             19           7       16      6     32%
+UMA-M             19          13       17     12     63%
+eSEN              19          10       17      8     42%
+
+single-reference  26                          25     96%   (one geometry per reaction)
+
+============================================================================
+1b  THE SAME QUESTION FOR OUR OWN STRUCTURES AND FOR THE BENCHMARK
+    REFERENCE
+============================================================================
+The reference is the ORCA NEB transition state the whole benchmark is
+scored against. Its gradient is measured on the ground-state surface,
+which for the multireference reactions is the broken-symmetry one -- so
+the number says whether the reference is a stationary point of the
+surface the reaction actually runs on. No Hessian was ever computed at
+the reference, so its stage 2 is unknown by construction.
+
+                         n  stationary   1 imag  saddle   share
+ours, multireference    16          16       16      16    100%
+reference, multireference  19           0  unknown unknown           median grad 1.697 eV/A
+reference, single-reference  26          25  unknown unknown           median grad 0.043 eV/A
+
+Our structures are compared on their own terms: they were optimised to
+be saddles, so a high rate here is expected and is a check on the
+optimisation, not a result about the models. The reference row is the
+one that carries information -- it is what every RMSD in the benchmark
+is measured against.
+
+============================================================================
+2  DO THE THREE LAND ON THE SAME SADDLE?
+============================================================================
+same structure: RMSD < 0.1 A
+same chemistry: both reactive bonds within 0.05 A, conformation
+                allowed to differ
+
+rxn       saddles   pairwise RMSD           reaktive Abweichung    verdict
+rxn7949         2   0.039 - 0.039           0.006 - 0.006          same saddle
+rxn8832         2   0.051 - 0.051           0.003 - 0.003          same saddle
+rxn1320         3   0.009 - 0.016           0.002 - 0.007          same saddle
+rxn4113         0                                                  no model is a saddle
+rxn8885         0                                                  no model is a saddle
+rxn6196         3   0.006 - 0.012           0.001 - 0.033          same saddle
+rxn0346         0                                                  no model is a saddle
+rxn4518         1   —                       —                      only one model is a saddle
+rxn3107         1   —                       —                      only one model is a saddle
+rxn8837         0                                                  no model is a saddle
+rxn7060         0                                                  no model is a saddle
+rxn5691         1   —                       —                      only one model is a saddle
+rxn1283         2   0.064 - 0.064           0.208 - 0.208          *** DIFFERENT SADDLES ***
+rxn8827         1   —                       —                      only one model is a saddle
+rxn4522         3   0.012 - 0.016           0.003 - 0.021          same saddle
+rxn1147         3   0.018 - 0.032           0.001 - 0.005          same saddle
+rxn0894         0                                                  no model is a saddle
+rxn7957         3   0.011 - 0.019           0.003 - 0.021          same saddle
+rxn5690         1   —                       —                      only one model is a saddle
+
+    7   same saddle
+    6   no model is a saddle
+    5   only one model is a saddle
+    1   *** DIFFERENT SADDLES ***
+
+For the single-reference reactions the question does not arise: the
+three models agree there to 0.0045 A median over all 26, which is one
+structure by any measure.
