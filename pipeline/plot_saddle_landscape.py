@@ -1,32 +1,30 @@
 """One figure: which method found which saddle, and why the others did not.
 
-Two coupled panels sharing a row per reaction.
+One panel, one row per reaction, one cell per method. The cell says what
+happened, and its height says where that saddle sits:
 
-  left    the energy of every distinct saddle found for that reaction, relative
-          to the lowest one. Methods that landed on the same saddle sit on the
-          same level, so agreement is a cluster and disagreement is a vertical
-          gap you can measure against the axis.
-  right   one cell per method: what happened. A failure is not a blank -- "not
-          stationary" and "two imaginary modes" and "never computed" are
-          different outcomes and get different cells.
+  low      this method found the lowest saddle of that reaction
+  high     it found a valid saddle, but a higher one; the number above the cell
+           says by how much, in meV
+  centre   it found no saddle at all -- no energy, so no height
 
-Together they make the summary counts checkable: every number in the tables can
-be recounted off this figure.
+A failure is not a blank. "Not stationary", "two imaginary modes" and "never
+computed" are different outcomes and get different cells, because collapsing
+them is what let untested candidates read as refuted ones.
 
-Design notes, because they were choices:
+Design notes, since they were choices:
 
-  No categorical colour for the methods. Six hues in a scatter-like form cannot
-  clear the colourblind separation floors, and identity is already carried by
-  the letter in each marker. Colour is spent on emphasis instead -- the lowest
-  saddle of each reaction against the ones above it -- which is what the figure
-  is about.
+  The two greens are one hue at two steps, an ordinal pair: "lowest" and
+  "higher" are ordered states of one outcome, not two outcomes. Height and the
+  printed number carry the same distinction, so nothing rests on telling the
+  greens apart.
 
-  The state cells use the status palette only, kept distinct from any series
-  hue, and each carries a glyph as well, so nothing depends on colour alone.
+  Height is schematic. Drawing +20 meV and +1214 meV proportionally would make
+  the first invisible; drawing them equally would misstate the size. Height
+  carries the order, the number carries the size.
 
-  A symmetric-log energy axis. The gaps run from 20 to 1214 meV and most
-  reactions sit at exactly zero; a linear axis would put everything on the
-  baseline and a plain log axis cannot show the zero.
+  An earlier version put a separate energy panel beside the cells. It said the
+  same thing twice.
 """
 import glob
 import json
@@ -37,7 +35,6 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from matplotlib.lines import Line2D
 from matplotlib.patches import Rectangle
 from ase.data import atomic_masses, atomic_numbers
 
@@ -55,12 +52,13 @@ INK = '#0b0b0b'
 INK2 = '#52514e'
 INK3 = '#8a8985'
 GRID = '#e6e5e1'
-# emphasis: the lowest saddle against the rest
-LOW = '#2a78d6'
-HIGH = '#9a9995'
-# status palette, fixed, distinct from any series hue
-ST = {'ok': '#0ca30c', 'grad': '#d03b3b', 'nimag': '#ec835a',
-      'mode': '#fab219', 'none': '#dedcd6'}
+# Status palette, fixed and distinct from any series hue. The two greens are one
+# hue at two steps: an ordinal pair, since "lowest saddle" and "a saddle but a
+# higher one" are ordered states of the same outcome, not different outcomes.
+# Height and the printed offset carry the same distinction, so nothing rests on
+# the two greens being told apart.
+ST = {'low': '#076b07', 'ok': '#0ca30c', 'grad': '#d03b3b',
+      'nimag': '#ec835a', 'mode': '#fab219', 'none': '#dedcd6'}
 
 METHODS = [('Reference', 'R'), ('TS-Opt', 'T'), ('UMA-S', 'S'),
            ('UMA-M', 'M'), ('eSEN', 'E'), ('UKS-NEB', 'N')]
@@ -324,135 +322,104 @@ for rx in MR:
     e0 = min(x['e'] for x in valid) if valid else None
     levels = [(min(x['e'] for x in g) - e0) * HA_MEV
               if e0 is not None else 0.0 for g in groups]
-    rows.append({'rx': rx, 'nfod': nf[rx], 'state': state,
+    # which level each method sits on, so the cell itself can carry it
+    lvl = {}
+    for k, grp in enumerate(groups):
+        for v in grp:
+            lvl[v['name']] = k
+    for name in lvl:
+        state[name] = 'low' if lvl[name] == 0 else 'ok'
+    rows.append({'rx': rx, 'nfod': nf[rx], 'state': state, 'level': lvl,
                  'groups': groups, 'levels': levels})
-
 # ------------------------------------------------------------------ figure
 NR = len(rows)
-# The energy panel is deliberately narrower than the status panel: thirteen of
-# the nineteen reactions have every method on one level at zero, so most of its
-# width would be empty. The emptiness is the message, but it does not need
-# sixty percent of the figure to make it.
-fig = plt.figure(figsize=(11.6, 0.60 * NR + 3.6), facecolor=SURF)
-axE = fig.add_axes([0.150, 0.095, 0.245, 0.760])
-axS = fig.add_axes([0.500, 0.095, 0.360, 0.760], sharey=axE)
+# One panel. The cells carry the energy themselves now: a cell sits lower when
+# its method found the lowest saddle of that reaction, higher when it found a
+# valid one that is not the lowest, and at the row centre when it found no
+# saddle at all -- height only exists where an energy exists. A separate energy
+# panel beside this said the same thing twice.
+fig = plt.figure(figsize=(9.6, 0.60 * NR + 3.4), facecolor=SURF)
+axS = fig.add_axes([0.175, 0.100, 0.780, 0.740])
+axS.set_facecolor(SURF)
+for sp in axS.spines.values():
+    sp.set_visible(False)
 
-# The energy is drawn as a staircase, not on a scale. A logarithmic axis was
-# hard to read a position off, and thirteen of the nineteen reactions sit at
-# exactly zero, so most of its width carried nothing. Height now means only
-# "higher", and the amount is written next to the point where it applies.
-STEP_X, STEP_Y = 1.0, 0.21
-for ax in (axE, axS):
-    ax.set_facecolor(SURF)
-    for sp in ax.spines.values():
-        sp.set_visible(False)
-axE.set_xlim(-0.35, 2.5)
-axE.set_ylim(NR - 0.5, -0.5)
-axE.set_yticks(range(NR))
-axE.set_yticklabels([f'{r["rx"]}   {r["nfod"]:.2f}' for r in rows],
-                    fontsize=9.5, color=INK, family='DejaVu Sans')
-axE.tick_params(axis='y', length=0, pad=6)
-axE.set_xticks([])
-for i in range(NR):
-    axE.axhline(i, color=GRID, lw=0.7, zorder=0)
+# Schematic offset: drawing +20 meV and +1214 meV at proportional heights would
+# make the first invisible, and drawing them equal would be a lie about size.
+# So height carries the order and the printed number carries the size.
+DY, CH = 0.155, 0.215
+GLYPH = {'low': '✓', 'ok': '✓', 'grad': 'g', 'nimag': 'n', 'mode': 'm',
+         'none': '·'}
 
-for i, r in enumerate(rows):
-    if not r['groups']:
-        axE.text(0.0, i, 'kein gültiger Sattelpunkt', fontsize=9,
-                 color=INK3, va='center', style='italic')
-        continue
-    # a staircase: every further saddle one step up and to the right
-    pts = [(k * STEP_X, i - k * STEP_Y) for k in range(len(r['groups']))]
-    if len(pts) > 1:
-        px, py = zip(*pts)
-        axE.plot(px, py, color=GRID, lw=1.6, zorder=1, solid_capstyle='round')
-    for k, (grp, (x, y)) in enumerate(zip(r['groups'], pts)):
-        col = LOW if k == 0 else HIGH
-        # in the column order of the panel on the right, so the eye can move
-        # between the two halves without re-sorting
-        order = [m for m, _ in METHODS]
-        names = sorted((v['name'] for v in grp), key=order.index)
-        # One marker per saddle, not per method: four stacked markers inside a
-        # row overlap at any readable marker size, and the level is the object
-        # the figure is about. Who found it goes beside it as letters.
-        axE.scatter([x], [y], s=112, marker='o', facecolor=col,
-                    edgecolor=SURF, linewidth=1.8, zorder=4)
-        axE.annotate(' '.join(LETTER[n] for n in names),
-                     xy=(x, y), xytext=(10, 0), textcoords='offset points',
-                     fontsize=8.6, color=INK if k == 0 else INK2,
-                     va='center', ha='left', zorder=5,
-                     weight='bold' if k == 0 else 'normal',
-                     family='DejaVu Sans')
-        if k > 0:
-            axE.annotate(f'+{r["levels"][k]:.0f} meV', xy=(x, y),
-                         xytext=(0, 12), textcoords='offset points',
-                         fontsize=8.2, color=INK2, va='center', ha='center',
-                         family='DejaVu Sans')
-
-
-GLYPH = {'ok': '✓', 'grad': 'g', 'nimag': 'n', 'mode': 'm', 'none': '·'}
 axS.set_xlim(-0.5, len(METHODS) - 0.5)
+axS.set_ylim(NR - 0.5, -0.5)
 axS.set_xticks(range(len(METHODS)))
-axS.set_xticklabels([m for m, _ in METHODS], fontsize=9, color=INK,
-                    rotation=38, ha='left')
+axS.set_xticklabels([m for m, _ in METHODS], fontsize=9.5, color=INK,
+                    rotation=34, ha='left')
 axS.xaxis.set_ticks_position('top')
-axS.xaxis.set_label_position('top')
-axS.tick_params(axis='x', length=0, pad=4)
-axS.tick_params(axis='y', length=0, labelleft=False)
+axS.tick_params(axis='x', length=0, pad=5)
+axS.set_yticks(range(NR))
+axS.set_yticklabels([f'{r["rx"]}   {r["nfod"]:.2f}' for r in rows],
+                    fontsize=9.5, color=INK, family='DejaVu Sans')
+axS.tick_params(axis='y', length=0, pad=8)
+for i in range(1, NR):
+    axS.axhline(i - 0.5, color=GRID, lw=0.7, zorder=0)
+
 for i, r in enumerate(rows):
+    nlev = len(r['groups'])
     for j, (name, _) in enumerate(METHODS):
         s = r['state'].get(name, 'none')
-        axS.add_patch(Rectangle((j - 0.42, i - 0.36), 0.84, 0.72,
-                                facecolor=ST[s], edgecolor=SURF, lw=1.6,
+        # Only a higher saddle leaves the line. Lowering the lowest as well
+        # made the thirteen uncontested rows ragged for no reason, and put the
+        # failure cells -- which have no energy at all -- at an apparent height
+        # between the two.
+        k = r.get('level', {}).get(name)
+        y = i if not k else i - k * 2 * DY
+        axS.add_patch(Rectangle((j - 0.42, y - CH), 0.84, 2 * CH,
+                                facecolor=ST[s], edgecolor=SURF, lw=1.8,
                                 zorder=2))
-        axS.text(j, i, GLYPH[s], fontsize=8.6, ha='center', va='center',
+        axS.text(j, y, GLYPH[s], fontsize=9.0, ha='center', va='center',
                  color='white' if s != 'none' else INK3, zorder=3,
                  weight='bold')
+        if k is not None and k > 0:
+            axS.text(j, y + CH + 0.115, f'+{r["levels"][k]:.0f}',
+                     fontsize=8.2, ha='center', va='center', color=INK2,
+                     zorder=3, family='DejaVu Sans')
 
-fig.text(0.075, 0.968, 'Which saddle, found by whom — and why not',
+fig.text(0.045, 0.968, 'Which saddle, found by whom — and why not',
          fontsize=16.5, color=INK, weight='bold', ha='left')
 for k, line in enumerate([
         'The 19 reactions whose restricted reference solution is externally '
-        'unstable. Each point on the left is a distinct saddle and the letters',
-        'beside it name the methods that landed on it. Valid means: '
-        'stationary (gradient < 0.15 eV/Å), exactly one imaginary mode, and '
-        'that mode',
-        'moves this reaction’s bonds. Height is schematic — it means only '
-        '"higher"; the amount is written next to the point it applies to.']):
-    fig.text(0.075, 0.945 - 0.0165 * k, line, fontsize=9.5, color=INK2,
+        'unstable. Valid means: stationary (gradient < 0.15 eV/Å),',
+        'exactly one imaginary mode, and that mode moves this reaction’s '
+        'bonds. A cell is raised only when its method found a valid saddle',
+        'that is not the lowest one for that reaction; the number above it '
+        'says by how much, in meV. Everything else sits on the line.']):
+    fig.text(0.045, 0.940 - 0.0172 * k, line, fontsize=9.5, color=INK2,
              ha='left')
 
-fig.text(0.075, 0.888,
-         'T  TS-Opt (ours)    S  UMA-S    M  UMA-M    E  eSEN    N  UKS-NEB'
-         '          (the reference is never a valid saddle, so it appears '
-         'only on the right)',
-         fontsize=9, color=INK3, ha='left')
+fig.text(0.045, 0.878,
+         'Thirteen of the nineteen have every successful method on one level — '
+         'there the methods that find a saddle find the same one.',
+         fontsize=9.3, color=INK3, ha='left')
 
-leg = [Line2D([], [], marker='o', ls='', markersize=8.5, markerfacecolor=LOW,
-              markeredgecolor=SURF, label='lowest saddle found'),
-       Line2D([], [], marker='o', ls='', markersize=8.5, markerfacecolor=HIGH,
-              markeredgecolor=SURF, label='higher saddle')]
-fig.legend(handles=leg, loc='lower left', bbox_to_anchor=(0.073, 0.862),
-           bbox_transform=fig.transFigure, ncol=2, frameon=False,
-           fontsize=9.2, handletextpad=0.4, columnspacing=2.4)
-
-# Two rows, so the longest label cannot run off the right edge.
-items = [[('ok', 'valid saddle'),
-          ('grad', 'not stationary'),
-          ('nimag', 'wrong number of imaginary modes')],
-         [('mode', 'mode does not belong to this reaction'),
+items = [[('low', 'lowest saddle found'),
+          ('ok', 'a valid saddle, but higher'),
+          ('grad', 'not stationary')],
+         [('nimag', 'wrong number of imaginary modes'),
+          ('mode', 'mode does not belong to this reaction'),
           ('none', 'no structure, or no Hessian computed')]]
 for r_i, row_items in enumerate(items):
-    x0 = 0.075
-    y = 0.040 - 0.021 * r_i
+    x0 = 0.045
+    y = 0.042 - 0.022 * r_i
     for key, lab in row_items:
-        fig.patches.append(Rectangle((x0, y), 0.0125, 0.0115,
+        fig.patches.append(Rectangle((x0, y), 0.0135, 0.0125,
                                      transform=fig.transFigure,
                                      facecolor=ST[key], edgecolor=SURF,
                                      lw=1.2))
-        fig.text(x0 + 0.0150, y + 0.0012, f'{GLYPH[key]}  {lab}', fontsize=9,
+        fig.text(x0 + 0.0165, y + 0.0014, f'{GLYPH[key]}  {lab}', fontsize=9,
                  color=INK2, ha='left')
-        x0 += 0.0205 + 0.0071 * len(lab)
+        x0 += 0.0235 + 0.0086 * len(lab)
 
 fig.savefig(f'{H}/saddle_landscape.png', dpi=200, facecolor=SURF)
 print('written saddle_landscape.png')
