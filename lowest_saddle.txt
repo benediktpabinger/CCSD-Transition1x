@@ -1,0 +1,53 @@
+WHICH METHOD FINDS THE LOWEST SADDLE?
+====================================================================================================
+Scope: lowest among the candidates that clear all three stages for that
+reaction. Not the true transition state -- that cannot be established.
+
+rxn       valid distinct   winner(s)                         2nd place          gap meV
+----------------------------------------------------------------------------------------------------
+rxn7949       1        1   TS-Opt                            —                        —
+rxn8832       5        1   TS-Opt+TS-Opt ab UMA-M+UKS-NEB+UMA-M+UMA-S—                        —
+rxn1320       3        1   UMA-M+UMA-S+eSEN                  —                        —
+rxn4113       2        1   TS-Opt+UKS-NEB                    —                        —
+rxn8885       1        1   TS-Opt                            —                        —
+rxn6196       4        1   TS-Opt+UMA-M+UMA-S+eSEN           —                        —
+rxn0346       2        1   TS-Opt+TS-Opt ab UMA-M            —                        —
+rxn4518       1        1   UMA-M                             —                        —
+rxn3107       3        1   TS-Opt+TS-Opt ab UMA-M+UMA-M      —                        —
+rxn8837       2        1   TS-Opt+UKS-NEB                    —                        —
+rxn7060       1        1   TS-Opt                            —                        —
+rxn5691       1        1   eSEN                              —                        —
+rxn1283       2        2   eSEN                              UMA-M                   26
+rxn8827       3        1   TS-Opt+TS-Opt ab UMA-M+UMA-M      —                        —
+rxn4522       4        2   UMA-M+UMA-S+eSEN                  UKS-NEB               1214
+rxn1147       6        2   TS-Opt ab UMA-M+UMA-M+UMA-S+eSEN  TS-Opt+UKS-NEB         238
+rxn0894       2        2   TS-Opt                            UKS-NEB                686
+rxn7957       6        2   TS-Opt ab UMA-M+UMA-M+UMA-S+eSEN  TS-Opt+UKS-NEB         891
+rxn5690       2        2   UKS-NEB                           UMA-M                   20
+
+How often did each method produce the lowest saddle, how often did it
+produce a valid saddle at all, and -- the column that decides whether
+the others can be compared -- on how many reactions was it even tried?
+
+Methode              versucht  gueltig niedrigster  Abdeckung
+TS-Opt                     18       13          11        72%
+UMA-M                      19       11           9        58%
+eSEN                       19        7           7        37%
+UMA-S                      19        6           6        32%
+TS-Opt ab UMA-M             9        6           6        67%
+UKS-NEB                    12        8           4        67%
+
+versucht    reactions where the method was run at all. The from-model
+            optimisations were only ever started on 10 of the 19, and 9
+            of those 10 from UMA-M alone, so that row is not on the same
+            footing as the rest and its rate is not comparable.
+gueltig     produced a structure clearing all three stages
+niedrigster was in the lowest group, ties included -- and 13 of 19
+            reactions have only one distinct saddle, so most of these
+            are ties rather than victories
+
+distinct saddles per reaction: 1.32 on average, 6 of 19 reactions have more than one
+
+energies from mixed sources in 3 reactions: rxn4522 rxn1147 rxn7957
+ORCA and PySCF agree to under 1 meV where both exist, so the comparison holds,
+but it is not a single-code number.
