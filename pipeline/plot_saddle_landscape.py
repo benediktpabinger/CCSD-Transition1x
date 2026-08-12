@@ -57,8 +57,12 @@ GRID = '#e6e5e1'
 # higher one" are ordered states of the same outcome, not different outcomes.
 # Height and the printed offset carry the same distinction, so nothing rests on
 # the two greens being told apart.
-ST = {'low': '#076b07', 'ok': '#0ca30c', 'grad': '#d03b3b',
-      'nimag': '#ec835a', 'mode': '#fab219', 'none': '#dedcd6'}
+ST = {'low': '#076b07', 'ok': '#4cbf4c', 'grad': '#d03b3b',
+      'nimag': '#ec835a', 'mode': '#fab219',
+      # These two were one grey cell reading "no structure or no Hessian",
+      # which put a failure of the method and a gap in our own work under the
+      # same label. They mean opposite things and now look different.
+      'nostruct': '#b9b7b0', 'untested': '#eceae4'}
 
 METHODS = [('Reference', 'R'), ('TS-Opt', 'T'), ('UMA-S', 'S'),
            ('UMA-M', 'M'), ('eSEN', 'E'), ('UKS-NEB', 'N')]
@@ -276,17 +280,21 @@ for rx in MR:
     state, valid = {}, []
     for name, _ in METHODS:
         d = info[name]
+        # "the method produced nothing" and "we never checked" are separate
+        # outcomes: the first is a result about the method, the second is a
+        # hole in our own work, and reading the second as the first is the
+        # mistake this whole project spent weeks recovering from.
         if not d['geom']:
-            state[name] = 'none'
+            state[name] = 'nostruct'
             continue
         if d['grad'] is None:
-            state[name] = 'none'
+            state[name] = 'untested'
             continue
         if d['grad'] >= GRAD_OK:
             state[name] = 'grad'
             continue
         if not d['hess']:
-            state[name] = 'none'
+            state[name] = 'untested'
             continue
         try:
             sym, xyz = read_xyz(d['geom'])
@@ -294,7 +302,7 @@ for rx in MR:
                   else np.load(d['hess']))
             a = analyse(hs, sym, xyz, pairs) if pairs else None
         except Exception:
-            state[name] = 'none'
+            state[name] = 'untested'
             continue
         if a is None or a['n_imag'] != 1:
             state[name] = 'nimag'
@@ -303,7 +311,7 @@ for rx in MR:
             state[name] = 'mode'
             continue
         if d['e'] is None:
-            state[name] = 'none'
+            state[name] = 'untested'
             continue
         state[name] = 'ok'
         valid.append({'name': name, 'e': d['e'], 'xyz': xyz})
@@ -338,8 +346,8 @@ NR = len(rows)
 # valid one that is not the lowest, and at the row centre when it found no
 # saddle at all -- height only exists where an energy exists. A separate energy
 # panel beside this said the same thing twice.
-fig = plt.figure(figsize=(9.6, 0.60 * NR + 3.4), facecolor=SURF)
-axS = fig.add_axes([0.175, 0.100, 0.780, 0.740])
+fig = plt.figure(figsize=(9.6, 0.60 * NR + 3.6), facecolor=SURF)
+axS = fig.add_axes([0.175, 0.118, 0.780, 0.725])
 axS.set_facecolor(SURF)
 for sp in axS.spines.values():
     sp.set_visible(False)
@@ -349,7 +357,7 @@ for sp in axS.spines.values():
 # So height carries the order and the printed number carries the size.
 DY, CH = 0.155, 0.215
 GLYPH = {'low': '✓', 'ok': '✓', 'grad': 'g', 'nimag': 'n', 'mode': 'm',
-         'none': '·'}
+         'nostruct': '–', 'untested': '?'}
 
 axS.set_xlim(-0.5, len(METHODS) - 0.5)
 axS.set_ylim(NR - 0.5, -0.5)
@@ -369,20 +377,19 @@ for i, r in enumerate(rows):
     nlev = len(r['groups'])
     for j, (name, _) in enumerate(METHODS):
         s = r['state'].get(name, 'none')
-        # Only a higher saddle leaves the line. Lowering the lowest as well
-        # made the thirteen uncontested rows ragged for no reason, and put the
-        # failure cells -- which have no energy at all -- at an apparent height
-        # between the two.
+        # Only the lowest saddle leaves the line. Everything else -- higher
+        # saddles and every kind of failure -- stays on it, so the one cell
+        # that sits apart is the one that is the answer.
         k = r.get('level', {}).get(name)
-        y = i if not k else i - k * 2 * DY
+        y = i + DY if k == 0 else i
         axS.add_patch(Rectangle((j - 0.42, y - CH), 0.84, 2 * CH,
                                 facecolor=ST[s], edgecolor=SURF, lw=1.8,
                                 zorder=2))
         axS.text(j, y, GLYPH[s], fontsize=9.0, ha='center', va='center',
-                 color='white' if s != 'none' else INK3, zorder=3,
-                 weight='bold')
+                 color='white' if s not in ('nostruct', 'untested') else INK3,
+                 zorder=3, weight='bold')
         if k is not None and k > 0:
-            axS.text(j, y + CH + 0.115, f'+{r["levels"][k]:.0f}',
+            axS.text(j, y - CH - 0.115, f'+{r["levels"][k]:.0f}',
                      fontsize=8.2, ha='center', va='center', color=INK2,
                      zorder=3, family='DejaVu Sans')
 
@@ -392,9 +399,9 @@ for k, line in enumerate([
         'The 19 reactions whose restricted reference solution is externally '
         'unstable. Valid means: stationary (gradient < 0.15 eV/Å),',
         'exactly one imaginary mode, and that mode moves this reaction’s '
-        'bonds. A cell is raised only when its method found a valid saddle',
-        'that is not the lowest one for that reaction; the number above it '
-        'says by how much, in meV. Everything else sits on the line.']):
+        'bonds. The dropped cells are the lowest saddle found for that',
+        'reaction. Everything else stays on the line — including valid '
+        'saddles that are higher, with the offset in meV printed below.']):
     fig.text(0.045, 0.940 - 0.0172 * k, line, fontsize=9.5, color=INK2,
              ha='left')
 
@@ -403,15 +410,17 @@ fig.text(0.045, 0.878,
          'there the methods that find a saddle find the same one.',
          fontsize=9.3, color=INK3, ha='left')
 
-items = [[('low', 'lowest saddle found'),
+# Three rows. Seven entries on two rows ran the last one off the right edge.
+items = [[('low', 'the lowest saddle found'),
           ('ok', 'a valid saddle, but higher'),
           ('grad', 'not stationary')],
          [('nimag', 'wrong number of imaginary modes'),
-          ('mode', 'mode does not belong to this reaction'),
-          ('none', 'no structure, or no Hessian computed')]]
+          ('mode', 'mode does not belong to this reaction')],
+         [('nostruct', 'the method produced no structure'),
+          ('untested', 'a structure exists, but nobody tested it')]]
 for r_i, row_items in enumerate(items):
     x0 = 0.045
-    y = 0.042 - 0.022 * r_i
+    y = 0.062 - 0.0205 * r_i
     for key, lab in row_items:
         fig.patches.append(Rectangle((x0, y), 0.0135, 0.0125,
                                      transform=fig.transFigure,
