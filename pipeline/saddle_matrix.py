@@ -16,6 +16,7 @@ differs by 0.2 A.
 import glob
 import json
 import os
+import re
 
 import numpy as np
 from ase.data import atomic_masses, atomic_numbers
@@ -213,6 +214,23 @@ print('N imag    stationaer, aber N imaginaere Moden -- Sattelpunkt hoeherer Ord
 print('n.gepr.   Struktur existiert, aber es wurde nie eine Hesse gerechnet')
 print('--        Struktur existiert nicht')
 print()
+def product_broken(rx):
+    """Is the relaxed product spin-broken? A marker, not a column: the product
+    is not a candidate for the transition state, but a reaction whose product
+    sits on the wrong surface is a different object from one whose does not."""
+    p = f'{H}/orca_endpoint/{rx}_product/sp.out'
+    if not os.path.exists(p):
+        return None
+    t = open(p, errors='replace').read()
+    if 'ORCA TERMINATED NORMALLY' not in t:
+        return None
+    m = re.findall(r'<S\*\*2>\s*:\s*([-\d.]+)', t)
+    if not m:
+        return None
+    v = float(m[-1])
+    return v if abs(v) > 0.05 else None
+
+
 print('rxn      ' + ''.join(f'{w:<{CW}}' for w in WHO) + 'gleicher Sattel?')
 print('-' * 118)
 
@@ -264,4 +282,7 @@ for rx in MR:
         else:
             cmp = ('VERSCHIEDEN: '
                    + ' | '.join('+'.join(g) for g in groups))
+    pb = product_broken(rx)
+    if pb is not None:
+        cmp += f'   [Produkt spingebrochen, S2 {pb:.2f}]'
     print(f'{rx:<9}' + ''.join(f'{c:<{CW}}' for c in cells) + cmp)

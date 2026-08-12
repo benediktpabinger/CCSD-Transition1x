@@ -259,6 +259,33 @@ def stab(rx):
     return {g['source']: g for g in json.load(open(p))['geometries']}
 
 
+def endpoint(rx, end):
+    """Stability at a relaxed endpoint, and how deep the breaking goes.
+
+    Belongs in the per-reaction block rather than only in a table of its own:
+    a reaction whose product is spin-broken is a different object from one
+    whose product is closed-shell, and that has to be visible where the
+    transition states of that reaction are being judged.
+    """
+    d = f'{H}/orca_endpoint/{rx}_{end}'
+    p, q = f'{d}/sp.out', f'{d}/rks.out'
+    if not os.path.exists(p):
+        return None
+    t = open(p, errors='replace').read()
+    if 'ORCA TERMINATED NORMALLY' not in t:
+        return {'state': 'laeuft'}
+    s2 = re.findall(r'<S\*\*2>\s*:\s*([-\d.]+)', t)
+    e = re.findall(r'FINAL SINGLE POINT ENERGY\s+([-\d.]+)', t)
+    de = None
+    if os.path.exists(q) and e:
+        tt = open(q, errors='replace').read()
+        if 'ORCA TERMINATED NORMALLY' in tt:
+            m = re.findall(r'FINAL SINGLE POINT ENERGY\s+([-\d.]+)', tt)
+            if m:
+                de = (float(e[-1]) - float(m[-1])) * HA_MEV
+    return {'state': 'fertig', 's2': float(s2[-1]) if s2 else None, 'de': de}
+
+
 def stage1_word(g):
     if g is None:
         return 'unbekannt'
@@ -336,6 +363,31 @@ for title, RXS in (('Multireferenz — die 19', MR),
         W('')
         if pairs:
             W(f'reaktive Bindungen: ' + ', '.join(nm for _, _, nm in pairs))
+            W('')
+
+        # the endpoints of this reaction, because a broken product changes what
+        # the reaction is, not only what one number says
+        er, ep = endpoint(rx, 'reactant'), endpoint(rx, 'product')
+        if er or ep:
+            def ptxt(x, name):
+                if not x:
+                    return f'{name} nicht geprüft'
+                if x['state'] != 'fertig':
+                    return f'{name} läuft'
+                s2 = x.get('s2')
+                de = x.get('de')
+                if s2 is None or abs(s2) <= 0.05:
+                    return f'{name} geschlossenschalig'
+                return (f'**{name} SPINGEBROCHEN** ⟨S²⟩ {s2:.3f}'
+                        + (f', ΔE_BS {de:+.1f} meV' if de is not None else ''))
+            W(f'Endpunkte: {ptxt(er, "Edukt")} · {ptxt(ep, "Produkt")}')
+            if ep and ep.get('s2') and abs(ep['s2']) > 0.05:
+                W('')
+                W('> Das Produkt liegt auf der falschen Fläche. Die')
+                W('> Vorwärtsbarriere ist davon unberührt — sie misst vom')
+                W('> Edukt —, Reaktionsenergie und Rückbarriere sind es nicht,')
+                W('> und die Produktgeometrie ist kein Minimum der')
+                W('> Grundzustandsfläche.')
             W('')
 
         cands = []

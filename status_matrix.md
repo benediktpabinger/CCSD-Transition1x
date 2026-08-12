@@ -37,6 +37,8 @@ den zwei Fällen zu kalibrieren, die sie entscheiden soll, wäre zirkulär.
 
 reaktive Bindungen: C3-C5, C4-C5
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | PySCF, batch, converged / 0.838 | 0.010 stationaer | +535 | **bestanden** 1 @ -732 | **bestanden** 0.98 / 1.159 0.310 | 1.84 1.50 | ORCA |
@@ -48,6 +50,14 @@ reaktive Bindungen: C3-C5, C4-C5
 ## rxn8832   N_FOD 1.000   ΔE_BS an der Referenz -428.0 meV
 
 reaktive Bindungen: C1-C6, C1-C2
+
+Endpunkte: Edukt geschlossenschalig · **Produkt SPINGEBROCHEN** ⟨S²⟩ 0.419, ΔE_BS -84.0 meV
+
+> Das Produkt liegt auf der falschen Fläche. Die
+> Vorwärtsbarriere ist davon unberührt — sie misst vom
+> Edukt —, Reaktionsenergie und Rückbarriere sind es nicht,
+> und die Produktgeometrie ist kein Minimum der
+> Grundzustandsfläche.
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -62,6 +72,8 @@ reaktive Bindungen: C1-C6, C1-C2
 
 reaktive Bindungen: C2-H6, O0-H6
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | PySCF, batch, converged / 1.019 | 0.009 stationaer | +0 | **bestanden** 1 @ -313 | **DURCHGEFALLEN** 0.00 / 0.000 0.001 | 3.36 0.97 | ORCA |
@@ -73,6 +85,8 @@ reaktive Bindungen: C2-H6, O0-H6
 ## rxn4113   N_FOD 0.960   ΔE_BS an der Referenz -8.4 meV
 
 reaktive Bindungen: O0-C3, N2-C3
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -86,6 +100,8 @@ reaktive Bindungen: O0-C3, N2-C3
 
 reaktive Bindungen: C1-O2, C1-N6
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | PySCF, v2, BS_LOST / 0.149 | 0.016 stationaer | +342 | **bestanden** 1 @ -1673 | **bestanden** 0.42 / 0.602 0.032 | 2.09 2.48 | ORCA |
@@ -96,6 +112,8 @@ reaktive Bindungen: C1-O2, C1-N6
 ## rxn6196   N_FOD 0.869   ΔE_BS an der Referenz -10.7 meV
 
 reaktive Bindungen: C2-C5, C2-H10
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -108,6 +126,8 @@ reaktive Bindungen: C2-C5, C2-H10
 ## rxn0346   N_FOD 0.847   ΔE_BS an der Referenz -147.6 meV
 
 reaktive Bindungen: C5-H10, C2-C5
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -122,6 +142,8 @@ reaktive Bindungen: C5-H10, C2-C5
 
 reaktive Bindungen: N0-O5, N0-C1
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | PySCF, batch, converged / 1.009 | 0.010 stationaer | +0 | **bestanden** 1 @ -90 | **DURCHGEFALLEN** 0.07 / 0.036 0.327 | 3.33 3.27 | ORCA |
@@ -132,6 +154,8 @@ reaktive Bindungen: N0-O5, N0-C1
 ## rxn3107   N_FOD 0.801   ΔE_BS an der Referenz -38.8 meV
 
 reaktive Bindungen: C2-O3, C2-N5
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -146,6 +170,14 @@ reaktive Bindungen: C2-O3, C2-N5
 
 reaktive Bindungen: N0-C6, C4-C6
 
+Endpunkte: Edukt geschlossenschalig · **Produkt SPINGEBROCHEN** ⟨S²⟩ 0.473, ΔE_BS -69.7 meV
+
+> Das Produkt liegt auf der falschen Fläche. Die
+> Vorwärtsbarriere ist davon unberührt — sie misst vom
+> Edukt —, Reaktionsenergie und Rückbarriere sind es nicht,
+> und die Produktgeometrie ist kein Minimum der
+> Grundzustandsfläche.
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | PySCF, batch, converged / 1.039 | 0.017 stationaer | +0 | **bestanden** 1 @ -819 | **bestanden** 0.92 / 1.313 0.055 | 2.05 2.33 | ORCA |
@@ -159,6 +191,8 @@ reaktive Bindungen: N0-C6, C4-C6
 
 reaktive Bindungen: O0-C1, O0-C5
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | PySCF, v2, BS_LOST / 0.034 | 0.053 nahe | +0 | **bestanden** 1 @ -2024 | **bestanden** 0.51 / 0.459 0.520 | 1.62 1.29 | ORCA |
@@ -170,6 +204,8 @@ reaktive Bindungen: O0-C1, O0-C5
 ## rxn5691   N_FOD 0.778   ΔE_BS an der Referenz -155.9 meV
 
 reaktive Bindungen: O0-N6, C4-N6
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -183,6 +219,8 @@ reaktive Bindungen: O0-N6, C4-N6
 
 reaktive Bindungen: C4-O5, O2-O5
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | PySCF, v2, BS_LOST / 0.985 | NICHT GEPRUEFT | +0 | NICHT GEPRUEFT | NICHT GEPRUEFT | 2.80 3.32 | PySCF, v2, BS_LOST |
@@ -194,6 +232,14 @@ reaktive Bindungen: C4-O5, O2-O5
 ## rxn8827   N_FOD 0.760   ΔE_BS an der Referenz -27.5 meV
 
 reaktive Bindungen: N0-C5, C4-C5
+
+Endpunkte: Edukt geschlossenschalig · **Produkt SPINGEBROCHEN** ⟨S²⟩ 0.425, ΔE_BS -35.4 meV
+
+> Das Produkt liegt auf der falschen Fläche. Die
+> Vorwärtsbarriere ist davon unberührt — sie misst vom
+> Edukt —, Reaktionsenergie und Rückbarriere sind es nicht,
+> und die Produktgeometrie ist kein Minimum der
+> Grundzustandsfläche.
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -208,6 +254,8 @@ reaktive Bindungen: N0-C5, C4-C5
 
 reaktive Bindungen: O3-C4, N0-O3
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | PySCF, batch, BS_LOST / 0.000 | NICHT GEPRUEFT | +1845 | NICHT GEPRUEFT | NICHT GEPRUEFT | 1.85 2.07 | PySCF, batch, BS_LOST |
@@ -219,6 +267,8 @@ reaktive Bindungen: O3-C4, N0-O3
 ## rxn1147   N_FOD 0.725   ΔE_BS an der Referenz -105.2 meV
 
 reaktive Bindungen: C1-C2, C1-O5
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -233,6 +283,8 @@ reaktive Bindungen: C1-C2, C1-O5
 
 reaktive Bindungen: C4-H8, C0-H8
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | PySCF, batch, converged / 0.816 | 0.016 stationaer | +0 | **bestanden** 1 @ -617 | **bestanden** 0.58 / 0.303 1.036 | 1.17 1.91 | ORCA |
@@ -246,6 +298,8 @@ reaktive Bindungen: C4-H8, C0-H8
 
 reaktive Bindungen: C1-H7, C5-H7
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | PySCF, v2, converged / 0.709 | 0.001 stationaer | +890 | **bestanden** 1 @ -677 | **bestanden** 0.27 / 0.544 0.061 | 2.46 1.12 | PySCF |
@@ -258,6 +312,8 @@ reaktive Bindungen: C1-H7, C5-H7
 ## rxn5690   N_FOD 0.433   ΔE_BS an der Referenz -1.3 meV
 
 reaktive Bindungen: C3-H8, C1-C4
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -273,6 +329,14 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn7945   N_FOD 0.903
 
+Endpunkte: Edukt geschlossenschalig · **Produkt SPINGEBROCHEN** ⟨S²⟩ 0.320, ΔE_BS -24.2 meV
+
+> Das Produkt liegt auf der falschen Fläche. Die
+> Vorwärtsbarriere ist davon unberührt — sie misst vom
+> Edukt —, Reaktionsenergie und Rückbarriere sind es nicht,
+> und die Produktgeometrie ist kein Minimum der
+> Grundzustandsfläche.
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -283,6 +347,14 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn7937   N_FOD 0.877
 
+Endpunkte: Edukt geschlossenschalig · **Produkt SPINGEBROCHEN** ⟨S²⟩ 0.103, ΔE_BS -2.0 meV
+
+> Das Produkt liegt auf der falschen Fläche. Die
+> Vorwärtsbarriere ist davon unberührt — sie misst vom
+> Edukt —, Reaktionsenergie und Rückbarriere sind es nicht,
+> und die Produktgeometrie ist kein Minimum der
+> Grundzustandsfläche.
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -291,6 +363,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | RKS / 0.000 | 0.225 NICHT STATIONAER | +5 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | RKS |
 
 ## rxn1150   N_FOD 0.847
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -302,6 +376,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn0896   N_FOD 0.840
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -310,6 +386,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | RKS / 0.000 | 0.119 nahe | +1 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | RKS |
 
 ## rxn7936   N_FOD 0.727
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -321,6 +399,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn0101   N_FOD 0.713
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -329,6 +409,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | RKS / 0.000 | 0.099 nahe | +1 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | RKS |
 
 ## rxn10005   N_FOD 0.695
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -339,6 +421,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn10054   N_FOD 0.695
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -347,6 +431,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | BS / 0.066 | 0.125 nahe | +3 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | BS |
 
 ## rxn1154   N_FOD 0.566
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -357,6 +443,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn4513   N_FOD 0.307
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -365,6 +453,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | RKS / 0.000 | 0.146 nahe | +0 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | ORCA |
 
 ## rxn7955   N_FOD 0.219
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -375,6 +465,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn4519   N_FOD 0.154
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -383,6 +475,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | RKS / 0.000 | 0.068 nahe | +1 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | RKS |
 
 ## rxn4500   N_FOD 0.106
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -393,6 +487,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn2553   N_FOD 0.076
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -401,6 +497,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | RKS / 0.000 | 0.067 nahe | +0 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | RKS |
 
 ## rxn8829   N_FOD 0.048
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -411,6 +509,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn1155   N_FOD 0.017
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -419,6 +519,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | RKS / 0.000 | 0.064 nahe | +0 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | RKS |
 
 ## rxn9246   N_FOD 0.014
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -429,6 +531,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn4498   N_FOD 0.012
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -437,6 +541,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | RKS / 0.000 | 0.082 nahe | +1 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | RKS |
 
 ## rxn1061   N_FOD 0.012
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -447,6 +553,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn4003   N_FOD 0.010
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -455,6 +563,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | RKS / 0.000 | 0.050 nahe | +0 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | RKS |
 
 ## rxn4004   N_FOD 0.009
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -465,6 +575,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn4063   N_FOD 0.008
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -473,6 +585,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | RKS / 0.000 | 0.088 nahe | +0 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | RKS |
 
 ## rxn4114   N_FOD 0.008
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
@@ -483,6 +597,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn4060   N_FOD 0.007
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -492,6 +608,8 @@ reaktive Bindungen: C3-H8, C1-C4
 
 ## rxn1961   N_FOD 0.004
 
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
+
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
 | ours | kein konvergierter Sattelpunkt / — | NICHT GEPRUEFT | — | — | — | — | kein konvergierter Sattelpunkt |
@@ -500,6 +618,8 @@ reaktive Bindungen: C3-H8, C1-C4
 | eSEN | RKS / 0.000 | 0.048 stationaer | +0 | NICHT GEPRUEFT | NICHT GEPRUEFT | — | RKS |
 
 ## rxn1962   N_FOD 0.003
+
+Endpunkte: Edukt geschlossenschalig · Produkt geschlossenschalig
 
 | Kandidat | Fläche/⟨S²⟩ | **Stufe 1** Gradient | ΔE meV | **Stufe 2** ν_imag | **Stufe 3** Anteil / Raten | Bindungen Å | Quelle |
 |---|---|---|---|---|---|---|---|
