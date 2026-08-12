@@ -1,0 +1,30 @@
+SATTELPUNKT GEFUNDEN?   19 Multireferenz-Reaktionen
+======================================================================================================================
+ja        stationaer (Gradient < 0.15 eV/A) und genau eine imaginaere Mode
+n.stat.   Gradient zu gross -- kein Stationaerpunkt, also kein Sattelpunkt
+Minimum   stationaer, aber keine imaginaere Mode
+N imag    stationaer, aber N imaginaere Moden -- Sattelpunkt hoeherer Ordnung
+n.gepr.   Struktur existiert, aber es wurde nie eine Hesse gerechnet
+--        Struktur existiert nicht
+
+rxn      Referenz       unsere         UMA-S          UMA-M          eSEN           NEB            gleicher Sattel?
+----------------------------------------------------------------------------------------------------------------------
+rxn7949  n.gepr. 1.69   ja             n.stat. 0.25   ja             ja             --             VERSCHIEDEN: unsere | UMA-M+eSEN
+rxn8832  n.gepr. 2.73   ja             ja             ja             n.stat. 0.23   ja             alle 4 gleich
+rxn1320  n.gepr. 2.07   ja             ja             ja             ja             n.stat. 2.06   VERSCHIEDEN: unsere | UMA-S+UMA-M+eSEN
+rxn4113  n.gepr. 0.39   ja             n.stat. 0.17   n.stat. 0.19   n.stat. 0.18   ja             alle 2 gleich
+rxn8885  n.gepr. 2.64   ja             n.stat. 0.48   n.stat. 0.18   n.stat. 0.38   --             nur unsere
+rxn6196  n.gepr. 0.64   ja             ja             ja             ja             n.stat. 0.68   alle 4 gleich
+rxn0346  n.gepr. 2.61   ja             n.stat. 0.24   n.stat. 0.18   n.stat. 0.48   n.stat. 2.55   nur unsere
+rxn4518  n.gepr. 2.95   ja             2 imag         ja             2 imag         --             VERSCHIEDEN: unsere | UMA-M
+rxn3107  n.gepr. 1.65   ja             n.stat. 0.16   ja             n.stat. 0.16   --             alle 2 gleich
+rxn8837  n.gepr. 1.70   ja             n.stat. 0.75   n.stat. 0.76   2 imag         ja             alle 2 gleich
+rxn7060  n.gepr. 1.77   ja             n.stat. 0.88   n.stat. 0.33   n.stat. 1.13   --             nur unsere
+rxn5691  n.gepr. 1.42   ja             n.stat. 0.15   2 imag         ja             --             VERSCHIEDEN: unsere | eSEN
+rxn1283  n.gepr. 2.39   n.gepr.        n.stat. 0.16   ja             ja             --             VERSCHIEDEN: UMA-M | eSEN
+rxn8827  n.gepr. 1.13   ja             n.stat. 0.18   ja             n.stat. 0.23   n.stat. 1.07   alle 2 gleich
+rxn4522  n.gepr. 1.88   n.gepr.        ja             ja             ja             ja             VERSCHIEDEN: UMA-S+UMA-M+eSEN | NEB
+rxn1147  n.gepr. 1.84   ja             ja             ja             ja             ja             VERSCHIEDEN: unsere+NEB | UMA-S+UMA-M+eSEN
+rxn0894  n.gepr. 1.35   ja             n.stat. 0.78   n.stat. 1.32   n.stat. 0.79   ja             VERSCHIEDEN: unsere | NEB
+rxn7957  n.gepr. 0.90   ja             ja             ja             ja             ja             VERSCHIEDEN: unsere+NEB | UMA-S+UMA-M+eSEN
+rxn5690  n.gepr. 0.16   --             n.stat. 0.18   ja             n.stat. 0.15   ja             VERSCHIEDEN: UMA-M | NEB
