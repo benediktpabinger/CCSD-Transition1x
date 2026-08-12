@@ -4,59 +4,85 @@ One single point with STABPerform at each relaxed reactant and product
 of the reference NEB. <S^2> > 0 after the analysis means the restricted
 solution was unstable there and ORCA rotated into a broken one.
 
-rxn      grp       reactant <S2>  product <S2>     TS <S2>  TS dE_BS   flag
+rxn      grp       Edukt S2    dE_BS  Produkt S2    dE_BS     TS S2  TS dE_BS   flag
 --------------------------------------------------------------------------------------------
-rxn7949  MR              -0.0000        0.0000       0.893    -559.6   
-rxn8832  MR              -0.0000        0.4194       0.870    -428.0   *** ENDPOINT BROKEN ***
-rxn1320  MR               0.0000       -0.0000       0.785    -339.2   
-rxn4113  MR               0.0000        0.0000       0.140      -8.4   
-rxn8885  MR               0.0000       -0.0000       0.507     -42.8   
-rxn7945  simple          -0.0000        0.3203         nan       nan   *** ENDPOINT BROKEN ***
-rxn7937  simple          -0.0000        0.1033         nan       nan   *** ENDPOINT BROKEN ***
-rxn6196  MR               0.0000        0.0000       0.216     -10.7   
-rxn0346  MR              -0.0000       -0.0000       0.628    -147.6   
-rxn1150  simple           0.0000       -0.0000         nan       nan   
-rxn0896  simple          -0.0000       -0.0000         nan       nan   
-rxn4518  MR               0.0000        0.0000       0.842    -648.5   
-rxn3107  MR               0.0000       -0.0000       0.409     -38.8   
-rxn8837  MR              -0.0000        0.4730       0.741    -293.9   *** ENDPOINT BROKEN ***
-rxn7060  MR              -0.0000        0.0000       0.374     -22.1   
-rxn5691  MR              -0.0000       -0.0000       0.629    -155.9   
-rxn1283  MR               0.0000       -0.0000       0.419     -44.5   
-rxn8827  MR              -0.0000        0.4245       0.338     -27.5   *** ENDPOINT BROKEN ***
-rxn4522  MR               0.0000       -0.0000       0.662    -184.0   
-rxn7936  simple          -0.0000       -0.0000         nan       nan   
-rxn1147  MR              -0.0000       -0.0000       0.534    -105.2   
-rxn0894  MR              -0.0000       -0.0000       0.580    -190.2   
-rxn0101  simple          -0.0000        0.0000         nan       nan   
-rxn10005 simple          -0.0000        0.0000         nan       nan   
-rxn10054 simple          -0.0000        0.0000         nan       nan   
-rxn7957  MR              -0.0000       -0.0000       0.513     -99.8   
-rxn1154  simple           0.0000        0.0000         nan       nan   
-rxn5690  MR               0.0000        0.0000       0.068      -1.3   
-rxn4513  simple           0.0000        0.0000         nan       nan   
-rxn7955  simple          -0.0000        0.0000         nan       nan   
-rxn4519  simple           0.0000        0.0000         nan       nan   
-rxn4500  simple          -0.0000        0.0000         nan       nan   
-rxn2553  simple           0.0000       -0.0000         nan       nan   
-rxn8829  simple          -0.0000       -0.0000         nan       nan   
-rxn1155  simple          -0.0000       -0.0000         nan       nan   
-rxn9246  simple          -0.0000        0.0000         nan       nan   
-rxn4498  simple          -0.0000        0.0000         nan       nan   
-rxn1061  simple           0.0000       -0.0000         nan       nan   
-rxn4003  simple          -0.0000       -0.0000         nan       nan   
-rxn4004  simple          -0.0000       -0.0000         nan       nan   
-rxn4063  simple           0.0000        0.0000         nan       nan   
-rxn4114  simple           0.0000        0.0000         nan       nan   
-rxn4060  simple           0.0000       -0.0000         nan       nan   
-rxn1961  simple          -0.0000       -0.0000         nan       nan   
-rxn1962  simple          -0.0000       -0.0000         nan       nan   
+rxn7949  MR          -0.000      0.0       0.000      0.0     0.893    -559.6   
+rxn8832  MR          -0.000     -0.0       0.419    -84.0     0.870    -428.0   *** ENDPOINT BROKEN ***
+rxn1320  MR           0.000     -0.0      -0.000      0.0     0.785    -339.2   
+rxn4113  MR           0.000     -0.0       0.000      0.0     0.140      -8.4   
+rxn8885  MR           0.000      0.0      -0.000     -0.0     0.507     -42.8   
+rxn7945  simple      -0.000      0.0       0.320    -24.2       nan       nan   *** ENDPOINT BROKEN ***
+rxn7937  simple      -0.000      0.0       0.103     -2.0       nan       nan   *** ENDPOINT BROKEN ***
+rxn6196  MR           0.000      0.0       0.000     -0.0     0.216     -10.7   
+rxn0346  MR          -0.000     -0.0      -0.000      0.0     0.628    -147.6   
+rxn1150  simple       0.000     -0.0      -0.000      0.0       nan       nan   
+rxn0896  simple      -0.000      0.0      -0.000     -0.0       nan       nan   
+rxn4518  MR           0.000     -0.0       0.000      0.0     0.842    -648.5   
+rxn3107  MR           0.000      0.0      -0.000     -0.0     0.409     -38.8   
+rxn8837  MR          -0.000     -0.0       0.473    -69.7     0.741    -293.9   *** ENDPOINT BROKEN ***
+rxn7060  MR          -0.000     -0.0       0.000     -0.0     0.374     -22.1   
+rxn5691  MR          -0.000     -0.0      -0.000      0.0     0.629    -155.9   
+rxn1283  MR           0.000     -0.0      -0.000      0.0     0.419     -44.5   
+rxn8827  MR          -0.000     -0.0       0.425    -35.4     0.338     -27.5   *** ENDPOINT BROKEN ***
+rxn4522  MR           0.000     -0.0      -0.000     -0.0     0.662    -184.0   
+rxn7936  simple      -0.000      0.0      -0.000      0.0       nan       nan   
+rxn1147  MR          -0.000     -0.0      -0.000     -0.0     0.534    -105.2   
+rxn0894  MR          -0.000      0.0      -0.000     -0.0     0.580    -190.2   
+rxn0101  simple      -0.000      0.0       0.000     -0.0       nan       nan   
+rxn10005 simple      -0.000     -0.0       0.000      0.0       nan       nan   
+rxn10054 simple      -0.000     -0.0       0.000     -0.0       nan       nan   
+rxn7957  MR          -0.000      0.0      -0.000      0.0     0.513     -99.8   
+rxn1154  simple       0.000     -0.0       0.000      0.0       nan       nan   
+rxn5690  MR           0.000     -0.0       0.000     -0.0     0.068      -1.3   
+rxn4513  simple       0.000     -0.0       0.000     -0.0       nan       nan   
+rxn7955  simple      -0.000      0.0       0.000      0.0       nan       nan   
+rxn4519  simple       0.000     -0.0       0.000      0.0       nan       nan   
+rxn4500  simple      -0.000      0.0       0.000      0.0       nan       nan   
+rxn2553  simple       0.000     -0.0      -0.000      0.0       nan       nan   
+rxn8829  simple      -0.000     -0.0      -0.000     -0.0       nan       nan   
+rxn1155  simple      -0.000     -0.0      -0.000      0.0       nan       nan   
+rxn9246  simple      -0.000     -0.0       0.000      0.0       nan       nan   
+rxn4498  simple      -0.000      0.0       0.000      0.0       nan       nan   
+rxn1061  simple       0.000      0.0      -0.000     -0.0       nan       nan   
+rxn4003  simple      -0.000     -0.0      -0.000     -0.0       nan       nan   
+rxn4004  simple      -0.000     -0.0      -0.000      0.0       nan       nan   
+rxn4063  simple       0.000     -0.0       0.000     -0.0       nan       nan   
+rxn4114  simple       0.000     -0.0       0.000      0.0       nan       nan   
+rxn4060  simple       0.000     -0.0      -0.000      0.0       nan       nan   
+rxn1961  simple      -0.000     -0.0      -0.000     -0.0       nan       nan   
+rxn1962  simple      -0.000     -0.0      -0.000      0.0       nan       nan   
 
 45 reactions complete, 0 still running or missing
 
 5 reactions with a broken-symmetry endpoint: rxn8832 rxn7945 rxn7937 rxn8837 rxn8827
+of those, 0 on the reactant side
 
-This changes the question. The endpoint geometry was optimised on
-the restricted surface, so it is not a minimum of the surface the
-reaction runs on, and every barrier measured from it has the wrong
-zero -- by the depth of the symmetry breaking at that minimum.
+Every reactant is closed-shell, and only products break. That
+matters for what is and is not affected, and the distinction is
+easy to get backwards:
+
+  forward barrier  E(TS) - E(reactant).  UNAFFECTED. The zero
+                   sits at the reactant and every reactant here
+                   is on the right surface. This is the number
+                   the benchmark scores.
+  reaction energy  E(product) - E(reactant).  WRONG for these,
+  reverse barrier  by the depth of the symmetry breaking at the
+                   product.
+  product geometry optimised on the restricted surface, so not a
+                   minimum of the surface the reaction runs on.
+                   The reference path ends at a point that is
+                   not a stationary point.
+
+A reaction whose transition state is stable but whose product is
+not is still labelled single-reference by our split, which was
+made on the transition state alone. The label is right about the
+transition state and wrong about the reaction.
+
+How much the affected quantities move, per reaction:
+
+  rxn        dE_BS at product   effect on the reaction energy and reverse barrier
+  rxn8832            -84.0 meV   both are too small by this amount
+  rxn7945            -24.2 meV   both are too small by this amount
+  rxn7937             -2.0 meV   both are too small by this amount
+  rxn8837            -69.7 meV   both are too small by this amount
+  rxn8827            -35.4 meV   both are too small by this amount

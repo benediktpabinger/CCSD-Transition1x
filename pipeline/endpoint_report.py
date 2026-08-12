@@ -40,11 +40,19 @@ def read(label):
     e = ERE.findall(t)
     unstable = ('is unstable' in t) or ('UNSTABLE' in t)
     stable = 'current solution is stable' in t or 'is stable' in t
+    # the restricted energy at the same geometry, from the separate plain RKS
+    # run -- the stability run keeps only the energy after its restart
+    erks = None
+    q = f'{H}/orca_endpoint/{label}/rks.out'
+    if os.path.exists(q):
+        tt = open(q, errors='replace').read()
+        if 'ORCA TERMINATED NORMALLY' in tt:
+            m = ERE.findall(tt)
+            if m:
+                erks = float(m[-1])
     return {'state': 'done', 's2': float(s2[-1]) if s2 else None,
-            'e': float(e[-1]) if e else None,
-            'unstable': unstable, 'stable': stable,
-            'raw': [l.strip() for l in t.split('\n')
-                    if 'stable' in l.lower() or 'STABILITY' in l]}
+            'e': float(e[-1]) if e else None, 'erks': erks,
+            'unstable': unstable, 'stable': stable}
 
 
 res = sorted(json.load(open(f'{H}/fod_ranking.json'))['results'],
@@ -86,9 +94,16 @@ print('One single point with STABPerform at each relaxed reactant and product')
 print('of the reference NEB. <S^2> > 0 after the analysis means the restricted')
 print('solution was unstable there and ORCA rotated into a broken one.')
 print()
-print(f'{"rxn":<9}{"grp":<8}{"reactant <S2>":>15}{"product <S2>":>14}'
-      f'   {"TS <S2>":>9}{"TS dE_BS":>10}   flag')
+print(f'{"rxn":<9}{"grp":<8}{"Edukt S2":>10}{"dE_BS":>9}'
+      f'{"Produkt S2":>12}{"dE_BS":>9}   {"TS S2":>7}{"TS dE_BS":>10}   flag')
 print('-' * 92)
+
+
+def de(x):
+    if not x or x.get('e') is None or x.get('erks') is None:
+        return float('nan')
+    return (x['e'] - x['erks']) * HA_MEV
+
 
 bad, done, missing = [], 0, 0
 for rx in rxns:
@@ -109,8 +124,8 @@ for rx in rxns:
     elif r['unstable'] or p['unstable']:
         flag = 'reported unstable'
         bad.append(rx)
-    print(f'{rx:<9}{c:<8}{s2r:>15.4f}{s2p:>14.4f}   '
-          f'{s2t if s2t is not None else float("nan"):>9.3f}'
+    print(f'{rx:<9}{c:<8}{s2r:>10.3f}{de(r):>9.1f}{s2p:>12.3f}{de(p):>9.1f}   '
+          f'{s2t if s2t is not None else float("nan"):>7.3f}'
           f'{det if det is not None else float("nan"):>10.1f}   {flag}')
 
 print()
@@ -144,6 +159,15 @@ if bad:
         print('not is still labelled single-reference by our split, which was')
         print('made on the transition state alone. The label is right about the')
         print('transition state and wrong about the reaction.')
+        print()
+        print('How much the affected quantities move, per reaction:')
+        print()
+        print(f'  {"rxn":<9}{"dE_BS at product":>18}   effect on the reaction '
+              f'energy and reverse barrier')
+        for rx in bad:
+            p = read(f'{rx}_product')
+            print(f'  {rx:<9}{de(p):>15.1f} meV   both are too small by this '
+                  f'amount')
     else:
         print('A broken reactant puts the wrong zero under the forward barrier')
         print('itself, which is the number the benchmark scores. This is the')
