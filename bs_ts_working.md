@@ -4,6 +4,11 @@ Arbeitsdokument, laufend fortgeschrieben. Alle Zahlen werden aus den
 gespeicherten Ergebnissen erzeugt, nicht abgetippt. Die erzeugenden Skripte
 liegen unter `pipeline/`; die eingebetteten Blöcke sind unveränderte Ausgaben.
 
+**Wer nur eine Datei liest, nehme `saddle_matrix.txt`** — eine Zeile je
+Reaktion, welche Methode einen Sattelpunkt gefunden hat und welche nicht, mit
+dem Grund. Dieses Dokument erklärt, wie die Zahlen dort zustande kommen und was
+im Verlauf schiefgegangen ist.
+
 ## Die Frage
 
 Der Benchmark vergleicht von MLIPs vorhergesagte Übergangszustände gegen eine
@@ -25,6 +30,283 @@ Daraus folgen zwei Fragen, und sie sind unterschiedlich schwer:
 > Abschnitt lesen.** Sie bindet jede Aussage darüber, welcher Punkt der richtige
 > Übergangszustand ist, und hat in diesem Projekt bereits zwei Urteile
 > umgedreht — je eines gegen jede Seite.
+
+---
+
+# STAND — was gilt und was überholt ist
+
+Nach dem vollständigen Frequenz-Sweep (106 Hesse-Matrizen, keine Fehler) und
+der Endpunktprüfung (90 Einzelpunkte) hat sich die Datenlage grundlegend
+geändert. Dieser Abschnitt steht vorn, weil Teile des Dokuments darunter aus
+der Zeit davor stammen.
+
+## Überholt
+
+**Die Urteilstabelle im Abschnitt „Urteil je Reaktion" und die 6/3/6/4-Bilanz.**
+Sie entstand, als für nur 5 der 19 Reaktionen Modellfrequenzen vorlagen. Jetzt
+liegen sie für alle vor, und alle vier damals „offenen" Fälle sind entschieden —
+gegen uns. Maßgeblich ist stattdessen `saddle_matrix.txt`.
+
+**Der Satz „kein Modellkandidat besteht Stufe 3"** in der Zuverlässigkeitsliste.
+Er bedeutete in Wahrheit „nie geprüft" und liest sich wie ein Ergebnis. Der
+Fehler war meine Auswahlregel, nicht die Daten.
+
+## Was neu gilt
+
+| | |
+|---|---|
+| **Die Referenz ist bei 0 von 19 stationär** | Median-Gradient 1.697 eV/Å auf der Grundzustandsfläche, gegen 0.043 bei den 26 einfachen. Die Struktur, gegen die jeder RMSD des Benchmarks misst, ist dort kein Übergangszustand. |
+| **Modelle: 96 % gegen 46 %** | Anteil der Vorhersagen, die stationär sind *und* genau eine imaginäre Mode tragen. |
+| **Der Engpass ist die Stationarität** | 16 bis 17 von 19 Vorhersagen haben je Modell genau eine imaginäre Mode. Nur 7 bis 13 sind stationär. Die Krümmungssignatur sitzt fast immer, der Punkt nicht. |
+| **Alle 45 Edukte sind sauber** | Die Prämisse des Aufbaus hält. Fünf Produkte sind gebrochen, um 2 bis 84 meV — das betrifft Reaktionsenergien und Rückbarrieren, nicht die Barrieren. |
+
+Erzeugende Dateien: `saddle_matrix.txt`, `model_saddle_stats.txt`,
+`sweep_summary.txt`, `status_matrix.md`, `endpoint_report.txt`.
+
+---
+
+# Die Endpunktprüfung — die Prämisse
+
+Die Stabilitätsanalyse lief an 180 Geometrien, und jede einzelne war ein
+Übergangszustand. Die Endpunkte hatte nie jemand angesehen, obwohl sie den Pfad
+definieren: ein NEB interpoliert zwischen ihnen, und eine Barriere ist
+E(TS) − E(Edukt). Wäre die restringierte Lösung an einem Minimum instabil, dann
+wäre die Geometrie auf der falschen Fläche optimiert und alles darauf ebenfalls.
+
+Ein Einzelpunkt mit `STABPerform` an jedem relaxierten Edukt und Produkt aller
+**45** Reaktionen — nicht nur der 19, weil die Einteilung allein am
+Übergangszustand gemacht wurde.
+
+```
+alle 45 Edukte      ⟨S²⟩ = 0.000   ausnahmslos
+ 5 von 45 Produkten spingebrochen
+
+rxn8832  Produkt 0.419   ΔE_BS  -84.0 meV    (TS: -428.0)
+rxn8837  Produkt 0.473          -69.7        (TS: -293.9)
+rxn8827  Produkt 0.425          -35.4        (TS:  -27.5)
+rxn7945  Produkt 0.320          -24.2        (TS: stabil)
+rxn7937  Produkt 0.103           -2.0        (TS: stabil)
+die übrigen 85 Endpunkte        exakt 0.0
+```
+
+Die 85 Nullen sind die Kontrolle: das Verfahren erzeugt keine falschen
+Brechungen.
+
+**Die Prämisse hält.** Kein Edukt ist gebrochen, also steht jede
+Vorwärtsbarriere auf einem korrekten Nullpunkt. Betroffen sind Reaktionsenergie
+und Rückbarriere dieser fünf, um 2 bis 84 meV — gegen bis zu 4.4 eV
+Modelluneinigkeit auf der TS-Seite, also zwei Größenordnungen darunter.
+
+**Eine Korrektur an mir selbst gehört dazu.** Das Auswertungsskript gab
+ursprünglich aus: *„jede Barriere, die von diesem Punkt aus gemessen wird, hat
+den falschen Nullpunkt"*. Das war vor den Zahlen formuliert und ist falsch,
+sobald nur Produkte brechen — eine Barriere misst vom Edukt. Der Text im Skript
+ist korrigiert.
+
+**Zwei Reaktionen sind falsch etikettiert.** rxn7945 und rxn7937 tragen hohe
+N_FOD-Werte (0.903, 0.877), haben aber einen extern stabilen Übergangszustand
+und stehen deshalb bei den 26 „einfachen". Der N_FOD-Screen hatte sie korrekt
+markiert; unsere Stabilitätsprüfung am Sattelpunkt hat sie wieder aussortiert,
+weil ihre Symmetriebrechung am Produkt sitzt. Das Etikett stimmt für den
+Übergangszustand und nicht für die Reaktion.
+
+**Ein Fall läuft andersherum:** bei rxn8827 ist das Produkt (−35.4 meV) stärker
+gebrochen als der Übergangszustand (−27.5). Der Diradikalcharakter wächst dort
+entlang der Reaktion, statt am Sattelpunkt zu kulminieren. Der einzige solche
+Fall im Satz.
+
+---
+
+# Der Frequenz-Sweep
+
+## Warum überhaupt
+
+Von 57 Modellgeometrien der 19 Reaktionen hatten 15 eine Hesse — ausgewählt an
+zwei Abenden nach zwei verschiedenen Kriterien. Die ausgelassenen enthielten
+rxn1320 und rxn4518, wo **unsere** Struktur nachweislich durchfällt und das
+Modell damit der einzige verbleibende Kandidat ist. Dass niemand ihn geprüft
+hatte, war in den Tabellen nicht von „geprüft und widerlegt" zu unterscheiden.
+
+Drei Vorarbeiten machten den Sweep kleiner, als er aussah:
+
+**Der Gradientenschirm** nutzt die 134 Gradienten, die längst in der
+Stabilitäts-Pipeline lagen. Er ist selbst ein Ergebnis: 5 von 78 Vorhersagen
+sind bei einfachen Reaktionen nicht stationär, 25 von 56 bei
+Multireferenz-Reaktionen.
+
+**Der Geometrievergleich** zeigt, welche Modellstruktur schlicht unsere ist.
+Sechs sind identisch, neun weitere unterscheiden sich nur in der Konformation
+bei reaktiven Bindungen auf 0.02 Å. Dort ist keine Hesse nötig.
+
+**Zehn liegengebliebene TS-Optimierungen** von Modellgeometrien aus, nie
+ausgewertet. Fünf konvergieren auf **0.002 bis 0.007 Å** zu unserer Struktur
+zurück — unabhängige Bestätigung für die gesamte Gruppe C. Zwei bleiben am
+Modell stehen. Drei erzeugten Strukturen, die niemand angesehen hatte.
+
+## Ergebnis
+
+106 Rechnungen, keine Fehler. Die Kette ist dieselbe, die gegen PySCF validiert
+wurde: Stabilität → Gradient → NumFreq.
+
+```
+                    geprüft   stationär   +1 imag.   = Sattelpunkt   Anteil
+Benchmark-Referenz
+  Multireferenz          19        0          —           —            0 %
+  einfach                26       25          —           —           96 %
+unsere BS-Struktur
+  Multireferenz          16       16         16          16          100 %
+Modelle, Multireferenz
+  UMA-M                  19       13         17          12           63 %
+  eSEN                   19       10         17           8           42 %
+  UMA-S                  19        7         16           6           32 %
+Modelle, einfach         26        —          —          25           96 %
+```
+
+Unsere 100 % sind **kein Qualitätsurteil**, sondern eine Kontrolle der
+Optimierung — die Strukturen wurden darauf optimiert. Die Zeile gehört nicht
+neben die Modellzahlen gestellt, als wäre es dieselbe Frage.
+
+## Landen die Modelle auf verschiedenen Sattelpunkten?
+
+Unter sich fast nie. In 7 von 8 Reaktionen, in denen mehrere ein Sattelpunkt
+sind, ist es derselbe (RMSD 0.006–0.064 Å, reaktive Bindungen 0.001–0.033).
+
+**Das korrigiert meine frühere Deutung der Barrierenstreuung.** Ich hatte
+geschlossen, die Modelle seien uneinig, *welcher* Sattelpunkt es ist. Falsch —
+die sechs Reaktionen ohne einen einzigen Modell-Sattelpunkt sind rxn8837,
+rxn4113, rxn8885, rxn0894, rxn7060, rxn0346, und das sind fünf der sechs
+größten Streuungen im Satz. **Die Streuung misst gemeinsames Danebenliegen,
+nicht konkurrierende Übergangszustände.**
+
+Sobald unsere Struktur und der NEB in den Vergleich kommen, sieht es anders aus:
+**10 von 19 Reaktionen haben konkurrierende Sattelpunkte.** Die Modelle sind
+sich untereinander einig — mit uns nicht. Zeilenweise in `saddle_matrix.txt`.
+
+## Die vier ehemals offenen Fälle
+
+Alle vier gehen an die Modelle:
+
+```
+rxn1320   alle drei Modelle bestehen alle drei Stufen    unsere: Anteil 0.00
+rxn4518   UMA-M besteht (UMA-S und eSEN: 2 imag. Moden)  unsere: Anteil 0.03
+rxn1283   UMA-M und eSEN bestehen                        wir haben keinen
+rxn5690   UMA-M besteht (-868.8 cm-1)                    wir haben keinen
+```
+
+Bei rxn1320 bestätigen die Bindungslängen die alte Diagnose: unsere C2-H6 steht
+bei 3.36 Å, das Wasserstoffatom ist vollständig ab, die Modelle sitzen bei
+2.60 Å mitten im Transfer.
+
+---
+
+# Der IRC — was er entschieden hat
+
+Vier Läufe in ORCA, alle durch.
+
+## rxn1147 ist entschieden, ohne mein Urteil
+
+```
+UMA-S-Pfad, 76 Punkte:   C1-O5 bleibt zwischen 1.43 und 1.51 Å
+unser Pfad:              C1-O5 läuft von 1.47 auf 2.37 Å
+```
+
+Die Mode, der UMA-S folgt, rührt die Reaktionskoordinate über den gesamten
+Abstieg nicht an. Genau die Aussage, für die bisher mein Satz „1.497 Å ist eine
+fertige Bindung" einstand — jetzt gemessen.
+
+**Und der IRC widerlegt dabei meinen eigenen automatischen Test.** Die
+Stufe-3-Automatik lässt alle drei Modelle knapp durch (Raten 0.059, 0.071,
+0.067 gegen die Schwelle 0.05). Die Schwelle ist zu großzügig; der IRC zeigt,
+um wie viel.
+
+## rxn7957 bleibt widersprüchlich
+
+Der UMA-M-Pfad ist ein sauberer Wasserstofftransfer: Punkt 0 liegt 0.108 Å vom
+relaxierten Edukt, Punkt 46 ist der Sattelpunkt, Punkt 79 die Produktseite.
+Unsere Struktur liegt 0.20 Å neben diesem Pfad. Unsere Mode bewegt C1-H7 — sie
+gehört zur **Ablösung des bereits übertragenen Wasserstoffs**, nicht zum
+Transfer.
+
+Das stützt das Urteil für die Modelle. **Dagegen steht, dass die unabhängige
+ORCA-NEB-TS-Struktur 0.019 Å von unserer liegt.** Einer der beiden Befunde
+braucht eine Erklärung; plausibel ist, dass die NEB-TS-Optimierung am Ende in
+denselben Dissoziations-Sattelpunkt gelaufen ist.
+
+---
+
+# Die BS-NEB-Bänder, richtig gelesen
+
+Die frühere Aussage „nur 5 von 11 ⟨S²⟩-Profile sind zusammenhängend" beruhte auf
+einer Verwechslung. Jedes Band zeigt ein Maximum bei 2.006 bis 2.014 — das ist
+kein Diradikal, sondern das **Triplett**, das ORCAs `BrokenSym` zuerst
+konvergiert, bevor es kippt. Mein Grep hat beide Werte eingesammelt.
+
+Getrennt gerechnet: **9 von 22 Bändern haben die Symmetriebrechung gehalten**,
+die anderen 13 sind RKS-Rechnungen mit BS-Etikett.
+
+Und bei den neun ist das Ergebnis stark. Die NEB-TS-Struktur liegt
+
+```
+rxn8837   0.003 Å von unserer     Frequenz -817.4 gegen -819.0
+rxn7957   0.019                            -670.1 gegen -670.8
+rxn1147   0.022                            -588.6 gegen -581.1
+rxn8832   0.107                            -656.5 gegen -650.7
+```
+
+Von einem Verfahren, das an Edukt und Produkt startet und die Referenzgeometrie
+nie sieht. Das ist die stärkste unabhängige Bestätigung, die diese Sattelpunkte
+haben.
+
+**Meine Ablehnung der BS-NEB-Route war teils falsch.** Der Einwand — 0.669 Å
+Streuung gegen 0.021 Å der TS-Optimierung — misst Präzision, nicht Richtigkeit.
+Ein ungenaues Verfahren, das in der richtigen Gegend sucht, schlägt ein
+präzises, das in der falschen sucht. Und ein NEB hat den Startpunktfehler
+strukturell nicht.
+
+Acht NEB-TS-Strukturen bestehen alle drei Stufen, darunter drei, die neu sind:
+
+```
+nebts_rxn0894   grad 0.022   -1074.6 cm-1   1.14 Å von unserer und von UMA-S
+nebts_rxn4522   grad 0.009    -494.8        wir haben dort keinen
+nebts_rxn5690   grad 0.004    -447.6        wir haben dort keinen
+```
+
+**rxn0894 ist damit der offene Fall:** zwei gültige Sattelpunkte 1.14 Å
+auseinander, beide bestehen alle drei Stufen, alle Modelle nicht stationär. Die
+Energie muss entscheiden.
+
+---
+
+# Was zusätzlich gescheitert ist
+
+## `frommodel` — 0 von 2
+
+Start der TS-Optimierung an der Modellgeometrie mit der **tiefsten** BS-Lösung.
+Beide Ergebnisse sind Minima: rxn8885 mit einer einzigen imaginären Mode bei
+−25.75 cm⁻¹ (nächste Mode +4.92), rxn1283 ohne jede.
+
+Der Grund ist einsichtig und der Fehler war meiner: „tiefste BS-Lösung" wählt
+den Punkt, der **am tiefsten im Tal** liegt — bei rxn8885 waren das −3015 meV.
+Ein TS-Optimierer, der dort startet, hat keine imaginäre Richtung zu verfolgen
+und rutscht auf den Talboden. Er meldet Konvergenz, weil das Kriterium am
+Gradienten hängt. Richtig wäre der **kleinste Gradient** gewesen.
+
+Ich hatte zudem behauptet, das Verfahren stehe bei 3 von 3. Falsch: rxn4113 kam
+aus `fromneb`, also von der NEB-Geometrie, nicht von einer Modellgeometrie. Zwei
+verschiedene Verfahren, von mir verwechselt.
+
+## Die Datenlücke war eine Auswahlregel
+
+Modellfrequenzen wurden in zwei Jobs vergeben. Job 1 nach „fast stationär und
+weit weg von unserem Sattelpunkt" — ein gutes Kriterium. Job 2 nach „am
+weitesten unter unserem Punkt" — das macht unsere Struktur zum Maßstab, und
+genau das gilt in den fraglichen Fällen nicht.
+
+rxn1320 hätte nach dem Kriterium von Job 1 dazugehört: Gradient 0.044 eV/Å, der
+kleinste im gesamten Satz. Es fehlte, weil zu dem Zeitpunkt schon feststand,
+dass **unsere** Struktur dort die Modenanalyse nicht besteht — und ich daraus
+den falschen Schluss gezogen habe: „unsere ist kaputt, also reparieren" statt
+„unsere ist kaputt, also ist das Modell der einzige Kandidat".
 
 ---
 
@@ -148,6 +430,12 @@ ausgegeben.
 ---
 
 # Urteil je Reaktion
+
+> **ÜBERHOLT.** Dieser Abschnitt entstand, als Modellfrequenzen nur für 5 der
+> 19 Reaktionen vorlagen. Nach dem Sweep liegen sie für alle vor, und die vier
+> hier als „offen" geführten Fälle sind entschieden — gegen uns. Maßgeblich ist
+> `saddle_matrix.txt`. Der Abschnitt bleibt stehen, weil die Begründungen je
+> Zeile zeigen, worauf das damalige Urteil beruhte.
 
 ```
 rxn      Gr     N_FOD  Kand  Urteil           Begruendung
