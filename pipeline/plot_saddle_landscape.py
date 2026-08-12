@@ -62,7 +62,7 @@ HIGH = '#9a9995'
 ST = {'ok': '#0ca30c', 'grad': '#d03b3b', 'nimag': '#ec835a',
       'mode': '#fab219', 'none': '#dedcd6'}
 
-METHODS = [('Referenz', 'R'), ('TS-Opt', 'T'), ('UMA-S', 'S'),
+METHODS = [('Reference', 'R'), ('TS-Opt', 'T'), ('UMA-S', 'S'),
            ('UMA-M', 'M'), ('eSEN', 'E'), ('UKS-NEB', 'N')]
 MODELDIR = {'UMA-S': 'uma_neb_results', 'UMA-M': 'uma_m_neb_results',
             'eSEN': 'esen_neb_results'}
@@ -201,8 +201,8 @@ def collect(rx):
     out = {}
     g = f'{H}/orca_neb_results/{rx}/transition_state.xyz'
     e, gr = stab(rx, 'RKS-ref')
-    out['Referenz'] = {'geom': g if os.path.exists(g) else None,
-                       'e': e, 'grad': gr, 'hess': None}
+    out['Reference'] = {'geom': g if os.path.exists(g) else None,
+                        'e': e, 'grad': gr, 'hess': None}
     geom = hp = e = None
     for d in ('bs_tsopt_fromneb', 'bs_tsopt_v2', 'bs_tsopt_batch'):
         rp = f'{H}/{d}/{rx}/result.json'
@@ -333,42 +333,40 @@ NR = len(rows)
 # the nineteen reactions have every method on one level at zero, so most of its
 # width would be empty. The emptiness is the message, but it does not need
 # sixty percent of the figure to make it.
-fig = plt.figure(figsize=(13.4, 0.60 * NR + 3.6), facecolor=SURF)
-axE = fig.add_axes([0.105, 0.095, 0.400, 0.760])
-axS = fig.add_axes([0.560, 0.095, 0.300, 0.760], sharey=axE)
+fig = plt.figure(figsize=(11.6, 0.60 * NR + 3.6), facecolor=SURF)
+axE = fig.add_axes([0.150, 0.095, 0.245, 0.760])
+axS = fig.add_axes([0.500, 0.095, 0.360, 0.760], sharey=axE)
 
-XMAX = 2600
+# The energy is drawn as a staircase, not on a scale. A logarithmic axis was
+# hard to read a position off, and thirteen of the nineteen reactions sit at
+# exactly zero, so most of its width carried nothing. Height now means only
+# "higher", and the amount is written next to the point where it applies.
+STEP_X, STEP_Y = 1.0, 0.21
 for ax in (axE, axS):
     ax.set_facecolor(SURF)
     for sp in ax.spines.values():
         sp.set_visible(False)
-axE.set_xscale('symlog', linthresh=20, linscale=0.55)
-axE.set_xlim(-2, XMAX)
+axE.set_xlim(-0.35, 2.5)
 axE.set_ylim(NR - 0.5, -0.5)
 axE.set_yticks(range(NR))
 axE.set_yticklabels([f'{r["rx"]}   {r["nfod"]:.2f}' for r in rows],
                     fontsize=9.5, color=INK, family='DejaVu Sans')
 axE.tick_params(axis='y', length=0, pad=6)
-ticks = [0, 20, 100, 1000]
-axE.set_xticks(ticks)
-axE.set_xticklabels([str(t) for t in ticks], fontsize=9, color=INK2)
-axE.set_xticks([], minor=True)          # symlog adds a ghost tick at linthresh
-axE.tick_params(axis='x', length=0, pad=4)
-for t in ticks:
-    axE.axvline(t, color=GRID, lw=0.8, zorder=0)
+axE.set_xticks([])
 for i in range(NR):
     axE.axhline(i, color=GRID, lw=0.7, zorder=0)
 
 for i, r in enumerate(rows):
     if not r['groups']:
-        axE.text(0.6, i, 'kein gültiger Sattelpunkt', fontsize=9,
+        axE.text(0.0, i, 'kein gültiger Sattelpunkt', fontsize=9,
                  color=INK3, va='center', style='italic')
         continue
-    xs = [max(l, 0.0) for l in r['levels']]
-    if len(xs) > 1:
-        axE.plot([min(xs), max(xs)], [i, i], color=GRID, lw=2.0, zorder=1,
-                 solid_capstyle='round')
-    for k, (grp, x) in enumerate(zip(r['groups'], xs)):
+    # a staircase: every further saddle one step up and to the right
+    pts = [(k * STEP_X, i - k * STEP_Y) for k in range(len(r['groups']))]
+    if len(pts) > 1:
+        px, py = zip(*pts)
+        axE.plot(px, py, color=GRID, lw=1.6, zorder=1, solid_capstyle='round')
+    for k, (grp, (x, y)) in enumerate(zip(r['groups'], pts)):
         col = LOW if k == 0 else HIGH
         # in the column order of the panel on the right, so the eye can move
         # between the two halves without re-sorting
@@ -377,22 +375,20 @@ for i, r in enumerate(rows):
         # One marker per saddle, not per method: four stacked markers inside a
         # row overlap at any readable marker size, and the level is the object
         # the figure is about. Who found it goes beside it as letters.
-        axE.scatter([x], [i], s=112, marker='o', facecolor=col,
+        axE.scatter([x], [y], s=112, marker='o', facecolor=col,
                     edgecolor=SURF, linewidth=1.8, zorder=4)
-        axE.annotate(' '.join(names_short := [LETTER[n] for n in names]),
-                     xy=(x, i), xytext=(10, 0), textcoords='offset points',
+        axE.annotate(' '.join(LETTER[n] for n in names),
+                     xy=(x, y), xytext=(10, 0), textcoords='offset points',
                      fontsize=8.6, color=INK if k == 0 else INK2,
                      va='center', ha='left', zorder=5,
                      weight='bold' if k == 0 else 'normal',
                      family='DejaVu Sans')
         if k > 0:
-            axE.annotate(f'+{x:.0f} meV', xy=(x, i), xytext=(0, 13),
-                         textcoords='offset points', fontsize=8.2,
-                         color=INK2, va='center', ha='center',
+            axE.annotate(f'+{r["levels"][k]:.0f} meV', xy=(x, y),
+                         xytext=(0, 12), textcoords='offset points',
+                         fontsize=8.2, color=INK2, va='center', ha='center',
                          family='DejaVu Sans')
 
-axE.set_xlabel('Energie über dem niedrigsten gefundenen Sattelpunkt  [meV]',
-               fontsize=10, color=INK2, labelpad=8)
 
 GLYPH = {'ok': '✓', 'grad': 'g', 'nimag': 'n', 'mode': 'm', 'none': '·'}
 axS.set_xlim(-0.5, len(METHODS) - 0.5)
@@ -413,56 +409,53 @@ for i, r in enumerate(rows):
                  color='white' if s != 'none' else INK3, zorder=3,
                  weight='bold')
 
-fig.text(0.105, 0.968, 'Welcher Sattelpunkt, gefunden von wem — und warum '
-         'nicht', fontsize=16.5, color=INK, weight='bold', ha='left')
+fig.text(0.075, 0.968, 'Which saddle, found by whom — and why not',
+         fontsize=16.5, color=INK, weight='bold', ha='left')
 for k, line in enumerate([
-        '19 Reaktionen, deren restringierte Referenzlösung extern instabil '
-        'ist. Jeder Punkt links ist ein eigenständiger Sattelpunkt, die '
-        'Buchstaben daneben',
-        'nennen die Methoden, die ihn gefunden haben. Gültig heißt: '
-        'stationär (Gradient < 0.15 eV/Å), genau eine imaginäre Mode, und '
-        'diese Mode bewegt',
-        'die reaktiven Bindungen. Die Tafel rechts nennt für jede Methode, '
-        'an welcher der drei Bedingungen es sonst lag.']):
-    fig.text(0.105, 0.945 - 0.0165 * k, line, fontsize=9.5, color=INK2,
+        'The 19 reactions whose restricted reference solution is externally '
+        'unstable. Each point on the left is a distinct saddle and the letters',
+        'beside it name the methods that landed on it. Valid means: '
+        'stationary (gradient < 0.15 eV/Å), exactly one imaginary mode, and '
+        'that mode',
+        'moves this reaction’s bonds. Height is schematic — it means only '
+        '"higher"; the amount is written next to the point it applies to.']):
+    fig.text(0.075, 0.945 - 0.0165 * k, line, fontsize=9.5, color=INK2,
              ha='left')
 
-fig.text(0.105, 0.888,
-         'T  TS-Opt (unsere)    S  UMA-S    M  UMA-M    E  eSEN    '
-         'N  UKS-NEB          (die Referenz ist nirgends ein gültiger '
-         'Sattelpunkt und erscheint deshalb nur rechts)',
+fig.text(0.075, 0.888,
+         'T  TS-Opt (ours)    S  UMA-S    M  UMA-M    E  eSEN    N  UKS-NEB'
+         '          (the reference is never a valid saddle, so it appears '
+         'only on the right)',
          fontsize=9, color=INK3, ha='left')
 
 leg = [Line2D([], [], marker='o', ls='', markersize=8.5, markerfacecolor=LOW,
-              markeredgecolor=SURF, label='niedrigster Sattelpunkt'),
+              markeredgecolor=SURF, label='lowest saddle found'),
        Line2D([], [], marker='o', ls='', markersize=8.5, markerfacecolor=HIGH,
-              markeredgecolor=SURF, label='höher liegend')]
-axE.legend(handles=leg, loc='lower left', bbox_to_anchor=(0.0, 1.012),
-           ncol=2, frameon=False, fontsize=9.2, handletextpad=0.4,
-           columnspacing=1.6)
+              markeredgecolor=SURF, label='higher saddle')]
+fig.legend(handles=leg, loc='lower left', bbox_to_anchor=(0.073, 0.862),
+           bbox_transform=fig.transFigure, ncol=2, frameon=False,
+           fontsize=9.2, handletextpad=0.4, columnspacing=2.4)
 
-# Two rows, so the longest label cannot run off the right edge -- the single
-# row overflowed at "keine Struktur oder keine Hesse".
-items = [[('ok', 'gültiger Sattelpunkt'),
-          ('grad', 'nicht stationär'),
-          ('nimag', 'falsche Zahl imaginärer Moden')],
-         [('mode', 'Mode gehört nicht zu dieser Reaktion'),
-          ('none', 'keine Struktur oder keine Hesse gerechnet')]]
+# Two rows, so the longest label cannot run off the right edge.
+items = [[('ok', 'valid saddle'),
+          ('grad', 'not stationary'),
+          ('nimag', 'wrong number of imaginary modes')],
+         [('mode', 'mode does not belong to this reaction'),
+          ('none', 'no structure, or no Hessian computed')]]
 for r_i, row_items in enumerate(items):
-    x0 = 0.105
+    x0 = 0.075
     y = 0.040 - 0.021 * r_i
     for key, lab in row_items:
-        fig.patches.append(Rectangle((x0, y), 0.0105, 0.0115,
+        fig.patches.append(Rectangle((x0, y), 0.0125, 0.0115,
                                      transform=fig.transFigure,
                                      facecolor=ST[key], edgecolor=SURF,
                                      lw=1.2))
-        fig.text(x0 + 0.0128, y + 0.0012, f'{GLYPH[key]}  {lab}', fontsize=9,
+        fig.text(x0 + 0.0150, y + 0.0012, f'{GLYPH[key]}  {lab}', fontsize=9,
                  color=INK2, ha='left')
-        x0 += 0.0175 + 0.0063 * len(lab)
+        x0 += 0.0205 + 0.0071 * len(lab)
 
 fig.savefig(f'{H}/saddle_landscape.png', dpi=200, facecolor=SURF)
 print('written saddle_landscape.png')
-print(f'{NR} Reaktionen, '
-      f'{sum(1 for r in rows if len(r["groups"]) > 1)} mit mehreren '
-      f'Sattelpunkten, '
-      f'{sum(1 for r in rows if not r["groups"])} ohne einen')
+print(f'{NR} reactions, '
+      f'{sum(1 for r in rows if len(r["groups"]) > 1)} with more than one '
+      f'saddle, {sum(1 for r in rows if not r["groups"])} with none')
