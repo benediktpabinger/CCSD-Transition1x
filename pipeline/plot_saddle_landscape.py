@@ -346,8 +346,8 @@ NR = len(rows)
 # valid one that is not the lowest, and at the row centre when it found no
 # saddle at all -- height only exists where an energy exists. A separate energy
 # panel beside this said the same thing twice.
-fig = plt.figure(figsize=(9.6, 0.60 * NR + 3.6), facecolor=SURF)
-axS = fig.add_axes([0.175, 0.118, 0.780, 0.725])
+fig = plt.figure(figsize=(9.6, 0.60 * NR + 4.1), facecolor=SURF)
+axS = fig.add_axes([0.175, 0.106, 0.780, 0.688])
 axS.set_facecolor(SURF)
 for sp in axS.spines.values():
     sp.set_visible(False)
@@ -405,10 +405,17 @@ for k, line in enumerate([
     fig.text(0.045, 0.940 - 0.0172 * k, line, fontsize=9.5, color=INK2,
              ha='left')
 
-fig.text(0.045, 0.878,
-         'Thirteen of the nineteen have every successful method on one level — '
-         'there the methods that find a saddle find the same one.',
-         fontsize=9.3, color=INK3, ha='left')
+for k, line in enumerate([
+        'Thirteen of the nineteen have every successful method on one level — '
+        'there the methods that find a saddle find the same one.',
+        'Ten further transition-state optimisations were run from model '
+        'geometries and get no column: none of them found',
+        'a saddle that is not already here — four returned to our structure, '
+        'two to the model saddle, one is a minimum',
+        '180 meV below our saddle at rxn0894, and one at rxn8837 sits 2.9 eV '
+        'above it with a 59 cm⁻¹ mode.']):
+    fig.text(0.045, 0.888 - 0.0163 * k, line, fontsize=9.3, color=INK3,
+             ha='left')
 
 # Three rows. Seven entries on two rows ran the last one off the right edge.
 items = [[('low', 'the lowest saddle found'),
