@@ -58,10 +58,17 @@ Fehler war meine Auswahlregel, nicht die Daten.
 | **Die Referenz ist bei 0 von 19 stationär** | Median-Gradient 1.697 eV/Å auf der Grundzustandsfläche, gegen 0.043 bei den 26 einfachen. Die Struktur, gegen die jeder RMSD des Benchmarks misst, ist dort kein Übergangszustand. |
 | **Modelle: 96 % gegen 46 %** | Anteil der Vorhersagen, die stationär sind *und* genau eine imaginäre Mode tragen. |
 | **Der Engpass ist die Stationarität** | 16 bis 17 von 19 Vorhersagen haben je Modell genau eine imaginäre Mode. Nur 7 bis 13 sind stationär. Die Krümmungssignatur sitzt fast immer, der Punkt nicht. |
+| **Die Modelle haben die richtige Fläche gelernt** | Ihre Barriere trifft die Broken-Symmetry-Barriere auf 0.01–0.04 eV, die restringierte verfehlt sie um bis zu 3 eV. 32 von 33 entscheidbaren Fällen. Meine gegenteilige Vermutung ist widerlegt. |
+| **Die Ursache ist der Kraftfehler** | Das Modell glaubt bei 0.032 eV/Å zu stehen, tatsächlich wirken 0.163. Der Fehler hat dieselbe Größe wie das Konvergenzkriterium — dann trägt das Kriterium keine Information mehr. |
 | **Alle 45 Edukte sind sauber** | Die Prämisse des Aufbaus hält. Fünf Produkte sind gebrochen, um 2 bis 84 meV — das betrifft Reaktionsenergien und Rückbarrieren, nicht die Barrieren. |
+| **Keine Methode über zwei Drittel** | Gültige Sattelpunkte je 19 Reaktionen: TS-Opt 13, UMA-M 11, UKS-NEB 8, eSEN 7, UMA-S 6. |
 
 Erzeugende Dateien: `saddle_matrix.txt`, `model_saddle_stats.txt`,
-`sweep_summary.txt`, `status_matrix.md`, `endpoint_report.txt`.
+`sweep_summary.txt`, `status_matrix.md`, `endpoint_report.txt`,
+`which_sheet.txt`, `force_error_at_ts.txt`, `lowest_saddle.txt`.
+Abbildungen: `saddle_landscape.png` (wer welchen Sattelpunkt fand und warum
+nicht), `two_sheets.png` (schematisch: warum zwei gültige Sattelpunkte
+möglich sind).
 
 ---
 
@@ -189,13 +196,212 @@ Alle vier gehen an die Modelle:
 ```
 rxn1320   alle drei Modelle bestehen alle drei Stufen    unsere: Anteil 0.00
 rxn4518   UMA-M besteht (UMA-S und eSEN: 2 imag. Moden)  unsere: Anteil 0.03
-rxn1283   UMA-M und eSEN bestehen                        wir haben keinen
-rxn5690   UMA-M besteht (-868.8 cm-1)                    wir haben keinen
+rxn1283   UMA-M und eSEN bestehen                        unsere: 2 imag. Moden
+rxn5690   UMA-M besteht (-868.8 cm-1)                    wir haben keine Struktur
 ```
 
 Bei rxn1320 bestätigen die Bindungslängen die alte Diagnose: unsere C2-H6 steht
 bei 3.36 Å, das Wasserstoffatom ist vollständig ab, die Modelle sitzen bei
 2.60 Å mitten im Transfer.
+
+## Die letzten zwei Lücken sind zu
+
+Unsere Strukturen bei rxn1283 und rxn4522 existierten, hatten aber nie eine
+Hesse bekommen — sie waren die einzigen beiden Zellen der Matrix, in denen
+„nie geprüft" stand. Sie fehlten, weil die Aufgabenliste aus den *vorhandenen*
+Hesse-Matrizen gebaut war statt aus den vorhandenen Strukturen: wer nie eine
+hatte, konnte auch keine bekommen.
+
+```
+rxn1283   Gradient 0.137, fast stationär — aber ZWEI imaginäre Moden (-123, -90)
+          Sattelpunkt zweiter Ordnung, kein Übergangszustand
+rxn4522   Gradient 1.199 — überhaupt kein Stationärpunkt
+```
+
+Kein Urteil verschiebt sich dadurch. Was sich ändert: **in keiner Zelle der
+Matrix steht mehr eine Lücke**, alle 114 tragen ein Ergebnis.
+
+Bei rxn4522 steckt ein zweiter Befund darin. Unser PySCF-Lauf verzeichnet an
+dieser Geometrie ⟨S²⟩ = 0.000, ORCAs Stabilitätsanalyse findet dort **0.470**.
+Die Optimierung ist die letzten Schritte auf der restringierten Fläche
+gelaufen, während die gebrochene existierte — und konnte deshalb nicht
+konvergieren, weil der Sattelpunkt auf dem anderen Blatt liegt. Das
+Mehrfachlösungs-Problem, an unserer eigenen Struktur vorgeführt.
+
+---
+
+# Warum die Modelle scheitern
+
+Drei Messungen, die zusammen eine Ursachenkette ergeben. Alle drei kamen erst
+zustande, nachdem eine Vermutung von mir widerlegt wurde.
+
+## Was widerlegt wurde: die Labelhypothese
+
+Ich hatte behauptet, die Modelle scheiterten, weil ihre Trainingslabels auf der
+restringierten Fläche lägen. Der Einwand dagegen war berechtigt: OMol25 hat
+Transition1x unrestringiert neu gerechnet, und eine UKS-Rechnung fällt auf die
+restringierte Lösung zurück, wo diese stabil ist.
+
+Der Test vergleicht an jeder Modellgeometrie drei Barrieren — die des Modells,
+die restringierte und die des Grundzustands. Sie unterscheiden sich um bis zu
+3 eV, die Hypothesen liegen also weit auseinander.
+
+```
+folgt dem Grundzustand (BS)   39
+folgt der restringierten       1
+Blätter innerhalb 50 meV      16   (nicht unterscheidbar)
+
+auf die 33 klar entscheidbaren Fälle beschränkt:  BS 32,  RKS 1
+```
+
+Und die Übereinstimmung ist der eigentliche Befund: **die Modellbarriere trifft
+die Broken-Symmetry-Barriere an derselben Geometrie meist auf 0.01 bis
+0.04 eV**, während die restringierte Hypothese um bis zu 3 eV danebenliegt.
+
+```
+rxn4518  eSEN    Modell 3.91    RKS 6.91    BS 3.93     20 meV neben BS
+rxn8885  eSEN    Modell 3.26    RKS 6.31    BS 3.29     30 meV neben BS
+rxn4522  UMA-S   Modell 3.85    RKS 6.06    BS 3.85      0 meV neben BS
+```
+
+Der eine Gegenfall, rxn0894/eSEN, liegt 1.30 eV neben der einen und 2.69 neben
+der anderen — dort ist das Modell schlicht falsch, bei Gradient 0.794.
+
+**Die Modelle haben die richtige Fläche gelernt.** Erzeugt von
+`pipeline/which_sheet_did_models_learn.py`, Rohausgabe in `which_sheet.txt`.
+
+## Was stattdessen die Ursache ist: die Kraft
+
+Wenn die Energie an der eigenen Vorhersage auf 20 meV stimmt und der Punkt
+trotzdem nicht stationär ist, muss der Fehler in der Ableitung sitzen. Beide
+Zahlen lagen längst auf der Platte und waren nie nebeneinandergelegt worden:
+die NEB-Ausgabe trägt ein Kraftfeld, und der Sweep hat einen ORCA-Gradienten an
+derselben Geometrie.
+
+```
+                    MAE     max Komp.   |F| Modell   |F| DFT     (eV/Å, Mediane)
+einfach            0.011      0.045       0.021      0.050
+Multireferenz      0.031      0.142       0.032      0.163
+
+je Modell, MAE einfach → MR:   UMA-S 3.4×   UMA-M 2.1×   eSEN 3.7×
+```
+
+**Die entscheidende Zeile ist die letzte Spalte.** Das Modell glaubt, bei
+0.032 eV/Å zu stehen; tatsächlich wirken dort 0.163. Bei den einfachen
+Reaktionen ist es 0.021 gegen 0.050.
+
+Damit ist der Mechanismus benannt:
+
+> Ein NEB hält an, wenn **seine** Kraft klein ist. Ist die Kraft um 0.14 eV/Å
+> falsch, hält er an einem Punkt an, an dem die echte Kraft noch wirkt — und
+> meldet dabei Konvergenz.
+
+**Die Einordnung gehört dazu:** 0.031 eV/Å ist für diese Modellklasse kein
+schlechter Kraftfehler. Das Problem ist, dass eine Sattelpunktsuche Genauigkeit
+genau auf der Skala verlangt, auf der das Modell seine Fehlergrenze hat. Ein
+Konvergenzkriterium von 0.03 bis 0.05 eV/Å trägt keine Information, wenn der
+Kraftfehler dieselbe Größe hat. Für eine Molekulardynamik oder eine
+Minimumssuche wäre derselbe Fehler folgenlos.
+
+Extremfälle: rxn7060/eSEN glaubt 0.028 und hat 1.126 — Faktor 40.
+
+Und eine Unterscheidung, die dabei herausfällt: **rxn8837/UMA-M glaubt 0.752
+und hat 0.757.** Dort ist die Kraft richtig vorhergesagt und der NEB ist
+trotzdem stehengeblieben — ein Konvergenzabbruch, kein Genauigkeitsproblem.
+Zwei verschiedene Fehlerarten in derselben Spalte.
+
+Erzeugt von `pipeline/force_error_at_ts.py`, Rohausgabe in
+`force_error_at_ts.txt`.
+
+## Was daraus folgt: das Modell als Startpunkt
+
+Zehn TS-Optimierungen wurden von Modellgeometrien aus gestartet, neun davon von
+UMA-M. Ordnet man sie nach dem DFT-Gradienten an der Startgeometrie, ist das
+Muster eindeutig:
+
+```
+Gradient am Modell      Ergebnis der DFT-Nachoptimierung
+──────────────────────────────────────────────────────────────
+0.05 – 0.25 eV/Å        4× zurück zu unserer Struktur (0.002–0.007 Å)
+                        2× am Modell stehengeblieben (0.010 und 0.049 Å)
+                        1× auf den Modell-Sattelpunkt
+                        → 7 von 7 auf einem gültigen Sattelpunkt
+
+0.33 – 1.32 eV/Å        rxn0894  → Minimum, 180 meV unter unserem Sattelpunkt
+                        rxn8837  → Sattelpunkt 2907 meV höher, 59 cm-1
+                        rxn7060  → nicht konvergiert, Endgradient 1.71
+                        → 0 von 3
+```
+
+**Unterhalb von etwa 0.25 eV/Å ist die Modellvorhersage nur ungenau** — sie
+liegt im Einzugsbereich des richtigen Sattelpunkts, und die DFT-Optimierung
+korrigiert genau den Kraftfehler. **Oberhalb davon ist sie am falschen Ort**,
+und die Nachoptimierung führt in ein Minimum oder auf einen anderen Pass.
+
+Damit ist der DFT-Gradient an der Modellgeometrie ein **Triage-Kriterium**: ein
+Einzelpunkt mit Gradient, Minuten, sagt vorher, ob eine Nachoptimierung sich
+lohnt. Das deckt sich mit der Prädiktor-Analyse, nach der der Gradient die
+beste einzelne Vorhersagegröße ist (AUC 0.85 für λ_min_ext gegen 0.70 für
+N_FOD).
+
+**Zwei von zehn sind schlicht richtig:** bei rxn7949 und rxn7957 bleibt die
+Optimierung 0.049 bzw. 0.010 Å vom Start stehen. Die Modellgeometrie war dort
+bereits ein DFT-Stationärpunkt, bei rxn7957 sogar der korrekte
+Übergangszustand.
+
+**Vorbehalt:** zehn Datenpunkte, nicht zufällig gewählt, und die Schwelle bei
+0.25 eV/Å ist abgelesen und nicht bestimmt. Für die neun fehlenden Reaktionen —
+darunter alle fünf, bei denen unsere Optimierung von der Referenz aus versagt
+hat — ist dieser Lauf nie gemacht worden.
+
+## Und was diese zehn Läufe sonst noch zeigen
+
+Keiner hat einen Sattelpunkt gefunden, der nicht schon bekannt war. Das ist der
+Grund, warum sie in `saddle_landscape.png` keine eigene Spalte haben, und es
+ist zugleich ein Ergebnis: **eine elfte Suche, von zehn anderen Startpunkten
+aus, hat nichts Neues gefunden.** Gegen den stehenden Vorbehalt — eine lokale
+Suche findet nur, was unter ihrem Startpunkt liegt — ist das der stärkste
+verfügbare Hinweis, dass wir nicht an einer offensichtlichen Stelle
+vorbeigelaufen sind.
+
+Nebenbei bestätigt es ein Muster: **rxn0894 liefert wie rxn8885 einen tieferen
+Stationärpunkt, der ein Minimum ist** — 180 bzw. 425 meV unter unserem
+Sattelpunkt, beide ohne imaginäre Mode. Die Falle aus der REGEL ist damit kein
+Einzelfall, sondern wiederkehrend in der diradikalischen Region.
+
+---
+
+# Zwei Blätter, nicht zwei Rechnungen
+
+Der begriffliche Kern, auf den mehrere Befunde zurückgehen. Schematisch
+dargestellt in `two_sheets.png`.
+
+Die SCF-Gleichungen sind nichtlinear und können bei **fester Geometrie**
+mehrere selbstkonsistente Lösungen haben: die restringierte (α und β in
+denselben Raumorbitalen) und eine oder mehrere spingebrochene. Welche man
+bekommt, hängt vom Startraten ab — das haben wir 19-mal direkt vorgeführt.
+
+Daraus folgt: **„die Potentialfläche" ist keine Funktion der Geometrie allein.**
+Der Grundzustand ist die untere Hülle mehrerer Blätter, mit einer Naht dort, wo
+sie sich kreuzen.
+
+**Zwei Konsequenzen, die im Dokument an verschiedenen Stellen auftauchen:**
+
+Eine Reaktion kann zwei gültige Sattelpunkte haben, weil jedes Blatt einen
+eigenen tragen kann. rxn1147 ist genau das — unsere Struktur bei ⟨S²⟩ = 0.456
+auf dem gebrochenen Blatt, die UMA-S-Struktur bei ⟨S²⟩ = 0.000, wo die
+restringierte Lösung extern **stabil** ist. Beide sind echte Sattelpunkte der
+Grundzustandsfläche, in Gegenden, wo verschiedene Blätter gewinnen. Welcher zur
+Reaktion gehört, entscheidet nicht die Energie, sondern der IRC.
+
+Und: wer einen Weg abläuft und den Startraten an jedem Punkt neu herleitet,
+springt zwischen den Blättern. Das ist der Grund für 13 von 22 verlorenen
+NEB-Bändern und für den Fehlschlag bei rxn4522.
+
+**Eine Einschränkung, die dazugehört:** jenseits des Coulson-Fischer-Punkts
+verschmilzt das gebrochene Blatt mit dem restringierten und existiert nicht
+mehr. ⟨S²⟩ = 0 an einem relaxierten Edukt ist deshalb **korrekt** und kein
+Rechenfehler — alle 45 Edukte sitzen dort.
 
 ---
 
