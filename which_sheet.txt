@@ -1,0 +1,75 @@
+WHICH SHEET DO THE MODEL ENERGIES FOLLOW?
+========================================================================================================
+All barriers in eV, measured from the reactant to the model's own
+predicted transition state. RKS and BS differ only at the transition
+state -- every reactant is closed-shell.
+
+rxn      model      model      RKS       BS    |m-RKS|  |m-BS|   verdict
+--------------------------------------------------------------------------------------------------------
+rxn7949  UMA-S       2.80     4.05     2.77       1.25    0.02   follows BS
+rxn7949  UMA-M       2.77     4.08     2.76       1.31    0.01   follows BS
+rxn7949  eSEN        2.75     4.10     2.76       1.35    0.01   follows BS
+rxn8832  UMA-S       2.49     3.51     2.51       1.01    0.01   follows BS
+rxn8832  UMA-M       2.47     3.52     2.49       1.05    0.02   follows BS
+rxn8832  eSEN        2.53     3.53     2.50       1.00    0.03   follows BS
+rxn1320  UMA-S       2.77     3.08     2.78       0.31    0.01   follows BS
+rxn1320  UMA-M       2.77     3.09     2.78       0.32    0.01   follows BS
+rxn1320  eSEN        2.77     3.08     2.78       0.31    0.01   follows BS
+rxn4113  UMA-S       5.40     5.44     5.43       0.04    0.03   sheets coincide here
+rxn4113  UMA-M       4.35     6.31     4.37       1.96    0.02   follows BS
+rxn4113  eSEN        5.37     5.45     5.43       0.08    0.06   sheets coincide here
+rxn8885  UMA-S       3.24     5.29     3.26       2.05    0.01   follows BS
+rxn8885  UMA-M       3.57     3.61     3.60       0.03    0.03   sheets coincide here
+rxn8885  eSEN        3.26     6.31     3.29       3.05    0.03   follows BS
+rxn6196  UMA-S       4.22     4.30     4.22       0.07    0.00   follows BS
+rxn6196  UMA-M       4.21     4.29     4.23       0.08    0.01   follows BS
+rxn6196  eSEN        4.22     4.29     4.23       0.07    0.01   follows BS
+rxn0346  UMA-S       3.33     3.45     3.33       0.13    0.01   follows BS
+rxn0346  UMA-M       3.31     3.44     3.33       0.13    0.02   follows BS
+rxn0346  eSEN        3.33     3.48     3.34       0.15    0.01   follows BS
+rxn4518  UMA-S       3.91     6.78     3.93       2.87    0.02   follows BS
+rxn4518  UMA-M       3.93     6.72     3.93       2.79    0.01   follows BS
+rxn4518  eSEN        3.91     6.91     3.93       2.99    0.02   follows BS
+rxn3107  UMA-S       4.09     4.14     4.13       0.05    0.04   sheets coincide here
+rxn3107  UMA-M       4.09     4.14     4.13       0.04    0.04   sheets coincide here
+rxn3107  eSEN        4.10     4.14     4.13       0.04    0.04   sheets coincide here
+rxn8837  UMA-S       9.64    12.50     9.03       2.86    0.61   follows BS
+rxn8837  UMA-M       6.95    10.14     6.91       3.20    0.03   follows BS
+rxn8837  eSEN        4.59     4.59     4.59       0.00    0.00   sheets coincide here
+rxn7060  UMA-S       6.14     6.19     6.19       0.05    0.05   sheets coincide here
+rxn7060  UMA-M       6.15     6.17     6.17       0.02    0.02   sheets coincide here
+rxn7060  eSEN        6.12     6.21     6.21       0.09    0.09   sheets coincide here
+rxn5691  UMA-S       2.37     3.97     2.38       1.60    0.01   follows BS
+rxn5691  UMA-M       2.44     4.17     2.44       1.73    0.01   follows BS
+rxn5691  eSEN        2.35     3.98     2.38       1.63    0.03   follows BS
+rxn1283  UMA-S       4.82     6.86     4.83       2.04    0.01   follows BS
+rxn1283  UMA-M       4.82     6.73     4.86       1.91    0.04   follows BS
+rxn1283  eSEN        4.80     6.77     4.83       1.97    0.03   follows BS
+rxn8827  UMA-S       3.46     4.49     3.46       1.03    0.01   follows BS
+rxn8827  UMA-M       3.46     4.50     3.45       1.04    0.01   follows BS
+rxn8827  eSEN        3.49     4.53     3.45       1.04    0.04   follows BS
+rxn4522  UMA-S       3.85     6.06     3.85       2.21    0.00   follows BS
+rxn4522  UMA-M       3.85     6.04     3.85       2.19    0.00   follows BS
+rxn4522  eSEN        3.86     6.05     3.85       2.18    0.01   follows BS
+rxn1147  UMA-S       3.88     3.89     3.89       0.02    0.02   sheets coincide here
+rxn1147  UMA-M       3.88     3.90     3.90       0.02    0.02   sheets coincide here
+rxn1147  eSEN        3.89     3.89     3.89       0.01    0.01   sheets coincide here
+rxn0894  UMA-S       4.18     5.46     4.18       1.27    0.00   follows BS
+rxn0894  eSEN        7.12     8.42     4.43       1.30    2.69   follows RKS
+rxn7957  UMA-S       2.92     3.34     2.92       0.42    0.01   follows BS
+rxn7957  UMA-M       2.92     3.25     2.92       0.34    0.01   follows BS
+rxn7957  eSEN        2.95     3.33     2.92       0.39    0.02   follows BS
+rxn5690  UMA-S       3.47     3.52     3.49       0.05    0.02   sheets coincide here
+rxn5690  UMA-M       3.48     3.52     3.49       0.04    0.01   sheets coincide here
+rxn5690  eSEN        3.47     3.52     3.50       0.06    0.03   sheets coincide here
+
+follows RKS    1
+follows BS    39
+no distinction possible (sheets within 50 meV)   16
+
+restricted to the 33 cases where the two hypotheses
+differ by more than 300 meV:  RKS 1, BS 32
+
+model reactant vs reference reactant: median 0.0005 A, max 0.0207 A
+-- the zero of the barrier is essentially the same structure, so it
+   does not favour either hypothesis
