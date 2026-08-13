@@ -1,0 +1,31 @@
+MODEL FORCE ERROR AT THE MODEL'S OWN PREDICTED TRANSITION STATE
+============================================================================================
+All in eV/A. |F| model is what the model believes is left at the point
+it stopped at; |F| DFT is what is actually there.
+
+group        n      MAE  max comp  |F| model   |F| DFT
+simple      26    0.011     0.045      0.021     0.050
+MR          44    0.031     0.142      0.032     0.163
+
+per model, median MAE
+              simple        MR   factor
+UMA-S          0.011     0.036     3.4x
+UMA-M          0.011     0.023     2.1x
+eSEN           0.010     0.038     3.7x
+
+The comparison that matters: the model stopped because its own force was
+small. Whatever the reference still has there is the error that moved
+the prediction off the saddle.
+
+  simple   model believes 0.021,  reference has 0.050
+  MR       model believes 0.032,  reference has 0.163
+
+worst cases in the multireference group
+  rxn0894  UMA-M  MAE  0.372   max  1.361   |F| model 0.314   DFT 1.320
+  rxn7060  eSEN   MAE  0.204   max  1.140   |F| model 0.028   DFT 1.126
+  rxn0894  UMA-S  MAE  0.193   max  0.771   |F| model 0.112   DFT 0.776
+  rxn8837  UMA-S  MAE  0.169   max  0.745   |F| model 0.046   DFT 0.749
+  rxn7060  UMA-S  MAE  0.159   max  0.890   |F| model 0.019   DFT 0.884
+  rxn0894  eSEN   MAE  0.116   max  0.799   |F| model 0.029   DFT 0.794
+  rxn8837  UMA-M  MAE  0.115   max  0.438   |F| model 0.752   DFT 0.757
+  rxn7060  UMA-M  MAE  0.076   max  0.337   |F| model 0.002   DFT 0.335
