@@ -242,6 +242,13 @@ for rx in MR:
         if g is None:
             cells.append('--')
             continue
+        # The gradient decides before the Hessian does. A point with a large
+        # residual force is not stationary and therefore not a saddle, which is
+        # a result and not a gap -- reporting it as "never tested" put the
+        # reference column in a state that contradicted the figure.
+        if gr is not None and gr >= GRAD_OK:
+            cells.append(f'n.stat. {gr:.2f}')
+            continue
         if hp is None:
             cells.append(f'n.gepr. {gr:.2f}' if gr is not None else 'n.gepr.')
             continue
@@ -249,9 +256,7 @@ for rx in MR:
         hs = read_orca_hess(hp) if hp.endswith('.hess') else np.load(hp)
         ni = n_imag_of(hs, sym, xyz)
         if gr is None:
-            cells.append(f'? kein Grad')
-        elif gr >= GRAD_OK:
-            cells.append(f'n.stat. {gr:.2f}')
+            cells.append('? kein Grad')
         elif ni == 0:
             cells.append('Minimum')
         elif ni > 1:
