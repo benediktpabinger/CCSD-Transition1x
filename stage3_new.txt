@@ -1,0 +1,98 @@
+==============================================================================
+stage3_new.py   2026-08-16 14:38
+Stufe 3: Modenanteil >= 0.1, Bindungsrate >= 0.05, massengewichtet.
+gelesen:
+  /home/energy/s242862/bs_uks_nebci   (65 Eintraege)
+  /home/energy/s242862/tsopt_broken   (12 Eintraege)
+  /home/energy/s242862/bs_uks_neb_modelpath   (24 Eintraege)
+  /home/energy/s242862/bs_uks_neb16   (9 Eintraege)
+  /home/energy/s242862/bs_uks_nebci_prod   (10 Eintraege)
+  /home/energy/s242862/sweep_summary.py   (11003 B, 08-12 12:53)
+==============================================================================
+
+============================================================================================
+NEB-CI aufgeteilt
+============================================================================================
+rxn          n_imag    v_imag  Anteil    Rate   Urteil
+--------------------------------------------------------------------------------------------
+rxn0346           1   -1925.6    0.94   0.865   *** BESTEHT ALLE DREI STUFEN ***
+rxn0894           1   -1194.9    0.95   1.300   *** BESTEHT ALLE DREI STUFEN ***
+rxn1147           1    -663.7    0.60   0.949   *** BESTEHT ALLE DREI STUFEN ***
+rxn1283           1    -123.7    0.84   0.980   *** BESTEHT ALLE DREI STUFEN ***
+rxn1320           1    -403.9    0.34   0.205   *** BESTEHT ALLE DREI STUFEN ***
+rxn3107           1   -1826.6    0.41   0.648   *** BESTEHT ALLE DREI STUFEN ***
+rxn4113           1    -158.8    0.74   0.964   *** BESTEHT ALLE DREI STUFEN ***
+rxn4518           1    -893.4    0.89   1.302   *** BESTEHT ALLE DREI STUFEN ***
+rxn4522           1    -540.5    0.40   0.338   *** BESTEHT ALLE DREI STUFEN ***
+rxn5690           1   -1772.6    0.95   0.943   *** BESTEHT ALLE DREI STUFEN ***
+rxn5691           —         —       —       —   keine Hesse oder Struktur
+rxn6196           1    -400.7    0.93   1.321   *** BESTEHT ALLE DREI STUFEN ***
+rxn7060           —         —       —       —   keine Hesse oder Struktur
+rxn7949           1    -289.3    0.02   0.025   Mode gehoert nicht zu dieser Reaktion
+rxn7957           1    -181.6    0.54   0.585   *** BESTEHT ALLE DREI STUFEN ***
+rxn8827           —         —       —       —   keine Hesse oder Struktur
+rxn8832           1    -691.8    0.96   1.226   *** BESTEHT ALLE DREI STUFEN ***
+rxn8837           1    -799.9    0.91   1.308   *** BESTEHT ALLE DREI STUFEN ***
+rxn8885           1   -2833.8    0.36   0.590   *** BESTEHT ALLE DREI STUFEN ***
+
+  15 von 16 bestehen alle drei Stufen
+
+============================================================================================
+vom hoechsten gebrochenen Bild
+============================================================================================
+rxn          n_imag    v_imag  Anteil    Rate   Urteil
+--------------------------------------------------------------------------------------------
+rxn1283           1     -78.0    0.83   0.788   *** BESTEHT ALLE DREI STUFEN ***
+rxn5691           1    -148.1    0.48   0.363   *** BESTEHT ALLE DREI STUFEN ***
+rxn8827           1    -597.6    0.97   1.391   *** BESTEHT ALLE DREI STUFEN ***
+rxn8885           1     -55.7    0.40   0.002   Mode gehoert nicht zu dieser Reaktion
+
+  3 von 4 bestehen alle drei Stufen
+
+============================================================================================
+Modellpfad
+============================================================================================
+rxn          n_imag    v_imag  Anteil    Rate   Urteil
+--------------------------------------------------------------------------------------------
+rxn0346           —         —       —       —   keine Hesse oder Struktur
+rxn1283           —         —       —       —   keine Hesse oder Struktur
+rxn1320           —         —       —       —   keine Hesse oder Struktur
+rxn5690           —         —       —       —   keine Hesse oder Struktur
+rxn5691           —         —       —       —   keine Hesse oder Struktur
+rxn6196           —         —       —       —   keine Hesse oder Struktur
+rxn8827           —         —       —       —   keine Hesse oder Struktur
+rxn8837           —         —       —       —   keine Hesse oder Struktur
+
+  0 von 0 bestehen alle drei Stufen
+
+============================================================================================
+16 Bilder
+============================================================================================
+rxn          n_imag    v_imag  Anteil    Rate   Urteil
+--------------------------------------------------------------------------------------------
+rxn1320           —         —       —       —   keine Hesse oder Struktur
+rxn8827           —         —       —       —   keine Hesse oder Struktur
+rxn8837           —         —       —       —   keine Hesse oder Struktur
+
+  0 von 0 bestehen alle drei Stufen
+
+============================================================================================
+Produktionsniveau wB97M-V/def2-TZVP
+============================================================================================
+rxn          n_imag    v_imag  Anteil    Rate   Urteil
+--------------------------------------------------------------------------------------------
+rxn0346           1   -1244.3    0.70   1.072   *** BESTEHT ALLE DREI STUFEN ***
+rxn1320           —         —       —       —   keine Hesse oder Struktur
+rxn6196           1    -730.6    0.97   1.296   *** BESTEHT ALLE DREI STUFEN ***
+rxn8827           1    -582.7    0.97   1.389   *** BESTEHT ALLE DREI STUFEN ***
+
+  3 von 3 bestehen alle drei Stufen
+
+============================================================================================
+BILANZ
+============================================================================================
+  NEB-CI aufgeteilt                     15 von 16
+  vom hoechsten gebrochenen Bild         3 von 4
+  Modellpfad                             0 von 0
+  16 Bilder                              0 von 0
+  Produktionsniveau wB97M-V/def2-TZVP    3 von 3

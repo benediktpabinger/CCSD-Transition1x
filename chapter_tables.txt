@@ -1,0 +1,187 @@
+==============================================================================
+chapter_tables.py   2026-08-14 01:43
+nebts_<rxn> ist das BS-NEB-Ergebnis, NICHT der RKS-TS.
+gelesen:
+  /home/energy/s242862/stab_pipeline   (138 Eintraege)
+  /home/energy/s242862/orca_freq   (324 Eintraege)
+  /home/energy/s242862/orca_irc   (34 Eintraege)
+  /home/energy/s242862/orca_endpoint   (450 Eintraege)
+  /home/energy/s242862/orca_neb_results   (287 Eintraege)
+  /home/energy/s242862/saddle_matrix.txt   (3246 B, 08-13 20:32)
+  /home/energy/s242862/endpoint_report.txt   (6036 B, 08-12 18:45)
+  /home/energy/s242862/_collected_stability.json   (27029 B, 07-27 15:36)
+==============================================================================
+====================================================================================================
+T0  DER RKS-TS AUF BEIDEN FLAECHEN
+====================================================================================================
+Dieselbe Geometrie, zwei Gradienten.  Links die Flaeche, auf der sie
+optimiert wurde; rechts die, auf der die Reaktion ablaeuft.
+
+rxn         auf RKS    auf BS   Faktor   Lesart
+----------------------------------------------------------------------------------------------------
+rxn7949       0.105     1.686      16x   stationaer auf RKS, nicht auf BS
+rxn8832       0.142     2.733      19x   stationaer auf RKS, nicht auf BS
+rxn1320       0.059     2.073      35x   stationaer auf RKS, nicht auf BS
+rxn4113       0.079     0.386       5x   stationaer auf RKS, nicht auf BS
+rxn8885       0.042     2.637      62x   stationaer auf RKS, nicht auf BS
+rxn6196       0.179     0.638       4x   auf beiden nicht stationaer
+rxn0346       0.052     2.613      50x   stationaer auf RKS, nicht auf BS
+rxn4518       0.068     2.949      43x   stationaer auf RKS, nicht auf BS
+rxn3107       0.063     1.646      26x   stationaer auf RKS, nicht auf BS
+rxn8837       0.057     1.697      30x   stationaer auf RKS, nicht auf BS
+rxn7060       0.033     1.766      53x   stationaer auf RKS, nicht auf BS
+rxn5691       0.041     1.419      35x   stationaer auf RKS, nicht auf BS
+rxn1283       0.038     2.386      63x   stationaer auf RKS, nicht auf BS
+rxn8827       0.026     1.128      43x   stationaer auf RKS, nicht auf BS
+rxn4522       0.098     1.875      19x   stationaer auf RKS, nicht auf BS
+rxn1147       0.065     1.840      28x   stationaer auf RKS, nicht auf BS
+rxn0894       0.062     1.350      22x   stationaer auf RKS, nicht auf BS
+rxn7957       0.026     0.901      34x   stationaer auf RKS, nicht auf BS
+rxn5690       0.037     0.162       4x   stationaer auf RKS, nicht auf BS
+
+Median auf der RKS-Flaeche  0.059 eV/A   (18 von 19 stationaer)
+Median auf der BS-Flaeche   1.697 eV/A   (0 von 19 stationaer)
+
+Der RKS-TS ist eine korrekte Rechnung auf der falschen Flaeche.
+Das ist der Unterschied zwischen einem Fehler und einer Annahme,
+die nicht mehr gilt.
+
+  Abgleich RKS-TS-Gradient auf der BS-Flaeche gegen saddle_matrix.txt: 19 gemeinsame Eintraege (neu 19, bestehend 19)
+  Abweichungen: 0
+  Sentinel Gradient auf der BS-Flaeche: unauffaellig (n=19, min 0.162, max 2.949)
+
+====================================================================================================
+T1  WER HAT EINEN SATTELPUNKT GEFUNDEN  --  mit Imaginaerfrequenz
+====================================================================================================
+Gradient in eV/A (max. Komponente), Frequenz in cm-1.
+stationaer = Gradient < 0.15.  Ein Punkt ohne Stationaritaet ist
+kein Sattelpunkt, gleich was die Hesse sagt.
+
+rxn                RKS-TS               UKS-NEB                unsere                 UMA-S                 UMA-M                  eSEN               TSopt/M
+----------------------------------------------------------------------------------------------------
+rxn7949       n.stat 1.69                    --               JA -732                    --                    --                    --                JA -69
+rxn8832       n.stat 2.73               JA -656               JA -651               JA -634               JA -644           n.stat 0.23               JA -652
+rxn1320       n.stat 2.07           n.stat 2.06               JA -313               JA -416               JA -405               JA -408                    --
+rxn4113       n.stat 0.39               JA -148               JA -152           n.stat 0.17           n.stat 0.19           n.stat 0.18                    --
+rxn8885       n.stat 2.64                    --              JA -1673           n.stat 0.48           n.stat 0.18           n.stat 0.38                    --
+rxn6196       n.stat 0.64           n.stat 0.68               JA -760               JA -781               JA -743               JA -744                    --
+rxn0346       n.stat 2.61           n.stat 2.55              JA -1289           n.stat 0.24           n.stat 0.18           n.stat 0.48              JA -1295
+rxn4518       n.stat 2.95                    --                JA -90            2 imag -86               JA -105           2 imag -133                    --
+rxn3107       n.stat 1.65                    --              JA -1486           n.stat 0.16              JA -1438           n.stat 0.16              JA -1484
+rxn8837       n.stat 1.70               JA -817               JA -819           n.stat 0.75           n.stat 0.76            2 imag -81                JA -59
+rxn7060       n.stat 1.77                    --              JA -2024           n.stat 0.88           n.stat 0.33           n.stat 1.13           n.stat 1.71
+rxn5691       n.stat 1.42                    --                JA -95                    --                    --                    --                    --
+rxn1283       n.stat 2.39                    --           2 imag -123           n.stat 0.16                JA -94                JA -73                    --
+rxn8827       n.stat 1.13           n.stat 1.07               JA -590           n.stat 0.18               JA -590           n.stat 0.23               JA -592
+rxn4522       n.stat 1.88               JA -495           n.stat 1.20                    --                    --                    --                    --
+rxn1147       n.stat 1.84               JA -589               JA -581               JA -253                    --                    --               JA -230
+rxn0894       n.stat 1.35              JA -1075               JA -617           n.stat 0.78           n.stat 1.32           n.stat 0.79                    --
+rxn7957       n.stat 0.90               JA -670               JA -671                    --               JA -696                    --               JA -624
+rxn5690       n.stat 0.16               JA -448                    --           n.stat 0.18               JA -869           n.stat 0.15                    --
+
+====================================================================================================
+T2  BARRIEREN IN eV, GEMESSEN VOM RELAXIERTEN EDUKT
+====================================================================================================
+Nullpunkt ist das relaxierte Edukt der Referenz, geschlossenschalig
+in allen 45 Reaktionen -- der einzige Punkt, ueber den alle Methoden
+einig sind.  Energien vom Stufe-1a-Einzelpunkt, also auf der
+Grundzustandsflaeche.  Eine Barriere an einem nicht-stationaeren
+Punkt ist keine Barriere; solche Zellen tragen (n.stat.).
+
+rxn            RKS-TS       UKS-NEB        unsere         UMA-S         UMA-M          eSEN       TSopt/M    Spanne
+----------------------------------------------------------------------------------------------------
+rxn7949        3.402*            --        3.289            --            --            --        2.756     0.533
+rxn8832        2.785*        2.460        2.473        2.501        2.485        2.491*        2.473     0.041
+rxn1320        3.076*        3.034*        2.520        2.771        2.770        2.770            --     0.252
+rxn4113        5.437*        4.402        4.402        5.426*        4.361*        5.426*            --     0.000
+rxn8885        3.569*            --        3.593        3.251*        3.597*        3.289*            --
+rxn6196        4.250*        4.242*        4.211        4.219        4.220        4.221            --     0.010
+rxn0346        3.411*        3.413*        3.321        3.326*        3.322*        3.329*        3.321     0.000
+rxn4518        4.799*            --        3.830        3.925        3.928        3.925            --     0.098
+rxn3107        4.108*            --        4.123        4.127*        4.124        4.125*        4.123     0.001
+rxn8837        3.938*        3.553        3.553        9.024*        6.908*        4.587        6.460     2.907
+rxn7060        6.147*            --        6.161        6.183*        6.161*        6.207*        6.143*
+rxn5691        2.976*            --        2.537            --            --            --            --
+rxn1283        5.327*            --        4.772        4.820*        4.848        4.822            --     0.076
+rxn8827        3.841*        3.835*        3.422        3.455*        3.443        3.441*        3.422     0.021
+rxn4522        5.518*        5.061        5.610*            --            --            --            --
+rxn1147        4.097*        4.118        4.118        3.884            --            --        3.880     0.239
+rxn0894        4.751*        4.788        4.102        4.171*        4.824*        4.424*            --     0.686
+rxn7957        3.858*        3.808        3.808            --        2.918            --        2.916     0.892
+rxn5690        3.506*        3.466            --        3.487*        3.486        3.491*            --     0.020
+
+*  nicht stationaer -- die Zahl ist eine Energie, keine Barriere
+
+Spanne ueber die gueltigen Sattelpunkte, groesste zuerst:
+   rxn8837  2.907 eV
+   rxn7957  0.892 eV
+   rxn0894  0.686 eV
+   rxn7949  0.533 eV
+   rxn1320  0.252 eV
+   rxn1147  0.239 eV
+   rxn4518  0.098 eV
+   rxn1283  0.076 eV
+
+====================================================================================================
+T3  WELCHE REAKTIONEN DAS SIND
+====================================================================================================
+RDKit ist auf dem Cluster nicht installiert, also keine SMILES.
+Stattdessen Summenformel und die drei Atompaare, deren Abstand sich
+zwischen Edukt und Produkt am staerksten aendert -- dieselbe
+Definition wie fuer die reaktive Koordinate, nur mit einem Paar mehr,
+damit ein mitlaufender Zuschauer sichtbar wird statt versteckt.
+
+rxn      Formel       N   Aenderung Edukt -> Produkt [A]
+----------------------------------------------------------------------------------------------------
+rxn7949  C5H5NO      12   C3-C5 knuepft 2.54->1.47   C4-C5 bricht 1.44->2.46   C2-C3 bricht 1.50->2.50
+rxn8832  C5H5NO      12   C1-C6 knuepft 2.56->1.48   C1-C2 bricht 1.47->2.47   C4-C6 bricht 1.51->2.34
+rxn1320  C3H5NO2     11   C2-H6 knuepft 2.89->1.09   O0-H6 bricht 0.96->2.56   C1-C2 bricht 1.54->2.95
+rxn4113  C3H5NO2     11   O0-C3 knuepft 3.48->1.43   N2-C3 bricht 1.45->3.48
+rxn8885  C5H5NO      12   C1-O2 bricht 1.42->2.67   C1-N6 knuepft 2.64->1.57   O2-C5 knuepft 2.37->1.32
+rxn6196  C5H5NO      12   C2-C5 bricht 1.47->4.12   C2-H10 bricht 1.09->3.42   C5-H10 knuepft 2.08->1.08
+rxn0346  C3H5NO2     11   C5-H10 bricht 1.09->2.78   C2-C5 bricht 1.50->2.68   C2-H10 knuepft 2.21->1.09
+rxn4518  C3H5NO2     11   N0-O5 knuepft 3.33->1.43   N0-C1 bricht 1.44->2.92   C2-C4 knuepft 2.04->1.93
+rxn3107  C3H5NO2     11   C2-O3 bricht 1.41->2.65   C2-N5 knuepft 2.62->1.56   O3-C4 knuepft 2.35->1.32
+rxn8837  C5H5NO      12   N0-C6 knuepft 3.58->1.46   C4-C6 bricht 1.51->2.34
+rxn7060  C5H5NO      12   O0-C1 bricht 1.19->5.08   O0-C5 knuepft 4.48->1.17   C3-N6 knuepft 2.60->1.44
+rxn5691  C5H5NO      12   O0-N6 knuepft 2.83->1.44   C4-N6 bricht 1.46->2.33
+rxn1283  C3H5NO2     11   C4-O5 bricht 1.42->3.85   O2-O5 knuepft 3.61->1.43   C3-O5 bricht 1.42->2.63
+rxn8827  C5H5NO      12   N0-C5 knuepft 3.89->1.45   C4-C5 bricht 1.48->2.57   C2-C4 knuepft 2.04->1.97
+rxn4522  C3H5NO2     11   O3-C4 bricht 1.37->3.34   N0-O3 knuepft 3.29->1.43   N0-C1 bricht 1.44->2.89
+rxn1147  C3H5NO2     11   C1-C2 bricht 1.54->3.32   C1-O5 knuepft 2.54->1.43
+rxn0894  C3H5NO2     11   C4-H8 knuepft 4.01->1.10   C0-H8 bricht 1.09->3.99   N2-O5 knuepft 3.84->1.44
+rxn7957  C5H5NO      12   C1-H7 bricht 1.11->4.35   C5-H7 knuepft 2.70->1.08   C4-N6 knuepft 2.59->1.53
+rxn5690  C5H5NO      12   C3-H8 knuepft 3.47->1.09   C1-C4 bricht 1.49->3.03   C4-H8 bricht 1.08->2.60
+
+====================================================================================================
+T4  DIE GROESSE, AUF DIE ALLES BEDINGT IST
+====================================================================================================
+Alles am RKS-TS, ausser den beiden Produktspalten.
+dE_BS = wie viel tiefer die gebrochene Loesung liegt [meV].
+
+rxn         N_FOD  lmin_ext   S2 TS  dE_BS TS  Grad TS  S2 Prod dE_BS Prod
+----------------------------------------------------------------------------------------------------
+rxn7949     1.146   -0.0631   0.893    -559.6    1.686    0.000        0.0
+rxn8832     1.000   -0.0493   0.870    -428.0    2.733    0.419      -84.0
+rxn1320     0.968   -0.0480   0.785    -339.2    2.073   -0.000        0.0
+rxn4113     0.960   -0.0085   0.140      -8.4    0.386    0.000        0.0
+rxn8885     0.923   -0.0111   0.507     -42.8    2.637   -0.000       -0.0
+rxn6196     0.869   -0.0069   0.216     -10.7    0.638    0.000       -0.0
+rxn0346     0.847   -0.0272   0.628    -147.6    2.613   -0.000        0.0
+rxn4518     0.833   -0.0778   0.842    -648.5    2.949    0.000        0.0
+rxn3107     0.801   -0.0125   0.409     -38.8    1.646   -0.000       -0.0
+rxn8837     0.798   -0.0440   0.741    -293.9    1.697    0.473      -69.7
+rxn7060     0.788   -0.0079   0.374     -22.1    1.766    0.000       -0.0
+rxn5691     0.778   -0.0290   0.629    -155.9    1.419   -0.000        0.0
+rxn1283     0.769   -0.0139   0.419     -44.5    2.386   -0.000        0.0
+rxn8827     0.760   -0.0110   0.338     -27.5    1.128    0.425      -35.4
+rxn4522     0.731   -0.0325   0.662    -184.0    1.875   -0.000       -0.0
+rxn1147     0.725   -0.0245   0.534    -105.2    1.840   -0.000       -0.0
+rxn0894     0.716   -0.0401   0.580    -190.2    1.350   -0.000       -0.0
+rxn7957     0.684   -0.0240   0.513     -99.8    0.901   -0.000        0.0
+rxn5690     0.433         —   0.068      -1.3    0.162    0.000       -0.0
+
+lmin_ext ist der kleinste externe Stabilitaetseigenwert; negativ
+heisst, die restringierte Loesung ist kein Minimum der
+unrestringierten Gleichungen.  dE_BS am Produkt steht in
+endpoint_report.txt und wird hier nicht doppelt gerechnet.

@@ -1,0 +1,156 @@
+==============================================================================
+band_seam.py   2026-08-14 02:09
+Energien und <S^2> je Bild aus der validierten Nachmessung.
+gelesen:
+  /home/energy/s242862/band_s2_v2   (66 Eintraege)
+==============================================================================
+========================================================================================================
+1  DAS ENERGIEPROFIL, BILDWEISE, MIT BLATTZUGEHOERIGKEIT
+========================================================================================================
+Energie relativ zu Bild 0, in meV.  B = gebrochen (<S^2> > 0.3),
+r = restringiert.  Der Gipfel ist markiert.
+
+  rxn0894
+    Blatt       r      r      B      B      B      B      B      B      r      r
+    E           0   2621   4367   4434   4464   4548   4819   3889   3428   2460
+    Gipfel                                               ^^                     
+    Naht bei Bild [1, 7], Gipfel bei 6, Abstand 1
+
+  rxn1147
+    Blatt       r      r      r      B      B      B      r      r      r      r
+    E           0    468   2664   2754   3637   4148   4010   3728   3567   3474
+    Gipfel                                        ^^                            
+    Naht bei Bild [2, 5], Gipfel bei 5, Abstand 0
+
+  rxn1283
+    Blatt       r      r      r      B      B      B      B      r      r      r
+    E           0    145   3609   4552   4816   4827   4852   6527   5637   3761
+    Gipfel                                                      ^^              
+    Naht bei Bild [2, 6], Gipfel bei 7, Abstand 1
+
+  rxn3107
+    Blatt       r      r      r      r      r      r      B      B      r      r
+    E           0    147    681   2115   3148   3876   4328   3141   1948   1320
+    Gipfel                                               ^^                     
+    Naht bei Bild [5, 7], Gipfel bei 6, Abstand 1
+
+  rxn4113
+    Blatt       r      r      B      B      B      B      B      B      r      r
+    E           0   2825   4491   4331   4313   4182   4094   4114   2665    945
+    Gipfel                   ^^                                                 
+    Naht bei Bild [1, 7], Gipfel bei 2, Abstand 1
+
+  rxn4518
+    Blatt       r      r      B      B      B      B      B      B      r      r
+    E           0   3211   3789   3826   3837   3863   3990   4736   3443   3093
+    Gipfel                                                      ^^              
+    Naht bei Bild [1, 7], Gipfel bei 7, Abstand 0
+
+  rxn4522
+    Blatt       r      r      r      B      B      B      B      B      r      r
+    E           0   2489   3465   5089   4876   4866   4832   4714   3012   2230
+    Gipfel                          ^^                                          
+    Naht bei Bild [2, 7], Gipfel bei 3, Abstand 1
+
+  rxn5691
+    Blatt       r      r      r      r      B      r      r      r      r      r
+    E           0    820   1851   2519   2703   3161   2733   1639   1184   1054
+    Gipfel                                        ^^                            
+    Naht bei Bild [3, 4], Gipfel bei 5, Abstand 1
+
+  rxn7060
+    Blatt       r      r      r      r      r      r      B      B      r      r
+    E           0    246   2947   1602   3747   6428   8057   8516   4339   3255
+    Gipfel                                                      ^^              
+    Naht bei Bild [5, 7], Gipfel bei 7, Abstand 0
+
+  rxn7949
+    Blatt       r      r      B      B      B      B      B      r      r      r
+    E           0   2162   2752   2858   3218   3144   2822   3162    752   -138
+    Gipfel                                 ^^                                   
+    Naht bei Bild [1, 6], Gipfel bei 4, Abstand 2
+
+  rxn7957
+    Blatt       r      r      r      B      B      r      r      r      r      r
+    E           0   2364   3718   3186   3816   3551   2926   2240   1763   1600
+    Gipfel                                 ^^                                   
+    Naht bei Bild [2, 4], Gipfel bei 4, Abstand 0
+
+  rxn8827
+    Blatt       r      r      r      r      r      B      B      r      r      r
+    E           0     50    418   1974   3284   3383   3612   3871   3539   3286
+    Gipfel                                                      ^^              
+    Naht bei Bild [4, 6], Gipfel bei 7, Abstand 1
+
+  rxn8832
+    Blatt       r      r      r      B      B      B      B      B      B      r
+    E           0   1300   1975   1923   2502   2357   2292   1877   1168    977
+    Gipfel                                 ^^                                   
+    Naht bei Bild [2, 8], Gipfel bei 4, Abstand 2
+
+  rxn8837
+    Blatt       r      r      r      r      r      B      B      B      r      r
+    E           0    102    468   1250   2321   3117   3508   3636   3403   3152
+    Gipfel                                                      ^^              
+    Naht bei Bild [4, 7], Gipfel bei 7, Abstand 0
+
+  rxn8885
+    Blatt       r      r      r      r      r      r      B      B      r      r
+    E           0   1240   2272   2942   3383   3602   2782   2371   1729   1106
+    Gipfel                                        ^^                            
+    Naht bei Bild [5, 7], Gipfel bei 5, Abstand 0
+
+========================================================================================================
+2  WIE GROSS IST DER SCHRITT UEBER DIE NAHT
+========================================================================================================
+  ueber eine Naht      n=30  median    584.2 meV   max   4176.6
+  innerhalb eines Blatts n=105 median    468.1 meV   max   3463.5
+  Verhaeltnis der Mediane  1.25
+
+  Kein auffaelliger Sprung an der Naht.  Die Erklaerung
+  ueber ein kuenstliches Maximum traegt so nicht.
+
+========================================================================================================
+3  LIEGT DER GIPFEL AN DER NAHT
+========================================================================================================
+  gemischte Baender: 15
+  Abstand Gipfel zur naechsten Naht, in Bildern:
+     0:  6x
+     1:  7x
+     2:  2x
+  median 1.0
+
+  Der Gipfel sitzt an oder neben der Naht.  Bei acht Bildern
+  ist das genau die Aufloesung, bei der sich Naht und Sattel
+  nicht trennen lassen.
+
+========================================================================================================
+4  SITZT DIE GEBROCHENE STRECKE TIEFER ALS EIN GLATTER PFAD
+========================================================================================================
+Fuer jede gebrochene Strecke: die Energie ihrer Bilder gegen die
+Gerade zwischen den beiden restringierten Nachbarn.  Negative Werte
+heissen, die gebrochene Loesung zieht das Profil nach unten -- die
+Voraussetzung fuer ein kuenstliches Maximum daneben.
+
+  rxn      Bilder der Strecke       max Absenkung [meV]
+  ------------------------------------------------------------
+  rxn0894  2-7                                    576.2
+  rxn1147  3-5                                   -247.0
+  rxn1283  3-6                                  -1091.2
+  rxn3107  6-7                                    550.3
+  rxn4113  2-7                                   1383.8
+  rxn4518  2-7                                    519.3
+  rxn4522  3-7                                   1562.4
+  rxn5691  4-4                                   -137.6
+  rxn7060  6-7                                   2325.4
+  rxn7949  2-6                                   -173.0
+  rxn7957  3-4                                   -476.6
+  rxn8827  5-6                                    -96.4
+  rxn8832  3-8                                     48.3
+  rxn8837  5-7                                    503.7
+  rxn8885  6-7                                   -195.4
+
+  n=15   median 48.3 meV   negativ in 7 von 15
+
+  NICHT bestaetigt: keine Absenkung.  Die Erklaerung ueber
+  das kuenstliche Maximum ist damit widerlegt.

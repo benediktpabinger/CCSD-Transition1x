@@ -1,0 +1,83 @@
+==============================================================================
+band_profile.py   2026-08-14 02:06
+<S^2> je Bild aus der validierten Nachmessung (Kontrolle bestanden, 1 SCF-Zyklus).
+gelesen:
+  /home/energy/s242862/band_s2_v2   (66 Eintraege)
+  /home/energy/s242862/orca_freq   (324 Eintraege)
+  /home/energy/s242862/bs_uks_neb_results   (66 Eintraege)
+  /home/energy/s242862/orca_neb_results   (287 Eintraege)
+==============================================================================
+====================================================================================================
+DAS PROFIL: wo entlang des Bandes sitzt die Brechung
+====================================================================================================
+Bild 0 ist das Edukt, das letzte das Produkt.  Der Gipfel ist das
+Bild mit der hoechsten Energie -- daraus wird das Climbing Image
+und damit der Uebergangszustand.
+
+rxn      Profil <S^2> je Bild                         Gipfel <S^2> dort  Grad NEB   Urteil
+----------------------------------------------------------------------------------------------------
+rxn0346  ....o.....                                        4      0.000     2.553   nirgends gebrochen
+rxn0894  ..####@#..                                        6      1.036     0.022   Gipfel gebrochen
+rxn1147  ...##@....                                        5      0.509     0.016   Gipfel gebrochen
+rxn1150  .....o....                                        5      0.000     0.017   nirgends gebrochen
+rxn1283  ...####o..                                        7      0.000         —   *** bricht, aber NICHT am Gipfel ***
+rxn1320  ....o.....                                        4      0.000     2.062   nirgends gebrochen
+rxn3107  ......@#..                                        6      0.423         —   Gipfel gebrochen
+rxn4113  ..@#####..                                        2      0.983     0.007   Gipfel gebrochen
+rxn4518  ..#####@..                                        7      0.767         —   Gipfel gebrochen
+rxn4522  ...@####..                                        3      0.922     0.009   Gipfel gebrochen
+rxn5690  .....o....                                        5     -0.000     0.004   nirgends gebrochen
+rxn5691  ....#o....                                        5      0.000         —   *** bricht, aber NICHT am Gipfel ***
+rxn6196  ..o.......                                        2     -0.000     0.683   nirgends gebrochen
+rxn7060  .....-#@..                                        7      0.830         —   Gipfel gebrochen
+rxn7945  ......-o..                                        7     -0.000     0.025   nirgends gebrochen
+rxn7949  ..##@##...                                        4      1.000         —   Gipfel gebrochen
+rxn7957  ...#@.....                                        4      0.647     0.009   Gipfel gebrochen
+rxn8827  .....##o..                                        7      0.000     1.074   *** bricht, aber NICHT am Gipfel ***
+rxn8832  ...#@####.                                        4      0.987     0.018   Gipfel gebrochen
+rxn8837  .....##@..                                        7      1.019     0.011   Gipfel gebrochen
+rxn8885  .....=##..                                        5      0.186         —   *** bricht, aber NICHT am Gipfel ***
+
+  Legende:  . <0.05   - 0.05-0.3   # >0.3      o = @ markieren den Gipfel
+
+  Sentinel <S^2> am Gipfel: unauffaellig (n=21, min -0, max 1.036)
+
+  Gipfel gebrochen              11 von 21
+  bricht, aber nicht am Gipfel   4   rxn1283 rxn5691 rxn8827 rxn8885
+  nirgends gebrochen             6   rxn0346 rxn1150 rxn1320 rxn5690 rxn6196 rxn7945
+
+====================================================================================================
+HAENGT DAS ERGEBNIS DES NEB DARAN
+====================================================================================================
+Ein Band, dessen Gipfel auf der restringierten Flaeche liegt, sollte
+gegen den restringierten Sattelpunkt laufen.
+
+Gruppe                             n  Grad NEB median  stationaer   RMSD zum RKS-TS
+----------------------------------------------------------------------------------------------------
+Gipfel gebrochen                  11            0.011      7 von 7               0.5290
+Gipfel restringiert               10            0.683      3 von 7               0.0950
+
+Einzeln, damit die Gruppen nachpruefbar bleiben:
+  Gipfel gebrochen:
+     rxn0894   <S^2>_Gipfel 1.036  max 1.036  Grad 0.022
+     rxn1147   <S^2>_Gipfel 0.509  max 1.010  Grad 0.016
+     rxn3107   <S^2>_Gipfel 0.423  max 0.860  Grad —
+     rxn4113   <S^2>_Gipfel 0.983  max 1.008  Grad 0.007
+     rxn4518   <S^2>_Gipfel 0.767  max 1.008  Grad —
+     rxn4522   <S^2>_Gipfel 0.922  max 1.007  Grad 0.009
+     rxn7060   <S^2>_Gipfel 0.830  max 0.830  Grad —
+     rxn7949   <S^2>_Gipfel 1.000  max 1.014  Grad —
+     rxn7957   <S^2>_Gipfel 0.647  max 0.996  Grad 0.009
+     rxn8832   <S^2>_Gipfel 0.987  max 0.998  Grad 0.018
+     rxn8837   <S^2>_Gipfel 1.019  max 1.019  Grad 0.011
+  Gipfel restringiert:
+     rxn1283   <S^2>_Gipfel 0.000  max 1.010  Grad —
+     rxn5691   <S^2>_Gipfel 0.000  max 0.755  Grad —
+     rxn8827   <S^2>_Gipfel 0.000  max 0.852  Grad 1.074
+     rxn8885   <S^2>_Gipfel 0.186  max 0.906  Grad —
+     rxn0346   <S^2>_Gipfel 0.000  max 0.000  Grad 2.553
+     rxn1150   <S^2>_Gipfel 0.000  max 0.000  Grad 0.017
+     rxn1320   <S^2>_Gipfel 0.000  max -0.000  Grad 2.062
+     rxn5690   <S^2>_Gipfel -0.000  max -0.000  Grad 0.004
+     rxn6196   <S^2>_Gipfel -0.000  max -0.000  Grad 0.683
+     rxn7945   <S^2>_Gipfel -0.000  max 0.256  Grad 0.025

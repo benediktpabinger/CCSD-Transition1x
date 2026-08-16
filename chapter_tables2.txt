@@ -1,0 +1,127 @@
+==============================================================================
+chapter_tables2.py   2026-08-14 01:43
+Stufe 3 kommt aus sweep_summary.py, nicht aus einer zweiten Implementierung.
+gelesen:
+  /home/energy/s242862/orca_freq   (324 Eintraege)
+  /home/energy/s242862/orca_irc   (34 Eintraege)
+  /home/energy/s242862/freq_at_model   (45 Eintraege)
+  /home/energy/s242862/bs_uks_neb_results   (66 Eintraege)
+  /home/energy/s242862/sweep_summary.py   (11003 B, 08-12 12:53)
+  /home/energy/s242862/sweep_summary.txt   (8365 B, 08-12 12:53)
+==============================================================================
+================================================================================================
+A  DIE FEHLENDEN ZELLEN IN T1
+================================================================================================
+Zelle                       Grad  n_imag    v_imag  Anteil    Rate  Barriere  Stufe
+------------------------------------------------------------------------------------------------
+rxn1147 / unsere           0.010       1    -581.1    0.60   0.946     4.118  c
+rxn7957 / unsere           0.011       1    -670.8    0.27   0.542     3.808  c
+
+Nach Einbeziehen von orca_irc und freq_at_model noch fehlend:
+   rxn7949   UKS-NEB   (nebts_rxn7949)
+   rxn1320   TSopt/M   (tsopt_rxn1320_UMA-M)
+   rxn4113   TSopt/M   (tsopt_rxn4113_UMA-M)
+   rxn8885   UKS-NEB   (nebts_rxn8885)
+   rxn8885   TSopt/M   (tsopt_rxn8885_UMA-M)
+   rxn6196   TSopt/M   (tsopt_rxn6196_UMA-M)
+   rxn4518   UKS-NEB   (nebts_rxn4518)
+   rxn4518   TSopt/M   (tsopt_rxn4518_UMA-M)
+   rxn3107   UKS-NEB   (nebts_rxn3107)
+   rxn7060   UKS-NEB   (nebts_rxn7060)
+   rxn5691   UKS-NEB   (nebts_rxn5691)
+   rxn5691   TSopt/M   (tsopt_rxn5691_UMA-M)
+   rxn1283   UKS-NEB   (nebts_rxn1283)
+   rxn1283   TSopt/M   (tsopt_rxn1283_UMA-M)
+   rxn4522   TSopt/M   (tsopt_rxn4522_UMA-M)
+   rxn0894   TSopt/M   (tsopt_rxn0894_UMA-M)
+   rxn5690   unsere    (ours_rxn5690)
+   rxn5690   TSopt/M   (tsopt_rxn5690_UMA-M)
+   18 Zellen von 114
+
+================================================================================================
+B  KUMULATIVE DREISTUFENBILANZ
+================================================================================================
+a  stationaer, Gradient < 0.15 eV/A
+b  zusaetzlich genau eine imaginaere Mode
+c  zusaetzlich Modenanteil >= 0.1 und Rate >= 0.05
+
+Methode       geprueft   Stufe a   Stufe b   Stufe c   verloren a->b   b->c
+------------------------------------------------------------------------------------------------
+UKS-NEB             12         8         8         8               0      0
+unsere              18        17        16        13               1      3
+UMA-S               19         7         6         6               1      0
+UMA-M               19        13        12        11               1      1
+eSEN                19        10         8         7               2      1
+TSopt/M              9         8         8         6               0      2
+
+  Abgleich Stufe-c-Urteile gegen sweep_summary.txt: 78 gemeinsame Eintraege (neu 96, bestehend 81)
+  Abweichungen: 0
+
+Zeilen, die Stufe b bestehen und an Stufe c scheitern:
+   rxn1320   unsere    v   -312.7  Anteil 0.00  Rate 0.001
+   rxn4518   unsere    v    -90.2  Anteil 0.07  Rate 0.327
+   rxn5691   unsere    v    -94.6  Anteil 0.60  Rate 0.015
+   rxn7949   UMA-M     v   -109.3  Anteil 0.13  Rate 0.011
+   rxn7949   eSEN      v   -100.1  Anteil 0.16  Rate 0.009
+   rxn7949   TSopt/M   v    -69.4  Anteil 0.23  Rate 0.008
+   rxn8837   TSopt/M   v    -59.4  Anteil 0.09  Rate 0.054
+
+================================================================================================
+C  TRIAGE, NEU AUSGEZAEHLT GEGEN STUFE c
+================================================================================================
+Lauf                         Start  Ergebnis    v_imag  Anteil    Rate  Stufe
+------------------------------------------------------------------------------------------------
+tsopt_rxn0346_UMA-M          0.182     0.009   -1295.1    0.67   1.031  c
+tsopt_rxn0894_UMA-S          0.776     0.010      -0.0    0.14   0.163  a
+tsopt_rxn1147_UMA-M          0.050     0.013    -229.7    0.18   0.073  c
+tsopt_rxn3107_UMA-M          0.106     0.016   -1483.6    0.40   0.598  c
+tsopt_rxn7060_UMA-M          0.335     1.707         —       —       —  none
+tsopt_rxn7949_UMA-M          0.051     0.012     -69.4    0.23   0.008  b
+tsopt_rxn7957_UMA-M          0.111     0.013    -624.3    0.70   0.987  c
+tsopt_rxn8827_UMA-M          0.131     0.008    -592.0    0.97   1.390  c
+tsopt_rxn8832_UMA-M          0.077     0.018    -652.1    0.96   1.217  c
+tsopt_rxn8837_UMA-M          0.757     0.014     -59.4    0.09   0.054  b
+
+unter 0.25 eV/A:  6 von 7 bestehen Stufe c
+     JA   tsopt_rxn0346_UMA-M       Start  0.182  -> c
+     JA   tsopt_rxn1147_UMA-M       Start  0.050  -> c
+     JA   tsopt_rxn3107_UMA-M       Start  0.106  -> c
+     NEIN tsopt_rxn7949_UMA-M       Start  0.051  -> b
+     JA   tsopt_rxn7957_UMA-M       Start  0.111  -> c
+     JA   tsopt_rxn8827_UMA-M       Start  0.131  -> c
+     JA   tsopt_rxn8832_UMA-M       Start  0.077  -> c
+
+ueber 0.25 eV/A:  0 von 3 bestehen Stufe c
+     NEIN tsopt_rxn0894_UMA-S       Start  0.776  -> a
+     NEIN tsopt_rxn7060_UMA-M       Start  0.335  -> none
+     NEIN tsopt_rxn8837_UMA-M       Start  0.757  -> b
+
+Startgradient unbekannt:  0 von 0 bestehen Stufe c
+
+================================================================================================
+D  ABSTAND DES UKS-NEB VOM RKS-TS
+================================================================================================
+rxn        NEB vs RKS-TS  NEB vs unsere  Grad NEB
+------------------------------------------------------------------------------------------------
+rxn8832           0.2908         0.1067     0.018
+rxn1320           0.0268         1.0721     2.062
+rxn4113           0.9319         0.0080     0.007
+rxn6196           0.0552         0.1336     0.683
+rxn0346           0.0116         0.1763     2.553
+rxn3107           0.9057         0.8725         —
+rxn8837           0.5388         0.0030     0.011
+rxn5691           0.1419         0.5979         —
+rxn1283           0.8680         0.3477         —
+rxn8827           0.0191         0.3656     1.074
+rxn4522           0.5193         0.4952     0.009
+rxn1147           0.1571         0.0218     0.016
+rxn0894           0.8876         1.1425     0.022
+rxn7957           0.1076         0.0194     0.009
+rxn5690           0.2881              —     0.004
+rxn1150           0.0950              —     0.017
+rxn7936           0.0054              —         —
+rxn7945           0.6686              —     0.025
+
+  Sentinel RMSD NEB gegen RKS-TS: unauffaellig (n=18, min 0.005401, max 0.9319)
+n = 18   Median 0.2226 A   unter 0.10 A: 6
+am naechsten: rxn7936 0.0054, rxn0346 0.0116, rxn8827 0.0191, rxn1320 0.0268, rxn6196 0.0552, rxn1150 0.0950

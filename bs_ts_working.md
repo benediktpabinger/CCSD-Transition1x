@@ -62,6 +62,7 @@ Fehler war meine Auswahlregel, nicht die Daten.
 | **Die Ursache ist der Kraftfehler** | Das Modell glaubt bei 0.032 eV/Å zu stehen, tatsächlich wirken 0.163. Der Fehler hat dieselbe Größe wie das Konvergenzkriterium — dann trägt das Kriterium keine Information mehr. |
 | **Alle 45 Edukte sind sauber** | Die Prämisse des Aufbaus hält. Fünf Produkte sind gebrochen, um 2 bis 84 meV — das betrifft Reaktionsenergien und Rückbarrieren, nicht die Barrieren. |
 | **Keine Methode über zwei Drittel** | Gültige Sattelpunkte je 19 Reaktionen: TS-Opt 13, UMA-M 11, UKS-NEB 8, eSEN 7, UMA-S 6. |
+| **Der UKS-NEB lässt sich reparieren** | Nicht am Spin — am Konvergenzkriterium. `NEB-CI` statt `NEB-TS`, dann eine eigene BS-TS-Optimierung: **7 von 7 bestehen alle drei Stufen**. Eigener Abschnitt weiter unten. |
 
 Erzeugende Dateien: `saddle_matrix.txt`, `model_saddle_stats.txt`,
 `sweep_summary.txt`, `status_matrix.md`, `endpoint_report.txt`,
@@ -395,8 +396,11 @@ Grundzustandsfläche, in Gegenden, wo verschiedene Blätter gewinnen. Welcher zu
 Reaktion gehört, entscheidet nicht die Energie, sondern der IRC.
 
 Und: wer einen Weg abläuft und den Startraten an jedem Punkt neu herleitet,
-springt zwischen den Blättern. Das ist der Grund für 13 von 22 verlorenen
-NEB-Bändern und für den Fehlschlag bei rxn4522.
+springt zwischen den Blättern. Am NEB zeigt sich das nicht als vollständiger
+Kollaps — 15 von 21 Bändern halten die Brechung —, sondern darin, dass ein Band
+teils auf dem einen und teils auf dem anderen Blatt liegt und der Gipfel
+manchmal auf der falschen Seite landet (Korrektur im Abschnitt „Die
+BS-NEB-Bänder"). Für den Fehlschlag bei rxn4522 gilt es unverändert.
 
 **Eine Einschränkung, die dazugehört:** jenseits des Coulson-Fischer-Punkts
 verschmilzt das gebrochene Blatt mit dem restringierten und existiert nicht
@@ -440,15 +444,398 @@ denselben Dissoziations-Sattelpunkt gelaufen ist.
 
 ---
 
+# Der UKS-NEB lässt sich zum Laufen bringen — 2026-08-14/15
+
+**Der Befund in einem Satz:** `NEB-TS` sucht in einem Lauf den Pfad *und*
+konvergiert den Sattelpunkt darauf, mit zwei Kriterien, von denen das zweite
+zehnmal strenger ist. Trennt man die beiden Aufgaben, funktioniert es.
+
+```
+Pfadkriterium      max|Fp|   0.020 eV/Å
+Sattelkriterium    max|FCI|  0.002 eV/Å
+```
+
+In fast allen Läufen lag die Pfadkraft unter ihrem Kriterium und die
+Sattelkraft nicht. Zwei Läufe haben so 122 und 132 Iterationen verbraucht, ohne
+je anzukommen, und mussten abgebrochen werden.
+
+## Die Aufteilung: NEB-CI, dann eine eigene TS-Optimierung
+
+```
+1  NEB-CI, sonst identisch zur Baseline    hört am Climbing Image auf
+2  Einzelpunkt mit STABPerform darauf      gebrochene Orbitale
+3  OptTS + Freq aus diesen Orbitalen       analytisch, wB97X hat kein VV10
+```
+
+Neun Reaktionen mit restringiertem Gipfel, sieben bekommen ein Climbing Image,
+und **alle sieben bestehen alle drei Stufen**:
+
+```
+rxn        ν [cm⁻¹]   Anteil   Rate      ⟨S²⟩ am CI
+rxn8885     -2834      0.36    0.590        0.285
+rxn0346     -1926      0.94    0.865        0.359
+rxn5690     -1773      0.95    0.943        0.178
+rxn8837      -800      0.91    1.308        1.076
+rxn1320      -404      0.34    0.205        0.705
+rxn6196      -401      0.93    1.321        0.851
+rxn1283      -124      0.84    0.980        1.007
+
+Schwellen: Anteil 0.10, Rate 0.05
+```
+
+Kein Grenzfall dabei. Ohne CI blieben rxn5691 (385 Iterationen) und rxn8827
+(496, MaxIter erreicht).
+
+**rxn1320 ist dabei** — die Reaktion, die mit `NEB-TS` in 133 Iterationen nie
+ein Climbing Image bekam.
+
+**rxn1283 besteht, obwohl seine Mode mit −124 cm⁻¹ weich ist**: Anteil 0.84,
+Rate 0.98. Die Bewegung sitzt auf den richtigen Bindungen, sie ist nur flach.
+Ein Urteil allein nach der Frequenz wäre hier falsch gewesen — genau dafür gibt
+es Stufe 3.
+
+## Das Climbing Image ist bereits der Sattelpunkt
+
+Vier Läufe aus anderen Ansätzen lieferten ein konvergiertes Climbing Image,
+aber keinen konvergierten NEB-TS. Eine nachgeschobene Frequenzrechnung zeigt:
+
+```
+modelpath rxn8827   ⟨S²⟩ 1.049   n_imag 1   -602.5
+neb16     rxn8837   ⟨S²⟩ 1.076   n_imag 1   -800.0
+neb16     rxn1320   ⟨S²⟩ 0.721   n_imag 1   -406.0
+modelpath rxn5690   ⟨S²⟩ 0.296   n_imag 1   -882.3
+```
+
+Vier von vier sind Sattelpunkte erster Ordnung mit gehaltener Brechung. **Die
+TS-Konvergenz im NEB war nie nötig** — ORCA hat nur nicht anerkannt, was schon
+dastand.
+
+Und **modelpath/rxn8827 mit −602.5 liegt neben dem Ergebnis der Optimierung vom
+höchsten gebrochenen Bild mit −597.6**, beide bei ⟨S²⟩ 1.049. Zwei
+verschiedene Wege auf denselben Punkt.
+
+## Startpunkte, die helfen
+
+**Vom höchsten gebrochenen Bild statt vom Gipfel**, wo beide auseinanderfallen:
+3 von 4 bestehen alle drei Stufen, darunter rxn8827 mit −598 cm⁻¹, Anteil 0.97,
+Rate 1.39. Nur rxn8885 fällt durch, mit Rate 0.002.
+
+**Das Modellband als Startpfad** bringt rxn8827 — den härtesten Fall — in
+**31 Iterationen** zum Climbing Image, wo Interpolation nach 496 aufgab. Nicht
+zirkulär, weil es eine Modellvorhersage benutzt und nicht unsere Struktur.
+
+**`BrokenSym 2,2` statt `1,1`** ist der einzige Guess-Hebel, der überhaupt
+läuft — und er hilft nicht, zeigt aber etwas Wichtiges:
+
+```
+b22 rxn8837    28 Iterationen   CI und TS konvergiert   die einzige
+                                                        NEB-TS-Konvergenz
+b22 rxn1320    57               CI konvergiert
+b22 rxn8827   245               offen
+```
+
+Gemessen an der Blattbelegung sammelt `2,2` **kein einziges** der Bilder ein,
+an denen `1,1` scheitert:
+
+```
+rxn        verfuegbar   mit 1,1   mit 2,2   gewonnen   verloren
+rxn8837        6           4         4          0          0
+rxn1320        4           4         1          0          3
+```
+
+Bei rxn8837 identisch auf drei Nachkommastellen. Bei rxn1320 **schlechter** —
+die Bilder 5, 6 und 7 mit ⟨S²⟩ 1.001, 0.977 und 0.719 fallen auf null.
+
+**Und das ist die sauberste Bestätigung der Hauptaussage, aus einem Versuch,
+der das Gegenteil zeigen sollte:**
+
+```
+rxn1320   mit 1,1:   4 gebrochene Bilder, nach 133 Iterationen kein CI
+          mit 2,2:   1 gebrochenes Bild,  nach  57 Iterationen ein CI
+```
+
+Weniger Brechung, schnellere Konvergenz. Die beiden Größen sind entkoppelt.
+Wäre der Spin der Engpass, müsste es umgekehrt sein.
+
+Zu empfehlen ist `2,2` trotzdem nicht: es konvergiert schneller auf dem
+falscheren Blatt.
+
+## Drei Grenzen von ORCA 5.0.4, alle heute gefunden
+
+```
+MORead                  vom NEB-Modul abgelehnt:
+                        "MORead requested. This is not implemented.
+                         Please instead use the NEB_RESTART_GBWNAME feature."
+
+NEB_Restart_GBWName     nimmt nur Orbitale, die ORCAs NEB selbst geschrieben
+                        hat. Fremde Wellenfunktionen -> Segfault, fünfmal:
+                        zweimal mit einer Kopie von fremder Geometrie,
+                        dreimal mit bildweise an der eigenen Geometrie
+                        gerechneten. Nicht der Speicher -- mit 4 statt 8
+                        Prozessen und 48 statt 32 GB dieselbe Stelle.
+
+Rotate {i,j,90,1,1}     am Einzelpunkt akzeptiert (⟨S²⟩ 0.680), im NEB
+                        "Fatal Error (ORCA_SCF) cannot open the input file"
+                        in allen 8 MPI-Prozessen, bei der ersten SCF von
+                        PREOPT.
+```
+
+**Damit ist der Weg „gebrochene Startorbitale von außen einspeisen" mit ORCA
+zu.** Das macht den PySCF-NEB mit explizitem `dm0` von einer Option zur
+einzigen Möglichkeit — eine deutlich stärkere Begründung für den Ausblick als
+die vorherige.
+
+## Verfügbar gegen genommen — ein Maß, das es vorher nicht gab
+
+Zwei Fragen, die bis dahin vermischt wurden:
+
+```
+verfügbar   existiert an dieser Geometrie eine gebrochene Lösung?
+            → Einzelpunkt mit STABPerform an jedem Bild
+genommen    hatte das Band sie dort tatsächlich?
+            → MORead auf die gespeicherten Bildorbitale, ein SCF-Zyklus
+```
+
+Am billigen Niveau, drei Reaktionen:
+
+```
+rxn        verfügbar   genommen   verpasst
+rxn8827        6           2          4
+rxn8837        6           4          2
+rxn1320        4           4          0
+```
+
+Bei rxn8827 trägt das Gipfelbild eine gebrochene Lösung mit ⟨S²⟩ 0.762, und das
+Band lief dort restringiert. Ein Fall von dreien — eine Beobachtung, keine
+Regel.
+
+## Die Triage-Vorhersage, vor dem Lauf aufgeschrieben
+
+Neun Reaktionen ohne Von-Modell-Suche, alle mit einem DFT-Gradienten unter
+0.25 eV/Å an der UMA-M-Geometrie. Das Kriterium sagt: alle neun erreichen einen
+gültigen Sattelpunkt.
+
+```
+9 von 9 konvergiert, ⟨S²⟩ 0.15 bis 1.02
+rxn0894 als Negativkontrolle (1.32 eV/Å) gefallen: RKS_NICHT_KONVERGIERT
+```
+
+Stufe 1 bestätigt. Stufen 2 und 3 stehen noch aus — diese Strukturen kommen aus
+PySCF und brauchen die ORCA-Kette.
+
+## Was das für das Kapitel heißt
+
+Aus „UKS-NEB funktioniert nicht" wird **„UKS-NEB funktioniert, wenn man ihn
+nicht zwingt, gleichzeitig den Sattelpunkt zu konvergieren"**. Das ist ein
+anderer Abschnitt, und ein besserer: er enthält eine Empfehlung statt nur einer
+Diagnose.
+
+Und die Diagnose selbst hat sich verschoben. Es war kein Spinproblem — die
+Bänder halten die gebrochene Lösung meistens. Es war ein Konvergenzproblem: der
+Zustand war da, der Optimierer kam nur nie an.
+
+> **Offen:** die Messung, ob `BrokenSym 2,2` die Bilder einsammelt, an denen
+> `1,1` scheitert (läuft). Stufen 2 und 3 der neun Von-Modell-Strukturen. Und
+> die Ausdehnung von *verfügbar gegen genommen* über drei Reaktionen hinaus.
+
+---
+
+# Die Aufteilung, angewandt auf alle neunzehn — 2026-08-16
+
+Das Rezept aus dem vorigen Abschnitt — NEB-CI für den *Pfad*, danach eine
+eigene BS-TS-Optimierung für den *Sattelpunkt* — ist auf alle neunzehn
+Reaktionen des multireferenziellen Satzes angewandt worden, auf dem billigen
+Niveau ωB97X/6-31G(d). Skript: `pipeline/job_orca_nebci_split.sh` mit
+`LEVEL=cheap`.
+
+## Stufe 1 und 2
+
+| | |
+|---|---|
+| Climbing Image erreicht | **16 von 19** |
+| TS-Optimierung konvergiert | **16 von 16** |
+| genau eine imaginäre Mode | **16 von 16** |
+
+Ohne Climbing Image blieben rxn7060, rxn5691 und rxn8827. Zum Vergleich: der
+alte, ungeteilte UKS-NEB kam auf acht.
+
+## Stufe 3
+
+Modenanteil ≥ 0.10, Bindungsrate ≥ 0.05, massengewichtet
+(`pipeline/stage3_new.py`).
+
+| rxn | ν_imag | Anteil | Rate | | rxn | ν_imag | Anteil | Rate |
+|---|---|---|---|---|---|---|---|---|
+| rxn0346 | −1926 | 0.94 | 0.865 | | rxn4522 | −540 | 0.40 | 0.338 |
+| rxn0894 | −1195 | 0.95 | 1.300 | | rxn5690 | −1773 | 0.95 | 0.943 |
+| rxn1147 | −664 | 0.60 | 0.949 | | rxn6196 | −401 | 0.93 | 1.321 |
+| rxn1283 | −124 | 0.84 | 0.980 | | rxn7957 | −182 | 0.54 | 0.585 |
+| rxn1320 | −404 | 0.34 | 0.205 | | rxn8832 | −692 | 0.96 | 1.226 |
+| rxn3107 | −1827 | 0.41 | 0.648 | | rxn8837 | −800 | 0.91 | 1.308 |
+| rxn4113 | −159 | 0.74 | 0.964 | | rxn8885 | −2834 | 0.36 | 0.590 |
+| rxn4518 | −893 | 0.89 | 1.302 | | **rxn7949** | **−289** | **0.02** | **0.025** |
+
+**15 von 16 bestehen alle drei Stufen.** rxn7949 fällt durch: seine imaginäre
+Mode rührt die reaktiven Bindungen dieser Reaktion praktisch nicht an. Es ist
+ein sauber konvergierter Sattelpunkt — nur nicht der dieser Reaktion.
+
+Der Lauf *vom höchsten gebrochenen Bild* schließt zwei der drei Lücken:
+rxn5691 (Anteil 0.48, Rate 0.363) und rxn8827 (0.97, 1.391) bestehen dort alle
+drei Stufen. rxn8885 fällt in jenem Lauf durch, hat aber über den NEB-CI schon
+einen gültigen Punkt.
+
+**Zusammengenommen haben 17 der 19 Reaktionen einen gebrochen-symmetrischen
+Sattelpunkt, der alle drei Stufen besteht.** Offen: rxn7060 und rxn7949. Der
+Ausgangspunkt war null von neunzehn stationären Punkten auf der BS-Fläche (T0).
+
+## Sind es dieselben Sattelpunkte wie die schon bekannten
+
+Kabsch-RMSD der neuen Struktur gegen `unsere`, RKS-TS, UKS-NEB, UMA-M, TSoptM.
+Die Vergleichsstrukturen stammen vom Produktionsniveau; ein Sattelpunkt
+verschiebt sich zwischen den Niveaus um wenige Hundertstel Å, ab etwa 0.2 ist
+es ein anderer Punkt. Skript im Sitzungsordner (`_cmp.py`).
+
+| rxn | nächster Nachbar | RMSD /Å | | rxn | nächster Nachbar | RMSD /Å |
+|---|---|---|---|---|---|---|
+| rxn8837 | unsere | 0.018 | | rxn0346 | UKS-NEB | 0.214 |
+| rxn4113 | unsere | 0.024 | | rxn1283 | unsere | 0.290 |
+| rxn8832 | UKS-NEB | 0.027 | | rxn7957 | UMA-M | 0.340 |
+| rxn1147 | UKS-NEB | 0.029 | | rxn4518 | UMA-M | 0.516 |
+| rxn1320 | UMA-M | 0.041 | | rxn7949 | UMA-M | 0.610 |
+| rxn4522 | UKS-NEB | 0.045 | | rxn3107 | UKS-NEB | 0.941 |
+| rxn8885 | RKS-TS | 0.054 | | rxn6196 | unsere | 1.044 |
+| rxn0894 | UKS-NEB | 0.104 | | | | |
+| rxn5690 | RKS-TS | 0.180 | | | | |
+
+Neun von sechzehn liegen näher als 0.20 Å an einer bereits bekannten Struktur;
+bei den engsten fünf sind es zwei bis fünf Hundertstel, also innerhalb dessen,
+was allein der Niveauwechsel ausmacht. **Die Methode erfindet nichts, sie
+findet wieder.** Häufigster nächster Nachbar ist der alte UKS-NEB (6×) — zu
+erwarten, es ist dieselbe Bandmethode.
+
+Drei Punkte liegen weit von allem Bekannten und bestehen trotzdem alle drei
+Stufen: rxn6196 (1.044 Å, Anteil 0.93), rxn3107 (0.941, 0.41), rxn4518 (0.516,
+0.89). Das sind Kandidaten für **bislang unbekannte gültige Sattelpunkte
+derselben Reaktion**. rxn7949 liegt ebenfalls weit (0.610) — dort erklärt
+Stufe 3, warum: ein anderer Prozess.
+
+Ob einer davon *tiefer* liegt als die bekannten, lässt sich nur auf gleichem
+Niveau entscheiden. Dafür `pipeline/job_orca_sp_samelevel.sh`: je Struktur
+zwei SCF-Lösungen (instabilitätsgefolgt und gebrochen), die tiefere zählt, mit
+eingebauter Kontrolle, dass der Einzelpunkt die Energie der TS-Optimierung
+reproduziert.
+
+## Der Energievergleich auf gleichem Niveau — und warum er nichts hergibt
+
+Um zu entscheiden, ob einer der neuen Punkte *tiefer* liegt als die bekannten,
+sind alle Strukturen jeder Reaktion mit **einer** Methodenzeile gerechnet
+worden: `pipeline/job_orca_sp_samelevel.sh`, UKS ωB97X/6-31G(d), TightSCF, je
+Geometrie zwei SCF-Lösungen (instabilitätsgefolgt und `BrokenSym 1,1`), die
+tiefere zählt.
+
+Kontrolle bestanden: alle 16 Einzelpunkte reproduzieren die Energie, auf der
+die zugehörige TS-Optimierung geendet hat. Das Rezept trifft dieselbe
+elektronische Lösung.
+
+Danach der Gradient an denselben Geometrien, `pipeline/job_orca_grad_samelevel.sh`
+— `EnGrad` mit `MORead` aus dem gespeicherten `sp.gbw`, damit der Gradient zu
+genau der Lösung gehört, deren Energie in der Tabelle steht. (`STABPerform`
+ist dort bewusst nicht gesetzt: ORCA erlaubt es nur bei `RunTyp SinglePoint`.)
+
+**max|F| in eV/Å auf ωB97X/6-31G(d)**
+
+| rxn | neu | unsere | RKS-TS | UKS-NEB | UMA-M | TSoptM |
+|---|---|---|---|---|---|---|
+| rxn0346 | 0.002 | 1.42 | 4.62 | 4.57 | 1.58 | 1.44 |
+| rxn0894 | 0.002 | 0.68 | 2.56 | 0.58 | 1.88 | – |
+| rxn1147 | 0.004 | 0.56 | 3.61 | 0.54 | 0.98 | 0.95 |
+| rxn1283 | 0.002 | 0.43 | 5.25 | – | – | – |
+| rxn1320 | 0.002 | 0.38 | 3.04 | 3.06 | 0.37 | – |
+| rxn3107 | 0.004 | 3.53 | 5.00 | 3.41 | 3.41 | 3.53 |
+| rxn4113 | 0.003 | 0.58 | 1.84 | 0.58 | 0.68 | – |
+| rxn4518 | 0.004 | 0.67 | 3.33 | – | 0.68 | – |
+| rxn4522 | 0.002 | 2.24 | 2.90 | 1.42 | 0.61 | – |
+| rxn5690 | 0.011 | – | 1.91 | 0.91 | 1.99 | – |
+| rxn6196 | 0.006 | 1.86 | 3.34 | 3.58 | 1.74 | – |
+| rxn7949 | 0.003 | 1.38 | 2.38 | – | 1.23 | 1.22 |
+| rxn7957 | 0.002 | 1.41 | 3.13 | 1.39 | 1.35 | 1.26 |
+| rxn8832 | 0.002 | 1.13 | 3.61 | 1.13 | 1.24 | 1.13 |
+| rxn8837 | 0.005 | 0.91 | 2.07 | 0.91 | 1.45 | 1.21 |
+| rxn8885 | 0.015 | 4.83 | 5.97 | – | 4.88 | – |
+
+65 Vergleichsgeometrien: Minimum 0.37, **Median 1.44**, Maximum 5.97 eV/Å.
+Keine einzige unter der Stufe-1-Schwelle von 0.15; drei unter 0.50.
+
+**Damit ist keine einzige Energiedifferenz auswertbar.** Eine Energie an einem
+Punkt, der 1.4 eV/Å vom Stationären entfernt liegt, ist ein Hangwert, keine
+Sattelhöhe.
+
+### Zurückgenommen
+
+Aus der Energietabelle schien zunächst hervorzugehen, dass die beiden
+geometrisch am weitesten entfernten neuen Punkte — rxn6196 (+323 bis +413 meV
+gegen alle vier Vergleichsstrukturen) und rxn3107 (+110 bis +316 gegen alle
+fünf) — *tiefer* liegen als alles Bekannte, und damit die These aus §4 belegen.
+
+**Das gilt nicht.** Die Übereinstimmung über vier bzw. fünf Strukturen hinweg
+ist kein Zeichen von Konsistenz: ein Sattelpunkt liegt systematisch tiefer als
+beliebige Punkte am Hang um ihn herum, und genau solche Punkte sind die
+Vergleichsstrukturen auf diesem Niveau. rxn6196s Vergleichswerte stehen bei
+1.74 bis 3.58 eV/Å, rxn3107s bei 3.41 bis 5.00.
+
+Was dagegen unabhängig davon stehen bleibt: der RKS-TS ist in jeder Zeile die
+Struktur mit dem grössten Gradienten (1.84 bis 5.97), `unsere` und `UKS-NEB`
+die kleinsten. Auf der BS-Fläche ist der RKS-TS am schlechtesten aufgehoben —
+das ist T0, an einer unabhängigen Messung wiederholt.
+
+### Wie die Frage doch zu beantworten wäre
+
+Zwei Wege, beide noch offen:
+
+1. **Auf Produktionsniveau vergleichen**, wo die bekannten Strukturen
+   stationär sind. Dafür müssen die neuen Sattelpunkte dort erst existieren —
+   das ist der laufende `bs_uks_nebci_prod`.
+2. **Jede bekannte Struktur auf dem billigen Niveau in einen Sattelpunkt
+   relaxieren** und erst dann vergleichen. Billig, aber bei Gradienten von
+   3 bis 6 eV/Å läuft die Optimierung vermutlich auf einen ganz anderen Punkt.
+
+Weg 1 ist der belastbare.
+
+---
+
 # Die BS-NEB-Bänder, richtig gelesen
+
+> **DRITTE KORREKTUR, 2026-08-14 — jetzt gemessen statt aus dem Log gezählt.**
+>
+> Weder die „9 von 22" unten noch meine zweite Korrektur („22 von 22 Bandphasen
+> restringiert") stimmen. **Das Hauptlog eines NEB enthält die Band-SCFs gar
+> nicht** — es enthält PREOPT, also die Relaxation der beiden Endpunkte, und die
+> abschließende TS-Optimierung. Zählprobe: rxn4113 hat 100 Banditerationen über
+> 8 Bilder und 36 protokollierte SCFs.
+>
+> Nachgemessen an den gespeicherten Bildorbitalen (`<base>_im{0..9}.gbw`, ein
+> Einzelpunkt mit `MORead` je Bild, ein SCF-Zyklus, Kontrolle bestanden):
+>
+> ```
+> 210 Bilder, 55 davon ⟨S²⟩ > 0.3
+> Band bricht irgendwo      15 von 21
+> Gipfel gebrochen          11 von 21
+> ```
+>
+> **Die Bänder halten die Brechung meistens.** Was über das Ergebnis
+> entscheidet, ist, ob das *höchste* Bild bricht — dort 0.011 eV/Å gegen
+> 0.683 eV/Å und 0.529 Å gegen 0.095 Å Abstand zum RKS-TS.
+>
+> Der Rest dieses Abschnitts bleibt gültig, soweit er Geometrien und Frequenzen
+> vergleicht. Vollständige Tabelle in `chapter_mr_transition_states.md`, §3.2.
 
 Die frühere Aussage „nur 5 von 11 ⟨S²⟩-Profile sind zusammenhängend" beruhte auf
 einer Verwechslung. Jedes Band zeigt ein Maximum bei 2.006 bis 2.014 — das ist
 kein Diradikal, sondern das **Triplett**, das ORCAs `BrokenSym` zuerst
 konvergiert, bevor es kippt. Mein Grep hat beide Werte eingesammelt.
 
-Getrennt gerechnet: **9 von 22 Bändern haben die Symmetriebrechung gehalten**,
-die anderen 13 sind RKS-Rechnungen mit BS-Etikett.
+Getrennt gerechnet: ~~9 von 22 Bändern haben die Symmetriebrechung gehalten~~ —
+siehe Korrektur oben: 9 von 22 **Läufen** haben sie gehalten, kein Band.
 
 Und bei den neun ist das Ergebnis stark. Die NEB-TS-Struktur liegt
 
