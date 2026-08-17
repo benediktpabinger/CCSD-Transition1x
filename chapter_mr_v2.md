@@ -99,13 +99,11 @@ Funktion des Startpunkts ist. Vier unabhängige Werkzeuge, dasselbe Muster,
 derselbe Reaktionssatz: **das ist eine Aussage über die Fläche, nicht über eine
 Werkzeugklasse.**
 
-**Der Fix.** Ein NEB mit Climbing Image soll zwei Dinge zugleich leisten — einen
-Pfad beschreiben und einen Punkt exakt treffen. Die Genauigkeitsforderungen
-unterscheiden sich um den Faktor zehn, das Werkzeug ist für beides dasselbe.
-Also verlangen wir es nicht mehr in einem Lauf: das Band liefert den Pfad auf der
-groben Schwelle, sein höchstes Bild geht als Startpunkt in eine eigene
-TS-Optimierung mit exakter Krümmung, und der einmal gefundene elektronische
-Zustand wird weitergereicht statt bei jedem Schritt neu hergeleitet. **Von 0 auf
+**Der Fix.** Das Band bleibt, wie es war — geändert wird, was danach passiert.
+Statt ORCA die Verfeinerung selbst zu überlassen (`NEB-TS`), endet der Lauf am
+Climbing Image (`NEB-CI`); dessen Geometrie geht in eine eigene TS-Optimierung
+mit Krümmungsinformation, und der am Climbing Image gefundene elektronische
+Zustand wird über `MORead` weitergereicht statt bei jedem SCF neu hergeleitet. **Von 0 auf
 17 von 19.** Auf Produktionsniveau bisher 3 von 3. Und sie erfindet nichts: dort
 liegen die neuen Punkte 0.001 bis 0.010 Å von Strukturen, die auf ganz anderem
 Weg gefunden wurden.
@@ -793,6 +791,40 @@ Der zweite Fall ist **kein Modellfehler**. Er gehört ins Kapitel, weil er zeigt
 dass „das Modell liegt daneben" mindestens zwei verschiedene Dinge bedeuten
 kann.
 
+**Wo der Fehler sitzt.** Beide Größen lassen sich an derselben Stelle messen —
+`stab_pipeline` führt einen Eintrag je Modellgeometrie, also Brechungstiefe und
+Kraftfehler am selben Punkt. Der Zusammenhang ist da, aber nicht monoton:
+
+```
+Spearman gegen |F|_DFT an der Modellgeometrie   (n = 122)
+  |ΔE_BS| dort            0.465
+  ⟨S²⟩ dort               0.465
+  −λ_min_ext dort         0.615
+
+Brechungstiefe      n    |F|_DFT   |F|_Modell   Fehler
+stabil, ΔE = 0     82     0.069      0.031      0.035
+1 – 50 meV         11     0.163      0.023      0.124   ← Maximum
+50 – 200 meV        6     0.163      0.114      0.089
+über 200 meV       23     0.141      0.034      0.069
+```
+
+Der Fehler ist **nicht** dort am größten, wo am tiefsten gebrochen wird,
+sondern wo die Brechung flach ist — wo die beiden Lösungen also nahezu entartet
+sind. Bei über 200 meV ist er fast halbiert.
+
+Das ist verträglich mit einer einfachen Deutung: an der Kreuzung der beiden
+Blätter hat die Grundzustandsfläche einen Knick, und eine glatte Funktion kann
+einen Knick zwar in der Energie mitteln — daher die 0.01 bis 0.04 eV aus
+§2.1 — nicht aber in der Ableitung. Wo eines der Blätter deutlich tiefer liegt,
+ist die Fläche wieder glatt und das Modell wieder gut.
+
+> **Belegt ist die Korrelation, nicht der Mechanismus.** Die mittleren Gruppen
+> sind klein (n = 11 und 6). |F|_DFT ist außerdem die Kraft, die das Modell
+> hätte wegoptimieren sollen — ein Zusammenhang mit der Instabilität könnte
+> auch heißen, dass die Fläche dort schlicht steiler ist. Die reine
+> Fehlerspalte korreliert schwächer, 0.375 gegen λ_min_ext statt 0.615. Die
+> Alternative „dort ist alles schwierig" ist damit nicht ausgeschlossen.
+
 ## Kontrollen
 
 **Es ist derselbe Punkt.** `orca_freq/<rxn>_<Modell>/start.xyz` ist eine Kopie
@@ -1053,6 +1085,33 @@ nebts_rxn8827            1.074        2                   kein Stationärpunkt
 nebts_rxn6196            0.683        2                   kein Stationärpunkt
 ```
 
+**Und sie sind dabei nicht an der Konvergenz gescheitert.** Das ist der
+wichtigste Einzelbefund dieses Abschnitts, und er widerspricht der
+naheliegenden Vermutung:
+
+```
+NEB konvergiert (nach ORCAs eigenen Kriterien)     15 von 19
+Wandzeit erreicht                                   4 von 19
+                                 rxn7949, rxn8885, rxn4518, rxn7060
+
+mit NEB-TS_converged.xyz                           13
+nur mit CI-Datei                                    3   rxn3107, rxn5691, rxn1283
+Laufzeiten der konvergierten                        5 h bis 46 h
+```
+
+Fünfzehn Läufe melden Konvergenz und liefern eine Struktur ab, die auf der
+Grundzustandsfläche 0.68 bis 2.55 eV/Å trägt. Ein Lauf, der bei 0.103 eV/Å
+konvergiert meldet und bei Nachmessung 2.55 zeigt, hat nicht ungenau gerechnet —
+**er hat auf einer anderen Lösung gerechnet als der, gegen die geprüft wird.**
+Innerhalb der NEB-Maschinerie entscheidet `BrokenSym` bei jedem SCF neu, welches
+Blatt genommen wird; das Verfahren konvergiert dann sauber gegen etwas, das
+keine durchgehende Fläche ist.
+
+Dasselbe Bild von der Modellseite: der Kraftfehler der Modelle hat sein
+Maximum dort, wo die beiden Lösungen nahezu entartet sind (§5). Beide
+Werkzeugklassen stolpern an derselben Stelle, in verschiedener Gestalt — das
+SCF entscheidet sich neu, das Modell mittelt darüber hinweg.
+
 **Die Bilanz über alle 19:**
 
 ```
@@ -1139,29 +1198,63 @@ die Startpunktabhängigkeit.
 
 ## Aussage
 
-Ein NEB mit Climbing Image soll zwei Dinge zugleich leisten: ein Band, das den
-Pfad beschreibt, und ein Bild, das exakt auf dem Sattelpunkt sitzt. Die
-Genauigkeitsforderungen unterscheiden sich um den Faktor zehn, das Werkzeug ist
-für beides dasselbe — und praktisch jeder abgebrochene Lauf steht an der
-strengeren der beiden Schwellen. Verlangt man beides nicht mehr in einem Lauf,
-liefern **17 von 19** Reaktionen einen gebrochen-symmetrischen Sattelpunkt, der
-alle drei Stufen besteht. Ausgangslage war 0 von 19.
+Der Sattelpunkt wird nicht mehr innerhalb der NEB-Maschinerie gesucht, sondern
+danach. Der Lauf endet am Climbing Image (`NEB-CI` statt `NEB-TS`); dessen
+Geometrie und dessen Orbitale gehen in eine eigene TS-Optimierung. Damit
+liefern **17 von 19** Reaktionen einen Sattelpunkt, der alle drei Stufen
+besteht — Ausgangslage war 0 von 19.
+
+**Was die Aufteilung ausdrücklich NICHT tut: die Climbing-Image-Phase
+überspringen.** Auch `NEB-CI` treibt das höchste Bild bis zur Konvergenz —
+mit einer sogar viermal strengeren Schwelle als `NEB-TS`, und die laufenden
+Produktionsrechnungen stehen genau dort. Geändert sind die Schwellen und
+das, was danach geschieht.
 
 Dies ist der einzige Abschnitt des Kapitels, der etwas **herstellt** statt etwas
 festzustellen.
 
 ## Methode
 
-**Warum überhaupt getrennt.** ORCA prüft ein NEB gegen zwei Schwellen:
+**Was sich gegenüber der Baseline ändert.** Ein Schlüsselwort — aber zwei
+Verhalten, weil ORCA an das Schlüsselwort auch seine Voreinstellungen hängt.
 
 ```
-Band              max|Fp|  ≤ 0.020 eV/Å
-Climbing Image    max|FCI| ≤ 0.002 eV/Å      zehnmal strenger
+Baseline (§7)   ! UKS <METHODE> NEB-TS ...      NImages 8, Preopt
+Aufteilung      ! UKS <METHODE> NEB-CI ...      NImages 8, Preopt
 ```
 
-Bewegt wird das Climbing Image mit denselben Kräften erster Ordnung wie jedes
-andere Bild, ohne jede Krümmungsinformation. Einen Sattelpunkt auf 0.002 eV/Å
-zu treiben, ohne zu wissen, wie die Fläche sich krümmt, dauert praktisch ewig.
+Bildzahl, Vorrelaxation, Endpunkte und Niveau sind identisch. **Beide
+durchlaufen eine Climbing-Image-Phase** — `NEB-TS` ist `NEB-CI` plus ORCAs
+eigene TS-Verfeinerung im Anschluss. Aber die Schwellen sind nicht dieselben;
+ORCA druckt sie in beiden Läufen aus:
+
+```
+                        reguläre Bilder        Climbing Image
+NEB-TS (Baseline)   2.00e-02 Eh/Bohr       2.00e-03 Eh/Bohr
+                        = 1.028 eV/Å            = 0.103 eV/Å
+NEB-CI (Aufteilung) 5.00e-03 Eh/Bohr       5.00e-04 Eh/Bohr
+                        = 0.257 eV/Å            = 0.0257 eV/Å
+```
+
+**Der neue Lauf rechnet also viermal genauer, nicht lockerer.** Das erklärt die
+Laufzeiten: die alten Bänder waren nach 5 bis 22 Stunden fertig, die neuen
+brauchen 7 bis 40. Und der alte Schwellenwert für das Climbing Image, 0.103
+eV/Å, liegt bereits nahe an der Stufe-1-Schwelle von 0.15 — ein nach diesem
+Maßstab „konvergierter" Punkt konnte die Prüfung gerade noch bestehen oder
+gerade nicht.
+
+Der zweite Unterschied ist die Nachbehandlung:
+
+```
+NEB-TS     verfeinert innerhalb der NEB-Maschinerie weiter, mit BrokenSym,
+           das den gebrochenen Zustand bei jedem SCF neu herleitet
+NEB-CI     Lauf endet am Climbing Image; danach ein eigener OptTS mit
+           MORead (Zustand eingefroren) und Hesse (Krümmung)
+```
+
+**Welcher der beiden Unterschiede den Ausschlag gibt, ist nicht getrennt.**
+Der Test, der es trännte, wäre `NEB-TS` mit den strengen Schwellen — er ist
+nicht gerechnet.
 
 **Das Rezept**, `pipeline/job_orca_nebci_split.sh`:
 
@@ -1343,7 +1436,8 @@ entgegen der Anweisung doch vorwärts rechnet.
 
 ## Vorbehalte
 
-- **Warum ein Bandverfahren an dieser Schwelle scheitert, ist nicht erklärt.**
+- **Warum ein Bandverfahren an dieser Schwelle scheitert, ist nicht erklärt — und
+  die Aufteilung erklärt es auch nicht, sie umgeht die Schwelle ja nicht.**
   Drei Kandidaten, die die vorliegenden Daten nicht voneinander trennen: die
   Zwei-Blatt-Struktur der Fläche mit einer Naht, die ein Band zwangsläufig
   kreuzt; `BrokenSym` als zustandsloses Verfahren; und das Fehlen zweiter
@@ -1486,7 +1580,8 @@ kleinsten. Das ist §6 an einer unabhängigen Messung wiederholt.
 
 Die Liste, die gedruckt gehört und nicht in eine Fußnote:
 
-- **Warum Bandverfahren an der 0.002-Schwelle scheitern, ist unbekannt.** Drei
+- **Warum Bandverfahren an der Climbing-Image-Schwelle scheitern, ist
+  unbekannt.** Drei
   Kandidaten, keiner von den anderen getrennt (§8).
 - **Kein tieferer Sattelpunkt gefunden.** Die Methode reproduziert, sie entdeckt
   nicht — jedenfalls nicht in den bisher auf Produktionsniveau gerechneten
@@ -1778,11 +1873,20 @@ Korrelation in §7 ist real und gemessen. Aber sie erklärt das Versagen nicht,
 weil offen bleibt, warum der Gipfel bei sechs Bändern restringiert bleibt — eine
 Erklärung über einen Energieversatz an der Naht wurde geprüft und widerlegt.
 
-**Dritte und aktuelle Fassung: es ist ein Konvergenzproblem** an der
-Climbing-Image-Schwelle von 0.002 eV/Å (§8). Diese Fassung hat als einzige eine
+**Dritte Fassung: es ist ein Konvergenzproblem** an der
+Climbing-Image-Schwelle, 0.0257 eV/Å gegen 0.257 für die übrigen Bilder (§8).
+Diese Fassung hat als einzige eine
 Vorhersage gemacht — die Trennung von Pfad und Sattelpunkt müsse helfen — und
-sie hat sich bestätigt. **Warum** ein Bandverfahren dort scheitert, ist damit
-weiterhin nicht erklärt.
+sie hat sich bestätigt.
+
+**Aber auch sie erklärt den Gewinn nicht.** Die Aufteilung überspringt die
+Climbing-Image-Phase nicht — `NEB-CI` fordert dieselbe Schwelle wie `NEB-TS`,
+und die Produktionsläufe vom 17.08. stehen genau dort. Was sich ändert, ist der
+Schritt danach: eingefrorener Zustand über `MORead` statt `BrokenSym`, und eine
+Suche mit Krümmung statt mit Kräften erster Ordnung. Bis zum 17.08. stand in
+§8 die Formulierung „das Band liefert den Pfad auf der groben Schwelle", die
+genau das Gegenteil nahelegte. **Belegt ist, dass die Aufteilung hilft; warum
+der ungeteilte Lauf scheitert, ist offen.**
 
 ---
 
