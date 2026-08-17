@@ -47,6 +47,11 @@ Satz, der die Umbenennung zur Aussage macht:
 > Wo sie instabil ist, sind es zwei Flächen — und das Wort „Referenz" trägt
 > dann eine Annahme, die nicht mehr gilt.
 
+**BS-TS-Opt** statt „unsere Struktur". Gemeint ist die Struktur aus einer
+gebrochen-symmetrischen TS-Optimierung, die am RKS-TS startet — eines von
+mehreren Suchverfahren im Kapitel, nicht der Maßstab. Der interne Name
+unterstellte genau das.
+
 ---
 
 ## §1 · Wo könnte es klemmen, und wie findet man es vorher
@@ -57,17 +62,49 @@ betroffenen Reaktionen, bevor man rechnet?
 **Antwort:** Die externe Stabilitätsanalyse an der Eduktgeometrie. Minuten pro
 Reaktion.
 
-Vergleich mit N_FOD als etabliertem Deskriptor, AUC für „Modell weicht um mehr
-als 0.3 Å ab":
+**Der Test.** Nimm eine Reaktion, bei der ein Modell später eine ungültige
+Struktur liefert, und eine, bei der es klappt. Wie oft zeigt der Deskriptor
+vorher auf die richtige?
 
 ```
-λ_min_ext (kontinuierlich)   0.850     UMA-S 0.932  UMA-M 0.921  eSEN 0.886
-ext_stable (binär)           0.771           0.861        0.842        0.792
-N_FOD (kontinuierlich)       0.696           0.741        0.748        0.772
+von 100 solchen Paaren:
+
+  Instabilitätsanalyse   ████████████████▌      84
+  N_FOD                  ██████████████         78
+  --------------------------------------------------
+  Münzwurf               █████████              50
 ```
 
-Und das Argument gegen „das misst doch dasselbe": **innerhalb** der Gruppe mit
-hohem N_FOD trennt die Stabilität weiter, 0.038 gegen 0.200 Å.
+**Ungültig heißt hier: die Modellstruktur ist kein Stationärpunkt** — max|F| ≥
+0.15 eV/Å an ihrer eigenen Geometrie, gemessen mit DFT. Es geht kein
+Vergleichspunkt ein. Das ist wichtig, weil ein Vergleich mit dem RKS-TS genau
+dort nichts taugt, wo die Frage interessant wird (§3.0): dort ist der RKS-TS
+selbst kein Sattelpunkt, und „Abstand zum RKS-TS" wäre dann Abstand, nicht
+Fehler.
+
+**Und so sieht die Trennung aus:**
+
+```
+                    Strukturen   davon Stationärpunkte
+  RKS stabil            78            74     95 %
+  RKS instabil          44            19     43 %
+```
+
+Eine Rechnung von Minuten an der Eduktgeometrie, und man weiß, ob man den
+Modellen hier trauen kann.
+
+**Das Argument gegen „das misst doch dasselbe".** Nimm nur die Reaktionen, die
+N_FOD ohnehin als verdächtig meldet, und teile sie noch einmal:
+
+```
+  N_FOD > 0.5,  RKS stabil       27 Strukturen     89 % Stationärpunkte
+  N_FOD > 0.5,  RKS instabil     41                44 %
+```
+
+N_FOD hätte beide gleich behandelt. Die Stabilitätsanalyse trennt sie um den
+Faktor zwei. Dazu zwei Fälle zum Anfassen: rxn7945 und rxn7937 haben hohes
+N_FOD und trotzdem stabile Übergangszustände — bei ihnen sitzt die Brechung am
+Produkt, nicht am Barrierenkamm.
 
 Die Paartabelle enthält nur, was **ohne** RKS-TS messbar ist:
 
@@ -153,7 +190,7 @@ belegt ist:
 > Reaktionsenergien und Rückbarrieren von fünf Reaktionen, um 2 bis 84 meV. Das
 > Problem sitzt ausschließlich am Barrierenkamm.
 
-### §3a · Es entscheidet das oberste Bild
+### §3a · Wo der UKS-NEB stehen bleibt
 
 **Befund:** Von 19 Bändern halten **14** die Symmetriebrechung irgendwo. Was
 darüber entscheidet, ob der NEB ein brauchbares Ergebnis liefert, ist aber
@@ -198,14 +235,33 @@ UKS-NEB gültiger Sattelpunkt       8 von 19
 > die richtige Antwort ist. Das verschob den Median von 1.074 auf 0.683 und die
 > Stationärquote von 1 von 5 auf 3 von 7.
 
-**Takeaway:** Der NEB verliert die gebrochene Lösung nicht — er landet nur
-manchmal mit dem falschen Bild obenauf. Der Ansatzpunkt ist nicht die
-Zustandsführung, sondern die Frage, welches Bild zum Climbing Image wird.
+**Takeaway:** Der NEB verliert die gebrochene Lösung nicht — sie ist da, in 14
+von 19 Bändern. Er bekommt sie nur nicht bis zur geforderten Genauigkeit zur
+Ruhe. Der Ansatzpunkt ist damit weder die Zustandsführung noch die Auswahl des
+Gipfelbildes, sondern die Frage, ob man Pfad und Sattelpunkt überhaupt in
+einem Lauf verlangen muss (§3d).
 
-> **Offen und ausdrücklich nicht beantwortet:** warum bei sechs Bändern der
-> Gipfel restringiert bleibt. Eine Erklärung über einen Energieversatz an der
-> Naht zwischen den Blättern wurde geprüft und **widerlegt** (§3.2). Ohne
-> Mechanismus bleibt die Korrelation eine Korrelation.
+> **Wo die Läufe tatsächlich hängen bleiben.** ORCA fordert für das Band
+> max|Fp| ≤ 0.020 eV/Å, für das Climbing Image aber max|FCI| ≤ **0.002** —
+> zehnmal strenger. Bewegt wird das Climbing Image mit denselben Kräften
+> erster Ordnung wie der Rest des Bandes, ohne jede Krümmungsinformation.
+> Praktisch jeder abgebrochene Lauf steht an dieser einen Schwelle.
+
+> **Zwei Erklärungen sind geprüft und ausgeschieden.** Erstens der flächige
+> Spinkollaps: widerlegt, 14 von 19 Bändern halten den gebrochenen Zustand.
+> Zweitens die Vermutung, mehr erzwungene Brechung helfe: `BrokenSym 2,2`
+> sammelt kein zusätzliches Bild ein (rxn8837 identisch, rxn1320 verliert
+> drei) und konvergiert bei *weniger* Brechung schneller.
+
+> **Offen und ausdrücklich nicht beantwortet:** *warum* ein Bandverfahren an
+> dieser Schwelle scheitert. Drei Kandidaten, die die vorliegenden Daten nicht
+> voneinander trennen — die Zwei-Blatt-Struktur der Fläche mit einer Naht, die
+> ein Band zwangsläufig kreuzt; `BrokenSym` als zustandsloses Verfahren, das
+> den Startzustand bei jedem SCF neu herleitet; und das Fehlen zweiter
+> Ableitungen im Bandverfahren. Ebenso offen bleibt, warum bei sechs Bändern
+> der Gipfel restringiert bleibt; eine Erklärung über einen Energieversatz an
+> der Naht wurde geprüft und **widerlegt** (§3.2). Was belegt ist: wo es
+> hängt, und was es behebt. Nicht: warum es hängt.
 
 > **Was hier vorher stand, war falsch.** Bis zum 14.08. behauptete dieser
 > Abschnitt „22 von 22 Bandphasen durchgehend restringiert" und leitete daraus
@@ -279,6 +335,72 @@ und §3b überhaupt auseinanderzuhalten sind:
 > auseinanderliegende Startpunkte, die im selben Becken landen, sind eine
 > Aussage über das Becken — geteilte Trainingsdaten sind keine.
 
+### §3d · Pfad und Sattelpunkt trennen
+
+Bis hierher ist §3 Diagnose. Am Ende steht eine Fläche, auf der **kein
+einziger** der bekannten Punkte stationär ist — und damit nichts, womit sich
+weiterrechnen ließe: keine Barriere, keine Frequenz, kein Vergleichswert für
+irgendein Modell. Dieser Abschnitt ist der einzige, der etwas herstellt.
+
+**Die Idee.** Ein NEB-CI soll zwei Dinge zugleich leisten: ein Band, das den
+Pfad beschreibt, und ein Bild, das exakt auf dem Sattelpunkt sitzt. Die
+Genauigkeitsforderungen unterscheiden sich um den Faktor zehn, das Werkzeug
+ist für beides dasselbe. Also verlangen wir es nicht mehr in einem Lauf: das
+Band liefert den Pfad auf der groben Schwelle, sein Climbing Image geht als
+Startpunkt in eine eigene BS-TS-Optimierung mit exakter Hesse und
+Eigenvektorverfolgung, und die konvergierten Orbitale werden über `MORead`
+weitergereicht, statt bei jedem Schritt neu hergeleitet zu werden.
+
+**Was dabei herauskommt.**
+
+```
+                                       Climbing Image   TS-Opt   1 imag   alle 3 Stufen
+NEB-CI aufgeteilt, wB97X/6-31G(d)         16 von 19      16/16    16/16     15 von 16
+vom hoechsten gebrochenen Bild                     —      4/4      4/4       3 von 4
+Produktion, wB97M-V/def2-TZVP                        3 von 3      3/3       3 von 3
+```
+
+Zusammengenommen haben **17 der 19** Reaktionen einen gebrochen-symmetrischen
+Sattelpunkt, der alle drei Stufen besteht. Offen bleiben rxn7060, das auf
+keinem Niveau ein Climbing Image erreicht, und rxn7949, dessen Punkt sauber
+konvergiert, aber mit einem Modenanteil von 0.02 zu einer anderen Umlagerung
+gehört. Zum Vergleich der Ausgangslage: **0 von 19**.
+
+**Und der Teil, der es belastbar macht.** Auf Produktionsniveau liegen die
+neuen Sattelpunkte auf Tausendstel Ångström auf Strukturen, die über einen
+völlig anderen Weg gefunden wurden:
+
+```
+rxn      BS-TS-Opt   RKS-TS   UKS-NEB    UMA-M   TSoptM
+rxn0346      0.002    0.173     0.177    0.010    0.001
+rxn6196      0.008    0.101     0.137    0.070        —
+rxn8827      0.006    0.355     0.371    0.132    0.003
+```
+
+Ein Verfahren, das nur Neues liefert, wäre verdächtig. Eines, das die
+bekannten Punkte wiederfindet **und** dort liefert, wo vorher keiner war, ist
+es nicht. Damit erfüllt jeder dieser drei Punkte die Definition des
+*unabhängig bestätigten Sattelpunkts* aus §3c: dieselbe Struktur, erreicht von
+zwei Suchen, die weder Startpunkt noch Verfahren teilen.
+
+> **Was hier ausdrücklich nicht steht: ein neuer oder tieferer Sattelpunkt.**
+> Auf dem billigen Niveau sahen drei Punkte danach aus, allen voran rxn6196 mit
+> 1.04 Å Abstand zu jeder bekannten Struktur. Auf Produktionsniveau liegt
+> derselbe Punkt 0.008 Å von der BS-TS-Opt-Struktur. Es war ein Artefakt des
+> Niveaus. Die Methode reproduziert, sie entdeckt nicht — jedenfalls nicht in
+> den bisher gerechneten Fällen (§4.4).
+
+> **Kontrolle, läuft.** Dasselbe Rezept auf drei einreferenzigen Reaktionen,
+> deren restringierte Lösung innen und außen stabil ist (rxn1061, rxn0101,
+> rxn0896, ausgewählt nach dem Abstand zur Instabilität). Erwartung: ⟨S²⟩ ≈ 0
+> und derselbe Punkt wie der RKS-TS. Käme dort eine gebrochene Lösung heraus,
+> bräche das Verfahren Symmetrie, wo keine zu brechen ist — und der Befund an
+> den 19 wäre entwertet. Ohne diese Kontrolle ist §3d nicht abgeschlossen.
+
+**Erzeugt von:** `pipeline/job_orca_nebci_split.sh` (`LEVEL=cheap|prod`),
+`pipeline/job_orca_tsopt_prod_resume.sh`, ausgewertet mit
+`pipeline/stage3_new.py`.
+
 ---
 
 ## §4 · Thesen
@@ -299,8 +421,8 @@ Einigkeit    →  kein Beleg. Gemeinsame Trainingsdaten, gemeinsames Zielniveau,
                 alle drei verfehlen, bleibt möglich.
 ```
 
-**RKS-Instabilität ist der beste Prädiktor** — kontinuierlich (λ_min_ext,
-AUC 0.85), nicht binär (0.77). Sie sagt drei Dinge zugleich voraus: dass die
+**RKS-Instabilität ist der beste Prädiktor** — AUC 0.84 gegen 0.78 für
+N_FOD, referenzfrei gemessen. Sie sagt drei Dinge zugleich voraus: dass die
 Modelle danebenliegen, dass der RKS-TS ungültig ist, und dass auch die
 UKS-Rechnung schwierig wird.
 
@@ -333,7 +455,7 @@ tieferer Brechung und analytischen Hesse-Matrizen.
 **Tabellen:** AUC-Vergleich → §1 · `which_sheet.txt`, `force_error_at_ts.txt`
 → §2 · `endpoint_report.txt` → §3 Eröffnung · `saddle_matrix.txt` → §3c
 
-**Weglassen:** „Unsere Strukturen sind die richtigen Übergangszustände" (nicht
+**Weglassen:** „Die BS-TS-Opt-Strukturen sind die richtigen Übergangszustände" (nicht
 belegbar) und „die Modelle brechen bei Multireferenz ein" (referenzfrei
 Faktor 2, nicht 25 — und nach §2 die falsche Beschreibung).
 
@@ -388,7 +510,7 @@ numerisch, 6N zentrale Differenzen. Das ist der Grund, warum der Prüfstand auf
 | 2 | Sattelpunkt erster Ordnung | genau eine imaginäre Frequenz |
 | 3 | gehört zu dieser Reaktion | imaginäre Mode gegen die reaktiven Bindungen |
 
-**Kalibrierung von Stufe 1:** unsere bestätigten Sattelpunkte liegen bei
+**Kalibrierung von Stufe 1:** die bestätigten BS-TS-Opt-Sattelpunkte liegen bei
 0.006 bis 0.011 eV/Å. Die Schwelle 0.15 ist damit um mehr als eine
 Größenordnung großzügiger als das, was eine konvergierte Optimierung liefert —
 sie schließt nichts Grenzwertiges aus.
@@ -463,71 +585,107 @@ bezüglich der Überlappungsmatrix der Ausgangsgeometrie orthonormal.
 
 ### 1.1 Der Prädiktorvergleich
 
-**Aufbau.** 225 Zeilen = 5 Modelle × 45 Reaktionen. Zielgröße: RMSD der
-Modellvorhersage über 0.3 Å (34 Positive). Drei Prädiktoren, alle **vor** jeder
-teuren Rechnung verfügbar.
+**Aufbau.** 122 Zeilen = 3 Modelle × 42 Reaktionen, jede Zeile eine
+Modellvorhersage für einen Übergangszustand. **Zielgröße: die Modellstruktur
+ist kein Stationärpunkt** — max|F| ≥ 0.15 eV/Å an ihrer eigenen Geometrie,
+gemessen auf der Grundzustandsfläche (29 Positive, 24 %). Der Gradient stammt
+aus derselben zweistufigen Rechnung wie in §2.3: `STABPerform` für die
+Orbitale, dann `EnGrad MORead`. Beide Prädiktoren sind **vor** jeder teuren
+Rechnung verfügbar.
 
 ```
-AUC für die Vorhersage RMSD > 0.3 Å        (n = 225, Positive 34)
+AUC für die Vorhersage „kein Stationaerpunkt"   (n = 122, Positive 29)
 
-  -λ_min_ext (kontinuierlich)   0.8496
-  ext_stable (binär)            0.7710
-  N_FOD      (kontinuierlich)   0.6963
+  -λ_min_ext (kontinuierlich)   0.836
+  ext_stable (binär)            0.829
+  N_FOD      (kontinuierlich)   0.776
 
-je Modell             AUC ext   AUC N_FOD   AUC -λmin
-  UMA-S                0.8611     0.7407      0.9321
-  UMA-M                0.8421     0.7481      0.9211
-  eSEN                 0.7917     0.7716      0.8858
-  MACE                 0.6310     0.4683      0.6984
-  MACE+delta           0.6410     0.6154      0.7222
+je Modell, AUC von -λ_min_ext
+  UMA-S    0.842    n = 41,  davon 12 nicht stationär
+  UMA-M    0.862    n = 41,  davon  6
+  eSEN     0.837    n = 40,  davon 11
 ```
 
-**Lesart, die ins Kapitel gehört:** der kontinuierliche Eigenwert schlägt sein
-eigenes binäres Abbild um 0.08 AUC. Die Tiefe der Instabilität trägt
-Information, nicht nur ihr Vorhandensein. Für die drei starken Modelle liegt
-λ_min_ext bei 0.89 bis 0.93 — das ist Screening-tauglich.
+**Warum die Zielgröße gewechselt hat.** Eine frühere Fassung nahm den RMSD zur
+RKS-TS-Struktur als Ziel (225 Zeilen, Schwelle 0.3 Å) und kam auf 0.8496 /
+0.7710 / 0.6963. Das ist nicht haltbar: auf der instabilen Seite ist der
+RKS-TS kein Stationärpunkt der Fläche, auf der die Reaktion abläuft (§3.0).
+„Abweichung vom RKS-TS" ist dort ein Abstand, kein Fehler — und der Test wird
+beinahe zirkulär, weil Prädiktor und Zielgröße beide von der restringierten
+Lösung handeln. Die Zielgröße oben braucht keinen Vergleichspunkt.
 
-MACE fällt aus dem Muster (AUC 0.70) und ist bei N_FOD mit 0.47 schlechter als
-Raten. Das ist ein Befund über MACE, nicht über den Prädiktor, und sollte als
-solcher stehen.
+**Was den Wechsel überlebt und was nicht.**
+
+```
+                              alt (RMSD zum RKS-TS)   neu (referenzfrei)
+  Instabilität schlägt N_FOD        0.850 / 0.696        0.836 / 0.776   ✓
+  kontinuierlich schlägt binär      0.850 / 0.771        0.836 / 0.829   ✗
+```
+
+Die Kernaussage bleibt fast unverändert. Der Vorsprung des kontinuierlichen
+Eigenwerts über sein binäres Abbild verschwindet dagegen — 0.007 statt 0.08.
+Er war ein Artefakt der referenzbasierten Zielgröße. **Für das Kapitel heißt
+das: „instabil ja/nein" genügt**, der Zahlenwert muss nicht berichtet werden.
+
+**Die Trennung, direkt statt über AUC:**
+
+```
+                    Strukturen   Stationärpunkte   Median max|F|
+  RKS stabil            78        74     95 %          0.067
+  RKS instabil          44        19     43 %          0.163
+```
+
+Das reproduziert die 96 % / 46 % aus §2.2 auf einem zweiten Weg, mit anderer
+Stichprobe und ohne Hesse-Matrix.
+
+> **Zur Stichprobe.** Die 42 Reaktionen sind nicht der Benchmark-Satz. Die
+> stabile Seite stammt aus der FOD-geschichteten Auswahl von
+> `pipeline/force_error_at_ts.py` (die obersten 26 nach N_FOD, zehn über die
+> Rangliste verteilt, die untersten zehn), die instabile sind die 19. MACE und
+> MACE+delta sind nicht enthalten, weil für sie keine Gradienten an den
+> Modellgeometrien vorliegen; in der alten Fassung fielen sie mit AUC 0.70
+> beziehungsweise 0.47 bei N_FOD aus dem Muster.
+
+**Erzeugt von:** `pipeline/predictor_reffree.py`; die alte, referenzbasierte
+Fassung bleibt als `pipeline/sep_analysis.py` bestehen.
 
 ### 1.2 Der Einwand „das misst doch dasselbe"
 
-**Aufbau.** Nur die Reaktionen mit hohem N_FOD, dort noch einmal nach
-Stabilität aufgeteilt. Wenn beide Deskriptoren dasselbe messen, darf innerhalb
-dieser Gruppe nichts mehr zu trennen sein.
+**Aufbau.** Nur die Strukturen, die N_FOD ohnehin als verdächtig meldet, dort
+noch einmal nach Stabilität aufgeteilt. Wenn beide Deskriptoren dasselbe
+messen, darf innerhalb dieser Gruppe nichts mehr zu trennen sein. Zielgröße
+wie in §1.1: ist die Modellstruktur ein Stationärpunkt.
 
 ```
-High-MR-Gruppe, gepoolt über die Modelle      RMSD [Å]
-                        n   median     mean       Q3      max   >0.3
-  stabil               40   0.0383   0.0619   0.0750   0.4272      2
-  instabil             90   0.1996   0.3667   0.3278   2.8203     30
-
-je Modell, median stabil → instabil
-  UMA-S     0.0211 → 0.2559      instabil >0.3:  9 von 18
-  UMA-M     0.0133 → 0.2253                      7 von 18
-  eSEN      0.0165 → 0.2794                      8 von 18
+N_FOD > 0.5              Strukturen   Stationärpunkte
+  RKS stabil                 27          24     89 %
+  RKS instabil               41          18     44 %
 ```
 
-Faktor 5 im Median, und 30 von 90 gegen 2 von 40 über der Schwelle. Die
-Trennung überlebt die Kontrolle für N_FOD.
+**Sie trennt weiter.** Innerhalb der Gruppe, die N_FOD gleich behandelt, steht
+89 gegen 44 Prozent. Die Stabilitätsanalyse misst also nicht dasselbe genauer,
+sondern etwas anderes.
 
-**Zwei Vergleichsverhältnisse zum Einordnen:**
-```
-Prädiktor ext_stable (binär)     Median stabil 0.0127  instabil 0.1811   14.3×
-Prädiktor N_FOD > 0.35           Median unten  0.0070  oben     0.1250   17.9×
-```
-Roh betrachtet trennt N_FOD sogar etwas schärfer. Der Unterschied liegt in der
-Überlappung — und in dem, was §1.2 zeigt: die Stabilität trennt *zusätzlich*.
+**Zwei Fälle zum Anfassen:** rxn7945 und rxn7937 haben hohes N_FOD und
+trotzdem stabile Übergangszustände. Bei ihnen sitzt die Brechung am Produkt,
+nicht am Barrierenkamm — N_FOD sieht sie, kann aber nicht sagen, *wo* sie
+sitzt, und genau darauf kommt es an.
 
-**Quelle:** `stability_vs_fod_separation.txt`, Schritte 4 und 5.
+> **Was hier vorher stand.** Eine frühere Fassung teilte dieselbe Gruppe nach
+> dem RMSD zur RKS-TS-Struktur (stabil 0.0383 Å, instabil 0.1996 Å, Faktor 5).
+> Die Trennung war dieselbe, die Größe aber nicht haltbar: rechts ist der
+> RKS-TS kein Sattelpunkt, der Abstand zu ihm also kein Fehler (§3.0). Die
+> Zahlen stehen weiter in `stability_vs_fod_separation.txt`, Schritte 4 und 5,
+> und sind als *Abstand* zu lesen, nicht als Abweichung.
+
+**Erzeugt von:** `pipeline/predictor_reffree.py`.
 
 ### 1.3 Die referenzfreie Paartabelle
 
 **Warum referenzfrei.** Die naheliegende Zeile „Modelle gegen RKS-TS" ist in
 der rechten Spalte nicht auswertbar: dort ist der RKS-TS nicht die Antwort.
-Eine frühere Fassung dieser Tabelle hat stattdessen gegen *unsere* Struktur
-gemessen — das ist zirkulär, weil unsere Struktur genau das ist, was zur
+Eine frühere Fassung dieser Tabelle hat stattdessen gegen die BS-TS-Opt-Struktur
+gemessen — das ist zirkulär, weil die BS-TS-Opt-Struktur genau das ist, was zur
 Debatte steht. Beide Zeilen sind deshalb aus §1 entfernt.
 
 Was bleibt, kommt ohne jeden Vergleichspunkt aus: Modell gegen Modell.
@@ -611,7 +769,7 @@ starken Modellen. Diese Zeile trägt die Aussage, dass Modelle, Aufbau und
 Auswertung funktionieren — und sie steht bewusst **ohne** Gegenstück rechts.
 
 > **Vorbehalt.** Dieselbe Tabelle existiert für die BS-Gruppe, misst dort aber
-> gegen *unsere* Struktur und ist damit zirkulär. Sie taugt zur Trennung von
+> gegen die BS-TS-Opt-Struktur und ist damit zirkulär. Sie taugt zur Trennung von
 > Konformations- und Chemiefehler, nicht als Leistungsurteil, und wird in §1
 > nicht verwendet. Bei rxn1147 und rxn7957 zählt sie alle Modelle als Versager,
 > obwohl bei rxn7957 die Modelle recht haben (§3c).
@@ -685,7 +843,7 @@ dreistufige ORCA-Kette. 106 Rechnungen, keine Fehler.
 RKS-TS
   RKS instabil            19        0         —          —            0 %
   RKS stabil              26       25         —          —           96 %
-unsere BS-Struktur
+BS-TS-Opt-Struktur
   RKS instabil            18       16        16         16           89 %
 Modelle, RKS instabil
   UMA-M                   19       13        17         12           63 %
@@ -699,7 +857,7 @@ Vorhersagen genau eine imaginäre Mode — die Krümmungssignatur eines
 Übergangszustands sitzt fast immer. Stationär sind nur 7 bis 13. **Der Engpass
 ist ausschließlich Stufe 1.**
 
-> **Unsere 89 % sind kein Qualitätsurteil.** Die Strukturen wurden darauf
+> **Die 89 % sind kein Qualitätsurteil.** Die Strukturen wurden darauf
 > optimiert, Sattelpunkte zu sein; die Zeile ist eine Kontrolle der
 > Optimierung. Sie darf nicht neben die Modellzahlen gestellt werden, als wäre
 > es dieselbe Frage.
@@ -757,17 +915,18 @@ Norm.** Berichtet werden Mediane über die Gruppe.
 
 ```
                      MAE   max Komp.  |F| Modell  |F| DFT     (eV/Å, Mediane)
-  RKS stabil    (26) 0.011     0.045      0.021     0.050
+  RKS stabil    (78) 0.013     0.058      0.032     0.067
   RKS instabil  (44) 0.031     0.142      0.032     0.163
 
 je Modell, MAE stabil → instabil
-  UMA-S    0.011 → 0.036    3.4×
+  UMA-S    0.013 → 0.036    2.7×
   UMA-M    0.011 → 0.023    2.1×
-  eSEN     0.010 → 0.038    3.7×
+  eSEN     0.017 → 0.038    2.3×
 ```
 
-**Die entscheidende Spalte ist die letzte.** Das Modell glaubt bei 0.032 eV/Å
-zu stehen; tatsächlich wirken dort 0.163. Links: 0.021 gegen 0.050.
+**Die entscheidende Spalte ist die letzte.** Das Modell meldet in beiden
+Gruppen dieselbe Restkraft, 0.032 eV/Å. Tatsächlich wirken links 0.067 und
+rechts 0.163.
 
 **Zwei Validierungen, ohne die der Vergleich nur plausibel wäre.**
 
@@ -803,6 +962,47 @@ rxn7949, rxn5691 und rxn4522 je alle drei Modelle, rxn1147 (UMA-M, eSEN),
 rxn7957 (UMA-S, eSEN). Auch nicht in `freq_at_model` — dort liegen nur
 Hesse-Matrizen. rxn7949 fehlt damit ausgerechnet in der Tabelle, obwohl es
 andernorts im Kapitel diskutiert wird.
+
+*Wie die Kontrollgruppe vervollständigt wurde.* Eine erste Fassung dieser
+Tabelle hatte links nur 26 Struktur-Modell-Paare — genau ein Modell je
+Reaktion, verteilt als UMA-M 18×, UMA-S 6×, eSEN 2×. Der Gruppenvergleich war
+davon unberührt, die modellweise Zeile stand für eSEN aber auf zwei
+Strukturen. Nachgerechnet wurden die 52 fehlenden Paare mit demselben
+zweistufigen Rezept wie die vorhandenen, kopiert aus
+`orca_freq/rxn0101_UMA-M`:
+
+```
+bs_sp.inp    ! UKS wB97M-V def2-TZVP def2/J RIJCOSX TightSCF
+             %scf STABPerform true / STABRestartUHFifUnstable true
+                  MaxIter 300 end
+             → bs_sp.gbw, kopiert nach bs_start.gbw
+
+engrad.inp   ! UKS wB97M-V def2-TZVP def2/J RIJCOSX TightSCF EnGrad MORead
+             %moinp "bs_start.gbw"
+             → CARTESIAN GRADIENT
+```
+
+Beide Läufe an derselben, unveränderten Modellgeometrie
+(`<modeldir>/<rxn>/transition_state.xyz`, kopiert nach `start.xyz`). Die
+Zweiteilung ist erzwungen: `STABPerform` erlaubt ORCA nur mit
+`RunTyp SinglePoint`, kann also im selben Lauf keinen Gradienten liefern.
+`MORead` stellt sicher, dass der Gradient zu der Lösung gehört, die die
+Stabilitätsanalyse gefunden hat, und nicht zu einer, auf die ein frisches SCF
+zufällig konvergiert.
+
+Vorhandene Gradienten wurden nicht überschrieben; der Lauf bricht ab, wenn ein
+Einzelpunkt nicht normal endet, keine Orbitale hinterlässt oder die Ausgabe
+keinen `CARTESIAN GRADIENT` enthält. 52 von 52 ohne Abbruch.
+
+*Probe an der Kontrollgruppe.* Jede der 52 Rechnungen protokolliert ihr ⟨S²⟩
+aus Stufe 1a. Über die 52 Werte: Median 0.0000, Minimum 0.0000, Maximum
+0.3118; zwei Werte über 0.05 (0.070 und 0.312), die übrigen exakt null. An den
+Modellgeometrien der stabilen Reaktionen findet die Stabilitätsanalyse also
+nichts zu brechen — die Einordnung stammte bis dahin allein aus der Analyse am
+RKS-TS.
+
+**Erzeugt von:** `pipeline/job_orca_grad_gap.sh` über `grad_gap_tasks.txt`.
+Vorherige Fassung der Tabelle als `force_error_at_ts_vor_luecke.txt`.
 
 *|F| ist die größte Komponente*, nicht der Betrag. 0.032 und 0.163 sind
 Maximalkomponenten.
@@ -921,7 +1121,7 @@ Gradient am Modell   Lauf                    Ergebnis                 Stufe
 > einer Bindungsrate von 0.008 — einem Torsionssattel im **Eduktbecken**, beide
 > reaktiven Bindungen auf Eduktwerten (C3-C5 2.408 gegen 2.538 im Edukt,
 > C4-C5 1.477 gegen 1.442). Ein sauber konvergierter Stationärpunkt mit genau
-> einer imaginären Mode, 0.53 eV unter unserem Übergangszustand, und trotzdem
+> einer imaginären Mode, 0.53 eV unter dem BS-TS-Opt-Übergangszustand, und trotzdem
 > kein Übergangszustand dieser Reaktion.
 >
 > Passend dazu: rxn7949 ist eine der vier Reaktionen aus §2.3b, deren
@@ -945,8 +1145,16 @@ nicht zu unterscheiden.
 
 > **Vorbehalt, der mitgedruckt gehört.** Zehn Datenpunkte, nicht zufällig
 > gewählt, und die Schwelle 0.25 eV/Å ist **abgelesen und nicht bestimmt**. Für
-> die neun fehlenden Reaktionen — darunter alle fünf, bei denen unsere
-> Optimierung vom RKS-TS aus versagt hat — ist dieser Lauf nie gemacht worden.
+> die neun fehlenden Reaktionen — darunter alle fünf, bei denen die BS-TS-Opt
+> vom RKS-TS aus versagt hat — ist dieser Lauf nie gemacht worden.
+
+**Erzeugt von:** `pipeline/job_bs_tsopt_umam_missing.sh` für die Läufe,
+`pipeline/force_error_at_ts.py` für die Sortiergröße (der DFT-Gradient an der
+Startgeometrie), Bewertung mit `pipeline/verdict_final.py`. Die Schwelle
+0.25 eV/Å liegt in der Lücke zwischen der obersten Zeile der ersten Gruppe
+(0.25) und der untersten der zweiten (0.33) — sie ist **abgelesen, nicht
+angepasst**, und die Vorhersage „unten gelingt es, oben nicht" wurde vor dem
+Start der zweiten Gruppe notiert.
 
 **Nebenbefund, der in §4 gebraucht wird:** keiner der zehn Läufe hat einen
 Sattelpunkt gefunden, der nicht schon bekannt war. Eine elfte Suche, von zehn
@@ -955,7 +1163,7 @@ Vorbehalt — eine lokale Suche findet nur, was unter ihrem Startpunkt liegt —
 das der stärkste verfügbare Hinweis.
 
 **Zweiter Nebenbefund:** rxn0894 liefert wie rxn8885 einen tieferen
-Stationärpunkt, der ein **Minimum** ist — 180 bzw. 425 meV unter unserem
+Stationärpunkt, der ein **Minimum** ist — 180 bzw. 425 meV unter dem BS-TS-Opt-
 Sattelpunkt, beide ohne imaginäre Mode. Die Falle aus der Dreistufenregel ist
 kein Einzelfall, sondern wiederkehrend in der diradikalischen Region.
 
@@ -998,7 +1206,7 @@ je Modell   einfach → MR    Faktor
 ```
 
 **Faktor 2, nicht 25.** Der große Faktor früherer Auswertungen entstand
-dadurch, dass gegen *unseren* Sattelpunkt gemessen wurde. Referenzfrei gemessen
+dadurch, dass gegen den BS-TS-Opt-Sattelpunkt gemessen wurde. Referenzfrei gemessen
 finden die Modelle weiterhin fast-stationäre Punkte; was zunimmt, ist die
 Uneinigkeit darüber, welcher es ist.
 
@@ -1061,7 +1269,7 @@ Einteilung der Reaktion ist.
 
 **Erzeugt von:** `pipeline/endpoint_report.py` → `endpoint_report.txt`.
 
-### 3.2 (§3a) UKS-NEB verliert den Zustand
+### 3.2 (§3a) Wo der UKS-NEB stehen bleibt
 
 **Aufbau.** BS-NEB-TS in ORCA, `! UKS wB97M-V def2-TZVP NEB-TS`, `%scf
 BrokenSym 1,1`, 8 Bilder, Preopt.
@@ -1175,7 +1383,7 @@ Die weiteren Übereinstimmungen aus derselben Auswertung:
 
 ```
 Welcher Seite der unabhängige NEB näher landet (Toleranz 0.05 Å)
-  unsere Struktur   6   rxn1147 rxn1283 rxn4113 rxn4522 rxn7957 rxn8837
+  die BS-TS-Opt-Struktur   6   rxn1147 rxn1283 rxn4113 rxn4522 rxn7957 rxn8837
   Modell            3   rxn1320 rxn5691 rxn8827
   keiner            5   rxn0346 rxn0894 rxn3107 rxn6196 rxn8832
 ```
@@ -1214,7 +1422,7 @@ sie sich kreuzen.
 eigenen tragen kann. rxn1147 ist genau das:
 
 ```
-unsere Struktur   ⟨S²⟩ = 0.456   auf dem gebrochenen Blatt
+die BS-TS-Opt-Struktur   ⟨S²⟩ = 0.456   auf dem gebrochenen Blatt
 UMA-S-Struktur    ⟨S²⟩ = 0.000   dort ist die restringierte Lösung extern stabil
 ```
 
@@ -1225,7 +1433,7 @@ die Energie, sondern der IRC.
 *Wer einen Weg abläuft und den Startraten an jedem Punkt neu herleitet, springt
 zwischen den Blättern.* Das ist §3a.
 
-**An unserer eigenen Struktur vorgeführt:** bei rxn4522 verzeichnet unser
+**An der BS-TS-Opt-Struktur vorgeführt:** bei rxn4522 verzeichnet der
 PySCF-Lauf ⟨S²⟩ = 0.000, ORCAs Stabilitätsanalyse an derselben Geometrie findet
 **0.470**. Die Optimierung ist die letzten Schritte auf der restringierten
 Fläche gelaufen, während die gebrochene existierte — und konnte deshalb nicht
@@ -1257,12 +1465,12 @@ Geometrie mit im Median 1.70 eV/Å Restkraft und konvergiert sauber gegen den
 Sattelpunkt, der von dort aus erreichbar ist. Zwei Fälle machen das explizit:
 
 ```
-rxn1320   unsere Struktur: Modenanteil 0.00 auf den reaktiven Atomen
+rxn1320   die BS-TS-Opt-Struktur: Modenanteil 0.00 auf den reaktiven Atomen
           C2-H6 bei 3.36 Å — das Wasserstoffatom ist vollständig ab
           alle drei Modelle bestehen alle drei Stufen, bei C2-H6 = 2.60 Å
           → wir sind über den Übergangszustand hinausgelaufen
 
-rxn4518   unsere Struktur: Modenanteil 0.03, Rate 0.206 bei 3.269 Å
+rxn4518   die BS-TS-Opt-Struktur: Modenanteil 0.03, Rate 0.206 bei 3.269 Å
           fast die gesamte Bewegung sitzt außerhalb der Reaktionskoordinate
           UMA-M besteht (UMA-S und eSEN: je 2 imaginäre Moden)
 ```
@@ -1286,7 +1494,7 @@ konkurrierende Übergangszustände", mit ihr „ein knappes Drittel".
 `pipeline/lowest_saddle.py` → `lowest_saddle.txt`.
 
 > **Fehler in `lowest_saddle.py`, der eine Zeit lang die Bilanz geschönt hat.**
-> Die Label-Zuordnung fand unsere Strukturen bei rxn1147 und rxn7957 nicht und
+> Die Label-Zuordnung fand die BS-TS-Opt-Strukturen bei rxn1147 und rxn7957 nicht und
 > ließ sie stillschweigend fallen — ausgerechnet die beiden Reaktionen, in
 > denen sie verlieren. Aus 11 von 13 wurde so 11 von 11. Behoben; die Funktion
 > `odir()` sucht jetzt in `orca_freq/`, `orca_irc/` und dem
@@ -1305,7 +1513,7 @@ beide Sattelpunkte erster Ordnung und verbinden sie dasselbe Edukt mit
 demselben Produkt, dann läuft die Reaktion über den **tieferen**. Energie ist
 ein physikalisches Kriterium, und sie behandelt beide Seiten gleich: sie fragt
 nicht, wessen Struktur es ist. Jedes frühere Maß fragte, wie weit das Modell von
-*unserer* Struktur entfernt liegt — damit war unsere Struktur der Maßstab.
+der BS-TS-Opt-Struktur entfernt liegt — damit war die BS-TS-Opt-Struktur der Maßstab.
 
 Zwei Bedingungen müssen erfüllt sein, damit eine Energiedifferenz etwas bedeutet:
 beide Punkte müssen echte Sattelpunkte sein, und beide müssen dieselben Minima
@@ -1313,7 +1521,7 @@ verbinden. Die zweite ist die Schwachstelle — die dafür gebaute Endpunktprüf
 erwies sich als untauglich (siehe *Verworfen* in `bs_ts_working.md`), die
 Modenanalyse ist der verfügbare Ersatz.
 
-**Die Falle.** Ein fast-stationärer Punkt unterhalb unseres Sattels hat zwei
+**Die Falle.** Ein fast-stationärer Punkt unterhalb des BS-TS-Opt-Sattels hat zwei
 Lesarten: ein tieferer Sattelpunkt — dann ist er der relevante — oder ein
 Minimum bergab vom Übergangszustand — dann ist er gar kein Kandidat. Die
 Frequenz trennt Minimum von Sattelpunkt. Sie trennt **nicht** einen Sattelpunkt
@@ -1323,7 +1531,7 @@ dieser Reaktion von dem einer anderen Bewegung.
 
 ```
 Struktur       Anteil  C1-C2 d/dQ  C1-C2 [Å]  C1-O5 d/dQ  C1-O5 [Å]
-unser BS-TS     0.601       0.134      3.196       0.943      1.864
+BS-TS-Opt       0.601       0.134      3.196       0.943      1.864
 UMA-S           0.239       0.053      3.570       0.059      1.497   dE -234 meV
 UMA-M           0.217       0.057      3.565       0.072      1.499   dE -231 meV
 eSEN            0.230       0.055      3.565       0.068      1.499   dE -232 meV
@@ -1333,7 +1541,7 @@ Die Modelle bestanden Stufe 1 (231–234 meV tiefer, Gradienten 0.050–0.077) u
 Stufe 2 (je genau eine imaginäre Frequenz). So war es auch notiert. Stufe 3
 kehrt es um: die zu knüpfende C1-O5-Bindung liegt bei **1.497 Å**, einer
 normalen Einfachbindung, gegen 1.864 Å bei uns — sie ist bereits fertig. Und die
-Mode bewegt sie mit 0.06 gegen unsere 0.94, dreizehnmal schwächer. Die
+Mode bewegt sie mit 0.06 gegen 0.94 bei BS-TS-Opt, dreizehnmal schwächer. Die
 Modellgeometrie sitzt im Produkttal; die 231 meV sind der Abfall von einem
 Übergangszustand zu seinem Produkt, kein tieferer Pass.
 
@@ -1341,25 +1549,25 @@ Modellgeometrie sitzt im Produkttal; die 231 meV sind der Abfall von einem
 
 ```
 Struktur       Anteil  C1-H7 d/dQ  C1-H7 [Å]  C5-H7 d/dQ  C5-H7 [Å]
-unser BS-TS     0.275       0.544      2.462       0.061      1.120
+BS-TS-Opt       0.275       0.544      2.462       0.061      1.120
 UMA-S           0.551       0.846      1.887       0.310      1.170   dE -890 meV
 UMA-M           0.744       1.012      1.866       0.570      1.190   dE -890 meV
 eSEN            0.570       0.871      1.884       0.339      1.173   dE -890 meV
 ```
 
-Dieselbe Prüfung, umgekehrtes Ergebnis. Unsere Struktur hat das wandernde
+Dieselbe Prüfung, umgekehrtes Ergebnis. Die BS-TS-Opt-Struktur hat das wandernde
 Wasserstoffatom bei 1.120 Å von C5 — eine fertige C-H-Bindung — und bei 2.462 Å
 von C1. Der Transfer ist vorbei. Die Modelle liegen mitten drin, mit
-Modenanteilen bis 0.74 gegen unsere 0.275, und 890 meV tiefer. **Die Modelle
+Modenanteilen bis 0.74 gegen 0.275 bei BS-TS-Opt, und 890 meV tiefer. **Die Modelle
 haben recht.**
 
-> **Diese beiden Fälle sind der Beleg, dass die Prüfung nicht zu unseren
+> **Diese beiden Fälle sind der Beleg, dass die Prüfung nicht zu den eigenen
 > Gunsten kalibriert ist.** Sie gehören genau deshalb ins Kapitel: je ein Urteil
 > in jede Richtung, aus demselben Kriterium.
 
 **Der IRC als unabhängige Instanz.** Vier ORCA-IRC-Läufe (`%irc`, `InitHess
 read`, `Hess_Filename`, `Direction both`, `Follow_CoordType cartesian`). Bei
-rxn1147 entscheidet er ohne unser Urteil — unsere Struktur liegt 0.20 Å neben
+rxn1147 entscheidet er ohne dieses Urteil — die BS-TS-Opt-Struktur liegt 0.20 Å neben
 dem IRC-Pfad, die Mode bewegt C1-H7. Bei rxn7957 bleibt das Bild
 widersprüchlich.
 
@@ -1388,7 +1596,7 @@ sondern eine RKS-Rechnung.
 > auseinanderliegende Startpunkte im selben Becken sind eine echte Aussage.
 
 > **Ein Fall fällt hier heraus und darf nicht mitgezählt werden.** Bei rxn4113
-> liegt der NEB 0.008 Å von unserer Struktur — aber unsere Struktur stammt
+> liegt der NEB 0.008 Å von der BS-TS-Opt-Struktur — aber die BS-TS-Opt-Struktur stammt
 > ihrerseits aus diesem NEB (`ours from: fromneb` in `bs_neb_check.txt`). Die
 > beiden Wege sind nicht unabhängig, die Übereinstimmung ist zirkulär. Dasselbe
 > gilt für rxn6196. Wer die Tabelle nachbaut, muss die Herkunftsspalte prüfen.
@@ -1407,6 +1615,132 @@ Die Unterscheidung ist nicht rhetorisch. Bei den Modellen kann die Ursache der
 Übereinstimmung *vor* der Rechnung liegen — im geteilten Training. Bei den zwei
 Optimierungen kann sie nur in der Fläche liegen, weil sie sonst nichts teilen,
 das sie an denselben Punkt führen könnte.
+
+---
+
+### 3.7 (§3d) Pfad und Sattelpunkt trennen — Zahlen und Rechenweg
+
+**Warum überhaupt getrennt.** ORCA prüft ein NEB gegen zwei Schwellen:
+max|Fp| ≤ 0.020 eV/Å für das Band, max|FCI| ≤ **0.002** für das Climbing
+Image. Bewegt wird das Climbing Image mit denselben Kräften erster Ordnung wie
+jedes andere Bild. Praktisch jeder abgebrochene Lauf steht an der zweiten
+Schwelle, nicht an der ersten.
+
+**Das Rezept**, `pipeline/job_orca_nebci_split.sh`:
+
+```
+1  NEB-CI   ! UKS <METHODE> NEB-CI TightSCF SlowConv
+            Endpunkte aus orca_neb_results/<rxn>/{reactant,product}.xyz
+            Ergebnis: <name>_NEB-CI_converged.xyz
+
+2  SP       ! UKS <METHODE> SP TightSCF SlowConv       am Climbing Image
+            liefert bs.gbw -- die konvergierten gebrochenen Orbitale
+
+3  TS-Opt   ! UKS <METHODE> OptTS <Freq|NumFreq> TightSCF SlowConv MORead
+            %moinp aus Schritt 2, bei LEVEL=prod zusaetzlich NumHess true
+```
+
+`LEVEL` wählt die Methodenzeile — `wB97X 6-31G(d)` gegen
+`wB97M-V def2-TZVP def2/J RIJCOSX`. Beide Niveaus laufen durch dasselbe
+Skript, damit die Rezepte nicht auseinanderdriften. Auf Produktionsniveau muss
+die Hesse numerisch sein: VV10 hat keine analytischen zweiten Ableitungen, und
+`Calc_Hess true` scheitert dort mit
+`ORCA_CPSCF: The CPSCF equations can not yet handle non-local correlation`.
+
+**Ergebnis, billiges Niveau** (19 Reaktionen):
+
+```
+Climbing Image erreicht    16 von 19    ohne: rxn7060, rxn5691, rxn8827
+TS-Optimierung konvergiert 16 von 16
+genau eine imaginäre Mode  16 von 16
+besteht alle drei Stufen   15 von 16    ohne: rxn7949 (Anteil 0.02, Rate 0.025)
+```
+
+rxn7949 ist ein sauber konvergierter Sattelpunkt — nur nicht der dieser
+Reaktion. Der Lauf *vom höchsten gebrochenen Bild* schließt zwei der drei
+Lücken: rxn5691 (Anteil 0.48, Rate 0.363) und rxn8827 (0.97, 1.391). Zusammen
+**17 von 19**; Ausgangslage war 0 von 19 (T0).
+
+**Ergebnis, Produktionsniveau** wB97M-V/def2-TZVP:
+
+```
+rxn         ⟨S²⟩ am CI   Zyklen   ν_imag /cm⁻¹   Anteil   Rate   Urteil
+rxn0346        0.600        —        −1244.3      0.70    1.072   besteht
+rxn6196        0.177       22         −730.6      0.97    1.296   besteht
+rxn8827        0.370       23         −582.7      0.97    1.389   besteht
+```
+
+Drei von drei. rxn1320 hat sein Band nach über 24 h noch nicht abgeschlossen;
+die restlichen 15 laufen. Bemerkenswert: die Brechung ist oben durchweg
+stärker als unten (0.18–0.60 gegen 0.14–0.37 an denselben Reaktionen).
+
+**Die Gegenprobe — sind es dieselben Punkte.** Kabsch-RMSD der
+Produktionsstruktur (`tsopt2.xyz`) gegen die dort bekannten, beide Seiten auf
+demselben Niveau:
+
+```
+rxn      BS-TS-Opt   RKS-TS   UKS-NEB    UMA-M   TSoptM
+rxn0346      0.002    0.173     0.177    0.010    0.001
+rxn6196      0.008    0.101     0.137    0.070        —
+rxn8827      0.006    0.355     0.371    0.132    0.003
+```
+
+Tausendstel Ångström zu `BS-TS-Opt` und `TSoptM`. Und `sweep_summary` bestätigt es
+von der anderen Seite: für alle drei besteht dort mindestens eine bekannte
+Struktur alle drei Stufen, mit Frequenzen direkt daneben (rxn6196 −742.7 gegen
+−730.6, rxn8827 −592.0 gegen −582.7, rxn0346 −1295.1 gegen −1244.3).
+
+> **Auf dem billigen Niveau sah es anders aus.** Dort lagen drei der 16 Punkte
+> weit von allem Bekannten — rxn6196 mit 1.044 Å, rxn3107 mit 0.941, rxn4518
+> mit 0.516 — und bestanden trotzdem alle drei Stufen. Für rxn6196 ist das auf
+> Produktionsniveau widerlegt: 0.008 Å. Der weit entfernte Punkt war ein
+> Sattelpunkt der billigen Fläche, den es oben nicht gibt. rxn3107 und rxn4518
+> laufen noch. Bis dahin gilt: **Strukturaussagen aus dem Prüfstand sind nicht
+> übertragbar** (§5.1).
+
+**Die Frequenzen sind nachgerechnet.** Die in Schritt 3 eingebettete
+`NumFreq` nimmt **vorwärts**-Differenzen — 3N Verschiebungen gegen einen
+Referenzpunkt, Fehler O(h). Jede eigenständige `NumFreq` dieses Projekts
+nimmt dagegen zentrale Differenzen (6N, Fehler O(h²), und der Gegenschubser
+fiele auf, wenn eine Verschiebung auf der anderen Lösung landete). Die Zeile
+`Central differences ... used` / `... NOT used` steht in der Ausgabe.
+
+Dieselbe Struktur, dieselben Orbitale, nur die Differenzenformel gewechselt
+(`pipeline/job_orca_freq_central.sh`, Rezept wörtlich aus
+`orca_freq/nebts_rxn0346/numfreq.inp`: `%freq CentralDiff true / Increment
+0.005 end`, Geometrie und `MORead` aus `tsopt2.xyz` beziehungsweise
+`tsopt2.gbw`):
+
+```
+           vorwärts (3N)   zentral (6N)   Differenz      Stufe 3 Anteil/Rate
+rxn0346      −1244.26        −1287.95      43.7 cm⁻¹     0.70/1.072 → 0.68/1.039
+rxn6196       −730.55         −775.28      44.7          0.97/1.296 → 0.97/1.276
+rxn8827       −582.68         −588.98       6.3          0.97/1.389 → 0.97/1.390
+```
+
+**Kein Urteil ändert sich**, in Stufe 2 nicht und in Stufe 3 nicht — der
+Eigenvektor ist gegen numerisches Rauschen deutlich robuster als der
+Eigenwert. Die Frequenzen selbst verschieben sich um 1.1 bis 6.1 %, in allen
+drei Fällen zu stärker negativ; vorwärts unterschätzt die Krümmung
+systematisch. **Berichtet werden die zentralen Werte.**
+
+> Der Test war ursprünglich anders gemeint: die Vermutung war, einzelne der
+> 3N Verschiebungen könnten auf der *anderen* SCF-Lösung landen und so die
+> Hesse verderben. Das ließ sich nicht prüfen — ORCA schreibt die verschobenen
+> Rechnungen nach `tsopt2.lastscf`, das jede folgende überschreibt. Die
+> gemessene Abweichung von 1 bis 6 % liegt im Rahmen dessen, was der Wechsel
+> der Differenzenformel ohnehin erklärt; **ein Blattwechsel ist damit weder
+> belegt noch ausgeschlossen.**
+
+**Was nicht funktioniert hat, damit es niemand wiederholt:** `MORead` direkt in
+der NEB-Eingabe wird abgewiesen; `NEB_Restart_GBWName` erwartet einen Basisnamen
+und akzeptiert nur ORCA-eigene NEB-Orbitale (fremde Orbitale ergaben fünf
+Segmentierungsfehler); `Rotate {HOMO,LUMO}` braucht numerische Indizes und
+scheitert auch damit innerhalb eines NEB.
+
+**Erzeugt von:** `pipeline/job_orca_nebci_split.sh`,
+`pipeline/job_orca_tsopt_prod_resume.sh`, `pipeline/job_orca_tsopt_from_broken.sh`;
+ausgewertet mit `pipeline/stage3_new.py` → `stage3_new.txt`.
 
 ---
 
@@ -1459,6 +1793,12 @@ rxn1283        2       0.064             0.208                 *** VERSCHIEDEN *
   5  nur ein Modell         1  verschiedene Sattelpunkte
 ```
 
+**Erzeugt von:** `pipeline/mode_compare.py` — paarweiser Kabsch-RMSD über alle
+Atome und, getrennt davon, über die reaktiven Atome der jeweiligen Reaktion.
+Gezählt werden nur Reaktionen, in denen **mehr als ein** Modell einen Punkt
+liefert, der Stufe 1 und 2 besteht; die übrigen stehen als „nur ein Modell"
+beziehungsweise „kein Modell ist ein Sattel" in der Bilanz darunter.
+
 **Die Streuung misst gemeinsames Danebenliegen, nicht konkurrierende
 Übergangszustände.** Das ist die Formulierung, die ins Kapitel gehört — sie ist
 korrekt und interessanter als die naheliegende.
@@ -1471,8 +1811,10 @@ zur Einigkeit, nicht zur Uneinigkeit.
 
 ### 4.3 Instabilität als Prädiktor
 
-Aus §1.1: λ_min_ext AUC 0.850, ext_stable 0.771, N_FOD 0.696. Die
-kontinuierliche Fassung ist die zu berichtende.
+Aus §1.1: die Instabilitätsanalyse trifft in 84 von 100 Fällen die
+richtige Reaktion, N_FOD in 78. Ob man sie als Ja/Nein oder als Zahl
+berichtet, macht dabei keinen Unterschied (0.829 gegen 0.836) — also
+genügt Ja/Nein.
 
 **Was sie alles zugleich vorhersagt** — das ist der eigentliche Wert:
 
@@ -1488,7 +1830,7 @@ Ein Deskriptor, drei Konsequenzen, eine Rechnung von Minuten.
 
 Diese Liste gehört gedruckt, nicht in eine Fußnote:
 
-- Alle unsere Optimierungen starteten am RKS-TS. Eine lokale Suche findet nur,
+- Alle BS-TS-Opt-Läufe starteten am RKS-TS. Eine lokale Suche findet nur,
   was unter ihrem Startpunkt liegt.
 - Bei 10 von 19 Reaktionen existieren konkurrierende Sattelpunkte (6 nach
   Stufe 3). Ein weiterer, tieferer ist prinzipiell nicht ausgeschlossen.
@@ -1503,7 +1845,35 @@ Diese Liste gehört gedruckt, nicht in eine Fußnote:
 
 **Der einzige Gegenbeleg**, und er ist schwach, aber real: zehn zusätzliche
 Suchen von Modellgeometrien aus haben keinen Sattelpunkt gefunden, der nicht
-schon bekannt war (§2.5).
+schon bekannt war (§2.5). Ein zweiter kommt aus §3d hinzu, ebenso schwach: die
+aufgeteilte Suche über NEB-CI startet am Climbing Image eines Bandes statt am
+RKS-TS und hat auf Produktionsniveau ebenfalls nur bekannte Punkte geliefert
+(0.002 bis 0.010 Å).
+
+> **Warum der Höhenvergleich nicht gerechnet werden konnte.** Der naheliegende
+> Test — die Energien der konkurrierenden Sattelpunkte auf einem Niveau
+> gegeneinander — ist versucht und **verworfen**. Alle 16 neuen Punkte wurden
+> mit ihren Vergleichsstrukturen bei ωB97X/6-31G(d) gerechnet, die Kontrolle
+> stimmte (16 von 16 Einzelpunkte reproduzieren die Energie ihrer
+> TS-Optimierung). Der zugehörige Gradient zeigte dann, dass **keine einzige**
+> der 65 Vergleichsgeometrien auf diesem Niveau stationär ist:
+>
+> ```
+> neuer Sattelpunkt        0.002 – 0.015 eV/Å
+> Vergleichsgeometrien     Minimum 0.37   Median 1.44   Maximum 5.97
+>                          unter 0.15 eV/A:  0 von 65
+> ```
+>
+> Eine Energie an einem Punkt, der 1.4 eV/Å vom Stationären entfernt liegt, ist
+> ein Hangwert und keine Sattelhöhe. Strukturen, die auf ωB97M-V/def2-TZVP
+> optimiert wurden, überstehen den Niveauwechsel nicht — Energievergleiche über
+> Niveaugrenzen hinweg sind hier gegenstandslos, nicht bloß ungenau. Der Test
+> ist auf Produktionsniveau nachzuholen; dort liegen die Vergleichsstrukturen
+> von Haus aus auf ihrer eigenen Fläche.
+>
+> Innerhalb dieser Spalten war das Ergebnis erwartungstreu: der RKS-TS hatte in
+> jeder Zeile den grössten Gradienten (1.84 bis 5.97), `BS-TS-Opt` und `UKS-NEB`
+> die kleinsten.
 
 ---
 
@@ -1545,6 +1915,19 @@ vergrößern den Testsatz und verfälschen ihn nicht.
 **Erzeugt von:** `pipeline/job_orca_cheap_stability.sh`,
 `pipeline/cheap_stab_report.py` → `cheap_stab_report.txt`.
 
+> **Wofür der Prüfstand nicht validiert ist: Geometrien.** Die Übertragung
+> oben betrifft die *Einstufung* — welche Reaktion bricht. Sie sagt nichts
+> darüber, ob ein Sattelpunkt an derselben Stelle liegt. rxn6196 zeigt, dass er
+> es nicht muss: bei ωB97X/6-31G(d) liefert die aufgeteilte Suche dort einen
+> sauber konvergierten Sattelpunkt, der alle drei Stufen besteht (Modenanteil
+> 0.93) und 1.04 Å von jeder bekannten Struktur entfernt liegt. Auf
+> ωB97M-V/def2-TZVP liegt derselbe Lauf 0.008 Å von der BS-TS-Opt-Struktur.
+> Der billige Sattelpunkt existiert oben nicht. Der Prüfstand taugt zur
+> Methodenentwicklung, nicht zur Strukturaussage — und Strukturvergleiche über
+> die Niveaugrenze hinweg sind mit Vorsicht zu lesen, Energievergleiche gar
+> nicht (§4.4).
+
+
 ### 5.2 Die Baseline läuft
 
 `pipeline/job_orca_bs_neb_cheap.sh` — BS-NEB bei ωB97X/6-31G(d) auf vier
@@ -1560,7 +1943,7 @@ rxn8827   billig -167            Produktion: dasselbe
 rxn8837   billig -507            KONTROLLE: Produktionsband ebenfalls
                                  durchgehend RKS, aber die TS-Optimierung danach
                                  brach (19 Werte, max 1.039) und landete 0.003 Å
-                                 von unserer Struktur.
+                                 von der BS-TS-Opt-Struktur.
 ```
 
 > **Die Kontrolllogik hat sich durch die Phasentrennung verschoben.** Das
@@ -1659,6 +2042,20 @@ Die Kontrollreaktion rxn8837 ist der Teil, der den Test falsifizierbar macht.
 | `pipeline/job_orca_bs_neb_cheap.sh` | Baseline am billigen Niveau | `bs_uks_neb_cheap/` |
 | `pipeline/plot_saddle_landscape.py` | Hauptabbildung | `saddle_landscape.png` |
 | `pipeline/plot_two_sheets.py` | Schema zweier Blätter | `two_sheets.png` |
+| `pipeline/predictor_reffree.py` | referenzfreier Prädiktortest, §1.1 und §1.2 | Konsole |
+| `pipeline/sep_analysis.py` | Vorfassung, gegen den RMSD zum RKS-TS — als Beleg für den Wechsel behalten | `stability_vs_fod_separation.txt` |
+| `pipeline/verdict_final.py` | die dreistufige Regel, symmetrisch auf beide Seiten | Konsole |
+| `pipeline/imag_mode.py` | Modenanalyse, Stufe 3 | Konsole |
+| `pipeline/stage3_new.py` | Stufe 3 über mehrere Ergebnisverzeichnisse, `tsopt` / `tsopt2` / `numfreq` | `stage3_new.txt` |
+| `pipeline/job_orca_nebci_split.sh` | **die Aufteilung**, §3d — `LEVEL=cheap\|prod`, `RXN_LIST`, `OUT_ROOT` | `bs_uks_nebci/`, `bs_uks_nebci_prod/` |
+| `pipeline/job_orca_tsopt_prod_resume.sh` | Stufe 3 am Produktionsniveau mit `NumHess true` nachgezogen | `<rxn>/tsopt2.*` |
+| `pipeline/job_orca_tsopt_from_broken.sh` | TS-Opt vom höchsten gebrochenen Bild | `tsopt_broken/` |
+| `pipeline/job_orca_freq_central.sh` | Frequenz mit `CentralDiff true` an derselben Struktur nachgerechnet | `freq_central/` |
+| `pipeline/job_orca_grad_gap.sh` | die 52 fehlenden Gradienten der Kontrollgruppe, §2.3 | `orca_freq/<rxn>_<Modell>/` |
+| `pipeline/job_orca_sp_samelevel.sh` | Einzelpunkte aller Kandidaten einer Reaktion auf **einem** Niveau, §4.4 | `sp_samelevel/` |
+| `pipeline/job_orca_grad_samelevel.sh` | Gradient dazu, `EnGrad MORead` — entscheidet, welche Zeile auswertbar ist | `sp_grad/` |
+| `pipeline/job_orca_band_s2.sh`, `job_orca_band_s2_cheap.sh` | ⟨S²⟩ je Bandbild, mit eingebauter Positivkontrolle | `band_s2*/` |
+| `pipeline/chapter_tables.py`, `chapter_tables2.py` | die Tabellen T0–T7 | `chapter_tables*.txt` |
 
 ### Cluster
 
@@ -1709,6 +2106,24 @@ VV10-Implementierung und anderer Auslenkung (0.005 statt 0.01 Bohr).
   41 wartende Aufgaben, keine abgestürzten)
 - Aufgabenlisten aus vorhandenen *Strukturen* bauen, nicht aus vorhandenen
   *Hesse-Matrizen* — sonst kann keine Lücke je geschlossen werden
+- **Den ORCA-Pfad nie zusammenbauen.** `$EBROOTORCA/orca` existiert nicht — die
+  Binärdatei liegt in `bin/`. Der Aufruf scheitert dann pro Rechnung in
+  Millisekunden, das umgebende Skript läuft weiter und meldet Erfolg über einem
+  leeren Verzeichnis. `ORCA=$(which orca)` plus `[ -x "$ORCA" ] || exit`, und
+  nach jeder Rechnung auf `ORCA TERMINATED NORMALLY` **und** eine Energie
+  ungleich null prüfen.
+- **`STABPerform` verträgt nur `RunTyp SinglePoint`.** Mit `EnGrad` oder `Opt`
+  bricht der Lauf nach zwei Sekunden ab mit
+  `WARNING: Only RunTyp == SinglePoint possible with Stability Analysis!` und
+  `Skipping actual calculation`. Wer den Gradienten *derselben* Lösung braucht,
+  rechnet den Einzelpunkt mit Stabilitätsanalyse, speichert die Orbitale und
+  hängt einen `EnGrad`-Lauf mit `MORead` daran.
+- **Numerische Frequenzen: die Differenzenformel prüfen.** Eine eigenständige
+  `NumFreq`-Rechnung nimmt hier zentrale Differenzen (6N Verschiebungen), die in
+  eine `OptTS` eingebettete dagegen vorwärts (3N, Fehler O(h) statt O(h²), und
+  ohne Gegenschubser, an dem eine abweichende SCF-Lösung auffiele). Die Zeile
+  `Central differences ... used` / `... NOT used` steht in der Ausgabe; bei
+  gebrochener Symmetrie gehört sie kontrolliert, nicht vorausgesetzt.
 
 ---
 

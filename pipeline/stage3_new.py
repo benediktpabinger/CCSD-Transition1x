@@ -45,6 +45,8 @@ SETS = [
     ('16 Bilder', f'{H}/bs_uks_neb16', 'neb'),
     ('Produktionsniveau wB97M-V/def2-TZVP', f'{H}/bs_uks_nebci_prod',
      'tsopt2'),
+    ('dieselben Punkte, zentrale Differenzen', f'{H}/freq_central',
+     'numfreq'),
 ]
 
 
@@ -63,7 +65,7 @@ def orca_nimag(d, kind):
     stray mode 17 times softer.  So the count comes from ORCA and the direction
     from the Hessian.
     """
-    p = f'{d}/{kind}.out' if kind.startswith('tsopt') else None
+    p = f'{d}/{kind}.out' if kind.startswith(('tsopt', 'numfreq')) else None
     if p is None or not os.path.exists(p):
         return None
     t = open(p, errors='replace').read()
@@ -81,7 +83,7 @@ def last_hess(d, kind):
     OptTS writes the starting Hessian from Calc_Hess as well; taking the first
     one makes a converged saddle look like a higher-order one.
     """
-    cands = ([f'{d}/{kind}.hess'] if kind.startswith('tsopt')
+    cands = ([f'{d}/{kind}.hess'] if kind.startswith(('tsopt', 'numfreq'))
              else sorted(glob.glob(f'{d}/*.hess')))
     for p in cands:
         if os.path.exists(p):
@@ -90,8 +92,8 @@ def last_hess(d, kind):
 
 
 def geom_for(d, kind):
-    if kind.startswith('tsopt'):
-        for f in (f'{kind}.xyz',):
+    if kind.startswith(('tsopt', 'numfreq')):
+        for f in (f'{kind}.xyz', 'start.xyz'):
             if os.path.exists(f'{d}/{f}'):
                 return f'{d}/{f}'
     for pat in ('*NEB-TS_converged.xyz', '*NEB-CI_converged.xyz'):
