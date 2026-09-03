@@ -1,0 +1,42 @@
+{
+  "rxn0894/eSEN": {
+    "e_rks_ts": -322.235387178769,
+    "e_r": -322.544358943374,
+    "e_bs_ts": -322.381878264385,
+    "cycles": 88,
+    "barr": 8.407550025771654,
+    "barr_bs": 4.4213245134792585,
+    "level": "RKS wB97M-V/def2-TZVPD def2/J RIJCOSX TightSCF DEFGRID3, Thresh 1e-12, TCut 1e-13, ORCA 5.0.4",
+    "job": "10767516"
+  },
+  "rxn0894/UMA-M": {
+    "e_rks_ts": -322.223612458789,
+    "e_r": -322.54435917806,
+    "e_bs_ts": -322.367167876456,
+    "cycles": 84,
+    "barr": 8.727962865217432,
+    "barr_bs": 4.821620947376114,
+    "level": "RKS wB97M-V/def2-TZVPD def2/J RIJCOSX TightSCF DEFGRID3, Thresh 1e-12, TCut 1e-13, ORCA 5.0.4",
+    "job": "10767516"
+  },
+  "rxn8837/UMA-S": {
+    "e_rks_ts": -322.966513951253,
+    "e_r": -323.425092908344,
+    "e_bs_ts": -323.093660103666,
+    "cycles": 95,
+    "barr": 12.478569125686898,
+    "barr_bs": 9.01874606268421,
+    "level": "RKS wB97M-V/def2-TZVPD def2/J RIJCOSX TightSCF DEFGRID3, Thresh 1e-12, TCut 1e-13, ORCA 5.0.4",
+    "job": "10767516"
+  },
+  "rxn7060/eSEN": {
+    "e_rks_ts": -323.255865354042,
+    "e_r": -323.483667629991,
+    "e_bs_ts": -323.255865382619,
+    "cycles": 13,
+    "barr": 6.198815718563071,
+    "barr_bs": 6.198814940943133,
+    "level": "RKS wB97M-V/def2-TZVPD def2/J RIJCOSX TightSCF DEFGRID3, Thresh 1e-12, TCut 1e-13, ORCA 5.0.4",
+    "job": "10767516"
+  }
+}

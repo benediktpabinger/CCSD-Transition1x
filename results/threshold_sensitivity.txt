@@ -1,0 +1,79 @@
+EMPFINDLICHKEIT DER SCHWELLEN
+============================================================================
+
+1  KALIBRIERUNG DER STUFE-1-SCHWELLE
+
+Restgradient konvergierter TS-Optimierungen dieser Arbeit, alle drei
+Startpunkte am Zielniveau (results/saddle_residuals.csv):
+
+   n = 37   Median 0.0116   Spanne 0.0018 bis 0.0314 eV/A
+   0.15 liegt 13-fach ueber dem Median, 4.8-fach ueber dem
+   unguenstigsten Fall.
+
+2  STUFE-1-SCHWELLE VARIIERT   (Standard 0.15 eV/A)
+
+    cut  Positive  AUC lam  AUC bin  AUC FOD stille Ausf.
+------------------------------------------------------------
+   0.05        99    0.764    0.695    0.764       65/87
+   0.08        66    0.771    0.734    0.772       39/87
+   0.10        51    0.807    0.763    0.759       29/87
+   0.15        29    0.836    0.829    0.776       16/87
+   0.20        16    0.840    0.796    0.751        9/87
+   0.30        12    0.836    0.808    0.704        5/87
+   0.50         8    0.838    0.775    0.620        4/87
+
+   AUC lam bleibt zwischen 0.764 und 0.840 -- nie in der Naehe von 0.5.
+   ABER: unter 0.10 ist N_FOD gleich gut oder besser. Der Vorsprung der
+   Instabilitaetsanalyse existiert erst ab cut >= 0.10.
+
+3  NEB-ABBRUCHKRITERIUM VARIIERT   (Standard 0.05 eV/A, Stufe 1 fest 0.15)
+
+   Modell meldet < 0.02:   39 Zeilen, davon  5 keine Stationaerpunkte = 13 %
+   Modell meldet < 0.03:   58 Zeilen, davon 12 keine Stationaerpunkte = 21 %
+   Modell meldet < 0.05:   87 Zeilen, davon 16 keine Stationaerpunkte = 18 %
+   Modell meldet < 0.08:  101 Zeilen, davon 17 keine Stationaerpunkte = 17 %
+   Modell meldet < 0.10:  107 Zeilen, davon 19 keine Stationaerpunkte = 18 %
+   Modell meldet < 0.15:  116 Zeilen, davon 23 keine Stationaerpunkte = 20 %
+
+   Die Rate bleibt 13 bis 21 %. Der stille Ausfall haengt nicht an der
+   Wahl des Abbruchkriteriums.
+
+4  GRENZFAELLE AN DER STUFE-1-SCHWELLE
+
+   19 von 122 Zeilen liegen innerhalb von +/-0.03 um 0.15.
+   Fuer sie ist das Urteil fragil, Beispiel:
+      rxn4513   esen   F_DFT 0.146  ->  ok
+      rxn4513   uma-m  F_DFT 0.150  ->  ok
+      rxn4513   uma-s  F_DFT 0.154  ->  AUSFALL
+
+5  HINGE-AUSSAGE VARIIERT
+
+    cut   stationaer RKS    stationaer BS
+------------------------------------------
+   0.05            7/19               0/19
+   0.10           16/19               0/19
+   0.15           18/19               0/19
+   0.20           19/19               1/19
+   0.30           19/19               1/19
+   0.50           19/19               2/19
+
+   "0 von 19" gilt bis 0.162 eV/A, dem kleinsten F_bs (rxn5690).
+   Der Faktor zwischen den Spalten (4x bis 63x) ist schwellenfrei.
+
+6  WAS OHNE JEDE SCHWELLE STEHT
+
+   Median F_Modell    stabil 0.0315   instabil 0.0316
+   Median F_DFT       stabil 0.0675   instabil 0.1626
+   Spearman(-lambda_min, F_DFT)      +0.582
+   Spearman(-lambda_min, maxcomp)    +0.585
+   Median F_bs ueber die 19          1.697 eV/A
+
+   Diese fuenf Groessen brauchen keinen Cutoff und tragen den Kern.
+
+7  DIE EINZIGE NICHT GEWAEHLTE SCHWELLE
+
+   lambda_min < 0 ist die exakte Grenze zwischen "die restringierte
+   Loesung ist ein Minimum im Orbitalraum" und "es existiert eine
+   tiefere". Kein Parameter, kein Spielraum.
+
+Erzeugt von pipeline/threshold_sensitivity.py

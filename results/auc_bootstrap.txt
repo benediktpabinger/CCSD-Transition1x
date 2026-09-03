@@ -1,0 +1,21 @@
+BOOTSTRAP-KONFIDENZINTERVALLE, referenzfreier Praediktortest
+========================================================================
+
+Zeilen 122 = 42 Reaktionen x 3 Modelle, davon 29 nicht stationaer
+Ziel y = 1, wenn max|F|_DFT >= 0.15 eV/A an der Modellgeometrie
+Resampling geclustert nach Reaktion (alle 3 Modellzeilen zusammen),
+10000 Iterationen, Seed 20260819, 0 wegen fehlender zweiter Klasse verworfen.
+
+Praediktor                              AUC   95 %-CI         
+--------------------------------------------------------------
+-lambda_min_ext (kontinuierlich)      0.836   [0.726, 0.924]
+N_FOD (kontinuierlich)                0.776   [0.643, 0.887]
+instabil ja/nein (binaer)             0.829   (nicht gebootstrappt)
+
+Delta AUC = -lambda_min - N_FOD       0.060   [-0.034, 0.166]
+Anteil Resamples mit Delta > 0        0.887
+
+Das Delta-CI enthaelt die Null.
+
+Erzeugt von pipeline/auc_bootstrap.py; Punktschaetzer gegen
+pipeline/predictor_reffree.py geprueft (0.8357 / 0.8289 / 0.7757).

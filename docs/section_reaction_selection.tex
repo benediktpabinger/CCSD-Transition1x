@@ -1,0 +1,91 @@
+% Abschnitt "Reaktionsauswahl" fuer das Workshop-Paper.
+% Jede Zahl aus results/paper_reactions.csv, gebaut und geprueft von
+% pipeline/paper_reactions.py. Herleitung in docs/methods_for_paper.md, §1.
+
+\paragraph{Reaction selection}
+
+We stratified rather than sampled. A random draw from the Transition1x test
+split would have been dominated by closed-shell reactions with clean
+single-determinant transition states, and the failure mode this work examines
+would have been almost absent from it. We therefore ordered the candidate
+reactions along an \emph{a priori} descriptor of static correlation and drew
+deliberately from both ends of that order and from the interior.
+
+The descriptor is $N_\mathrm{FOD}$, the fractional-occupation-number weighted
+density,
+%
+\begin{equation}
+  N_\mathrm{FOD} \;=\; \sum_i \bigl| n_i - n_i^{0} \bigr|
+  \;=\; 2 \sum_{i \in \mathrm{virt}} n_i ,
+\end{equation}
+%
+which counts the electron density that a Fermi-smeared calculation places in
+orbitals a single determinant would leave empty. We computed it once per
+reaction, at the reference transition state, with PBE/def2-SVP and Fermi
+smearing at $T_\mathrm{el} = 5000$~K. Two properties make it the right
+selection axis. It is cheap enough to run over the whole pool, and it is
+computed before any of the quantities this paper measures, so the sample cannot
+have been chosen by its outcome.
+
+We inherited the pool rather than defining it. It holds the 279 reactions of
+the Transition1x test split for which a converged reference NEB and its
+transition state were already on disk from an earlier and unrelated stage of
+this project; the remaining eight of the 287 test reactions were never
+screened. We kept that boundary deliberately. It was fixed before the effect
+reported here was known, so neither the pool nor the ranking can have been
+shaped by an observation that did not yet exist.
+
+Ranking the 279 by $N_\mathrm{FOD}$ spans a factor of nearly 400, from $0.003$
+to $1.146$, and the strongly correlated tail is thin: the top 26 reactions are
+$9\,\%$ of the pool. We drew three strata from this ranking.
+
+\begin{table}[t]
+  \centering
+  \begin{tabular}{lccc}
+    \toprule
+    Stratum & $n$ & Ranks & $N_\mathrm{FOD}$ \\
+    \midrule
+    High         & 26 & 1--26     & $0.684$--$1.146$ \\
+    Spread       &  9 & 40--269   & $0.017$--$0.566$ \\
+    Low          & 10 & 270--279  & $0.003$--$0.014$ \\
+    \midrule
+    Total        & 45 & 1--279    & $0.003$--$1.146$ \\
+    \bottomrule
+  \end{tabular}
+  \caption{The three strata. The spread stratum was drawn at ten evenly
+  distributed ranks; one of them, rank 11, already belongs to the high
+  stratum, so the union contains 45 reactions and not 46.}
+  \label{tab:strata}
+\end{table}
+
+Each stratum answers a different question. The \textbf{high} stratum is the stress
+test: it concentrates the cases where a restricted reference is most likely to
+be the wrong description, and it carries the effect we report. The \textbf{low}
+stratum is the negative control. These reactions should show no symmetry
+breaking at all, and they are where our null probes live -- where the
+restricted and broken-symmetry surfaces coincide, the two calculations must
+return the same energy and the same force, and any deviation is an error in the
+pipeline rather than a result. The \textbf{spread} stratum fills the interior, so
+the axis is covered continuously and not only at its ends.
+
+The design worked as intended: 18 of the 45 reactions turn out to have a
+broken-symmetry ground state at at least one transition state, and they fall
+where the descriptor predicted -- 17 of the 26 high-$N_\mathrm{FOD}$
+reactions, 1 of the 9 in the spread, and none of the 10 lowest. We stress that
+this $40\,\%$ is a property of a deliberately enriched sample and not an
+estimate of how often the problem occurs in Transition1x as a whole; the pool
+was never screened for stability, only ranked.
+
+Three boundaries of the selection are worth stating plainly. First, the eight
+unscreened reactions are few, $2.8\,\%$ of the test split, but they are not
+drawn uniformly: six of the eight share one molecular formula, which suggests
+the earlier reference NEB converged less readily for that composition. We
+report the boundary rather than repair it, since the pool predates this study.
+Second,
+$N_\mathrm{FOD}$ sits at PBE/def2-SVP with smearing, a level used nowhere else
+in this work; it enters the paper only as the axis along which the sample was
+drawn and contributes no measured quantity to any result. Third, the sample is
+chemically narrow. All 45 systems are neutral singlets built from C, H, N and O
+with 40 to 52 electrons, distributed over five molecular formulas. The
+mechanism we describe is electronic and should not depend on that composition,
+but we have not tested it outside these bounds.

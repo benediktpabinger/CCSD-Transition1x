@@ -44,9 +44,11 @@ SETS = [
     ('Modellpfad', f'{H}/bs_uks_neb_modelpath', 'neb'),
     ('16 Bilder', f'{H}/bs_uks_neb16', 'neb'),
     ('Produktionsniveau wB97M-V/def2-TZVP', f'{H}/bs_uks_nebci_prod',
-     'tsopt2'),
+     'tsoptX'),
     ('dieselben Punkte, zentrale Differenzen', f'{H}/freq_central',
      'numfreq'),
+    ('Trenntest: Schritt 2+3 am lockeren Climbing Image',
+     f'{H}/sep_step23', 'tsopt'),
 ]
 
 
@@ -65,7 +67,11 @@ def orca_nimag(d, kind):
     stray mode 17 times softer.  So the count comes from ORCA and the direction
     from the Hessian.
     """
-    p = f'{d}/{kind}.out' if kind.startswith(('tsopt', 'numfreq')) else None
+    if kind == 'tsoptX':
+        p = next((q for q in (f'{d}/tsopt2.out', f'{d}/tsopt.out')
+                  if os.path.exists(q)), None)
+    else:
+        p = f'{d}/{kind}.out' if kind.startswith(('tsopt', 'numfreq')) else None
     if p is None or not os.path.exists(p):
         return None
     t = open(p, errors='replace').read()
@@ -83,8 +89,11 @@ def last_hess(d, kind):
     OptTS writes the starting Hessian from Calc_Hess as well; taking the first
     one makes a converged saddle look like a higher-order one.
     """
-    cands = ([f'{d}/{kind}.hess'] if kind.startswith(('tsopt', 'numfreq'))
-             else sorted(glob.glob(f'{d}/*.hess')))
+    if kind == 'tsoptX':
+        cands = [f'{d}/tsopt2.hess', f'{d}/tsopt.hess']
+    else:
+        cands = ([f'{d}/{kind}.hess'] if kind.startswith(('tsopt', 'numfreq'))
+                 else sorted(glob.glob(f'{d}/*.hess')))
     for p in cands:
         if os.path.exists(p):
             return p
@@ -93,7 +102,9 @@ def last_hess(d, kind):
 
 def geom_for(d, kind):
     if kind.startswith(('tsopt', 'numfreq')):
-        for f in (f'{kind}.xyz', 'start.xyz'):
+        stems = (('tsopt2.xyz', 'tsopt.xyz') if kind == 'tsoptX'
+                 else (f'{kind}.xyz', 'start.xyz'))
+        for f in stems:
             if os.path.exists(f'{d}/{f}'):
                 return f'{d}/{f}'
     for pat in ('*NEB-TS_converged.xyz', '*NEB-CI_converged.xyz'):

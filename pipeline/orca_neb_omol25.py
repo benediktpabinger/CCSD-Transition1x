@@ -109,6 +109,23 @@ def load_wB97x_images(h5file, reaction, split):
     raise ValueError(f"Reaction '{reaction}' not found in split '{split}' of {h5file}")
 
 
+def load_images_from_db(db_path, n_images=10):
+    """Das zuletzt geschriebene Band aus neb.db.
+
+    DBWriter haengt nach jedem Optimierungsschritt alle n_images Bilder an,
+    die letzten n_images Zeilen sind also das Band, wie es beim Abbruch stand.
+    """
+    with ase.db.connect(db_path) as db:
+        rows = list(db.select())
+    if len(rows) < n_images:
+        raise ValueError('neb.db hat nur %d Eintraege, gebraucht werden %d'
+                         % (len(rows), n_images))
+    images = [r.toatoms() for r in rows[-n_images:]]
+    print('Warmstart: %d Bilder aus neb.db (%d Eintraege, also %d Schritte)'
+          % (n_images, len(rows), len(rows) // n_images))
+    return images
+
+
 def plot_mep(images, output, label):
     neb_tools = NEBTools(images)
     fit = neb_tools.get_fit()
@@ -159,20 +176,27 @@ def main(args):
                'orca_version': '5.0.4 (OMol25 used 6.0.0)',
                'nprocs': args.nprocs,
                'neb_fmax': args.neb_fmax, 'cineb_fmax': args.cineb_fmax,
-               'endpoints_relaxed_at_this_level': not args.skip_relax},
+               'endpoints_relaxed_at_this_level': not (args.skip_relax
+                                                       or args.resume),
+               'resumed_from_neb_db': bool(args.resume)},
               open(os.path.join(args.output, 'level.json'), 'w'), indent=1)
 
     scratch_base = os.path.join('/tmp', f'orca25_{args.reaction}_{os.getpid()}')
     os.makedirs(scratch_base, exist_ok=True)
 
-    print(f'Loading wB97x NEB images for {args.reaction} ...')
-    images = load_wB97x_images(args.h5file, args.reaction, args.split)
+    db_path = os.path.join(args.output, 'neb.db')
+    if args.resume:
+        images = load_images_from_db(db_path)
+    else:
+        print(f'Loading wB97x NEB images for {args.reaction} ...')
+        images = load_wB97x_images(args.h5file, args.reaction, args.split)
     assign_calcs(images, orca_cmd, args.nprocs, args.maxcore, scratch_base)
 
     r_xyz = os.path.join(args.output, 'reactant.xyz')
     p_xyz = os.path.join(args.output, 'product.xyz')
 
-    if args.skip_relax and os.path.exists(r_xyz) and os.path.exists(p_xyz):
+    if (args.skip_relax or args.resume) and os.path.exists(r_xyz) \
+            and os.path.exists(p_xyz):
         print('Skipping endpoint relaxation (loading existing xyz) ...')
         images[0].set_positions(read(r_xyz).get_positions())
         images[-1].set_positions(read(p_xyz).get_positions())
@@ -189,7 +213,7 @@ def main(args):
     neb_tools = NEBTools(images)
     relax_neb = NEBOptimizer(neb, logfile=os.path.join(args.output, 'neb.log'))
 
-    db_writer = DBWriter(os.path.join(args.output, 'neb.db'), images)
+    db_writer = DBWriter(db_path, images)
     fmaxs = []
     relax_neb.attach(db_writer.write)
     relax_neb.attach(lambda: fmaxs.append(neb_tools.get_fmax()))
@@ -231,6 +255,9 @@ if __name__ == '__main__':
     parser.add_argument('--neb-fmax',   type=float, default=0.15)
     parser.add_argument('--cineb-fmax', type=float, default=0.05)
     parser.add_argument('--steps',      type=int, default=500)
+    parser.add_argument('--resume', action='store_true',
+                        help='Warmstart aus <output>/neb.db statt aus dem H5; '
+                             'die Endpunkte werden dabei nicht neu relaxiert')
     parser.add_argument('--skip-relax', action='store_true',
                         help='restart only; endpoints must already be at THIS level')
     args = parser.parse_args()

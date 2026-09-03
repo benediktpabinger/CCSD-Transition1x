@@ -1,0 +1,87 @@
+AUF WELCHEM SHEET SITZT DAS MLIP BEI DEN DREI ENERGIE-AUSREISSERN?
+================================================================================================================
+Alle Barrieren in eV, vom Edukt zum vom Modell selbst vorhergesagten Uebergangszustand.
+RKS und BS unterscheiden sich nur am Uebergangszustand: das Edukt ist in allen vier Zeilen
+geschlossenschalig (<S^2> = 0 in r_sp.out), der Nullpunkt bevorzugt also keine der beiden Flaechen.
+
+1   HERKUNFT VON E_RKS
+----------------------------------------------------------------------------------------------------------------
+   a) orca_freq/<rxn>_<Modell>/bs_sp.out, TZVP, Vor-Restart-Energie
+      NICHTS GEFUNDEN. Alle vier Outputs enthalten genau einen SCF-Block, "Stability Analysis indicates
+      a stable HF/KS wave function" und genau eine FINAL SINGLE POINT ENERGY. STABRestartUHFifUnstable hat
+      nirgends gegriffen, weil der SCF direkt auf der gebrochenen Loesung landete -- es gibt dort keine
+      restringierte Energie zum Ablesen.
+   b) stab_pipeline/<rxn>/result.json
+      GEFUNDEN, aber auf anderem Niveau: PySCF wB97M-V/def2-TZVP, grids 3, conv_tol 1e-10. Fuer
+      rxn0894/UMA-M steht dort e_rks, aber ext_stable = None und bs.e_uks = None: die Stabilitaets-
+      analyse ist an dieser Geometrie nicht durchgelaufen. Deshalb fehlt die Zeile auch in which_sheet.txt.
+   c) RKS-Singlepoint auf TZVPD
+      NEU GERECHNET. ! RKS wB97M-V def2-TZVPD def2/J RIJCOSX TightSCF DEFGRID3, Thresh 1e-12, TCut 1e-13,
+      sonst wortgleich zu ts_sp; keine Stabilitaetsanalyse, die restringierte Loesung ist hier gewollt.
+      pipeline/job_rks_sheet.sh, Slurm-Job 10767516, vier Aufgaben, Ergebnisse in orca_rks_sheet/.
+
+2   BARRIEREN AM IDENTISCHEN MODELL-TS
+----------------------------------------------------------------------------------------------------------------
+2a  TZVPD durchgaengig, ORCA 5.0.4, wB97M-V/def2-TZVPD DEFGRID3 Thresh 1e-12.
+    Nullpunkt fuer alle drei Barrieren ist das Modell-Edukt desselben Laufs -- kein Niveau- und kein
+    Strukturwechsel innerhalb einer Zeile.
+
+rxn       Modell     E_MLIP     E_RKS      E_BS |MLIP-RKS|   |MLIP-BS|  <S^2> TS   naeher an
+                       [eV]      [eV]      [eV]       [eV]        [eV]          
+rxn0894   eSEN       7.1151    8.4076    4.4213     1.2925      2.6938    1.0277   RKS
+rxn0894   UMA-M      7.3401    8.7280    4.8216     1.3879      2.5185    1.0384   RKS
+rxn8837   UMA-S      9.6382   12.4786    9.0187     2.8404      0.6195    1.0100   BS
+rxn7060   eSEN       6.1211    6.1988    6.1988     0.0777      0.0777   -0.0000   Flaechen fallen zusammen (0.000 eV)   <- Kontrolle
+
+2b  TZVP-NAEHERUNG als Gegenprobe. Zwei Unterschiede zu 2a:
+    - E_RKS und E_BS aus PySCF/def2-TZVP, der Nullpunkt E0 aus ORCA. Ein Codewechsel innerhalb einer
+      Differenz; er verschiebt beide DFT-Barrieren um denselben Betrag und laesst den Vergleich RKS gegen BS
+      unberuehrt, nicht aber den Abstand zur MLIP-Barriere.
+    - Nullpunkt ist das REFERENZ-Edukt, nicht das Modell-Edukt. Laut which_sheet.txt liegen die beiden
+      Strukturen im Median 0.0005 A und maximal 0.0207 A auseinander.
+
+rxn       Modell     E_MLIP     E_RKS      E_BS |MLIP-RKS|   |MLIP-BS|   naeher an
+                       [eV]      [eV]      [eV]       [eV]        [eV]
+rxn0894   eSEN       7.1151    8.4199    4.4280     1.3048      2.6871   RKS
+rxn0894   UMA-M      7.3401    8.7399     fehlt     1.3998       fehlt   BS-Seite fehlt
+rxn8837   UMA-S      9.6382   12.5032    9.0287     2.8650      0.6095   BS
+rxn7060   eSEN       6.1211    6.2129    6.2129     0.0918      0.0918   Flaechen fallen zusammen (0.000 eV)   <- Kontrolle
+
+3   GEGENPROBE: DER EINE RKS-FOLGER IM 40er-FLAECHENTEST
+----------------------------------------------------------------------------------------------------------------
+   Quelle: which_sheet.txt, erzeugt von pipeline/which_sheet_did_models_learn.py.
+   Bilanz dort: follows BS 39, follows RKS 1, sheets coincide here 16.
+   Der einzige RKS-Folger:  rxn0894 / eSEN   Modell 7.12   RKS 8.42   BS 4.43   |m-RKS| 1.30   |m-BS| 2.69
+   Ist das eine der drei?  ja, rxn0894/eSEN
+   rxn0894 / UMA-M  steht dort als: nicht enthalten (stab_pipeline lieferte keine BS-Seite)
+   rxn8837 / UMA-S  steht dort als: follows BS
+
+4   KONTROLLE rxn7060 / eSEN  (grosses Kraftresiduum, kleines Energieresiduum)
+----------------------------------------------------------------------------------------------------------------
+   TZVPD:  <S^2> am TS = -0.0000. Der UKS-Lauf mit STABPerform ist auf die geschlossenschalige Loesung
+           konvergiert und meldet sie als stabil; eine davon verschiedene gebrochene Loesung gibt es an
+           diesem Punkt nicht.
+   TZVP:   stab_pipeline gibt ext_stable = True und keine BS-Loesung; which_sheet.txt fuehrt die Zeile
+           als "sheets coincide here" (RKS 6.21 gegen BS 6.21).
+   Zahlen: Energieresiduum -0.0777 eV, Kraftresiduum 1.1027 eV/A.
+
+   Gemeldete Abweichung von der Erwartung: die Zeile ist nicht "klar BS-nah", sondern liegt gar nicht in der
+   instabilen Gruppe. Bei <S^2> = 0 fallen die beiden Flaechen zusammen, die Frage nach dem Sheet stellt sich
+   dort nicht. Ihr grosses Kraftresiduum bleibt damit ohne Sheet-Erklaerung.
+
+5   ANTWORT
+----------------------------------------------------------------------------------------------------------------
+Die Energie-Ausreisser sitzen uneinheitlich.
+
+Zeile fuer Zeile:
+   rxn       Modell   TZVPD                                      TZVP 
+   rxn0894   eSEN     RKS                                        RKS
+   rxn0894   UMA-M    RKS                                        fehlt
+   rxn8837   UMA-S    BS                                         BS
+   rxn7060   eSEN     Flaechen fallen zusammen (0.000 eV)        Flaechen fallen zusammen (0.000 eV)   <- Kontrolle
+
+Abstand zur naeheren der beiden Flaechen, damit "naeher an" nicht als "auf" gelesen wird:
+   rxn0894   eSEN     1.292 eV von RKS,   die beiden Flaechen liegen 3.986 eV auseinander
+   rxn0894   UMA-M    1.388 eV von RKS,   die beiden Flaechen liegen 3.906 eV auseinander
+   rxn8837   UMA-S    0.619 eV von BS,   die beiden Flaechen liegen 3.460 eV auseinander
+   rxn7060   eSEN     0.078 eV von BS,   die beiden Flaechen liegen 0.000 eV auseinander

@@ -256,6 +256,12 @@ if __name__ == '__main__':
     parser.add_argument('--optimizer',   default='ode', choices=['ode', 'bfgs'])
     parser.add_argument('--head',        default=None, help='path to delta head checkpoint (default: delta_head_fw1.00.pt)')
     parser.add_argument('--no-delta',    action='store_true', help='use bare MACE only, skip delta correction head entirely')
+    parser.add_argument('--fixed-head',  action='store_true',
+                        help='head trained by train_delta_head_fixed.py: full node_feats with '
+                             'correctly declared irreps (see its docstring for the audit)')
     parser.add_argument('--device',      default=None, help='cuda or cpu (default: auto-detect)')
     args = parser.parse_args()
+    if args.fixed_head:
+        HIDDEN_IRREPS     = o3.Irreps("1024x0e + 1024x1o + 1024x2e + 1024x3o + 1024x0e")
+        NODE_FEATS_OFFSET = 0
     main(args)

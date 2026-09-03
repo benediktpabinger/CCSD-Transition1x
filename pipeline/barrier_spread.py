@@ -1,175 +1,205 @@
-"""Barrier disagreement between the three OMol25 models.
+# -*- coding: utf-8 -*-
+"""Wie weit streut die DFT-Barriere einer Reaktion ueber die drei Modell-TS?
 
-A forward barrier is E(TS) - E(reactant). Asking how much the models disagree
-about it therefore has two contributions: they may place the transition state
-differently, and they may place the reactant differently. If they agree on the
-reactant, that term cancels in the difference between two models and the barrier
-disagreement equals the disagreement in transition-state energy alone.
+Bricht ab, wenn eine Pruefung fehlschlaegt.
 
-The script checks that assumption instead of assuming it: it reports the
-geometric spread of the model reactants next to the spread of their transition
-states. Where the reactants coincide, the transition-state energy spread IS the
-barrier spread.
+DIE FRAGE
+    Jede der 45 Reaktionen hat drei Uebergangszustaende -- einen je MLIP. An
+    jedem davon steht eine DFT-Barriere, alle drei auf demselben Niveau und
+    aus derselben Rechnung. Sie unterscheiden sich also nur darin, WO der
+    Punkt liegt, nicht wie er bewertet wurde. Die Spannweite max - min ueber
+    diese drei Zahlen ist damit der reine Geometrieeffekt: was die
+    Verschiebung des Sattels allein an der Barriere anrichtet.
 
-All energies are DFT single points at the models' own predicted geometries,
-wB97M-V/def2-TZVP in PySCF, on whichever surface is the ground state there --
-the broken-symmetry solution where the restricted one is externally unstable.
-The DFT method is identical across all of them; every difference comes from the
-models predicting different structures.
+    Gegenstueck zu results/model_ts_rmsd.csv, das dieselben drei Punkte rein
+    geometrisch vergleicht. Speist Panel b der Barrieren-Spannweiten-Figur
+    (fig9_5, pipeline/plot_omol25_figs.py).
 
-Groups:
-  "single-reference"  the 26 reactions whose RKS reference TS is externally
-                      stable -- no broken-symmetry solution exists, the ordinary
-                      closed-shell picture holds
-  "multireference"    the 19 where it does not
+QUELLEN
+    spread_mev   results/omol25_model_geoms.csv, Spalte barr_dft [eV], je
+                 Reaktion ueber die drei Modellzeilen. In meV umgerechnet.
+    group_rxn    results/paper_reactions.csv, Spalte group_rxn. UEBERNOMMEN,
+                 nicht neu abgeleitet -- es ist das Reaktionslabel (unstable,
+                 wenn mindestens einer der drei Modell-TS unstable_ts = 1
+                 hat), und genau so soll es hier stehen.
+
+    Join-Schluessel ist rxn, in beiden Dateien. Die Pruefung verlangt, dass
+    die Schluesselmengen deckungsgleich sind und jede Reaktion in der Master
+    genau drei Modellzeilen hat -- ein Join ueber unvollstaendige Gruppen
+    wuerde eine zu kleine Spannweite melden, ohne dass es auffiele.
+
+DIE SCHWELLE 43 meV
+    Chemische Genauigkeit, 1 kcal/mol. Sie wird hier nur ausgezaehlt, nicht
+    als Kriterium verwendet.
+
+results/barrier_spread.csv
 """
-import itertools
-import json
+import csv
 import os
+import statistics as st
+from collections import defaultdict
 
-import numpy as np
+HERE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+RES = os.path.join(HERE, 'results')
+CHEM_ACC = 43.0            # meV, 1 kcal/mol
+ERR_ACC = 0.043            # eV, dieselbe Schwelle fuer |err_barr|
 
-H = '/home/energy/s242862'
-HA_MEV = 27211.386
-MODELS = {'UMA-S': 'uma_neb_results', 'UMA-M': 'uma_m_neb_results',
-          'eSEN': 'esen_neb_results'}
+# --- eingefrorene Kennzahlen, Stand 26.08.2026 ------------------------------
+# Aendert sich eine dieser Zahlen, bricht der Lauf ab. Sie stehen so im
+# README und in der Figurenbeschriftung; beides darf nicht stillschweigend
+# von der Datei abweichen.
+FROZEN = {
+    'n': 45,
+    'n_stable': 27,
+    'n_unstable': 18,
+    'med_stable': 0.335,          # meV
+    'med_unstable': 10.705,       # meV
+    'over_stable': 2,             # Reaktionen mit spread_mev > 43
+    'over_unstable': 5,
+    'max_rxn': 'rxn8837',
+    'max_spread': 4434.359,       # meV
+    'un_rows_within': 49,         # unstable-Zeilen mit |err_barr| < 0.043 eV
+    'un_rows_total': 53,
+}
+TOL_MEV = 5e-4                    # Mediane sind auf drei Nachkommastellen frei
 
-res = sorted(json.load(open(f'{H}/fod_ranking.json'))['results'],
-             key=lambda r: -r['nfod'])
-n = len(res)
-TOP = [res[i]['rxn'] for i in range(26)]
-MID = [res[i - 1]['rxn'] for i in [11, 40, 68, 97, 126, 154, 183, 212, 240, 269]]
-LOW = [res[i]['rxn'] for i in range(n - 10, n)]
-grp = {}
-for r in TOP: grp[r] = 'high'
-for r in MID: grp.setdefault(r, 'mid')
-for r in LOW: grp.setdefault(r, 'low')
-nf = {x['rxn']: x['nfod'] for x in res}
-
-
-def read_xyz(p):
-    L = open(p).read().split('\n')
-    m = int(L[0].split()[0])
-    sym, xyz = [], []
-    for line in L[2:2 + m]:
-        f = line.split()
-        sym.append(f[0]); xyz.append([float(x) for x in f[1:4]])
-    return sym, np.array(xyz)
-
-
-def kabsch(A, B):
-    Ac, Bc = A - A.mean(0), B - B.mean(0)
-    V, S, W = np.linalg.svd(Ac.T @ Bc)
-    D = np.diag([1., 1., np.sign(np.linalg.det(V @ W))])
-    return float(np.sqrt((((Ac @ (V @ D @ W)) - Bc) ** 2).sum() / len(A)))
+fails = []
 
 
-def spread(vals):
-    v = [x for x in vals if x is not None]
-    return (max(v) - min(v)) if len(v) > 1 else None
+def check(ok, msg):
+    print(('  ok   ' if ok else '  FEHL ') + msg)
+    if not ok:
+        fails.append(msg)
 
+
+def load(name):
+    with open(os.path.join(RES, name), encoding='utf-8') as fh:
+        return list(csv.DictReader(fh))
+
+
+M = load('omol25_model_geoms.csv')
+P = load('paper_reactions.csv')
+
+GROUP = {r['rxn']: r['group_rxn'] for r in P}
+by = defaultdict(list)
+for r in M:
+    by[r['rxn']].append(r)
+
+incomplete = sorted(rx for rx, v in by.items() if len(v) != 3)
+missing_b = sorted(r['rxn'] for r in M if r['barr_dft'] == '')
+only_master = sorted(set(by) - set(GROUP))
+only_paper = sorted(set(GROUP) - set(by))
 
 rows = []
-for rx in sorted(grp, key=lambda r: -nf[r]):
-    p = f'{H}/stab_pipeline/{rx}/result.json'
-    if not os.path.exists(p):
-        continue
-    d = json.load(open(p))
-    geo = {g['source']: g for g in d['geometries']}
-    ref = geo.get('RKS-ref')
-    if not ref or ref.get('ext_stable') is None:
-        continue
-    cls = ('multireference' if ref['ext_stable'] is False
-           else 'single-reference')
+for rx in sorted(by):
+    b = [float(x['barr_dft']) for x in by[rx] if x['barr_dft'] != '']
+    rows.append({
+        'rxn': rx,
+        'group_rxn': GROUP.get(rx, 'NOT FOUND'),
+        'spread_mev': None if len(b) != 3 else (max(b) - min(b)) * 1000.0,
+    })
 
-    e_ts, x_ts, x_r = {}, {}, {}
-    for m, dn in MODELS.items():
-        g = geo.get(m)
-        if g and g.get('ext_stable') is not None:
-            e_ts[m] = (g.get('e_rks') if g['ext_stable']
-                       else (g.get('bs') or {}).get('e_uks'))
-        f = f'{H}/{dn}/{rx}/transition_state.xyz'
-        if os.path.exists(f):
-            x_ts[m] = read_xyz(f)
-        fr = f'{H}/{dn}/{rx}/reactant.xyz'
-        if os.path.exists(fr):
-            x_r[m] = read_xyz(fr)
+with open(os.path.join(RES, 'barrier_spread.csv'), 'w', newline='',
+          encoding='utf-8') as fh:
+    w = csv.writer(fh)
+    w.writerow(['rxn', 'group_rxn', 'spread_mev'])
+    for r in rows:
+        w.writerow([r['rxn'], r['group_rxn'],
+                    'NOT FOUND' if r['spread_mev'] is None
+                    else '%.3f' % r['spread_mev']])
 
-    def geo_spread(xd):
-        out = []
-        for a, b in itertools.combinations(xd, 2):
-            if xd[a][0] == xd[b][0]:
-                out.append(kabsch(xd[a][1], xd[b][1]))
-        return max(out) if out else None
+# ------------------------------------------------------------------ Bericht
+val = [r for r in rows if r['spread_mev'] is not None]
+grp = {g: [r for r in val if r['group_rxn'] == g]
+       for g in ('stable', 'unstable')}
 
-    s = spread(list(e_ts.values()))
-    rows.append({'rxn': rx, 'cls': cls, 'nfod': nf[rx],
-                 'dE_ts': None if s is None else s * HA_MEV,
-                 'rmsd_ts': geo_spread(x_ts),
-                 'rmsd_react': geo_spread(x_r),
-                 'n_react': len(x_r)})
-
-print('Barrier disagreement between UMA-S, UMA-M and eSEN')
-print('=' * 78)
+print('SPANNWEITE DER DFT-BARRIERE UEBER DIE DREI MODELLGEOMETRIEN')
+print('=' * 88)
+print('%d Reaktionen.  nach group_rxn (uebernommen): %d stable / %d unstable'
+      % (len(val), len(grp['stable']), len(grp['unstable'])))
 print()
-print('Every number is the largest pairwise difference between the three')
-print('models. No DFT reference enters -- this is model against model.')
-print()
-print('  TS energy spread   max - min of the DFT energy evaluated at each')
-print('                     model\'s own predicted transition state [meV].')
-print('                     With a shared reactant this equals the spread in')
-print('                     forward barrier, because the reactant cancels.')
-print('  TS geometry        largest pairwise Kabsch RMSD of those transition')
-print('                     states [A]')
-print('  reactant geometry  same for the relaxed reactants, to check whether')
-print('                     the reactant really does cancel')
-print()
+print('%-10s %4s %12s %10s %12s %14s'
+      % ('Gruppe', 'n', 'Median/meV', '> 43 meV', 'min/meV', 'max/meV'))
+print('-' * 88)
+for g in ('stable', 'unstable'):
+    s = [r['spread_mev'] for r in grp[g]]
+    print('%-10s %4d %12.3f %10d %12.3f %14.3f'
+          % (g, len(s), st.median(s), sum(1 for v in s if v > CHEM_ACC),
+             min(s), max(s)))
+alls = [r['spread_mev'] for r in val]
+print('%-10s %4d %12.3f %10d %12.3f %14.3f'
+      % ('alle', len(alls), st.median(alls),
+         sum(1 for v in alls if v > CHEM_ACC), min(alls), max(alls)))
 
-have_react = sum(1 for r in rows if r['rmsd_react'] is not None)
-print(f'reactant geometries available for {have_react} of {len(rows)} reactions')
+mx = max(val, key=lambda r: r['spread_mev'])
 print()
+print('Maximum: %s   %.3f meV   (%s)'
+      % (mx['rxn'], mx['spread_mev'], mx['group_rxn']))
+print()
+print('die %d Reaktionen ueber %.0f meV:' % (sum(1 for v in alls
+                                                 if v > CHEM_ACC), CHEM_ACC))
+for r in sorted((r for r in val if r['spread_mev'] > CHEM_ACC),
+                key=lambda r: -r['spread_mev']):
+    print('   %-9s %-9s %11.3f meV' % (r['rxn'], r['group_rxn'],
+                                       r['spread_mev']))
 
-print(f"{'group':<20}{'n':>4}{'TS energy spread [meV]':>26}"
-      f"{'TS geometry [A]':>19}")
-print(f"{'':<20}{'':>4}{'median':>11}{'max':>15}{'median':>11}{'max':>8}")
-print('-' * 69)
-for cls in ('single-reference', 'multireference'):
-    s = [r for r in rows if r['cls'] == cls]
-    e = np.array([r['dE_ts'] for r in s if r['dE_ts'] is not None])
-    g = np.array([r['rmsd_ts'] for r in s if r['rmsd_ts'] is not None])
-    print(f'{cls:<20}{len(s):>4}{np.median(e):>11.1f}{e.max():>15.1f}'
-          f'{np.median(g):>11.4f}{g.max():>8.4f}')
+un = [r for r in M if r['unstable_ts'] == '1' and r['err_barr'] != '']
+within = [r for r in un if abs(float(r['err_barr'])) < ERR_ACC]
+print()
+print('AUS DER MASTER, zum Vergleich')
+print('-' * 88)
+print('   unstable-Zeilen mit |err_barr| < %.3f eV: %d von %d  (%.0f %%)'
+      % (ERR_ACC, len(within), len(un), 100.0 * len(within) / len(un)))
+print('   Die Barriere an einer instabilen Geometrie ist also meist genau;')
+print('   die Streuung sitzt darin, WELCHE Geometrie es ist.')
 
-if have_react:
-    print()
-    print(f"{'group':<20}{'n':>4}{'reactant geometry [A]':>25}")
-    print(f"{'':<20}{'':>4}{'median':>13}{'max':>12}")
-    print('-' * 49)
-    for cls in ('single-reference', 'multireference'):
-        v = np.array([r['rmsd_react'] for r in rows
-                      if r['cls'] == cls and r['rmsd_react'] is not None])
-        if len(v):
-            print(f'{cls:<20}{len(v):>4}{np.median(v):>13.4f}{v.max():>12.4f}')
+# ---------------------------------------------------------------- Pruefungen
+print()
+print('Pruefungen')
+check(not only_master and not only_paper,
+      'Schluesselmengen deckungsgleich (Join ueber rxn)'
+      + ('' if not (only_master or only_paper)
+         else ' -- nur Master: %s   nur paper_reactions: %s'
+         % (only_master, only_paper)))
+check(not incomplete, 'jede Reaktion mit genau drei Modellzeilen'
+      + ('' if not incomplete else ' -- Ausnahmen: %s' % incomplete))
+check(not missing_b, 'barr_dft in jeder Modellzeile belegt'
+      + ('' if not missing_b else ' -- fehlt bei %s' % missing_b))
+check(all(r['group_rxn'] != 'NOT FOUND' for r in rows),
+      'group_rxn fuer jede Zeile aus paper_reactions.csv')
+check(all(r['spread_mev'] is not None and r['spread_mev'] >= 0 for r in rows),
+      'spread_mev fuer jede Zeile, nicht negativ')
+
+got = {
+    'n': len(val),
+    'n_stable': len(grp['stable']),
+    'n_unstable': len(grp['unstable']),
+    'med_stable': st.median([r['spread_mev'] for r in grp['stable']]),
+    'med_unstable': st.median([r['spread_mev'] for r in grp['unstable']]),
+    'over_stable': sum(1 for r in grp['stable']
+                       if r['spread_mev'] > CHEM_ACC),
+    'over_unstable': sum(1 for r in grp['unstable']
+                         if r['spread_mev'] > CHEM_ACC),
+    'max_rxn': mx['rxn'],
+    'max_spread': mx['spread_mev'],
+    'un_rows_within': len(within),
+    'un_rows_total': len(un),
+}
+drift = []
+for k, exp in FROZEN.items():
+    v = got[k]
+    if isinstance(exp, str):
+        if v != exp:
+            drift.append('%s: %s statt %s' % (k, v, exp))
+    elif isinstance(exp, int):
+        if v != exp:
+            drift.append('%s: %d statt %d' % (k, v, exp))
+    elif abs(v - exp) > TOL_MEV:
+        drift.append('%s: %.3f statt %.3f' % (k, v, exp))
+check(not drift, 'Kennzahlen unveraendert gegen den eingefrorenen Stand'
+      + ('' if not drift else ' -- %s' % drift))
 
 print()
-print('How many reactions exceed a given disagreement')
-print('-' * 62)
-sr = [r for r in rows if r['cls'] == 'single-reference']
-mr = [r for r in rows if r['cls'] == 'multireference']
-for label, thr in (('TS energy spread >  10 meV', 10),
-                   ('TS energy spread >  50 meV', 50),
-                   ('TS energy spread > 250 meV', 250),
-                   ('TS energy spread >   1 eV', 1000)):
-    a = sum(1 for r in sr if r['dE_ts'] is not None and r['dE_ts'] > thr)
-    b = sum(1 for r in mr if r['dE_ts'] is not None and r['dE_ts'] > thr)
-    print(f'  {label:<28} single-reference {a:>2}/{len(sr)}'
-          f'   multireference {b:>2}/{len(mr)}')
-
-print()
-print('Multireference reactions, sorted by disagreement')
-print('-' * 62)
-print(f"{'reaction':<11}{'N_FOD':>7}{'TS energy [meV]':>17}{'TS geom [A]':>13}")
-for r in sorted(mr, key=lambda x: -(x['dE_ts'] or 0)):
-    e = '—' if r['dE_ts'] is None else '{:.1f}'.format(r['dE_ts'])
-    g = '—' if r['rmsd_ts'] is None else '{:.4f}'.format(r['rmsd_ts'])
-    print('{:<11}{:>7.3f}{:>17}{:>13}'.format(r['rxn'], r['nfod'], e, g))
+print('geschrieben: results/barrier_spread.csv (%d Zeilen)' % len(rows))
+if fails:
+    raise SystemExit('ABBRUCH: %d Pruefung(en) fehlgeschlagen' % len(fails))

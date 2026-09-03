@@ -13,8 +13,15 @@ Both are reference-free. Neither asks whether the saddle is the right one.
 
 A structure counts as a saddle only if it is stationary as well: a Hessian at a
 point with a large residual force has eigenvalues but no meaning as a
-transition state. Threshold 0.15 eV/A, against 0.006-0.011 at our confirmed
-saddles.
+transition state. Threshold 0.15 eV/A.
+
+CORRECTION 20.08.: this docstring used to say the threshold sits against
+0.006-0.011 eV/A at our confirmed saddles, and that figure was quoted onward
+into the chapter. It predates the production runs. Measured at the target
+level over all three starting points, the converged TS optimisations leave
+0.002 to 0.031 eV/A, median 0.012, n = 37 -- so 0.15 is 13x the median and
+4.8x the worst case, not 15-25x. See pipeline/saddle_residuals.py and
+paper_methods_thresholds.md.
 
 Caveat on the control group: only one model geometry per single-reference
 reaction was given a Hessian, chosen as the one nearest stationary, because the

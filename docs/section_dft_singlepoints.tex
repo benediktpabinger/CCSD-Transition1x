@@ -1,0 +1,34 @@
+% Abschnitt "DFT single point evaluation" fuer das Workshop-Paper.
+% Quellen: docs/methods_for_paper.md §4, results/omol25_model_geoms.csv (135
+% Zeilen), pipeline/job_orca_omol25_probe.sh, pipeline/job_rks_sheet.sh,
+% results/rotation_check.csv.
+
+\paragraph{DFT single point evaluation}
+
+We evaluate every structure the MLIPs produced without moving it: for each of
+the 135 searches we take the reactant, transition state and product exactly as
+the model left them, so both sides of every difference we report are read at
+the same nuclear coordinates and the geometry cancels out of the error. Each
+structure receives one unrestricted single point at the OMol25 level ---
+$\omega$B97M-V/def2-TZVPD, def2/J, RIJCOSX, TightSCF, DEFGRID3, integral
+thresholds \texttt{Thresh}~$=10^{-12}$ and \texttt{TCut}~$=10^{-13}$, ORCA
+5.0.4 --- with \texttt{STABPerform} and \texttt{STABRestartUHFifUnstable}
+enabled, so the calculation follows the stability analysis down to the lowest
+solution it finds. That run supplies $\langle S^2\rangle$, which is our class
+label: a transition state counts as RKS-unstable when $\langle S^2\rangle$
+exceeds $0.05$. We take the force from a separate \texttt{EnGrad} run that
+reads those converged orbitals through \texttt{MORead}, so the gradient sits on
+the surface the stability analysis selected rather than on a freshly converged
+one. To measure how far the two surfaces lie apart we add a restricted single
+point at the transition state, deliberately without a stability analysis, for
+the 53 unstable rows and one stable control; the breaking depth is
+$E_\mathrm{RKS} - E_\mathrm{BS}$ at that identical geometry. For the remaining
+81 rows the stability analysis had already established that no second solution
+exists, and the depth is zero by construction.
+
+We write ``the OMol25 level'' and not ``identical to OMol25''. Those
+calculations used ORCA 6.0.0 and broke spin symmetry by a $20^\circ$
+HOMO--LUMO rotation, whereas ours use 5.0.4 and the stability analysis. We
+measured the second difference on all 135 geometries: the two routes agree in
+134, and in the single exception the stability analysis finds the lower
+solution. The version difference we did not test.
