@@ -1,0 +1,34 @@
+set,reaction_id,dir,name,natoms,formula,charge,mult,n_electrons,rks_question_applies
+baker,1,01_hcn,HCN -> HNC,3,CHN,0,1,14,1
+baker,2,02_hcch,HCCH -> CCH2,4,C2H2,0,1,14,1
+baker,3,03_h2co,H2CO -> H2 + CO,4,CH2O,0,1,16,1
+baker,4,04_ch3o,CH3O -> CH2OH,5,CH3O,0,2,17,0
+baker,5,05_cyclopropyl,cyclopropyl ring opening,8,C3H5,0,2,23,0
+baker,6,06_bicyclobutane,bicyclo[1.1.0]butane -> trans-butadiene,10,C4H6,0,1,30,1
+baker,7,08_formyloxyethyl,"formyloxyethyl 1,2-migration",10,C3H5O2,0,2,39,0
+baker,8,09_parentdielsalder,parent Diels-Alder cycloaddition,16,C6H10,0,1,46,1
+baker,9,10_tetrazine,s-tetrazine -> 2HCN + N2,8,C2H2N4,0,1,42,1
+baker,10,11_trans_butadiene,trans-butadiene -> cis-butadiene,10,C4H6,0,1,30,1
+baker,11,12_ethane_h2_abstraction,CH3CH3 -> CH2CH2 + H2,8,C2H6,0,1,18,1
+baker,12,13_hf_abstraction,CH3CH2F -> CH2CH2 + HF,8,C2H5F,0,1,26,1
+baker,13,14_vinyl_alcohol,acetaldehyde keto-enol tautomerism,7,C2H4O,0,1,24,1
+baker,14,15_hocl,HCOCl -> HCl + CO,4,CHClO,0,1,32,1
+baker,15,16_h2po4_anion,H2O + PO3- -> H2PO4-,7,H2O4P,-1,1,50,1
+baker,16,17_claisen,CH2CHCH2CH2CHO Claisen rearrangement,14,C5H8O,0,1,46,1
+baker,17,18_silylene_insertion,SiH2 + CH3CH3 -> SiH3CH2CH3,11,C2H8Si,0,1,34,1
+baker,18,19_hnccs,HNCCS -> HNC + CS,5,C2HNS,0,1,36,1
+baker,19,20_hconh3_cation,HCONH3+ -> NH4+ + CO,7,CH4NO,1,1,24,1
+baker,20,21_acrolein_rot,acrolein rotational TS,8,C3H4O,0,1,30,1
+baker,21,22_hconhoh,HCONHOH -> HCOHNHO,7,CH3NO2,0,1,32,1
+baker,22,23_hcn_h2,HNC + H2 -> H2CNH,5,CH3N,0,1,16,1
+baker,23,24_h2cnh,H2CNH -> HCNH2,5,CH3N,0,1,16,1
+baker,24,25_hcnh2,HCNH2 -> HCN + H2,5,CH3N,0,1,16,1
+sharada,1,01_formaldehyde,H2CO -> H2 + CO,4,CH2O,0,1,16,1
+sharada,2,02_silane,SiH2 + H2 -> SiH4,11,C2H8Si,0,1,34,1
+sharada,3,03_ethanal,CH2CHOH <-> CH3CHO,7,C2H4O,0,1,24,1
+sharada,4,04_ethane_dehydrogenation,CH3CH3 -> CH2CH2 + H2,8,C2H6,1,0,17,0
+sharada,5,05_bicyclobutane,bicyclo[1.1.0]butane -> trans-butadiene,10,C4H6,0,1,30,1
+sharada,6,06_diels_alder,parent Diels-Alder cycloaddition,16,C6H10,0,1,46,1
+sharada,7,07_hexadiene,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",16,C6H10,0,1,46,1
+sharada,8,08_alanine,alanine dipeptide C5 <-> C7AX,22,C6H12N2O2,0,1,78,1
+sharada,9,09_icr,silyl ketene acetal -> silyl ester Ireland-Claisen,56,C18H32O5Si,0,1,194,1

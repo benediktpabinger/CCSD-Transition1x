@@ -1,0 +1,54 @@
+% Section "Multireference geometries: attempted, out of scope"
+% (sec:mr-whynotmr). Gehoert in das Outlook-/Future-work-Kapitel der
+% Thesis, nicht in das OMol25-Kapitel; dort steht nur ein Verweis
+% (Methods, DFT Reevaluation). Lange Vorfassung: section_mr_feasibility.tex.
+
+\section{Multireference geometries: attempted, out of scope}
+\label{sec:mr-whynotmr}
+
+Multireference geometries and energies were attempted for these reactions
+because they would be the gold standard for reactions with high
+multireference character. They were placed out of scope. Problems arose,
+and they are not needed for the question of this thesis: the models were
+trained on \mbox{$\omega$B97M-V/def2-TZVPD} and are trying to find the
+transition states of that surface, so the reference stays at that level.
+A reference closer to the exact surface would answer a different
+question, and a model agreeing with it would be right for the wrong
+reason. No multireference barrier enters this work.
+
+\paragraph{The overall problem: active space selection.} Every
+multireference method needs an active space, and the result depends on
+it. autoCAS~\cite{stein2019autocas} selects the space from a DMRG
+calculation over all valence orbitals, which was not practical for
+molecules of this size. AVAS~\cite{sayfutyarova2017} and selection by
+hand require experience that could not be acquired within the time of
+this work. A smaller choice of molecules for this part of the test set
+would have avoided this. This is also why the standard protocol, NEVPT2
+energies on UKS geometries, was not carried out.
+
+\paragraph{The additional problem for geometries: active space
+consistency.} Starting from the DFT transition state, AVAS selected a
+space, CASSCF optimised a transition state with it, and AVAS at the
+optimised geometry returned a different space. The geometry had been
+optimised on a surface that does not belong to it. A possible solution is
+an iteration:
+
+\begin{enumerate}
+  \item select the active space, with autoCAS where affordable;
+  \item optimise the transition state at the CASPT2 or NEVPT2 level;
+  \item re-select the active space at the optimised geometry;
+  \item repeat until the selected space is the one the geometry was
+    optimised with;
+  \item add the next orbitals to the converged space and check that the
+    result does not change.
+\end{enumerate}
+
+The re-selection in the optimised orbital basis is what the autoCAS
+authors recommend for a single structure~\cite{stein2019autocas}; the
+iteration above applies it to a moving geometry.
+
+Significant time of this work went into this attempt. To the author's
+knowledge, transition-state geometries optimised at a multireference
+level do not exist as a benchmark set, which is why it was worth trying
+and is documented here.
+

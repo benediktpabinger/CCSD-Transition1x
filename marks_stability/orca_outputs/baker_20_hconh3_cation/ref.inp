@@ -1,0 +1,7 @@
+! RKS wB97X-V def2-TZVP def2/J RIJCOSX TightSCF DEFGRID3 EnGrad
+%pal nprocs 8 end
+%maxcore 1800
+%scf
+  MaxIter 300
+end
+* xyzfile 1 1 start.xyz

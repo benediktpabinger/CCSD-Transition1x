@@ -266,7 +266,7 @@ sB.set_title('Energy along the band  —  OMol25 level, both surfaces',
              loc='left', fontsize=10, fontweight='bold')
 
 fig.suptitle('The same ten geometries at two levels of theory  —  '
-             'RKS-unstable reaction, sketch',
+             'broken-symmetry reaction, sketch',
              x=0.04, ha='left', fontsize=12, fontweight='bold', y=0.975)
 fig.text(0.04, 0.935, 'top: the level the band was relaxed at.   '
          'bottom: the level OMol25 labelled it at.   '
@@ -277,3 +277,9 @@ os.makedirs(FIG, exist_ok=True)
 p = os.path.join(FIG, 'fig_schematic_pes3.png')
 fig.savefig(p, bbox_inches='tight', facecolor='white')
 print('geschrieben:', os.path.relpath(p, HERE))
+# Paperfassung: dieselbe Zeichnung, im Ordner der Paperfiguren (\ref{fig:pes})
+PIC = os.path.join(HERE, 'Pictures')
+os.makedirs(PIC, exist_ok=True)
+p2 = os.path.join(PIC, 'fig_pes.png')
+fig.savefig(p2, bbox_inches='tight', facecolor='white')
+print('geschrieben:', os.path.relpath(p2, HERE))

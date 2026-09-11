@@ -1,0 +1,7 @@
+packed job 10818299 on b001: NPAR=5 CORES=8
+list /home/energy/s242862/marks_stab/tasks_pk1.txt  (13 structures)  Wed Sep  9 23:22:53 CEST 2026
+  done baker_05_cyclopropyl  open-shell (no stability step)  23:23:57
+  done baker_08_formyloxyethyl  open-shell (no stability step)  23:24:26
+  done baker_18_silylene_insertion  stable  23:24:41
+  done baker_12_ethane_h2_abstraction  stable  23:24:50
+  done sharada_07_hexadiene  stable  23:27:28

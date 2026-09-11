@@ -1,0 +1,793 @@
+algorithm,set,reaction_id,name,model,workflow,gradients,success,failure_mode
+FSM,baker,1,HCN -> HNC,GFN2-xTB,native,3,1,
+FSM,baker,1,HCN -> HNC,GFN2-xTB,low-level refined,4,1,
+FSM,baker,1,HCN -> HNC,AIMNet2,native,3,1,
+FSM,baker,1,HCN -> HNC,AIMNet2,low-level refined,4,1,
+FSM,baker,1,HCN -> HNC,eSEN-S,native,4,1,
+FSM,baker,1,HCN -> HNC,eSEN-S,low-level refined,2,1,
+FSM,baker,1,HCN -> HNC,UMA-S,native,3,1,
+FSM,baker,1,HCN -> HNC,UMA-S,low-level refined,3,1,
+FSM,baker,1,HCN -> HNC,UMA-M,native,4,1,
+FSM,baker,1,HCN -> HNC,UMA-M,low-level refined,2,1,
+FSM,baker,1,HCN -> HNC,MACE-OMol25,native,4,1,
+FSM,baker,1,HCN -> HNC,MACE-OMol25,low-level refined,2,1,
+FSM,baker,2,HCCH -> CCH2,GFN2-xTB,native,16,1,
+FSM,baker,2,HCCH -> CCH2,GFN2-xTB,low-level refined,5,1,
+FSM,baker,2,HCCH -> CCH2,AIMNet2,native,6,1,
+FSM,baker,2,HCCH -> CCH2,AIMNet2,low-level refined,3,1,
+FSM,baker,2,HCCH -> CCH2,eSEN-S,native,8,1,
+FSM,baker,2,HCCH -> CCH2,eSEN-S,low-level refined,2,1,
+FSM,baker,2,HCCH -> CCH2,UMA-S,native,9,1,
+FSM,baker,2,HCCH -> CCH2,UMA-S,low-level refined,2,1,
+FSM,baker,2,HCCH -> CCH2,UMA-M,native,9,1,
+FSM,baker,2,HCCH -> CCH2,UMA-M,low-level refined,2,1,
+FSM,baker,2,HCCH -> CCH2,MACE-OMol25,native,9,1,
+FSM,baker,2,HCCH -> CCH2,MACE-OMol25,low-level refined,3,1,
+FSM,baker,3,H2CO -> H2 + CO,GFN2-xTB,native,10,1,
+FSM,baker,3,H2CO -> H2 + CO,GFN2-xTB,low-level refined,5,1,
+FSM,baker,3,H2CO -> H2 + CO,AIMNet2,native,21,1,
+FSM,baker,3,H2CO -> H2 + CO,AIMNet2,low-level refined,36,0,b
+FSM,baker,3,H2CO -> H2 + CO,eSEN-S,native,17,1,
+FSM,baker,3,H2CO -> H2 + CO,eSEN-S,low-level refined,2,1,
+FSM,baker,3,H2CO -> H2 + CO,UMA-S,native,16,1,
+FSM,baker,3,H2CO -> H2 + CO,UMA-S,low-level refined,3,1,
+FSM,baker,3,H2CO -> H2 + CO,UMA-M,native,16,1,
+FSM,baker,3,H2CO -> H2 + CO,UMA-M,low-level refined,2,1,
+FSM,baker,3,H2CO -> H2 + CO,MACE-OMol25,native,18,1,
+FSM,baker,3,H2CO -> H2 + CO,MACE-OMol25,low-level refined,2,1,
+FSM,baker,4,CH3O -> CH2OH,GFN2-xTB,native,6,1,
+FSM,baker,4,CH3O -> CH2OH,GFN2-xTB,low-level refined,4,1,
+FSM,baker,4,CH3O -> CH2OH,AIMNet2,native,23,1,
+FSM,baker,4,CH3O -> CH2OH,AIMNet2,low-level refined,14,1,
+FSM,baker,4,CH3O -> CH2OH,eSEN-S,native,6,1,
+FSM,baker,4,CH3O -> CH2OH,eSEN-S,low-level refined,3,1,
+FSM,baker,4,CH3O -> CH2OH,UMA-S,native,6,1,
+FSM,baker,4,CH3O -> CH2OH,UMA-S,low-level refined,3,1,
+FSM,baker,4,CH3O -> CH2OH,UMA-M,native,6,1,
+FSM,baker,4,CH3O -> CH2OH,UMA-M,low-level refined,3,1,
+FSM,baker,4,CH3O -> CH2OH,MACE-OMol25,native,6,1,
+FSM,baker,4,CH3O -> CH2OH,MACE-OMol25,low-level refined,3,1,
+FSM,baker,5,cyclopropyl ring opening,GFN2-xTB,native,13,1,
+FSM,baker,5,cyclopropyl ring opening,GFN2-xTB,low-level refined,5,1,
+FSM,baker,5,cyclopropyl ring opening,AIMNet2,native,47,0,a
+FSM,baker,5,cyclopropyl ring opening,AIMNet2,low-level refined,7,0,a
+FSM,baker,5,cyclopropyl ring opening,eSEN-S,native,13,1,
+FSM,baker,5,cyclopropyl ring opening,eSEN-S,low-level refined,3,1,
+FSM,baker,5,cyclopropyl ring opening,UMA-S,native,12,1,
+FSM,baker,5,cyclopropyl ring opening,UMA-S,low-level refined,3,1,
+FSM,baker,5,cyclopropyl ring opening,UMA-M,native,9,1,
+FSM,baker,5,cyclopropyl ring opening,UMA-M,low-level refined,3,1,
+FSM,baker,5,cyclopropyl ring opening,MACE-OMol25,native,23,0,a
+FSM,baker,5,cyclopropyl ring opening,MACE-OMol25,low-level refined,3,1,
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,GFN2-xTB,native,147,0,a
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,GFN2-xTB,low-level refined,14,1,
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,AIMNet2,native,43,1,
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,AIMNet2,low-level refined,28,1,
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,eSEN-S,native,59,1,
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,eSEN-S,low-level refined,4,1,
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,UMA-S,native,181,0,a
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,UMA-S,low-level refined,4,1,
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,UMA-M,native,43,1,
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,UMA-M,low-level refined,3,1,
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,MACE-OMol25,native,92,0,a
+FSM,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,MACE-OMol25,low-level refined,4,1,
+FSM,baker,7,"formyloxyethyl 1,2-migration",GFN2-xTB,native,14,1,
+FSM,baker,7,"formyloxyethyl 1,2-migration",GFN2-xTB,low-level refined,8,1,
+FSM,baker,7,"formyloxyethyl 1,2-migration",AIMNet2,native,18,1,
+FSM,baker,7,"formyloxyethyl 1,2-migration",AIMNet2,low-level refined,33,0,b
+FSM,baker,7,"formyloxyethyl 1,2-migration",eSEN-S,native,14,1,
+FSM,baker,7,"formyloxyethyl 1,2-migration",eSEN-S,low-level refined,4,1,
+FSM,baker,7,"formyloxyethyl 1,2-migration",UMA-S,native,15,1,
+FSM,baker,7,"formyloxyethyl 1,2-migration",UMA-S,low-level refined,5,1,
+FSM,baker,7,"formyloxyethyl 1,2-migration",UMA-M,native,11,1,
+FSM,baker,7,"formyloxyethyl 1,2-migration",UMA-M,low-level refined,4,1,
+FSM,baker,7,"formyloxyethyl 1,2-migration",MACE-OMol25,native,16,1,
+FSM,baker,7,"formyloxyethyl 1,2-migration",MACE-OMol25,low-level refined,3,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,GFN2-xTB,native,31,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,GFN2-xTB,low-level refined,7,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,AIMNet2,native,29,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,AIMNet2,low-level refined,4,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,eSEN-S,native,42,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,eSEN-S,low-level refined,2,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,UMA-S,native,26,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,UMA-S,low-level refined,3,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,UMA-M,native,19,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,UMA-M,low-level refined,3,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,MACE-OMol25,native,23,1,
+FSM,baker,8,parent Diels-Alder cycloaddition,MACE-OMol25,low-level refined,3,1,
+FSM,baker,9,s-tetrazine -> 2HCN + N2,GFN2-xTB,native,14,1,
+FSM,baker,9,s-tetrazine -> 2HCN + N2,GFN2-xTB,low-level refined,10,0,b
+FSM,baker,9,s-tetrazine -> 2HCN + N2,AIMNet2,native,7,1,
+FSM,baker,9,s-tetrazine -> 2HCN + N2,AIMNet2,low-level refined,4,1,
+FSM,baker,9,s-tetrazine -> 2HCN + N2,eSEN-S,native,24,1,
+FSM,baker,9,s-tetrazine -> 2HCN + N2,eSEN-S,low-level refined,5,1,
+FSM,baker,9,s-tetrazine -> 2HCN + N2,UMA-S,native,36,1,
+FSM,baker,9,s-tetrazine -> 2HCN + N2,UMA-S,low-level refined,4,1,
+FSM,baker,9,s-tetrazine -> 2HCN + N2,UMA-M,native,24,1,
+FSM,baker,9,s-tetrazine -> 2HCN + N2,UMA-M,low-level refined,3,1,
+FSM,baker,9,s-tetrazine -> 2HCN + N2,MACE-OMol25,native,9,1,
+FSM,baker,9,s-tetrazine -> 2HCN + N2,MACE-OMol25,low-level refined,3,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,GFN2-xTB,native,5,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,GFN2-xTB,low-level refined,4,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,AIMNet2,native,4,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,AIMNet2,low-level refined,4,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,eSEN-S,native,3,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,eSEN-S,low-level refined,3,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,UMA-S,native,3,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,UMA-S,low-level refined,2,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,UMA-M,native,3,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,UMA-M,low-level refined,2,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,MACE-OMol25,native,3,1,
+FSM,baker,10,trans-butadiene -> cis-butadiene,MACE-OMol25,low-level refined,2,1,
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,GFN2-xTB,native,20,1,
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,GFN2-xTB,low-level refined,9,1,
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,AIMNet2,native,33,1,
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,AIMNet2,low-level refined,34,1,
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,eSEN-S,native,23,1,
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,eSEN-S,low-level refined,250,0,d
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,UMA-S,native,20,1,
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,UMA-S,low-level refined,156,0,a
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,UMA-M,native,17,1,
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,UMA-M,low-level refined,64,0,a
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,MACE-OMol25,native,21,1,
+FSM,baker,11,CH3CH3 -> CH2CH2 + H2,MACE-OMol25,low-level refined,3,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,GFN2-xTB,native,11,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,GFN2-xTB,low-level refined,7,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,AIMNet2,native,9,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,AIMNet2,low-level refined,4,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,eSEN-S,native,11,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,eSEN-S,low-level refined,2,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,UMA-S,native,11,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,UMA-S,low-level refined,2,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,UMA-M,native,11,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,UMA-M,low-level refined,2,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,MACE-OMol25,native,11,1,
+FSM,baker,12,CH3CH2F -> CH2CH2 + HF,MACE-OMol25,low-level refined,2,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,GFN2-xTB,native,6,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,GFN2-xTB,low-level refined,5,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,AIMNet2,native,4,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,AIMNet2,low-level refined,4,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,eSEN-S,native,4,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,eSEN-S,low-level refined,2,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,UMA-S,native,4,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,UMA-S,low-level refined,2,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,UMA-M,native,4,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,UMA-M,low-level refined,2,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,MACE-OMol25,native,4,1,
+FSM,baker,13,acetaldehyde keto-enol tautomerism,MACE-OMol25,low-level refined,2,1,
+FSM,baker,14,HCOCl -> HCl + CO,GFN2-xTB,native,8,1,
+FSM,baker,14,HCOCl -> HCl + CO,GFN2-xTB,low-level refined,6,1,
+FSM,baker,14,HCOCl -> HCl + CO,AIMNet2,native,8,1,
+FSM,baker,14,HCOCl -> HCl + CO,AIMNet2,low-level refined,4,1,
+FSM,baker,14,HCOCl -> HCl + CO,eSEN-S,native,7,1,
+FSM,baker,14,HCOCl -> HCl + CO,eSEN-S,low-level refined,2,1,
+FSM,baker,14,HCOCl -> HCl + CO,UMA-S,native,6,1,
+FSM,baker,14,HCOCl -> HCl + CO,UMA-S,low-level refined,2,1,
+FSM,baker,14,HCOCl -> HCl + CO,UMA-M,native,7,1,
+FSM,baker,14,HCOCl -> HCl + CO,UMA-M,low-level refined,2,1,
+FSM,baker,14,HCOCl -> HCl + CO,MACE-OMol25,native,7,1,
+FSM,baker,14,HCOCl -> HCl + CO,MACE-OMol25,low-level refined,2,1,
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,GFN2-xTB,native,23,1,
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,GFN2-xTB,low-level refined,6,1,
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,AIMNet2,native,27,1,
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,AIMNet2,low-level refined,250,0,d
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,eSEN-S,native,23,1,
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,eSEN-S,low-level refined,3,1,
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,UMA-S,native,27,1,
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,UMA-S,low-level refined,2,1,
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,UMA-M,native,21,1,
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,UMA-M,low-level refined,2,1,
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,MACE-OMol25,native,23,1,
+FSM,baker,15,H2O + PO_3^- -> H2PO_4^-,MACE-OMol25,low-level refined,2,1,
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,GFN2-xTB,native,30,1,
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,GFN2-xTB,low-level refined,7,1,
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,AIMNet2,native,34,1,
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,AIMNet2,low-level refined,6,1,
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,eSEN-S,native,27,1,
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,eSEN-S,low-level refined,22,1,
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,UMA-S,native,24,1,
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,UMA-S,low-level refined,250,0,d
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,UMA-M,native,27,1,
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,UMA-M,low-level refined,233,0,a
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,MACE-OMol25,native,25,1,
+FSM,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,MACE-OMol25,low-level refined,3,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,GFN2-xTB,native,19,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,GFN2-xTB,low-level refined,22,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,AIMNet2,native,7,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,AIMNet2,low-level refined,8,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,eSEN-S,native,6,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,eSEN-S,low-level refined,4,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,UMA-S,native,7,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,UMA-S,low-level refined,5,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,UMA-M,native,7,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,UMA-M,low-level refined,4,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,MACE-OMol25,native,6,1,
+FSM,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,MACE-OMol25,low-level refined,4,1,
+FSM,baker,18,HNCCS -> HNC + CS,GFN2-xTB,native,144,0,a
+FSM,baker,18,HNCCS -> HNC + CS,GFN2-xTB,low-level refined,36,0,b
+FSM,baker,18,HNCCS -> HNC + CS,AIMNet2,native,8,1,
+FSM,baker,18,HNCCS -> HNC + CS,AIMNet2,low-level refined,4,1,
+FSM,baker,18,HNCCS -> HNC + CS,eSEN-S,native,21,1,
+FSM,baker,18,HNCCS -> HNC + CS,eSEN-S,low-level refined,3,1,
+FSM,baker,18,HNCCS -> HNC + CS,UMA-S,native,12,1,
+FSM,baker,18,HNCCS -> HNC + CS,UMA-S,low-level refined,3,1,
+FSM,baker,18,HNCCS -> HNC + CS,UMA-M,native,15,1,
+FSM,baker,18,HNCCS -> HNC + CS,UMA-M,low-level refined,3,1,
+FSM,baker,18,HNCCS -> HNC + CS,MACE-OMol25,native,10,1,
+FSM,baker,18,HNCCS -> HNC + CS,MACE-OMol25,low-level refined,2,1,
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,GFN2-xTB,native,42,1,c
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,GFN2-xTB,low-level refined,9,1,
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,AIMNet2,native,250,0,d
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,AIMNet2,low-level refined,21,1,
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,eSEN-S,native,14,1,c
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,eSEN-S,low-level refined,10,1,c
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,UMA-S,native,25,1,c
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,UMA-S,low-level refined,9,1,c
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,UMA-M,native,17,1,c
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,UMA-M,low-level refined,9,1,c
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,MACE-OMol25,native,21,1,
+FSM,baker,19,HCONH_3^+ -> NH_4^+ + CO,MACE-OMol25,low-level refined,7,1,
+FSM,baker,20,acrolein rotational TS,GFN2-xTB,native,4,1,
+FSM,baker,20,acrolein rotational TS,GFN2-xTB,low-level refined,4,1,
+FSM,baker,20,acrolein rotational TS,AIMNet2,native,3,1,
+FSM,baker,20,acrolein rotational TS,AIMNet2,low-level refined,3,1,
+FSM,baker,20,acrolein rotational TS,eSEN-S,native,4,1,
+FSM,baker,20,acrolein rotational TS,eSEN-S,low-level refined,2,1,
+FSM,baker,20,acrolein rotational TS,UMA-S,native,4,1,
+FSM,baker,20,acrolein rotational TS,UMA-S,low-level refined,3,1,
+FSM,baker,20,acrolein rotational TS,UMA-M,native,4,1,
+FSM,baker,20,acrolein rotational TS,UMA-M,low-level refined,2,1,
+FSM,baker,20,acrolein rotational TS,MACE-OMol25,native,4,1,
+FSM,baker,20,acrolein rotational TS,MACE-OMol25,low-level refined,3,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,GFN2-xTB,native,6,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,GFN2-xTB,low-level refined,10,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,AIMNet2,native,9,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,AIMNet2,low-level refined,7,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,eSEN-S,native,9,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,eSEN-S,low-level refined,3,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,UMA-S,native,9,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,UMA-S,low-level refined,3,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,UMA-M,native,10,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,UMA-M,low-level refined,3,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,MACE-OMol25,native,10,1,
+FSM,baker,21,HCONHOH -> HCOHNHO,MACE-OMol25,low-level refined,3,1,
+FSM,baker,22,HNC + H2 -> H2CNH,GFN2-xTB,native,45,0,a
+FSM,baker,22,HNC + H2 -> H2CNH,GFN2-xTB,low-level refined,8,1,
+FSM,baker,22,HNC + H2 -> H2CNH,AIMNet2,native,0,0,e
+FSM,baker,22,HNC + H2 -> H2CNH,AIMNet2,low-level refined,17,0,a
+FSM,baker,22,HNC + H2 -> H2CNH,eSEN-S,native,250,0,d
+FSM,baker,22,HNC + H2 -> H2CNH,eSEN-S,low-level refined,2,1,
+FSM,baker,22,HNC + H2 -> H2CNH,UMA-S,native,250,0,d
+FSM,baker,22,HNC + H2 -> H2CNH,UMA-S,low-level refined,40,0,a
+FSM,baker,22,HNC + H2 -> H2CNH,UMA-M,native,41,0,a
+FSM,baker,22,HNC + H2 -> H2CNH,UMA-M,low-level refined,2,1,
+FSM,baker,22,HNC + H2 -> H2CNH,MACE-OMol25,native,234,0,b
+FSM,baker,22,HNC + H2 -> H2CNH,MACE-OMol25,low-level refined,3,1,
+FSM,baker,23,H2CNH -> HCNH2,GFN2-xTB,native,9,1,
+FSM,baker,23,H2CNH -> HCNH2,GFN2-xTB,low-level refined,7,1,
+FSM,baker,23,H2CNH -> HCNH2,AIMNet2,native,7,1,
+FSM,baker,23,H2CNH -> HCNH2,AIMNet2,low-level refined,10,1,
+FSM,baker,23,H2CNH -> HCNH2,eSEN-S,native,6,1,
+FSM,baker,23,H2CNH -> HCNH2,eSEN-S,low-level refined,2,1,
+FSM,baker,23,H2CNH -> HCNH2,UMA-S,native,5,1,
+FSM,baker,23,H2CNH -> HCNH2,UMA-S,low-level refined,2,1,
+FSM,baker,23,H2CNH -> HCNH2,UMA-M,native,6,1,
+FSM,baker,23,H2CNH -> HCNH2,UMA-M,low-level refined,3,1,
+FSM,baker,23,H2CNH -> HCNH2,MACE-OMol25,native,5,1,
+FSM,baker,23,H2CNH -> HCNH2,MACE-OMol25,low-level refined,3,1,
+FSM,baker,24,HCNH2 -> HCN + H2,GFN2-xTB,native,38,0,a
+FSM,baker,24,HCNH2 -> HCN + H2,GFN2-xTB,low-level refined,3,0,a
+FSM,baker,24,HCNH2 -> HCN + H2,AIMNet2,native,37,1,
+FSM,baker,24,HCNH2 -> HCN + H2,AIMNet2,low-level refined,29,1,
+FSM,baker,24,HCNH2 -> HCN + H2,eSEN-S,native,40,1,
+FSM,baker,24,HCNH2 -> HCN + H2,eSEN-S,low-level refined,18,0,f
+FSM,baker,24,HCNH2 -> HCN + H2,UMA-S,native,29,1,
+FSM,baker,24,HCNH2 -> HCN + H2,UMA-S,low-level refined,19,0,f
+FSM,baker,24,HCNH2 -> HCN + H2,UMA-M,native,28,1,
+FSM,baker,24,HCNH2 -> HCN + H2,UMA-M,low-level refined,18,0,f
+FSM,baker,24,HCNH2 -> HCN + H2,MACE-OMol25,native,33,1,
+FSM,baker,24,HCNH2 -> HCN + H2,MACE-OMol25,low-level refined,27,0,f
+FSM,sharada,1,H2CO -> H2 + CO,GFN2-xTB,native,10,1,
+FSM,sharada,1,H2CO -> H2 + CO,GFN2-xTB,low-level refined,5,1,
+FSM,sharada,1,H2CO -> H2 + CO,AIMNet2,native,21,1,
+FSM,sharada,1,H2CO -> H2 + CO,AIMNet2,low-level refined,36,0,b
+FSM,sharada,1,H2CO -> H2 + CO,eSEN-S,native,17,1,
+FSM,sharada,1,H2CO -> H2 + CO,eSEN-S,low-level refined,2,1,
+FSM,sharada,1,H2CO -> H2 + CO,UMA-S,native,16,1,
+FSM,sharada,1,H2CO -> H2 + CO,UMA-S,low-level refined,3,1,
+FSM,sharada,1,H2CO -> H2 + CO,UMA-M,native,16,1,
+FSM,sharada,1,H2CO -> H2 + CO,UMA-M,low-level refined,2,1,
+FSM,sharada,1,H2CO -> H2 + CO,MACE-OMol25,native,18,1,
+FSM,sharada,1,H2CO -> H2 + CO,MACE-OMol25,low-level refined,2,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,GFN2-xTB,native,25,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,GFN2-xTB,low-level refined,20,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,AIMNet2,native,6,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,AIMNet2,low-level refined,8,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,eSEN-S,native,7,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,eSEN-S,low-level refined,4,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,UMA-S,native,5,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,UMA-S,low-level refined,5,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,UMA-M,native,7,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,UMA-M,low-level refined,4,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,MACE-OMol25,native,6,1,
+FSM,sharada,2,SiH2 + H2 -> SiH4,MACE-OMol25,low-level refined,4,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,GFN2-xTB,native,6,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,GFN2-xTB,low-level refined,5,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,AIMNet2,native,4,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,AIMNet2,low-level refined,4,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,eSEN-S,native,4,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,eSEN-S,low-level refined,2,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,UMA-S,native,4,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,UMA-S,low-level refined,2,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,UMA-M,native,4,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,UMA-M,low-level refined,2,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,MACE-OMol25,native,4,1,
+FSM,sharada,3,CH2CHOH <-> CH3CHO,MACE-OMol25,low-level refined,2,1,
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,GFN2-xTB,native,20,1,
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,GFN2-xTB,low-level refined,9,1,
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,AIMNet2,native,33,1,
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,AIMNet2,low-level refined,34,1,
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,eSEN-S,native,23,1,
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,eSEN-S,low-level refined,250,0,d
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,UMA-S,native,20,1,
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,UMA-S,low-level refined,156,0,a
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,UMA-M,native,17,1,
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,UMA-M,low-level refined,64,0,a
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,MACE-OMol25,native,21,1,
+FSM,sharada,4,CH3CH3 -> CH2CH2 + H2,MACE-OMol25,low-level refined,3,1,
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,GFN2-xTB,native,147,0,a
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,GFN2-xTB,low-level refined,14,1,
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,AIMNet2,native,43,1,
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,AIMNet2,low-level refined,28,1,
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,eSEN-S,native,59,1,
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,eSEN-S,low-level refined,4,1,
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,UMA-S,native,181,0,a
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,UMA-S,low-level refined,4,1,
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,UMA-M,native,43,1,
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,UMA-M,low-level refined,3,1,
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,MACE-OMol25,native,92,0,a
+FSM,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,MACE-OMol25,low-level refined,4,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,GFN2-xTB,native,31,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,GFN2-xTB,low-level refined,7,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,AIMNet2,native,29,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,AIMNet2,low-level refined,4,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,eSEN-S,native,42,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,eSEN-S,low-level refined,2,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,UMA-S,native,26,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,UMA-S,low-level refined,3,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,UMA-M,native,19,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,UMA-M,low-level refined,3,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,MACE-OMol25,native,23,1,
+FSM,sharada,6,parent Diels-Alder cycloaddition,MACE-OMol25,low-level refined,3,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",GFN2-xTB,native,18,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",GFN2-xTB,low-level refined,5,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",AIMNet2,native,19,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",AIMNet2,low-level refined,5,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",eSEN-S,native,16,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",eSEN-S,low-level refined,3,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",UMA-S,native,16,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",UMA-S,low-level refined,3,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",UMA-M,native,16,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",UMA-M,low-level refined,3,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",MACE-OMol25,native,17,1,
+FSM,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",MACE-OMol25,low-level refined,3,1,
+FSM,sharada,8,C5 <-> C7AX,GFN2-xTB,native,153,1,
+FSM,sharada,8,C5 <-> C7AX,GFN2-xTB,low-level refined,23,1,
+FSM,sharada,8,C5 <-> C7AX,AIMNet2,native,100,1,c
+FSM,sharada,8,C5 <-> C7AX,AIMNet2,low-level refined,25,1,
+FSM,sharada,8,C5 <-> C7AX,eSEN-S,native,108,1,
+FSM,sharada,8,C5 <-> C7AX,eSEN-S,low-level refined,12,1,
+FSM,sharada,8,C5 <-> C7AX,UMA-S,native,65,1,
+FSM,sharada,8,C5 <-> C7AX,UMA-S,low-level refined,12,1,
+FSM,sharada,8,C5 <-> C7AX,UMA-M,native,199,1,
+FSM,sharada,8,C5 <-> C7AX,UMA-M,low-level refined,12,1,
+FSM,sharada,8,C5 <-> C7AX,MACE-OMol25,native,117,1,
+FSM,sharada,8,C5 <-> C7AX,MACE-OMol25,low-level refined,16,1,
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,GFN2-xTB,native,250,0,d
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,GFN2-xTB,low-level refined,53,0,b
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,AIMNet2,native,107,1,
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,AIMNet2,low-level refined,19,1,
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,eSEN-S,native,49,1,
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,eSEN-S,low-level refined,14,1,
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,UMA-S,native,96,0,g
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,UMA-S,low-level refined,15,1,
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,UMA-M,native,75,1,
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,UMA-M,low-level refined,250,0,d
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,MACE-OMol25,native,80,1,
+FSM,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,MACE-OMol25,low-level refined,14,1,
+CI-NEB,baker,1,HCN -> HNC,GFN2-xTB,native,4,1,
+CI-NEB,baker,1,HCN -> HNC,GFN2-xTB,low-level refined,4,1,
+CI-NEB,baker,1,HCN -> HNC,AIMNet2,native,4,1,
+CI-NEB,baker,1,HCN -> HNC,AIMNet2,low-level refined,4,1,
+CI-NEB,baker,1,HCN -> HNC,eSEN-S,native,2,1,
+CI-NEB,baker,1,HCN -> HNC,eSEN-S,low-level refined,2,1,
+CI-NEB,baker,1,HCN -> HNC,UMA-S,native,3,1,
+CI-NEB,baker,1,HCN -> HNC,UMA-S,low-level refined,3,1,
+CI-NEB,baker,1,HCN -> HNC,UMA-M,native,2,1,
+CI-NEB,baker,1,HCN -> HNC,UMA-M,low-level refined,2,1,
+CI-NEB,baker,1,HCN -> HNC,MACE-OMol25,native,2,1,
+CI-NEB,baker,1,HCN -> HNC,MACE-OMol25,low-level refined,2,1,
+CI-NEB,baker,2,HCCH -> CCH2,GFN2-xTB,native,4,1,
+CI-NEB,baker,2,HCCH -> CCH2,GFN2-xTB,low-level refined,5,1,
+CI-NEB,baker,2,HCCH -> CCH2,AIMNet2,native,3,1,
+CI-NEB,baker,2,HCCH -> CCH2,AIMNet2,low-level refined,3,1,
+CI-NEB,baker,2,HCCH -> CCH2,eSEN-S,native,2,1,
+CI-NEB,baker,2,HCCH -> CCH2,eSEN-S,low-level refined,2,1,
+CI-NEB,baker,2,HCCH -> CCH2,UMA-S,native,2,1,
+CI-NEB,baker,2,HCCH -> CCH2,UMA-S,low-level refined,2,1,
+CI-NEB,baker,2,HCCH -> CCH2,UMA-M,native,2,1,
+CI-NEB,baker,2,HCCH -> CCH2,UMA-M,low-level refined,2,1,
+CI-NEB,baker,2,HCCH -> CCH2,MACE-OMol25,native,2,1,
+CI-NEB,baker,2,HCCH -> CCH2,MACE-OMol25,low-level refined,3,1,
+CI-NEB,baker,3,H2CO -> H2 + CO,GFN2-xTB,native,5,1,
+CI-NEB,baker,3,H2CO -> H2 + CO,GFN2-xTB,low-level refined,5,1,
+CI-NEB,baker,3,H2CO -> H2 + CO,AIMNet2,native,12,1,
+CI-NEB,baker,3,H2CO -> H2 + CO,AIMNet2,low-level refined,14,1,
+CI-NEB,baker,3,H2CO -> H2 + CO,eSEN-S,native,2,1,
+CI-NEB,baker,3,H2CO -> H2 + CO,eSEN-S,low-level refined,2,1,
+CI-NEB,baker,3,H2CO -> H2 + CO,UMA-S,native,11,0,b
+CI-NEB,baker,3,H2CO -> H2 + CO,UMA-S,low-level refined,12,0,b
+CI-NEB,baker,3,H2CO -> H2 + CO,UMA-M,native,38,0,a
+CI-NEB,baker,3,H2CO -> H2 + CO,UMA-M,low-level refined,37,0,a
+CI-NEB,baker,3,H2CO -> H2 + CO,MACE-OMol25,native,2,1,
+CI-NEB,baker,3,H2CO -> H2 + CO,MACE-OMol25,low-level refined,2,1,
+CI-NEB,baker,4,CH3O -> CH2OH,GFN2-xTB,native,4,1,
+CI-NEB,baker,4,CH3O -> CH2OH,GFN2-xTB,low-level refined,4,1,
+CI-NEB,baker,4,CH3O -> CH2OH,AIMNet2,native,15,1,
+CI-NEB,baker,4,CH3O -> CH2OH,AIMNet2,low-level refined,14,1,
+CI-NEB,baker,4,CH3O -> CH2OH,eSEN-S,native,3,1,
+CI-NEB,baker,4,CH3O -> CH2OH,eSEN-S,low-level refined,3,1,
+CI-NEB,baker,4,CH3O -> CH2OH,UMA-S,native,3,1,
+CI-NEB,baker,4,CH3O -> CH2OH,UMA-S,low-level refined,3,1,
+CI-NEB,baker,4,CH3O -> CH2OH,UMA-M,native,3,1,
+CI-NEB,baker,4,CH3O -> CH2OH,UMA-M,low-level refined,3,1,
+CI-NEB,baker,4,CH3O -> CH2OH,MACE-OMol25,native,3,1,
+CI-NEB,baker,4,CH3O -> CH2OH,MACE-OMol25,low-level refined,3,1,
+CI-NEB,baker,5,cyclopropyl ring opening,GFN2-xTB,native,4,1,
+CI-NEB,baker,5,cyclopropyl ring opening,GFN2-xTB,low-level refined,5,1,
+CI-NEB,baker,5,cyclopropyl ring opening,AIMNet2,native,11,0,a
+CI-NEB,baker,5,cyclopropyl ring opening,AIMNet2,low-level refined,7,0,a
+CI-NEB,baker,5,cyclopropyl ring opening,eSEN-S,native,3,1,
+CI-NEB,baker,5,cyclopropyl ring opening,eSEN-S,low-level refined,3,1,
+CI-NEB,baker,5,cyclopropyl ring opening,UMA-S,native,4,1,
+CI-NEB,baker,5,cyclopropyl ring opening,UMA-S,low-level refined,3,1,
+CI-NEB,baker,5,cyclopropyl ring opening,UMA-M,native,3,1,
+CI-NEB,baker,5,cyclopropyl ring opening,UMA-M,low-level refined,3,1,
+CI-NEB,baker,5,cyclopropyl ring opening,MACE-OMol25,native,12,1,
+CI-NEB,baker,5,cyclopropyl ring opening,MACE-OMol25,low-level refined,3,1,
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,GFN2-xTB,native,19,1,
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,GFN2-xTB,low-level refined,14,1,
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,AIMNet2,native,27,0,b
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,AIMNet2,low-level refined,4,0,a
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,eSEN-S,native,4,1,
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,eSEN-S,low-level refined,4,1,
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,UMA-S,native,4,1,
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,UMA-S,low-level refined,4,1,
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,UMA-M,native,4,1,
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,UMA-M,low-level refined,3,1,
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,MACE-OMol25,native,3,1,
+CI-NEB,baker,6,bicyclo[1.1.0]butane -> trans-butadiene,MACE-OMol25,low-level refined,4,1,
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",GFN2-xTB,native,8,1,
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",GFN2-xTB,low-level refined,8,1,
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",AIMNet2,native,24,0,b
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",AIMNet2,low-level refined,4,0,b
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",eSEN-S,native,107,0,b
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",eSEN-S,low-level refined,154,0,b
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",UMA-S,native,250,0,d
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",UMA-S,low-level refined,188,0,b
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",UMA-M,native,81,0,e
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",UMA-M,low-level refined,241,0,b
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",MACE-OMol25,native,166,0,b
+CI-NEB,baker,7,"formyloxyethyl 1,2-migration",MACE-OMol25,low-level refined,250,0,d
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,GFN2-xTB,native,17,0,b
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,GFN2-xTB,low-level refined,167,0,b
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,AIMNet2,native,250,0,d
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,AIMNet2,low-level refined,250,0,d
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,eSEN-S,native,250,0,d
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,eSEN-S,low-level refined,250,0,d
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,UMA-S,native,250,0,d
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,UMA-S,low-level refined,250,0,d
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,UMA-M,native,71,0,b
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,UMA-M,low-level refined,62,0,b
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,MACE-OMol25,native,79,0,b
+CI-NEB,baker,8,parent Diels-Alder cycloaddition,MACE-OMol25,low-level refined,5,0,b
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,GFN2-xTB,native,12,1,
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,GFN2-xTB,low-level refined,12,1,
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,AIMNet2,native,4,1,
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,AIMNet2,low-level refined,4,1,
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,eSEN-S,native,74,0,f
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,eSEN-S,low-level refined,49,0,a
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,UMA-S,native,101,0,f
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,UMA-S,low-level refined,4,1,
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,UMA-M,native,74,0,f
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,UMA-M,low-level refined,139,0,a
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,MACE-OMol25,native,108,0,f
+CI-NEB,baker,9,s-tetrazine -> 2HCN + N2,MACE-OMol25,low-level refined,177,0,f
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,GFN2-xTB,native,4,1,
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,GFN2-xTB,low-level refined,4,1,
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,AIMNet2,native,4,1,
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,AIMNet2,low-level refined,4,1,
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,eSEN-S,native,4,1,
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,eSEN-S,low-level refined,3,1,
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,UMA-S,native,4,1,
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,UMA-S,low-level refined,2,1,
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,UMA-M,native,4,1,
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,UMA-M,low-level refined,2,1,
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,MACE-OMol25,native,4,1,
+CI-NEB,baker,10,trans-butadiene -> cis-butadiene,MACE-OMol25,low-level refined,2,1,
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,GFN2-xTB,native,213,0,a
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,GFN2-xTB,low-level refined,250,0,d
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,AIMNet2,native,35,1,
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,AIMNet2,low-level refined,175,0,a
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,eSEN-S,native,3,1,
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,eSEN-S,low-level refined,3,1,
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,UMA-S,native,154,0,a
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,UMA-S,low-level refined,39,0,a
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,UMA-M,native,3,1,
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,UMA-M,low-level refined,3,1,
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,MACE-OMol25,native,250,0,d
+CI-NEB,baker,11,CH3CH3 -> CH2CH2 + H2,MACE-OMol25,low-level refined,138,0,a
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,GFN2-xTB,native,9,1,
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,GFN2-xTB,low-level refined,8,1,
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,AIMNet2,native,4,1,
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,AIMNet2,low-level refined,4,1,
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,eSEN-S,native,3,1,
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,eSEN-S,low-level refined,2,1,
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,UMA-S,native,3,1,
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,UMA-S,low-level refined,2,1,
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,UMA-M,native,2,1,
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,UMA-M,low-level refined,2,1,
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,MACE-OMol25,native,3,1,
+CI-NEB,baker,12,CH3CH2F -> CH2CH2 + HF,MACE-OMol25,low-level refined,2,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,GFN2-xTB,native,5,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,GFN2-xTB,low-level refined,5,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,AIMNet2,native,4,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,AIMNet2,low-level refined,4,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,eSEN-S,native,3,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,eSEN-S,low-level refined,2,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,UMA-S,native,3,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,UMA-S,low-level refined,2,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,UMA-M,native,3,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,UMA-M,low-level refined,2,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,MACE-OMol25,native,3,1,
+CI-NEB,baker,13,acetaldehyde keto-enol tautomerism,MACE-OMol25,low-level refined,2,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,GFN2-xTB,native,6,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,GFN2-xTB,low-level refined,6,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,AIMNet2,native,4,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,AIMNet2,low-level refined,4,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,eSEN-S,native,2,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,eSEN-S,low-level refined,2,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,UMA-S,native,2,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,UMA-S,low-level refined,2,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,UMA-M,native,2,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,UMA-M,low-level refined,2,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,MACE-OMol25,native,2,1,
+CI-NEB,baker,14,HCOCl -> HCl + CO,MACE-OMol25,low-level refined,2,1,
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,GFN2-xTB,native,250,0,d
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,GFN2-xTB,low-level refined,250,0,d
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,AIMNet2,native,250,0,d
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,AIMNet2,low-level refined,1,0,g
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,eSEN-S,native,250,0,d
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,eSEN-S,low-level refined,37,0,b
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,UMA-S,native,250,0,d
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,UMA-S,low-level refined,250,0,d
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,UMA-M,native,250,0,d
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,UMA-M,low-level refined,250,0,d
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,MACE-OMol25,native,157,0,b
+CI-NEB,baker,15,H2O + PO_3^- -> H2PO_4^-,MACE-OMol25,low-level refined,20,0,b
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,GFN2-xTB,native,8,1,
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,GFN2-xTB,low-level refined,7,1,
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,AIMNet2,native,4,1,
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,AIMNet2,low-level refined,6,1,
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,eSEN-S,native,3,1,
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,eSEN-S,low-level refined,3,1,
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,UMA-S,native,3,1,
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,UMA-S,low-level refined,3,1,
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,UMA-M,native,3,1,
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,UMA-M,low-level refined,2,1,
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,MACE-OMol25,native,3,1,
+CI-NEB,baker,16,CH2CHCH2CH2CHO Claisen rearrangement,MACE-OMol25,low-level refined,3,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,GFN2-xTB,native,16,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,GFN2-xTB,low-level refined,15,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,AIMNet2,native,10,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,AIMNet2,low-level refined,8,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,eSEN-S,native,5,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,eSEN-S,low-level refined,4,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,UMA-S,native,5,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,UMA-S,low-level refined,5,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,UMA-M,native,8,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,UMA-M,low-level refined,4,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,MACE-OMol25,native,5,1,
+CI-NEB,baker,17,SiH2 + CH3CH3 -> SiH3CH2CH3,MACE-OMol25,low-level refined,4,1,
+CI-NEB,baker,18,HNCCS -> HNC + CS,GFN2-xTB,native,5,0,g
+CI-NEB,baker,18,HNCCS -> HNC + CS,GFN2-xTB,low-level refined,107,0,b
+CI-NEB,baker,18,HNCCS -> HNC + CS,AIMNet2,native,2,1,
+CI-NEB,baker,18,HNCCS -> HNC + CS,AIMNet2,low-level refined,2,1,
+CI-NEB,baker,18,HNCCS -> HNC + CS,eSEN-S,native,3,1,
+CI-NEB,baker,18,HNCCS -> HNC + CS,eSEN-S,low-level refined,3,1,
+CI-NEB,baker,18,HNCCS -> HNC + CS,UMA-S,native,3,1,
+CI-NEB,baker,18,HNCCS -> HNC + CS,UMA-S,low-level refined,3,1,
+CI-NEB,baker,18,HNCCS -> HNC + CS,UMA-M,native,3,1,
+CI-NEB,baker,18,HNCCS -> HNC + CS,UMA-M,low-level refined,3,1,
+CI-NEB,baker,18,HNCCS -> HNC + CS,MACE-OMol25,native,3,1,
+CI-NEB,baker,18,HNCCS -> HNC + CS,MACE-OMol25,low-level refined,2,1,
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,GFN2-xTB,native,3,0,g
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,GFN2-xTB,low-level refined,9,1,
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,AIMNet2,native,61,1,c
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,AIMNet2,low-level refined,14,0,b
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,eSEN-S,native,10,1,
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,eSEN-S,low-level refined,9,1,
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,UMA-S,native,10,1,
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,UMA-S,low-level refined,10,1,
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,UMA-M,native,10,1,
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,UMA-M,low-level refined,9,1,
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,MACE-OMol25,native,9,1,
+CI-NEB,baker,19,HCONH_3^+ -> NH_4^+ + CO,MACE-OMol25,low-level refined,1,0,g
+CI-NEB,baker,20,acrolein rotational TS,GFN2-xTB,native,4,1,
+CI-NEB,baker,20,acrolein rotational TS,GFN2-xTB,low-level refined,4,1,
+CI-NEB,baker,20,acrolein rotational TS,AIMNet2,native,3,1,
+CI-NEB,baker,20,acrolein rotational TS,AIMNet2,low-level refined,3,1,
+CI-NEB,baker,20,acrolein rotational TS,eSEN-S,native,3,1,
+CI-NEB,baker,20,acrolein rotational TS,eSEN-S,low-level refined,2,1,
+CI-NEB,baker,20,acrolein rotational TS,UMA-S,native,3,1,
+CI-NEB,baker,20,acrolein rotational TS,UMA-S,low-level refined,3,1,
+CI-NEB,baker,20,acrolein rotational TS,UMA-M,native,3,1,
+CI-NEB,baker,20,acrolein rotational TS,UMA-M,low-level refined,2,1,
+CI-NEB,baker,20,acrolein rotational TS,MACE-OMol25,native,3,1,
+CI-NEB,baker,20,acrolein rotational TS,MACE-OMol25,low-level refined,3,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,GFN2-xTB,native,6,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,GFN2-xTB,low-level refined,10,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,AIMNet2,native,7,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,AIMNet2,low-level refined,7,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,eSEN-S,native,4,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,eSEN-S,low-level refined,3,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,UMA-S,native,4,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,UMA-S,low-level refined,3,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,UMA-M,native,4,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,UMA-M,low-level refined,3,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,MACE-OMol25,native,4,1,
+CI-NEB,baker,21,HCONHOH -> HCOHNHO,MACE-OMol25,low-level refined,3,1,
+CI-NEB,baker,22,HNC + H2 -> H2CNH,GFN2-xTB,native,7,0,a
+CI-NEB,baker,22,HNC + H2 -> H2CNH,GFN2-xTB,low-level refined,7,0,a
+CI-NEB,baker,22,HNC + H2 -> H2CNH,AIMNet2,native,76,0,b
+CI-NEB,baker,22,HNC + H2 -> H2CNH,AIMNet2,low-level refined,57,0,b
+CI-NEB,baker,22,HNC + H2 -> H2CNH,eSEN-S,native,2,0,a
+CI-NEB,baker,22,HNC + H2 -> H2CNH,eSEN-S,low-level refined,2,0,a
+CI-NEB,baker,22,HNC + H2 -> H2CNH,UMA-S,native,3,0,a
+CI-NEB,baker,22,HNC + H2 -> H2CNH,UMA-S,low-level refined,3,0,a
+CI-NEB,baker,22,HNC + H2 -> H2CNH,UMA-M,native,2,0,a
+CI-NEB,baker,22,HNC + H2 -> H2CNH,UMA-M,low-level refined,2,0,a
+CI-NEB,baker,22,HNC + H2 -> H2CNH,MACE-OMol25,native,,0,h
+CI-NEB,baker,22,HNC + H2 -> H2CNH,MACE-OMol25,low-level refined,,0,h
+CI-NEB,baker,23,H2CNH -> HCNH2,GFN2-xTB,native,3,0,f
+CI-NEB,baker,23,H2CNH -> HCNH2,GFN2-xTB,low-level refined,3,0,f
+CI-NEB,baker,23,H2CNH -> HCNH2,AIMNet2,native,5,0,f
+CI-NEB,baker,23,H2CNH -> HCNH2,AIMNet2,low-level refined,13,1,
+CI-NEB,baker,23,H2CNH -> HCNH2,eSEN-S,native,9,1,
+CI-NEB,baker,23,H2CNH -> HCNH2,eSEN-S,low-level refined,2,1,
+CI-NEB,baker,23,H2CNH -> HCNH2,UMA-S,native,3,1,
+CI-NEB,baker,23,H2CNH -> HCNH2,UMA-S,low-level refined,2,1,
+CI-NEB,baker,23,H2CNH -> HCNH2,UMA-M,native,9,1,
+CI-NEB,baker,23,H2CNH -> HCNH2,UMA-M,low-level refined,9,1,
+CI-NEB,baker,23,H2CNH -> HCNH2,MACE-OMol25,native,2,0,f
+CI-NEB,baker,23,H2CNH -> HCNH2,MACE-OMol25,low-level refined,2,0,f
+CI-NEB,baker,24,HCNH2 -> HCN + H2,GFN2-xTB,native,4,1,
+CI-NEB,baker,24,HCNH2 -> HCN + H2,GFN2-xTB,low-level refined,4,1,
+CI-NEB,baker,24,HCNH2 -> HCN + H2,AIMNet2,native,9,1,
+CI-NEB,baker,24,HCNH2 -> HCN + H2,AIMNet2,low-level refined,10,1,
+CI-NEB,baker,24,HCNH2 -> HCN + H2,eSEN-S,native,17,0,a
+CI-NEB,baker,24,HCNH2 -> HCN + H2,eSEN-S,low-level refined,3,0,a
+CI-NEB,baker,24,HCNH2 -> HCN + H2,UMA-S,native,17,0,a
+CI-NEB,baker,24,HCNH2 -> HCN + H2,UMA-S,low-level refined,2,0,a
+CI-NEB,baker,24,HCNH2 -> HCN + H2,UMA-M,native,21,0,f
+CI-NEB,baker,24,HCNH2 -> HCN + H2,UMA-M,low-level refined,250,0,d
+CI-NEB,baker,24,HCNH2 -> HCN + H2,MACE-OMol25,native,4,1,
+CI-NEB,baker,24,HCNH2 -> HCN + H2,MACE-OMol25,low-level refined,4,1,
+CI-NEB,sharada,1,H2CO -> H2 + CO,GFN2-xTB,native,5,1,
+CI-NEB,sharada,1,H2CO -> H2 + CO,GFN2-xTB,low-level refined,5,1,
+CI-NEB,sharada,1,H2CO -> H2 + CO,AIMNet2,native,12,1,
+CI-NEB,sharada,1,H2CO -> H2 + CO,AIMNet2,low-level refined,14,1,
+CI-NEB,sharada,1,H2CO -> H2 + CO,eSEN-S,native,2,1,
+CI-NEB,sharada,1,H2CO -> H2 + CO,eSEN-S,low-level refined,2,1,
+CI-NEB,sharada,1,H2CO -> H2 + CO,UMA-S,native,11,0,b
+CI-NEB,sharada,1,H2CO -> H2 + CO,UMA-S,low-level refined,12,0,b
+CI-NEB,sharada,1,H2CO -> H2 + CO,UMA-M,native,38,0,a
+CI-NEB,sharada,1,H2CO -> H2 + CO,UMA-M,low-level refined,37,0,a
+CI-NEB,sharada,1,H2CO -> H2 + CO,MACE-OMol25,native,2,1,
+CI-NEB,sharada,1,H2CO -> H2 + CO,MACE-OMol25,low-level refined,2,1,
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,GFN2-xTB,native,22,1,
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,GFN2-xTB,low-level refined,27,1,
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,AIMNet2,native,26,0,b
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,AIMNet2,low-level refined,22,0,b
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,eSEN-S,native,5,1,
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,eSEN-S,low-level refined,4,1,
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,UMA-S,native,5,1,
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,UMA-S,low-level refined,5,1,
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,UMA-M,native,5,1,
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,UMA-M,low-level refined,4,1,
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,MACE-OMol25,native,5,1,
+CI-NEB,sharada,2,SiH2 + H2 -> SiH4,MACE-OMol25,low-level refined,4,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,GFN2-xTB,native,5,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,GFN2-xTB,low-level refined,5,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,AIMNet2,native,4,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,AIMNet2,low-level refined,4,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,eSEN-S,native,3,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,eSEN-S,low-level refined,2,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,UMA-S,native,3,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,UMA-S,low-level refined,2,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,UMA-M,native,3,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,UMA-M,low-level refined,2,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,MACE-OMol25,native,3,1,
+CI-NEB,sharada,3,CH2CHOH <-> CH3CHO,MACE-OMol25,low-level refined,2,1,
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,GFN2-xTB,native,213,0,a
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,GFN2-xTB,low-level refined,250,0,b
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,AIMNet2,native,35,1,
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,AIMNet2,low-level refined,175,0,a
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,eSEN-S,native,3,1,
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,eSEN-S,low-level refined,3,1,
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,UMA-S,native,154,0,a
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,UMA-S,low-level refined,39,0,a
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,UMA-M,native,3,1,
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,UMA-M,low-level refined,3,1,
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,MACE-OMol25,native,250,0,d
+CI-NEB,sharada,4,CH3CH3 -> CH2CH2 + H2,MACE-OMol25,low-level refined,138,0,a
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,GFN2-xTB,native,19,1,
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,GFN2-xTB,low-level refined,14,1,
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,AIMNet2,native,27,0,b
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,AIMNet2,low-level refined,4,0,a
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,eSEN-S,native,4,1,
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,eSEN-S,low-level refined,4,1,
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,UMA-S,native,4,1,
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,UMA-S,low-level refined,4,1,
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,UMA-M,native,4,1,
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,UMA-M,low-level refined,3,1,
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,MACE-OMol25,native,3,1,
+CI-NEB,sharada,5,bicyclo[1.1.0]butane -> trans-butadiene,MACE-OMol25,low-level refined,4,1,
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,GFN2-xTB,native,17,0,b
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,GFN2-xTB,low-level refined,167,0,b
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,AIMNet2,native,250,0,d
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,AIMNet2,low-level refined,250,0,d
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,eSEN-S,native,250,0,d
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,eSEN-S,low-level refined,250,0,d
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,UMA-S,native,250,0,d
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,UMA-S,low-level refined,250,0,d
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,UMA-M,native,71,0,b
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,UMA-M,low-level refined,62,0,b
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,MACE-OMol25,native,79,0,b
+CI-NEB,sharada,6,parent Diels-Alder cycloaddition,MACE-OMol25,low-level refined,5,0,b
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",GFN2-xTB,native,15,0,b
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",GFN2-xTB,low-level refined,12,0,b
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",AIMNet2,native,250,0,d
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",AIMNet2,low-level refined,250,0,d
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",eSEN-S,native,3,1,
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",eSEN-S,low-level refined,3,1,
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",UMA-S,native,3,1,
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",UMA-S,low-level refined,3,1,
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",UMA-M,native,3,1,
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",UMA-M,low-level refined,3,1,
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",MACE-OMol25,native,3,1,
+CI-NEB,sharada,7,"cis,cis-2,4-hexadiene <-> 3,4-dimethylcyclobutene",MACE-OMol25,low-level refined,3,1,
+CI-NEB,sharada,8,C5 <-> C7AX,GFN2-xTB,native,30,1,
+CI-NEB,sharada,8,C5 <-> C7AX,GFN2-xTB,low-level refined,13,1,
+CI-NEB,sharada,8,C5 <-> C7AX,AIMNet2,native,42,1,
+CI-NEB,sharada,8,C5 <-> C7AX,AIMNet2,low-level refined,16,1,c
+CI-NEB,sharada,8,C5 <-> C7AX,eSEN-S,native,14,1,
+CI-NEB,sharada,8,C5 <-> C7AX,eSEN-S,low-level refined,8,1,
+CI-NEB,sharada,8,C5 <-> C7AX,UMA-S,native,21,1,
+CI-NEB,sharada,8,C5 <-> C7AX,UMA-S,low-level refined,10,1,
+CI-NEB,sharada,8,C5 <-> C7AX,UMA-M,native,14,1,
+CI-NEB,sharada,8,C5 <-> C7AX,UMA-M,low-level refined,10,1,
+CI-NEB,sharada,8,C5 <-> C7AX,MACE-OMol25,native,20,1,
+CI-NEB,sharada,8,C5 <-> C7AX,MACE-OMol25,low-level refined,11,1,
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,GFN2-xTB,native,62,0,b
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,GFN2-xTB,low-level refined,51,0,b
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,AIMNet2,native,57,0,b
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,AIMNet2,low-level refined,54,0,b
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,eSEN-S,native,53,0,b
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,eSEN-S,low-level refined,54,0,b
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,UMA-S,native,250,0,d
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,UMA-S,low-level refined,65,1,
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,UMA-M,native,115,1,
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,UMA-M,low-level refined,250,0,d
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,MACE-OMol25,native,58,0,b
+CI-NEB,sharada,9,silyl ketene acetal -> silyl ester Ireland-Claisen rearrangement,MACE-OMol25,low-level refined,59,0,b

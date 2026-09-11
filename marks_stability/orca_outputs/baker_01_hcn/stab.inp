@@ -1,0 +1,9 @@
+! UKS wB97X-V def2-TZVP def2/J RIJCOSX TightSCF DEFGRID3
+%pal nprocs 8 end
+%maxcore 1800
+%scf
+  STABPerform true
+  STABRestartUHFifUnstable true
+  MaxIter 300
+end
+* xyzfile 0 1 start.xyz

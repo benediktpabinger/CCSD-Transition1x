@@ -1,0 +1,9 @@
+Task 0: baker_06_bicyclobutane  chg=0 mult=1  node x007  Wed Sep  9 23:04:06 CEST 2026
+FINAL SINGLE POINT ENERGY      -155.879294088341
+                             ****ORCA TERMINATED NORMALLY****
+Stability Analysis indicates an UNSTABLE HF/KS wave function with one negative eigenvalue.
+     current solution is stable - it is up to you to rerun the stability
+Expectation value of <S**2>     :     0.192139
+FINAL SINGLE POINT ENERGY      -155.879798266276
+                             ****ORCA TERMINATED NORMALLY****
+Finished baker_06_bicyclobutane Wed Sep  9 23:07:08 CEST 2026

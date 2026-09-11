@@ -14,9 +14,9 @@ $\omega$B97M-V/def2-TZVPD, def2/J, RIJCOSX, TightSCF, DEFGRID3, integral
 thresholds \texttt{Thresh}~$=10^{-12}$ and \texttt{TCut}~$=10^{-13}$, ORCA
 5.0.4 --- with \texttt{STABPerform} and \texttt{STABRestartUHFifUnstable}
 enabled, so the calculation follows the stability analysis down to the lowest
-solution it finds. That run supplies $\langle S^2\rangle$, which is our class
-label: a transition state counts as RKS-unstable when $\langle S^2\rangle$
-exceeds $0.05$. We take the force from a separate \texttt{EnGrad} run that
+solution it finds. That run supplies $\langle S^2\rangle$, which is our
+classification: a transition state counts as broken-symmetry when
+$\langle S^2\rangle$ exceeds $0.05$ and as closed-shell otherwise. We take the force from a separate \texttt{EnGrad} run that
 reads those converged orbitals through \texttt{MORead}, so the gradient sits on
 the surface the stability analysis selected rather than on a freshly converged
 one. To measure how far the two surfaces lie apart we add a restricted single

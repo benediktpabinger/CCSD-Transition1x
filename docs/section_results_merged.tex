@@ -1,0 +1,233 @@
+% ABGELOEST (2026-09-07): dieser Entwurf ist durch docs/chapter_omol25.tex
+% ersetzt (Gruppennamen closed-shell / broken-symmetry, Fig 3 mit Panel A+B,
+% Leiter-Tabelle). Nur noch als Verlauf aufbewahrt.
+%
+% Results, zusammengefuehrt: der Appendix-Teil (Figur fig3 und der doppelte
+% Unterabschnitt) ist in den Haupttext gewandert. Aenderungen gegenueber
+% dem eingereichten Entwurf, alle formal:
+%   - \label{fig:forceerror} -> \label{fig:ferr}   (so wird es 3x referenziert)
+%   - \label{fig:drift}      -> \label{fig:barrier} (so wird es referenziert)
+%   - Barrieren-Unterabschnitt nur einmal, mit Figur UND Tabelle
+%   - "between 337 and 4434 meV, and 5 of 18 beyond" -> die fuenf ueber
+%     43 meV reichen von 61 bis 4434, nicht von 337
+%   - eV,\AA -> eV\,\AA  (zweimal in der Discussion)
+% Alle Zahlen gegen results/*.csv geprueft (check_results_section.py plus
+% f_err_max-Mediane, Tiefenspanne, Spearman -0.047).
+
+\section{Results}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=\linewidth]{figs/Fig1.png}
+  \caption{Model residual force against DFT residual force, evaluated at the
+  same unrelaxed geometry: the transition state each model produced
+  (45~reactions $\times$ 3~models; all 135 structures shown).
+  Both axes give $\max_i |F_i|$ over all $3N$ Cartesian components.
+  The DFT force is evaluated at the OMol25 level of theory on the surface
+  selected by the stability analysis (Sec.~\ref{sec:methods}).
+  Colours mark the two classes: $\langle S^2 \rangle$ of that single point is
+  exactly~0 for 82 of the 135 structures and at least 0.0579 for the
+  remaining~53, so the classes separate without a chosen cut-off.
+  Crosses mark group medians, model/DFT, stable then unstable ---
+  UMA-S 0.030/0.046, 0.042/0.157; UMA-M 0.019/0.039, 0.030/0.115;
+  eSEN 0.042/0.074, 0.038/0.129.}
+  \label{fig:silent}
+\end{figure}
+
+\subsection{The residual force the model reports does not track the force at its transition state}
+Figure~\ref{fig:silent} evaluates both force fields at the identical, unrelaxed
+geometry --- the transition state each model produced in its own search.
+In the model's own residual, the two classes are nearly indistinguishable: the
+median is 0.0299~eV\,\AA$^{-1}$ at the RKS-stable and 0.0344~eV\,\AA$^{-1}$ at
+the RKS-unstable structures, a factor of 1.15.
+The DFT residual at the same points separates them: 0.0507 against
+0.1293~eV\,\AA$^{-1}$, a factor of 2.55.
+That unstable-group median is more than twice the criterion the searches
+stopped at.
+The stable group sets the baseline.
+No second solution exists there, so its ratio measures the ordinary
+disagreement between model and DFT.
+The unstable group exceeds this baseline, and the difference is the effect of
+the instability.
+Restricting the analysis to the 112 searches that met the band criterion
+changes the DFT-side separation from 2.55 to 2.45.
+The model output contains no signal that marks the affected structures.
+What separates the two groups is one DFT single point with stability analysis
+at the model geometry.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{figs/fig2_force_mae.png}
+  \caption{Mean absolute difference between the model and the DFT force,
+$\langle |F_i^\mathrm{MLIP} - F_i^\mathrm{DFT}| \rangle_i$ over all $3N$
+Cartesian components, at the transition state each model produced.
+Both fields are read at the identical, unrelaxed geometry, so no geometry
+difference enters.
+The DFT force is one gradient per structure at the OMol25 level of theory,
+on the surface selected by the stability analysis
+(Sec.~\ref{sec:methods}); colours mark the two classes by $\langle S^2 \rangle$ of that single point (Fig.~\ref{fig:silent}).
+Faint dots are individual structures, jittered horizontally only; bars are
+group medians, shaded bands their 95\,\% bootstrap intervals
+(10\,000 resamples); the arrow gives the ratio of the two medians.}
+  \label{fig:ferr}
+\end{figure}
+
+\subsection{The learned force field itself is wrong where the restricted solution is unstable}
+Fig.~\ref{fig:ferr} measures the distance between the two force fields directly: the vectors are subtracted component by component at the same geometry, and a large value means the fields disagree.
+This error separates the two classes for every model, stable against unstable: medians of 0.0104 against
+0.0303~eV\,\AA$^{-1}$ for UMA-S, 0.0052 against 0.0177 for UMA-M, and 0.0138
+against 0.0268 for eSEN --- factors of 2.9, 3.4, and 1.9.
+Pooled, the median grows from 0.0095 to 0.0250~eV\,\AA$^{-1}$, and the largest
+single component from 0.0353 to 0.1034~eV\,\AA$^{-1}$.
+The overlap is small: 4 of 53 unstable structures lie below the stable median,
+8 of 82 stable structures above the unstable one.
+The failure in Fig.~\ref{fig:silent} is therefore not a convergence artefact: the force field the models learned differs from the ground-state field at these points --- at the identical geometry, before any optimisation enters.
+Within the unstable group the breaking depth spans 0.6 to 3986~meV, yet the force error does not follow it (Spearman $\rho = -0.05$ across the 53
+structures): what matters is that a second solution exists, not how deep it lies.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.99\linewidth]{figs/fig3.png}
+  \caption{Barrier error at fixed geometry (a) and barrier spread from
+  geometry alone (b).
+  (a)~One dot is one reaction evaluated with one model: the model barrier
+  minus the DFT barrier at the same two unrelaxed structures, reactant and
+  transition state, so no geometry error enters.
+  Solid bars are means, dashed bars medians; they disagree because in every
+  unstable group one named reaction misses by more than 0.5~eV and sets the
+  mean almost by itself.
+  (b)~One dot is one reaction (45 in total): the same DFT calculation at its
+  three model transition states, each barrier against the reactant of the
+  same model, closed-shell in every case; plotted is $\max-\min$ over the
+  three.
+  A reaction counts as unstable when at least one of its three transition
+  states has $\langle S^2 \rangle > 0$ in its single point
+  (Fig.~\ref{fig:silent}).
+  The green line marks 1~kcal/mol (43~meV) for orientation; it is not a
+  criterion used in this work.
+  DFT at the OMol25 level of theory, surface selected by the stability
+  analysis (Sec.~\ref{sec:methods}).}
+  \label{fig:barrier}
+\end{figure}
+
+\subsection{The energy error is small and the geometry error is not}
+Figure~\ref{fig:barrier} and Table~\ref{tab:barrier} split the barrier error
+into its two sources: the model's energy error and its geometry error.
+Panel~(a) freezes the geometry: the model barrier minus the DFT barrier at
+the identical reactant and transition state, so only the energies differ.
+This error is small in both classes --- medians of 1.7 to 4.1~meV at the
+stable and 6.3 to 13.7~meV at the unstable structures, per model.
+The means sit far above the medians in the unstable groups (42.2, 148.9,
+174.3~meV) because a single reaction per model misses by more than half an
+electronvolt and carries the mean almost alone --- rxn8837 at 0.62~eV for
+UMA-S, rxn0894 at 2.52 and 2.69~eV for UMA-M and eSEN; 49 of 53 unstable
+rows lie within chemical accuracy.
+The models mostly know the energies, even where the forces fail.
+
+Panel~(b) turns the question around and varies only the geometry: the same
+DFT calculation runs at the three model transition states of each reaction,
+against the closed-shell reactant of the same model, and the spread
+$\max - \min$ of the barrier is recorded.
+What separates the three numbers is the saddle position and nothing else.
+At the stable reactions the median spread is 0.33~meV; at the unstable ones
+it is 10.71~meV.
+Five of the 18 unstable reactions exceed chemical accuracy, from 61~meV up to
+4434~meV (rxn8837), against 2 of 27 on the stable side.
+The choice among the three model geometries alone shifts the barrier by up to
+4.4~eV, and the models' own residual forces carry no signal of which
+geometries are affected (Fig.~\ref{fig:silent}).
+A DFT single point at the model geometry repairs the energy part, which was
+largely sound, and inherits the geometry part, which was not.
+The affected transition states are therefore useful as starting points for a
+subsequent optimisation, not as final saddle points.
+
+\begin{table}[!t]
+\caption{Barrier errors, in meV.
+(a)~Per structure: $|\Delta E^\ddagger_\mathrm{MLIP} -
+\Delta E^\ddagger_\mathrm{DFT}|$ with both barriers read at the identical
+unrelaxed reactant and transition state, so no geometry error enters.
+(b)~Per reaction: $\max-\min$ of the DFT barrier over the three model
+transition states, each against the reactant of the same model, closed-shell
+in every case; a reaction counts as unstable when at least one of its three
+transition states has $\langle S^2 \rangle > 0$.
+Chemical accuracy taken as 1~kcal/mol (43~meV), for orientation only.
+DFT at the OMol25 level of theory, surface selected by the stability
+analysis (Sec.~\ref{sec:methods}).}
+\label{tab:barrier}
+\centering
+\begin{minipage}[t]{0.56\linewidth}
+\centering
+(a) energy error at frozen geometry,\\ per structure\\[2pt]
+\begin{tabular}{llrrr}
+\toprule
+ & & $n$ & median & MAE \\
+\midrule
+UMA-S & RKS stable   & 27 & 1.7  & 4.4 \\
+      & RKS unstable & 18 & 7.5  & 42.2 \\
+UMA-M & RKS stable   & 27 & 2.4  & 2.8 \\
+      & RKS unstable & 18 & 6.3  & 148.9 \\
+eSEN  & RKS stable   & 28 & 4.1  & 7.6 \\
+      & RKS unstable & 17 & 13.7 & 174.3 \\
+\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.42\linewidth}
+\centering
+(b) barrier spread from geometry\\ alone, per reaction\\[2pt]
+\begin{tabular}{lrrr}
+\toprule
+ & $n$ & median & $>43$~meV \\
+\midrule
+all three stable      & 27 & 0.33  & 2 \\
+at least one unstable & 18 & 10.71 & 5 \\
+\bottomrule
+\end{tabular}
+\end{minipage}
+\end{table}
+
+\subsection{The training labels are not stationary on the surface they describe}
+The measurements so far characterise what the models produce; this section
+characterises what they learned (measurement in
+Sec.~\ref{sec:methods-labels}, results in Table~\ref{tab:hinge}).
+Table~\ref{tab:hinge} answers two questions per geometry: the distance from
+a saddle of the restricted surface, and from one of the ground-state
+surface.
+At the stored Transition1x geometries the answer is 0.6~eV\,\AA$^{-1}$ on
+both surfaces for the stable reactions --- the two surfaces are the same
+there, and 0.6 is what the level change ($\omega$B97M-V/def2-TZVPD labels
+on $\omega$B97x/6-31G(d) optimised geometries) alone did to every saddle.
+For the unstable reactions the restricted answer is the same 0.6, but on
+the ground-state surface, which is unrestricted for these, the answer is
+1.64.
+How much of the 1.64 is the level and how much is the surface cannot be
+told apart at these points, since both changed at once.
+The lower block of Table~\ref{tab:hinge} separates them: re-optimising at
+the training level restores the saddle on the restricted surface --- the
+residual force drops to 0.04 in both groups --- while the ground-state
+surface of the unstable group still carries 1.87, a ratio of 32.
+
+\section{Discussion}
+
+Relabelling the inherited geometries carries two potential inconsistencies.
+First, the paths are not relaxed at the level the labels are computed at:
+every training point sits 0.6~eV\,\AA$^{-1}$ off stationarity, stable and
+unstable alike.
+Second, for reactions whose restricted solution is unstable, the paths are
+not relaxed on the surface the labels describe: Transition1x was computed
+restricted, and the saddle of the ground-state surface lies elsewhere.
+The measurements separate the two.
+The first is not the problem: the stable reactions have the same offset, and
+the models learn them to 0.01~eV\,\AA$^{-1}$ (Fig.~\ref{fig:ferr}).
+The second is consistent with everything measured: it exists exactly where
+the failures concentrate, and it means the models never trained on a
+stationary point of the surface they are asked to find saddles on.
+One caveat remains: OMol25 contains reactive organic configurations beyond
+the recomputed Transition1x paths (RGD1 path frames, MechDB reaction steps,
+bond-breaking curves), and we have not tested how close any of them come to
+these saddle regions.
+None of them, however, was optimised on the surface its labels describe: all
+reactive geometries enter as interpolated, force-field- or MLIP-generated, or
+inherited frames with unrestricted single-point labels (OMol25, Secs.~G--H).
+Whether this is the cause cannot be decided from our data.
+It can be tested: re-relax the affected paths on the ground-state surface
+and train on them.

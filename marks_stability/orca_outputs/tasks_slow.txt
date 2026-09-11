@@ -1,0 +1,2 @@
+sharada_08_alanine 0 1 /home/energy/s242862/marks_stab/geoms/sharada_08_alanine.xyz
+sharada_09_icr 0 1 /home/energy/s242862/marks_stab/geoms/sharada_09_icr.xyz

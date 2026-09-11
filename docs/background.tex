@@ -1,0 +1,1169 @@
+% Background, Endfassung im Aufbau. Ein Begriff pro Absatz, drei bis fuenf
+% Saetze, keine Verweise auf Ergebnisse der Arbeit. Referenzen:
+% docs/background_refs.bib. Verlauf: docs/chapter_background_v2.tex,
+% Thesis-Kopie: docs/chapter_background.tex.
+
+\chapter{Background}
+\label{ch:background}
+
+% =====================================================================
+\section{Potential Energy Surfaces}
+\label{sec:background-pes}
+
+\subsection{The Born--Oppenheimer Surface}
+\label{sec:background-bo}
+
+Nuclei are thousands of times heavier than electrons. On the timescale of
+nuclear motion the electrons adjust instantly, so the electronic problem can
+be solved with the nuclei held fixed at positions $\mathbf{R}$,
+%
+\begin{equation}
+  \hat{H}_\text{el}(\mathbf{R})\, \psi_k(\mathbf{r};\mathbf{R})
+  = E_k(\mathbf{R})\, \psi_k(\mathbf{r};\mathbf{R}),
+  \qquad E_0 \le E_1 \le \dots
+  \label{eq:electronic-schrodinger}
+\end{equation}
+%
+The lowest eigenvalue $E_0(\mathbf{R})$, computed for every nuclear
+arrangement, is the potential energy surface (PES). The nuclei move on it and
+feel the force $-\nabla E_0(\mathbf{R})$. The approximation holds when the
+ground state is well separated from the excited states.
+
+\subsection{Stationary Points}
+\label{sec:background-stationary}
+
+The chemistry of a surface lies in its stationary points, where the gradient
+$\mathbf{g} = \nabla_\mathbf{R} E$ vanishes. The eigenvalues of the Hessian
+$\mathbf{H}_{ij} = \partial^2 E / \partial R_i \partial R_j$ tell them apart:
+
+\begin{itemize}
+  \item \textbf{Local minima} ($\mathbf{H}$ positive definite) are stable or
+    metastable structures --- the reactants and products of a reaction.
+  \item \textbf{First-order saddle points} (exactly one negative eigenvalue)
+    are \textbf{transition states} (TS): the highest point on the
+    lowest-energy path between two minima. The eigenvector of the negative
+    eigenvalue is the reaction coordinate at the TS.
+\end{itemize}
+
+The energy difference between transition state and reactant is the barrier
+$\Delta E^\ddagger$. Transition state theory relates it to the rate constant
+by $k \propto \exp(-\Delta E^\ddagger / k_\text{B} T)$~\cite{eyring1935}, so
+an error in the barrier enters the rate exponentially. An error of
+1~kcal/mol (43~meV) changes the rate at room temperature by a factor of
+five; this value is called chemical accuracy.
+
+\subsection{Geometry and Energy}
+\label{sec:geom-energy}
+
+A barrier calculation has two parts: the geometry of the transition state,
+and the energy of the surface at that geometry relative to the reactant. The
+two can be computed with different methods. A geometry optimised with one
+method can be used for an energy calculation with another, a single-point
+calculation. A reference calculation therefore has a geometry level and an
+energy level. Common practice lets the geometry level be the lower one,
+because structures depend less on functional and basis set than
+energies~\cite{bursch2022}.
+
+% =====================================================================
+\section{Electronic Structure Methods}
+\label{sec:background-electronic}
+
+Every electronic structure method approximates
+Eq.~\eqref{eq:electronic-schrodinger}; an exact solution exists for one
+electron only. A method restricts the form of the wavefunction and returns
+the lowest energy within that form, with its gradient. If the true ground
+state lies outside the form, the method returns a higher state without
+indication.
+
+\subsection{Single-Reference and Multireference Systems}
+\label{sec:sr-vs-mr}
+
+Electrons occupy orbitals, at most two per orbital with opposite spin. One
+assignment of all electrons to orbitals is a configuration. As a
+wavefunction, a configuration is a Slater determinant $\Phi_I$. The exact
+electronic state is a weighted sum of all configurations,
+%
+\begin{equation}
+  \Psi = \sum_I c_I \, \Phi_I , \qquad \sum_I |c_I|^2 = 1 .
+  \label{eq:ci-expansion}
+\end{equation}
+%
+Two cases are distinguished by how the weights $|c_I|^2$ are distributed:
+
+\begin{itemize}
+  \item \textbf{Single-reference.} One configuration has a weight close to
+    one; all others are small corrections. This is the case for most
+    molecules near their equilibrium geometry, where all electrons are paired
+    in bonding orbitals.
+  \item \textbf{Multireference.} Two or more configurations have comparable
+    weight. Example: a half-broken bond. The two electrons of the bond can
+    be described as a pair in the bonding orbital, or as one electron on
+    each fragment. Both configurations have similar energy, and the state is
+    a mixture of both. This occurs at breaking bonds, at diradicals, and at
+    many transition states.
+\end{itemize}
+
+Methods are built for one of the two cases:
+
+\begin{itemize}
+  \item \textbf{Single-reference methods} start from one determinant:
+    Hartree--Fock, Kohn--Sham DFT, coupled cluster.
+  \item \textbf{Multireference methods} optimise several determinants at
+    once: CASSCF, NEVPT2 (Section~\ref{sec:background-beyond}).
+\end{itemize}
+
+The following sections treat single-reference methods.
+
+\subsection{Kohn--Sham Density Functional Theory}
+\label{sec:background-dft}
+
+Density functional theory (DFT) replaces the wavefunction, a function of all
+$3N_e$ electron coordinates, by the electron density $\rho(\mathbf{r})$, a
+function of three coordinates. The ground-state energy is a functional of
+the density alone~\cite{hohenberg1964}. This makes DFT the most widely used
+electronic structure method: it reaches useful accuracy at a cost of
+$\mathcal{O}(N^3)$ to $\mathcal{O}(N^4)$ in the number of basis functions.
+
+In the Kohn--Sham formulation~\cite{kohn1965} the density is built from one
+determinant of orbitals $\phi_i$, and the energy is split into four terms:
+%
+\begin{equation}
+  E[\rho] = T_s[\rho] + E_\text{ext}[\rho] + E_\text{H}[\rho] + E_\text{XC}[\rho] .
+  \label{eq:ks-energy}
+\end{equation}
+
+\begin{itemize}
+  \item $T_s$: kinetic energy of the electrons in the orbitals. Exact.
+  \item $E_\text{ext}$: attraction between electrons and nuclei. Exact.
+  \item $E_\text{H}$: classical repulsion of the density with itself. Exact.
+  \item $E_\text{XC}$: exchange and correlation, everything the other three
+    terms leave out. Its exact form is unknown; it is approximated by an
+    exchange--correlation functional.
+\end{itemize}
+
+The orbitals are found by the self-consistent field (SCF) iteration:
+
+\begin{enumerate}
+  \item a starting guess for the orbitals gives a density;
+  \item the density gives an effective potential;
+  \item the potential gives new orbitals;
+  \item repeat until the density no longer changes.
+\end{enumerate}
+
+The converged result is a stationary point of the energy with respect to the
+orbitals. Two properties of the iteration:
+
+\begin{itemize}
+  \item it converges to the stationary point the starting guess leads to;
+  \item a stationary point is not necessarily the lowest one.
+\end{itemize}
+
+Equation~\eqref{eq:ks-energy} and the SCF iteration leave three things
+unspecified (Figure~\ref{fig:choices}). The term $E_\text{XC}$ needs a
+formula; this is the choice of functional
+(Section~\ref{sec:background-functionals}). The orbitals $\phi_i$ need a
+mathematical form in which they can be stored and optimised; this is the
+choice of basis set (Section~\ref{sec:background-basis}). And each orbital
+carries a spin; whether spin-up and spin-down electrons must share the same
+orbital or may have different ones is the choice of spin treatment
+(Section~\ref{sec:background-spin}). The first two are named in the level
+of theory, written functional/basis.
+
+\begin{figure}[h]
+\centering
+% Preamble needs: \usepackage{tikz} \usetikzlibrary{calc, fit, positioning, decorations.pathreplacing, arrows.meta, backgrounds}
+\resizebox{\linewidth}{!}{%
+\begin{tikzpicture}[
+  box/.style={draw, rounded corners=3pt, align=center, font=\small,
+              inner sep=5pt, text width=4.4cm, minimum height=1.7cm},
+  term/.style={inner sep=1.5pt, anchor=west},
+  tgt/.style={inner sep=3pt, rounded corners=2pt},
+  arr/.style={->, thick, >=stealth, shorten >=3pt, shorten <=3pt},
+]
+% --- line 1: energy, unknown term E_XC
+\node[term] (l1) at (0,0)
+  {$E[\rho] \;=\; T_s + E_\text{ext} + E_\text{H} \;+$};
+\node[tgt, fill=blue!12, base right=3pt of l1] (exc) {$E_\text{XC}[\rho]$};
+\node[font=\footnotesize, anchor=west] at (0,-0.55)
+  {$T_s$, $E_\text{ext}$, $E_\text{H}$ exact for the given orbitals};
+% --- rows 2 and 3 at fixed distance below the centre of E_XC
+\coordinate (row2) at ($(l1.west |- exc.center)+(0,-2.1)$);
+\coordinate (row3) at ($(l1.west |- exc.center)+(0,-4.2)$);
+% --- line 2: orbitals from basis functions
+\node[term] (l2) at (row2) {$\phi_i \;=\; \sum_\mu c_{\mu i}\,$};
+\node[tgt, fill=green!12, right=0pt of l2] (chi) {$\chi_\mu$};
+% --- line 3: density from the orbitals of both spins
+\node[term] (l3) at (row3)
+  {$\rho \;=\; \sum_i \big|\phi_i^{\alpha}\big|^2 + \big|\phi_i^{\beta}\big|^2$,
+   \quad};
+\node[tgt, fill=orange!15, right=0pt of l3] (sp)
+  {$\phi_i^{\alpha} \overset{?}{=} \phi_i^{\beta}$};
+\begin{scope}[on background layer]
+  \node[draw, rounded corners=3pt, fill=gray!6, inner sep=8pt,
+        fit=(l1)(exc)(l2)(chi)(l3)(sp)] (eq) {};
+\end{scope}
+
+% --- the three choices, at the same fixed rows
+\node[box, fill=blue!6,   anchor=west] (func)  at ($(eq.east |- exc.center)+(1.2,0)$)
+  {\textbf{Functional}\\ the formula for $E_\text{XC}$\\ \emph{e.g.\ $\omega$B97M-V}};
+\node[box, fill=green!6,  anchor=west] (basis) at ($(eq.east |- exc.center)+(1.2,-2.1)$)
+  {\textbf{Basis set}\\ the fixed functions $\chi_\mu$ the orbitals are built from\\ \emph{e.g.\ def2-TZVP}};
+\node[box, fill=orange!8, anchor=west] (spin)  at ($(eq.east |- exc.center)+(1.2,-4.2)$)
+  {\textbf{Spin treatment}\\ $\alpha$, $\beta$ forced to share orbitals\\ (RKS) or not (UKS)};
+
+\draw[arr] (func.west)  -- (exc.east);
+\draw[arr] (basis.west) -- (chi.east);
+\draw[arr] (spin.west)  -- (sp.east);
+
+% --- brace: the level of theory names the first two
+\draw[decorate, decoration={brace, amplitude=5pt}, thick]
+  ([xshift=4pt]func.north east) -- ([xshift=4pt]basis.south east)
+  node[midway, right=7pt, font=\small, align=left]
+  {level of\\ theory};
+\end{tikzpicture}%
+}
+\caption{The three choices of a Kohn--Sham calculation and where they enter.
+The energy depends on the density through the unknown term $E_\text{XC}$,
+which the functional supplies. The orbitals are built from the basis
+functions $\chi_\mu$, which the basis set supplies. The density is built
+from the orbitals of both spins, and the spin treatment decides whether
+these orbitals are the same. The level of theory, written functional/basis,
+names the first two choices.}
+\label{fig:choices}
+\end{figure}
+
+\subsection{Exchange--Correlation Functionals}
+\label{sec:background-functionals}
+
+The presentation in this and the following section follows
+Jensen~\cite{jensen2017} and Koch and Holthausen~\cite{koch2001}.
+
+The exchange--correlation energy $E_\text{XC}$ collects the quantum
+mechanical effects that the other three terms of the Kohn--Sham energy do
+not describe: the exchange interaction between electrons of the same spin,
+and the correlation between all electrons. Its exact dependence on the
+density is unknown. An approximate expression for $E_\text{XC}$ as a
+function of the density is called an exchange--correlation functional. The
+functional is the only approximation in a Kohn--Sham calculation, and the
+quality of the result depends on it.
+
+Functionals are classified by the information they use
+(Table~\ref{tab:functionals}). The simplest use only the density at each
+point. Better ones add the gradient of the density, then the kinetic energy
+density of the orbitals. The next step concerns the exchange energy, the
+lowering of the electron repulsion that follows from the Pauli principle:
+electrons of the same spin avoid each other. This energy can be
+approximated from the density, or calculated exactly from the orbitals with
+the Hartree--Fock expression. Hybrid functionals use a mixture of both, with
+typically 20 to 25\,\% exact exchange. This ordering is known as Jacob's
+ladder. Each step increases the computational cost and, on average, the
+accuracy.
+
+\begin{table}[h]
+\centering
+\caption{Jacob's ladder of exchange--correlation
+functionals~\cite{perdew2001}. Each rung uses the ingredients of the rungs
+below and adds one.}
+\label{tab:functionals}
+\begin{tabular}{@{}l p{7.4cm} l@{}}
+\toprule
+rung & adds & example \\
+\midrule
+LDA & the density $\rho$ at each point & SVWN \\
+GGA & the gradient of the density, $\nabla\rho$ & PBE \\
+meta-GGA & the kinetic energy density of the occupied orbitals, $\tau$,
+  and/or the Laplacian of the density, $\nabla^2\rho$ & TPSS \\
+hybrid & a constant fraction of exact exchange, computed from the occupied
+  orbitals as in Hartree--Fock theory & B3LYP \\
+range-separated hybrid & the same, but the fraction of exact exchange
+  depends on the interelectronic distance: small at short range, full at
+  long range, switched by an error function with parameter $\omega$ &
+  $\omega$B97X-D3, $\omega$B97M-V \\
+double hybrid & the unoccupied orbitals, through a second-order
+  perturbation (MP2) or random-phase correlation term & B2PLYP \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Dispersion, the weak attraction between non-bonded atoms, is missing from
+all rungs and is added as a correction: D3~\cite{grimme2010} as an
+empirical pairwise term, VV10~\cite{vydrov2010} as a functional of the
+density. The suffix -D3 or -V in a functional name says which.
+
+Three levels of theory appear in this thesis:
+
+\begin{itemize}
+  \item \textbf{$\omega$B97X-D3/6-31G(d)}~\cite{lin2013}: range-separated
+    hybrid GGA with D3 dispersion, small basis. The level of Transition1x,
+    chosen for the cost of ten thousand NEB runs.
+  \item \textbf{$\omega$B97M-V/def2-TZVP}~\cite{mardirossian2016}:
+    range-separated hybrid meta-GGA with VV10 dispersion, triple-zeta
+    basis. The target level of the delta correction. In the GMTKN55
+    benchmark~\cite{goerigk2017} the functional belongs to the most
+    accurate hybrids for thermochemistry, reaction barriers and
+    non-covalent interactions.
+  \item \textbf{$\omega$B97M-V/def2-TZVPD}: the same functional with
+    diffuse functions added to the basis. The level of OMol25.
+\end{itemize}
+
+\subsection{Basis Sets}
+\label{sec:background-basis}
+
+The functional decides how the energy is computed from the density. The
+basis set decides how well the orbitals, and with them the density, can be
+represented at all. It is the second approximation of a Kohn--Sham
+calculation, and it is independent of the first.
+
+In step 3 of the SCF iteration the orbitals have to be stored and
+optimised. An orbital is a function of the electron coordinates, and a
+computer cannot handle an arbitrary function. Each orbital is therefore
+written as a linear combination of a fixed set of known functions
+$\chi_\mu$ centred on the atoms,
+%
+\begin{equation}
+  \phi_i(\mathbf{r}) = \sum_\mu c_{\mu i}\, \chi_\mu(\mathbf{r}) .
+\end{equation}
+%
+The set $\{\chi_\mu\}$ is the basis set. Its functions are fixed before the
+calculation; the SCF adjusts only the coefficients $c_{\mu i}$, that is,
+how much of each basis function enters an orbital. An orbital can therefore
+only take shapes that can be mixed from the basis functions. Gaussian
+functions $e^{-\alpha r^2}$ are used because the integrals over them can be
+solved analytically; a basis function is usually a fixed sum of several
+Gaussians of different width~\cite{jensen2017}.
+
+The size of the basis set is a trade-off. A small basis restricts the
+orbitals to shapes close to those of the free atoms and is cheap. A large
+basis lets the orbitals adapt to the molecule and approaches the basis set
+limit, at a cost that grows formally as $\mathcal{O}(N^4)$ in the number of
+functions. A basis set is described by three properties:
+
+\begin{itemize}
+  \item \textbf{Functions per valence orbital.} One function fixes the
+    orbital to its shape in the free atom. Two functions of different width
+    (double zeta) let it expand or contract in the molecule; three (triple
+    zeta) more so. The core orbitals usually keep one function.
+  \item \textbf{Polarisation functions.} Functions of higher angular
+    momentum than the atom's occupied orbitals, $d$ on C, N, O and $p$ on
+    H. They let an orbital bend away from the atom, which a bond requires.
+  \item \textbf{Diffuse functions.} Functions that extend far from the
+    nucleus. They are needed for anions and weakly bound electrons.
+\end{itemize}
+
+Three basis sets appear in this thesis (Table~\ref{tab:basis}). Each is
+larger than the previous one in one of these properties.
+
+\begin{table}[h]
+\centering
+\caption{Basis sets used in this thesis.}
+\label{tab:basis}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & 6-31G(d)~\cite{hariharan1973} & def2-TZVP~\cite{weigend2005} & def2-TZVPD~\cite{rappoport2010} \\
+\midrule
+functions per valence orbital & 2 & 3 & 3 \\
+polarisation functions        & on C, N, O & on all atoms & on all atoms \\
+diffuse functions             & no & no & yes \\
+functions per C atom          & 15 & 31 & 37 \\
+\midrule
+used for & Transition1x & delta target level & OMol25 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Functional and basis set together are the level of theory, written
+functional/basis, for example \mbox{$\omega$B97X-D3/6-31G(d)}. The two
+errors are independent: a larger basis does not correct the functional,
+and a better functional does not correct a small basis. A third choice
+remains to define a Kohn--Sham calculation: the treatment of spin.
+
+\subsection{Spin States of a Molecule}
+\label{sec:background-spinstates}
+
+Each electron has spin up ($\alpha$) or spin down ($\beta$). The spins of
+all electrons add to the total spin $S$ of the molecule; two electrons of
+opposite spin cancel. The input of a calculation specifies the
+multiplicity $2S + 1$. All molecules in this thesis have $S = 0$,
+multiplicity one, and are called singlets.
+
+A singlet can have two different electronic structures:
+
+\begin{itemize}
+  \item \textbf{closed-shell:} every occupied orbital holds one $\alpha$
+    and one $\beta$ electron. This is the normal case for a stable
+    molecule.
+  \item \textbf{open-shell singlet:} two electrons of opposite spin sit in
+    two different orbitals, for example one on each end of a breaking
+    bond. This is the case at diradicals and at many transition states.
+\end{itemize}
+
+Both are entered as multiplicity one. The input does not say which one is
+meant. Whether a calculation can find the open-shell structure depends on
+how it treats spin, which is the subject of the next section.
+
+\subsection{Restricted and Unrestricted Kohn--Sham}
+\label{sec:background-spin}
+
+The presentation follows Szabo and Ostlund~\cite{szabo1996}.
+
+\paragraph{Two treatments.} The third choice of Figure~\ref{fig:choices}
+is whether an $\alpha$ electron must share its spatial orbital with a
+$\beta$ electron (restricted) or may have its own (unrestricted). This
+decides which of the two structures of
+Section~\ref{sec:background-spinstates} the calculation can describe
+(Table~\ref{tab:rks-uks}). Programs use RKS by default for multiplicity
+one~\cite{orca_manual, qchem_manual}.
+
+\begin{table}[h]
+\centering
+\small
+\caption{The two spin treatments and what they can describe.}
+\label{tab:rks-uks}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+ & RKS & UKS \\
+\midrule
+orbitals & $\phi_i^{\alpha} = \phi_i^{\beta}$ & independent \\
+energy & & $\le$ RKS \\
+program default for multiplicity one & yes & \\
+\midrule
+closed-shell & $\langle S^2 \rangle = 0$ & $\langle S^2 \rangle = 0$ \\
+open-shell singlet & not possible & $\langle S^2 \rangle > 0$, broken symmetry \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{$\langle S^2 \rangle$: which structure was found.} A UKS
+calculation can end in either structure. The number that tells which is
+$\langle S^2 \rangle$, the expectation value of the total spin operator,
+which every unrestricted calculation reports. Its exact value is $S(S+1)$,
+so 0 for any singlet. A single determinant gives:
+
+\begin{itemize}
+  \item $\langle S^2 \rangle = 0$ when every $\alpha$ orbital equals its
+    $\beta$ partner: the closed-shell structure;
+  \item $\langle S^2 \rangle \approx 1$ when one $\alpha$ and one $\beta$
+    electron sit in orbitals that do not overlap: the open-shell structure.
+    The value is not 0 because a single determinant cannot represent an
+    open-shell singlet exactly; it is an equal mixture of singlet and
+    triplet;
+  \item values in between for partial separation.
+\end{itemize}
+
+The excess over 0 is called spin contamination. It is a property of the
+determinant, not of the molecule. For a singlet, $\langle S^2 \rangle > 0$
+means the calculation has found the open-shell structure.
+
+\paragraph{Broken symmetry.} A UKS singlet solution with
+$\langle S^2 \rangle > 0$ is called a broken-symmetry (BS)
+solution~\cite{noodleman1981}. The name says what happened: the symmetry
+between $\alpha$ and $\beta$ orbitals is broken, while the total spin stays
+zero. It is the single-determinant description of the open-shell singlet.
+Whether such a solution exists depends on the geometry. For H$_2$ at its
+equilibrium distance it does not; both electrons share the bonding
+orbital. Beyond a certain bond length it appears, lies below the RKS
+solution, and has one electron on each atom. The same happens at
+transition states in which a bond is broken~\cite{bursch2022}.
+
+% TODO (mit Literatur): Absatz "Broken symmetry and the multireference
+% case" -- open-shell singlet = MR-Fall aus sec:sr-vs-mr; BS als
+% Ein-Determinanten-Naeherung, MR-Methoden als exakte Behandlung.
+
+\subsection{Breaking the Symmetry and Testing for It}
+\label{sec:background-stability}
+
+\paragraph{Symmetry does not break by itself.} Requesting UKS is not
+enough to obtain a broken-symmetry solution. If the starting orbitals are
+the same for both spins, both spins see the same potential at every SCF
+step, and the iteration converges to the RKS solution even where a lower
+one exists. The symmetry has to be broken on purpose. Two ways:
+
+\begin{itemize}
+  \item \textbf{Perturb the starting guess}, typically by mixing the
+    $\beta$ HOMO and LUMO. The SCF then starts outside the symmetric
+    solution and usually converges to the lower one. It can also fall back
+    to the RKS solution; a closed-shell result then does not say whether a
+    lower solution exists.
+  \item \textbf{Test the converged solution} with a stability analysis. It
+    decides whether a lower solution exists, and gives the direction to
+    it.
+\end{itemize}
+
+\paragraph{Stability analysis~\cite{cizek1967, seeger1977}.} A converged
+SCF solution is a stationary point of the energy with respect to rotations
+of the orbitals. Whether it is a minimum is decided by the second
+derivative of the energy with respect to these rotations:
+
+\begin{enumerate}
+  \item Converge the SCF.
+  \item Compute the second derivative of the energy with respect to
+    orbital rotations.
+  \item Examine its lowest eigenvalue. A negative eigenvalue in the
+    direction from restricted to unrestricted orbitals means a lower UKS
+    solution exists.
+  \item Follow that eigenvector and reconverge. This gives the
+    broken-symmetry solution; the energy difference
+    $E_\mathrm{RKS} - E_\mathrm{BS}$ is the breaking depth.
+\end{enumerate}
+
+\paragraph{Terminology.} A structure is \textbf{closed-shell} when the
+stability analysis confirms the RKS solution as the lowest,
+$\langle S^2 \rangle = 0$, and \textbf{broken-symmetry} when a lower UKS
+solution exists, $\langle S^2 \rangle > 0$.
+
+\paragraph{Wavefunction, not geometry.} The stability analysis is a
+statement about the electronic solution at one fixed geometry. Whether
+that geometry is also a stationary point of the broken-symmetry surface is
+a separate question, answered by the gradient of the broken-symmetry
+solution at that geometry.
+
+\subsection{Beyond Kohn--Sham DFT}
+\label{sec:background-beyond}
+
+The presentation follows Jensen~\cite{jensen2017}, Chapter 4. This work
+used a coupled cluster method and a multireference method in addition to
+DFT; neither enters the final results. They are described here as far as
+needed to follow why.
+
+\paragraph{CCSD(T).} DFT approximates the correlation between electrons
+with the functional. Coupled cluster calculates it from the wavefunction.
+\mbox{CCSD(T)}~\cite{raghavachari1989}, coupled cluster with single,
+double and perturbative triple excitations, is the standard variant. For
+single-reference molecules the error is below 1~kcal/mol. It is the
+standard reference for testing density functionals. The cost scales as
+$\mathcal{O}(N^7)$ with the number of basis functions, for gradients as
+well~\cite{scuseria1991}, so it is used for single-point energies and not
+for path searches. It is a single-reference method and fails in the
+multireference case.
+
+\paragraph{CASSCF and NEVPT2.} In the multireference case no single
+determinant is a good starting point, and CASSCF starts from several.
+Only a few orbitals change their occupation between the configurations
+that mix, for a breaking bond the bonding and the antibonding orbital of
+that bond; these are chosen as the active orbitals. All lower orbitals
+stay doubly occupied, all higher ones empty, and the active electrons are
+distributed over the active orbitals in every possible way. Each
+distribution is one determinant, and CASSCF optimises their weights and
+the orbitals together:
+%
+\begin{equation}
+  \Psi_\text{CAS} = \sum_{I \in \text{active}} c_I \,\Phi_I .
+\end{equation}
+%
+CASSCF mixes only the determinants of the active space, the few with
+large weight. The many determinants outside it, the small corrections of
+Section~\ref{sec:sr-vs-mr}, are missing, and CASSCF energies alone are not
+accurate. NEVPT2~\cite{angeli2001} estimates their contribution
+afterwards by perturbation theory on top of the CASSCF wavefunction. The
+result depends on which orbitals are active. For a single geometry that
+is a matter of choice; for a reaction path it is a condition: the same
+orbitals must stay active at every geometry, otherwise the surface changes
+its definition along the path. Choosing the active space at one geometry
+is automated~\cite{sayfutyarova2017, stein2019autocas}; keeping it
+consistent along a path is not~\cite{bensberg2023, seal2025wasp}.
+
+\paragraph{Multireference diagnostics.} Whether a molecule is a
+multireference case is not known in advance. Diagnostics estimate it from
+a cheaper calculation. None of them measures the multireference character
+directly; each measures a quantity that grows with it:
+
+\begin{itemize}
+  \item the $T_1$ diagnostic~\cite{lee1989}: the size of the single
+    excitation amplitudes of a CCSD calculation. Values above about 0.02
+    indicate that one determinant is not enough. It needs a CCSD
+    calculation and is therefore as expensive as the method it is meant
+    to replace.
+  \item the $M$ diagnostic~\cite{tishchenko2008}: computed from the
+    occupation numbers of a CASSCF wavefunction. It needs a CASSCF
+    calculation and inherits its dependence on the active space.
+  \item $N_\text{FOD}$~\cite{grimme2015}: computed from one DFT
+    calculation at a finite electronic temperature of 5000~K. At zero
+    temperature every orbital is either occupied by two electrons or
+    empty. At finite temperature the electrons are spread over the
+    orbitals near the gap between occupied and empty: an orbital far
+    below the gap stays at occupation 2, one far above at 0, but orbitals
+    close to the gap take fractional occupations $n_i$ between 0 and 2.
+    In a single-reference molecule the gap is large and nothing changes.
+    In a multireference case the frontier orbitals are close in energy,
+    exactly the orbitals that would be active in CASSCF, and they take
+    fractional occupations. The sum of the deviations from the integer
+    values $n_i^0$,
+    %
+    \begin{equation}
+      N_\text{FOD} = \sum_i |n_i - n_i^0| ,
+    \end{equation}
+    %
+    is therefore near zero for a single-reference molecule and grows with
+    the number of electrons in near-degenerate orbitals.
+\end{itemize}
+
+All three characterise a structure, not a particular calculation: they
+estimate whether one determinant is likely to be enough there.
+
+% =====================================================================
+\section{The Nudged Elastic Band Method}
+\label{sec:background-neb}
+
+A saddle point cannot be found by descending the surface. If reactant and
+product are known, a path between them can be optimised instead: the
+minimum energy path, the path of lowest energy connecting the two minima,
+whose highest point is the transition state. The nudged elastic band
+(NEB)~\cite{jonsson1998, henkelman2000tangent} represents the path as a
+chain of images $\mathbf{R}_0, \dots, \mathbf{R}_{N_\text{img}-1}$ with the
+endpoints fixed at reactant and product. Neighbouring images are connected
+by springs. On each image the true force acts only perpendicular to the
+path and the spring force only along it,
+%
+\begin{equation}
+  \mathbf{F}_i = -\nabla E(\mathbf{R}_i)\big|_\perp
+               + \mathbf{F}_i^\text{spring}\big|_\parallel ,
+\end{equation}
+%
+so the images relax onto the minimum energy path and stay evenly spaced on
+it.
+
+The climbing image variant (CI-NEB)~\cite{henkelman2000cineb} treats the
+highest image differently: its spring force is removed and the component
+of the true force along the path is inverted,
+%
+\begin{equation}
+  \mathbf{F}_i^\text{CI} = -\nabla E(\mathbf{R}_i)
+  + 2\,\nabla E(\mathbf{R}_i)\big|_\parallel .
+\end{equation}
+%
+This image moves uphill along the path and downhill perpendicular to it,
+and converges to the saddle point.
+
+The optimisation stops when the largest component of the projected force,
+over all images and all $3N$ Cartesian directions of the $N$ atoms, falls
+below a threshold $f_\text{max}$, typically 0.05~eV\,\AA$^{-1}$. The force
+that remains at the end is the residual force.
+
+A converged CI-NEB gives a transition state and a barrier on the surface
+it was run on. The transition state is a maximum along the path and a
+minimum perpendicular to it. That it has exactly one negative Hessian
+eigenvalue is not verified unless a frequency calculation follows.
+
+% =====================================================================
+\section{Machine-Learned Interatomic Potentials}
+\label{sec:background-mlip}
+
+The presentation follows the reviews of Behler~\cite{behler2021} and Unke
+et al.~\cite{unke2021}.
+
+\subsection{The Approximation}
+\label{sec:mlip-approximation}
+
+A machine-learned interatomic potential (MLIP) replaces the electronic
+structure calculation by a function fitted to its output. The energy is a
+sum over atoms,
+%
+\begin{equation}
+  E(\mathbf{R}) = \sum_a \varepsilon_a(\mathcal{N}_a),
+  \label{eq:mlip-decomposition}
+\end{equation}
+%
+where $\varepsilon_a$ is the contribution of atom $a$ and depends only on
+its environment $\mathcal{N}_a$, the atoms within a cutoff radius of
+typically 5 to 6~\AA. The forces are the analytic gradient of
+Eq.~\eqref{eq:mlip-decomposition}. Two consequences of this form:
+
+\begin{itemize}
+  \item the cost grows linearly with the number of atoms, and a model
+    trained on small molecules can be applied to larger ones;
+  \item the model has no wavefunction, no density and no spin treatment.
+    It represents one function of the nuclear coordinates. Which surface
+    that function approximates is fixed by the data it was fitted to.
+\end{itemize}
+
+\subsection{Symmetry}
+\label{sec:mlip-symmetry}
+
+The energy of a molecule does not change when the molecule is translated,
+rotated, or when identical atoms are exchanged; the forces rotate with the
+molecule. A model must respect this, otherwise it predicts different
+energies for the same structure in different orientations. Two ways:
+
+\begin{itemize}
+  \item \textbf{Invariant models} describe the environment by distances
+    and angles, which do not change under rotation, and any function of
+    them is invariant automatically.
+  \item \textbf{Equivariant models} carry features that transform under
+    rotation in a defined way, scalars, vectors and higher tensors, and
+    read the energy out from the scalars only
+    (Section~\ref{sec:mlip-mace}). They reach a given accuracy with fewer
+    training data, and all models in this thesis are of this type.
+\end{itemize}
+
+\subsection{Message Passing}
+\label{sec:mlip-mace}
+
+\paragraph{Features.} Every atom carries a list of numbers, its features,
+that describes the atom itself and its surroundings. At the start the
+list contains only the element of the atom. Over the layers described
+next, it is filled with information about the neighbours: how many there
+are, how far away, in which directions, and what their surroundings look
+like in turn. The list is a compressed description of the local structure
+around the atom, from which its energy contribution can be read off.
+Which properties the list records is not fixed by hand; the network
+adjusts this during training so that the energies and forces of the
+training data are reproduced.
+
+\paragraph{Message passing.} The list is filled in layers. In every layer
+an atom receives from each neighbour within the cutoff the neighbour's
+features together with the distance and direction to it, a message, and
+updates its own features from them. After one layer an atom knows its
+direct neighbours, after two layers also their neighbours.
+PaiNN~\cite{schutt2021painn} made the messages equivariant, so that
+directional information is carried from atom to atom.
+MACE~\cite{batatia2022} lets one message combine several neighbours at
+once instead of one at a time, so that two layers are enough.
+
+\paragraph{Channels.} The feature list of an atom is divided into
+channels. Each channel records one learned property of the environment,
+and it holds as many numbers as that kind of property needs
+(Table~\ref{tab:channels}). The kinds are labelled $\ell$, the same label
+that distinguishes $s$, $p$, $d$ and $f$ orbitals. The network has many
+channels of each kind; with 1024 per $\ell$ up to 3, the list of one atom
+holds $1024 \times (1 + 3 + 5 + 7) = 16\,384$ numbers per layer.
+
+\begin{table}[h]
+\centering
+\caption{Kinds of channels in an equivariant model. The examples are
+illustrations; the network decides during training what each channel
+records.}
+\label{tab:channels}
+\begin{tabular}{@{}clp{4.6cm}p{3.6cm}@{}}
+\toprule
+$\ell$ & numbers per channel & example of a property & under rotation \\
+\midrule
+0 & 1 & how crowded the surroundings are & unchanged \\
+1 & 3 & mean direction to the neighbours & rotates like a vector \\
+2 & 5 & whether the neighbours lie in a plane & rotates like a $d$ orbital \\
+3 & 7 & a more detailed shape & rotates like an $f$ orbital \\
+\midrule
+\multicolumn{4}{@{}l}{1024 channels of each kind: $1024 \times 16 = 16\,384$ numbers per atom and layer} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Readout.} A readout block is a small network that maps the
+features of an atom to its energy contribution $\varepsilon_a$ in
+Eq.~\eqref{eq:mlip-decomposition}. Because $\varepsilon_a$ is a scalar
+and cannot depend on a direction, the readout uses only the $\ell = 0$
+channels. The vector and tensor channels matter inside the layers, where
+their combinations produce the scalar channels of the next layer.
+
+\paragraph{Intuition.} An illustration, not a description of the
+computation. A carbon atom in a C--C bond stretched to 2.0~\AA{} receives
+from its neighbour a message built from the neighbour's element and
+learned functions of the distance; at 2.0~\AA{} these produce a different
+pattern across the channels than at 1.54~\AA. Only the atoms within the
+cutoff enter, so a carbon with the same surroundings in a different
+molecule gets the same pattern. The readout has learned that this pattern
+goes with a higher energy. No channel is a named property; the channels
+record whatever helped to reproduce the training energies.
+
+\subsection{Conservative and Direct Forces}
+\label{sec:mlip-conservative}
+
+Forces can be obtained in two ways. A conservative model predicts the
+energy and takes the forces as its gradient, as in
+Eq.~\eqref{eq:mlip-decomposition}. A direct model predicts the forces with
+a separate output. Direct forces are cheaper and often more accurate on
+force benchmarks, but they are not the gradient of any energy: the work
+along a closed path does not vanish, and a point of zero predicted force
+is not a stationary point of the predicted energy. A saddle-point search
+and a barrier height both require forces that are the gradient of the
+reported energy. All models in this thesis are conservative.
+
+\subsection{Training}
+\label{sec:mlip-training}
+
+The presentation follows Goodfellow et al.~\cite{goodfellow2016}.
+
+\paragraph{Loss.} A model is fitted to reference energies and forces by
+adjusting its weights to minimise
+%
+\begin{equation}
+  L = \lambda_E \, d\big(E_\text{pred}, E_\text{ref}\big)
+    + \lambda_F \, d\big(\mathbf{F}_\text{pred}, \mathbf{F}_\text{ref}\big),
+\end{equation}
+%
+summed over the training structures. The function $d$ measures the
+distance between prediction and reference,
+$\Delta = x_\text{pred} - x_\text{ref}$. Three choices are common:
+%
+\begin{align}
+  d_\text{sq}(\Delta)  &= \Delta^2, \\
+  d_\text{abs}(\Delta) &= |\Delta|, \\
+  d_\text{Huber}(\Delta) &=
+  \begin{cases}
+    \tfrac{1}{2}\Delta^2 & |\Delta| \le \delta \\
+    \delta\,\big(|\Delta| - \tfrac{1}{2}\delta\big) & |\Delta| > \delta .
+  \end{cases}
+\end{align}
+%
+The squared loss weights large errors heavily, so a few structures with
+large errors can dominate the sum. The absolute loss treats all errors
+alike but has no smooth minimum. The Huber loss is quadratic below the
+threshold $\delta$ and linear above it, and combines the two. The
+weights $\lambda_E$ and $\lambda_F$ set how much energies and forces
+count. Forces dominate the fit: each structure contributes $3N$ force
+components and one energy, and the forces fix the local shape of the
+surface, which a geometry optimisation follows.
+
+\paragraph{Data splits.} The available structures are divided into three
+sets (Table~\ref{tab:training-terms}). The training set is what the
+weights are fitted to. The validation set is held out from the fit and
+used during training to check whether the model still improves on
+structures it has not seen, which decides when to lower the learning rate
+and which checkpoint to keep. The test set is set aside before training
+starts, is never used during it, and is evaluated once at the end to
+report the accuracy on structures that played no role in training.
+
+\paragraph{Procedure.} The loss is minimised by gradient descent: the
+gradient of $L$ with respect to the weights is computed, and the weights
+are moved a small step against it. Table~\ref{tab:training-terms} lists
+the terms that describe this procedure.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Terms of the training procedure.}
+\label{tab:training-terms}
+\begin{tabular}{@{}l p{9.4cm}@{}}
+\toprule
+term & meaning \\
+\midrule
+training set & the structures the weights are fitted to \\
+validation set & structures held out from the fit; their loss is used to
+  steer the training and to choose the final weights \\
+test set & structures held out from both; used once, to report the
+  accuracy \\
+\midrule
+batch & the structures whose loss is averaged for one weight update,
+  typically 32 to 128 \\
+epoch & one pass over the training set, or over a fixed random subsample
+  of it if the set is too large \\
+learning rate & the step size of the weight update \\
+optimiser & the rule that turns the gradient into the step; Adam and
+  AdamW~\cite{kingma2015adam, loshchilov2019adamw} adapt the step per
+  weight from the history of its gradients \\
+gradient clipping & an upper bound on the size of the gradient, to keep
+  single batches from moving the weights too far \\
+scheduler & a rule that lowers the learning rate during training; with
+  ReduceLROnPlateau it is multiplied by a factor when the validation loss
+  has not improved for a set number of epochs, the patience \\
+checkpoint & the saved weights at one point of training; the final model
+  is the checkpoint with the lowest validation loss \\
+overfitting & the training loss keeps falling while the validation loss
+  rises: the model fits the training structures rather than the surface \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Raising the Level of Theory}
+\label{sec:mlip-fidelity}
+
+The accuracy of a model is bounded by the accuracy of its labels. A model
+trained at one level of theory converges towards that level, not towards
+the exact surface. Its errors against the exact surface are those of the
+level plus those of the fit. Recomputing a full training set at a higher
+level is usually not affordable. Three constructions avoid it:
+
+\begin{itemize}
+  \item \textbf{Delta learning}~\cite{ramakrishnan2015} keeps the
+    low-level model and fits a second model to the difference between the
+    two levels, $\Delta(\mathbf{R}) = E_\text{high}(\mathbf{R}) -
+    E_\text{low}(\mathbf{R})$, at a sample of geometries. The prediction
+    is the sum of both. The difference is smoother than either surface
+    and needs far fewer training points.
+  \item \textbf{Transfer learning}~\cite{smith2019ani1ccx} takes the
+    low-level model as the starting point and continues training on
+    high-level data, with all or part of the weights free.
+  \item \textbf{Multifidelity learning} trains one model on both levels
+    at once, with the level as an additional input.
+\end{itemize}
+
+\subsection{Limitations}
+\label{sec:mlip-limits}
+
+\begin{itemize}
+  \item \textbf{Extrapolation.} An MLIP interpolates within the region of
+    configuration space covered by its training data and has no defined
+    behaviour outside it. Stretched bonds and transition states are
+    sparsely covered by datasets of equilibrium structures.
+  \item \textbf{No error estimate.} A model returns an energy and a force
+    without a measure of confidence. A DFT calculation reports SCF
+    convergence and can be tested for stability
+    (Section~\ref{sec:background-stability}); an MLIP prediction carries
+    no such signal.
+\end{itemize}
+
+% =====================================================================
+\section{Datasets and Models}
+\label{sec:background-datasets}
+
+Two datasets and four models appear in this thesis. A dataset fixes two
+things for every model trained on it: the level of theory the model
+reproduces, and the region of configuration space it has seen. The
+datasets are therefore described first.
+
+\subsection{Dataset: Transition1x}
+\label{sec:dataset-t1x}
+
+Transition1x~\cite{schreiner2022} was built as training data for reactive
+potentials: structures on and around reaction paths rather than at
+equilibrium.
+
+\paragraph{Reactions.} The starting point are the 11\,961 elementary
+reactions of Grambow et al.~\cite{grambow2020}, each given as reactant,
+transition state and product. The molecules contain up to seven heavy
+atoms of C, N and O plus hydrogen, are neutral, closed-shell and in the
+gas phase; the reactions are unimolecular rearrangements and
+dissociations of these small organic molecules.
+
+\paragraph{Geometries.} For every reaction a CI-NEB with ten images was
+run at the \mbox{$\omega$B97X-D3/6-31G(d)} level in ORCA. The level was
+chosen for the cost of twelve thousand NEB runs. The band converged for
+10\,073 reactions, with the criterion that the maximal perpendicular force
+on the path does not exceed 0.05~eV\,\AA$^{-1}$. Every intermediate band
+configuration of every NEB iteration was kept, not only the converged
+path, so each reaction contributes on the order of 950 geometries. In
+total the dataset holds 9.6~million structures with energies and forces.
+Reactant, transition state and product of each reaction are stored
+separately. All calculations are restricted.
+
+\paragraph{Coverage.} The geometries lie on and near reaction paths of
+one class of reactions at one level of theory. There is no solvent, no
+charge or spin variation, and no element beyond C, H, N and O. Test and
+validation data are 5\,\% of the total each.
+
+\subsection{Dataset: OMol25}
+\label{sec:dataset-omol}
+
+Open Molecules 2025~\cite{omol25} is a dataset of more than 100 million
+DFT calculations on about 83 million distinct molecular systems, built as
+training data for general-purpose models.
+
+\paragraph{Level of theory.} All calculations use
+\mbox{$\omega$B97M-V/def2-TZVPD} in ORCA~6.0.0, with RI-J and COSX
+integral approximations, tight SCF convergence and a large integration
+grid. The dataset covers 83 elements, systems of 2 to 350 atoms with 50
+on average, total charges from $-10$ to $+10$ and spin multiplicities
+from 1 to 11. Non-singlets are computed unrestricted. Singlets are
+computed unrestricted, with the initial guess perturbed by a $20^\circ$
+rotation between HOMO and LUMO in the $\beta$ space, when they contain a
+transition metal or lanthanide or when bonds are expected to break; all
+other singlets are restricted. For the recomputed Transition1x structures
+fewer than 5\,\% gave $\langle S^2 \rangle > 0.001$.
+
+\paragraph{Composition.} The structures come from four chemical domains
+and a fifth part that recomputes existing datasets
+(Table~\ref{tab:omol25}). The geometries are taken from these sources as
+they are, from molecular dynamics, optimisation trajectories, conformer
+enumeration and reaction paths; none is relaxed at the OMol25 level.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Composition of OMol25~\cite{omol25}. Sizes are given in the
+paper as atoms per domain.}
+\label{tab:omol25}
+\begin{tabular}{@{}l p{8.6cm} r@{}}
+\toprule
+domain & structures & atoms \\
+\midrule
+biomolecules & protein pockets and nucleic acids from the PDB; drug-like
+  molecules from GEOM, ChEMBL and ZINC20 & 1.2\,B \\
+electrolytes & molecules and ions of battery electrolytes in solution,
+  water clusters of up to 70 molecules & 2.0\,B \\
+metal complexes & complexes assembled from curated ligands and
+  metal--oxidation-state pairs, in several spin states & 1.2\,B \\
+main-group molecules & organic and heavy-main-group molecules and
+  clusters, including reaction paths & -- \\
+community & ANI-2x, ANI-1xBB, Transition1x, OrbNet Denali, SPICE2,
+  Solvated Protein Fragments, about 30\,\% of GEOM, recomputed at the
+  OMol25 level & 1.4\,B \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{Reactions.} Transition-state regions enter through the
+recomputed Transition1x, through metal-complex reactivity sets, through
+electrolyte decomposition paths and through the interpolated and
+artificial-force paths of the main-group domain. For Transition1x the
+geometries are those of Section~\ref{sec:dataset-t1x}; only the energies
+and forces are new.
+
+\subsection{Model: MACE}
+\label{sec:model-mace}
+
+The MACE model of this thesis is trained on Transition1x. It has two
+layers and 1024 channels per $\ell$ up to 3. The first layer keeps all
+$\ell$; the second, last layer outputs scalars only. The features of both
+layers are concatenated, giving 17\,408 numbers per atom, of which 2048
+are scalars (Table~\ref{tab:mace-features}). A second readout block
+attached to the same features, trained to a different target, is the
+construction of Chapter~\ref{ch:delta}; the combined model is called
+MACE+$\Delta$.
+
+\begin{table}[h]
+\centering
+\caption{Per-atom features of the MACE encoder used in this thesis, 1024
+channels per layer, $\ell \le 3$. Only the $\ell = 0$ column is
+rotation-invariant.}
+\label{tab:mace-features}
+\begin{tabular}{@{}lccccr@{}}
+\toprule
+ & $\ell = 0$ & $\ell = 1$ & $\ell = 2$ & $\ell = 3$ & total \\
+\midrule
+layer 1 & 1024 & 3072 & 5120 & 7168 & 16\,384 \\
+layer 2 & 1024 & --   & --   & --   & 1024 \\
+\midrule
+per atom & 2048 & 3072 & 5120 & 7168 & 17\,408 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Models: UMA and eSEN}
+\label{sec:model-uma-esen}
+
+Both models come from Meta FAIR and are trained on OMol25.
+
+\paragraph{eSEN}~\cite{esen}, the equivariant Smooth Energy Network, is an
+equivariant message-passing architecture built so that the energy is a
+continuously differentiable function of the positions: no cutoff or
+neighbour-list step introduces a jump. Its authors show that models
+without this property, and models with direct forces, fail to conserve
+energy in dynamics. The checkpoint used here is the small conserving
+model trained on the full OMol25 dataset, eSEN-sm-conserving-all, with
+6.3 million parameters and forces as the gradient of the
+energy~\cite{omol25}.
+
+\paragraph{UMA}~\cite{uma}, the Universal Model for Atoms, is built on
+the eSEN architecture and trained on five datasets at once: OMol25,
+OMat24 (materials), OC20 (catalysis), ODAC25 (direct air capture) and
+OMC25 (molecular crystals), in total close to half a billion structures.
+The five datasets were computed at different levels of theory, so the
+model receives the dataset, called the task, as an input and reproduces
+the level of that dataset; the task used in this thesis is \texttt{omol}.
+Capacity is added by a mixture of linear experts: every linear layer
+exists in several copies, and a weighted combination of them, chosen
+from the composition, charge, spin and task of the structure, is used for
+that structure. Only the combined layer runs during a calculation, so
+the cost is that of a small model. Two sizes are used:
+
+\begin{itemize}
+  \item \textbf{UMA-S}: 150 million parameters in total, 6 million active
+    per structure, 32 experts;
+  \item \textbf{UMA-M}: 1.4 billion parameters in total, 50 million
+    active.
+\end{itemize}
+
+Both predict forces as the gradient of the energy; the models are first
+trained with direct forces and then fine-tuned to conservative ones. The
+two sizes differ in capacity, not in training data or formulation.
+UMA-S-1.2 was trained on the expanded OMol25 release, UMA-M-1.1 and the
+eSEN checkpoint on the earlier one.
+
+\subsection{Overview}
+\label{sec:mlip-models}
+
+\begin{table}[h]
+\centering
+\caption{The models of this thesis. All are equivariant message-passing
+models with conservative forces.}
+\label{tab:mlip-models}
+\begin{tabular}{@{}llll@{}}
+\toprule
+model & training data & level of theory & role \\
+\midrule
+MACE & Transition1x & $\omega$B97X-D3/6-31G(d) & base model, Chapter~\ref{ch:delta} \\
+MACE+$\Delta$ & MACE plus correction head & $\omega$B97M-V/def2-TZVP & this work, Chapter~\ref{ch:delta} \\
+UMA-S, UMA-M~\cite{uma} & OMol25 and others & $\omega$B97M-V/def2-TZVPD & Chapter~\ref{ch:mr} \\
+eSEN~\cite{esen} & OMol25 & $\omega$B97M-V/def2-TZVPD & Chapter~\ref{ch:mr} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+MACE is trained on Transition1x alone and therefore specialised to reaction
+paths of small organic molecules at one level of theory. UMA and eSEN are
+general-purpose models trained on OMol25 and, for UMA, on further datasets
+of materials, catalysts and molecular crystals.
+
+% =====================================================================
+\section{Software}
+\label{sec:background-software}
+
+Five packages are used in this thesis (Table~\ref{tab:software}). Their
+division of labour follows a common pattern in computational chemistry:
+one program computes energies and forces for a given geometry, another
+decides which geometries to compute next.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Software used in this thesis.}
+\label{tab:software}
+\begin{tabular}{@{}l l p{7.6cm}@{}}
+\toprule
+package & version & role \\
+\midrule
+ORCA~\cite{orca5} & 5.0.4 &
+  DFT energies and gradients: single points, stability analysis,
+  and the reference calculations behind the NEB paths \\
+ASE~\cite{larsen2017ase} & 3.28.0 &
+  Drives the geometry work: sets up the band, runs NEB and CI-NEB,
+  relaxes endpoints, and calls ORCA or an MLIP for every energy and
+  force it needs \\
+PySCF~\cite{pyscf} & 2.12.1 &
+  $N_\text{FOD}$ screening (DFT with Fermi smearing) and the
+  multireference attempt (CASSCF, NEVPT2) \\
+MACE~\cite{mace_code} & 0.3.15 &
+  Training of the MACE base model and of the correction head; MLIP
+  inference for MACE and MACE+$\Delta$ \\
+fairchem~\cite{fairchem} & 2.20.0 &
+  Inference for the UMA and eSEN models \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\paragraph{ORCA} is a quantum chemistry program for molecules, with a
+focus on DFT and correlated wavefunction methods. In this thesis it
+performs every DFT calculation: the single points on model geometries,
+the stability analysis and the reconvergence to the broken-symmetry
+solution, and the energies and gradients of the reference NEB paths.
+Density fitting for the Coulomb and exchange integrals (RIJCOSX) keeps
+hybrid functionals affordable at triple-zeta basis size. ORCA is also the
+program with which OMol25 was computed, in a later version.
+
+\paragraph{ASE}, the Atomic Simulation Environment, is a Python library
+for setting up, running and analysing atomistic calculations. It holds
+the geometries, provides the optimisers, BFGS for minima and the NEB
+driver with the ode12r integrator~\cite{makri2019preconditioning} for
+paths, and applies the convergence criterion. It does not compute
+energies itself. Every source of energies and forces is attached as a
+calculator: a geometry goes in, energy and forces come out, and ORCA,
+MACE and the fairchem models all take this role. A NEB run therefore uses
+the same driver, the same optimiser and the same convergence criterion
+whether the forces come from DFT or from a model; only the calculator
+differs. This is what makes the comparison between DFT-driven and
+model-driven searches in this thesis a comparison of the surfaces, not
+of the search procedure.
+
+\paragraph{PySCF} is a Python-based quantum chemistry package in which
+the individual steps of a calculation are accessible as functions. It is
+used where a calculation departs from a standard protocol: the
+$N_\text{FOD}$ screening, which needs DFT with Fermi smearing of the
+occupations, and the multireference attempt, which needs CASSCF with an
+automated active-space selection.
+
+\paragraph{MACE and fairchem} are the two model packages. The MACE
+package trains and evaluates MACE models and exposes the per-atom
+features of a trained model, which the correction head of
+Chapter~\ref{ch:delta} reads. fairchem is the library of Meta FAIR that
+ships the UMA and eSEN checkpoints; a model is selected by checkpoint
+name and, for UMA, by the task head, here the molecular task trained on
+OMol25. Both packages provide an ASE calculator.

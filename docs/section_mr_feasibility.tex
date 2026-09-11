@@ -1,0 +1,73 @@
+% ABGELOEST am 2026-09-09: gekuerzt als Subsection "Multireference
+% geometries: attempted, out of scope" (sec:mr-whynotmr) in
+% docs/section_mr_outofscope.tex (Outlook-Kapitel). Nur noch Verlauf.
+% "Feasibility of a multireference reference", aus dem MR-Kapitel der Thesis,
+% hier abgelegt am 2026-09-07. Wird laut Autor auf einen Absatz im
+% OMol25-Kapitel schrumpfen; der Background verweist darauf.
+% Referenzierte Labels, die hier nicht definiert sind: sec:mr-setup,
+% sec:mr-together, sec:mr-fix.
+
+\section{Feasibility of a multireference reference}
+\label{sec:mr-whynotmr}
+
+A broken-symmetry reference is a pragmatic construction: a single determinant
+that is not a spin eigenfunction. The alternative is a multireference treatment,
+which describes the separation of the electron pair without spin contamination.
+This route was attempted for these reactions and abandoned. The reasons are
+reported because they bear on what a benchmark of this kind can use.
+
+\paragraph{The blocker is active-space consistency, not gradients.} A CASSCF
+transition-state optimisation needs an active space, and the surface being
+differentiated is defined by that choice, so the space must remain the same
+along the path. Selecting it with AVAS~\cite{sayfutyarova2017} at the DFT
+transition state and re-selecting it at the resulting CASSCF geometry returned a
+different space, which means the geometry had been optimised with a space that
+does not belong to it. The magnitude was measured directly: at rxn7949, changing
+the active space at fixed geometry shifted the barrier by 3310\,meV. Eleven of
+26 optimisations converged cleanly.
+
+\paragraph{The diagnostic inherits the same ambiguity.} The $M$
+diagnostic~\cite{tishchenko2008} would be the natural quantity for stratifying
+by multireference character, but it is computed from a CASSCF wavefunction. Two
+converged AVAS solutions at the same geometry gave $M = 0.79$ and $M = 0.07$ for
+the same reaction, and $M$ halved across geometry changes below 0.3\,\AA. It was
+therefore not used for the stratification of Section~\ref{sec:mr-setup};
+$N_\mathrm{FOD}$, computed from a single DFT calculation at a fixed geometry,
+was used instead.
+
+\fbox{\begin{minipage}{0.95\linewidth}
+\textbf{Key takeaway.} The obstacle to a multireference reference at this system
+size is not the availability of gradients. It is that the active space --- and
+with it the diagnostic that would indicate whether one is needed --- is not
+stable against the choice of solution or against small changes in geometry.
+\end{minipage}}
+
+\medskip
+\paragraph{Automated selection does not remove the problem at this size.}
+autoCAS~\cite{stein2019autocas} prescribes the required iteration: re-select the
+active space in the optimised orbital basis until the space selected at the
+converged geometry is the one used to optimise it. It requires a DMRG
+entanglement calculation over the full valence orbital space, which is not
+practical at 11--12 atoms with this basis set. Protocols that enforce
+consistency across geometries exist~\cite{seal2025wasp, bensberg2023}, but they
+assume a fixed active space; adapting its composition along a reaction
+coordinate is stated there as open work.
+
+\paragraph{Requirements for a future attempt.} Three routes remain. A
+self-consistency iteration at the CASSCF level, repeated until the selected
+space is a fixed point of the optimisation, then enlarged to check that no
+relevant orbital was omitted. A move to CASPT2 or NEVPT2 geometries, which add
+the dynamic correlation CASSCF omits --- CASSCF accentuates single and double
+bond character, which at a transition state means overstating diradical
+character, and bond lengths differ from CASPT2 by 0.01 to 0.02\,\AA{} for small
+organic molecules~\cite{page2003}; analytic gradients for these
+methods~\cite{park2019} are not available in the software stack used here, and
+numerical gradients cost of order $6N$ single points per optimisation step. Or a
+reference set restricted to systems small enough for near-exact methods, which
+will not resemble the reactions of interest.
+
+The consequence for this chapter is that the broken-symmetry surface is used
+with its limitations stated. One observation supports the choice after the fact:
+where several methods find a saddle point on that surface, they find the same
+one (Sections~\ref{sec:mr-together} and~\ref{sec:mr-fix}); the surface has a
+reproducible stationary point that independent searches converge to.

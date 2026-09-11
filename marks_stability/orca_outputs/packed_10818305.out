@@ -1,0 +1,25 @@
+packed job 10818305 on b001: NPAR=5 CORES=8
+list /home/energy/s242862/marks_stab/tasks_r0.txt  (22 structures)  Wed Sep  9 23:30:04 CEST 2026
+  done sharada_02_silane  stable  23:31:56
+  done baker_11_trans_butadiene  stable  23:33:59
+  done baker_09_parentdielsalder  stable  23:34:32
+  done baker_17_claisen  stable  23:35:03
+  done baker_13_hf_abstraction  stable  23:36:13
+  done baker_10_tetrazine  stable  23:36:35
+  done baker_21_acrolein_rot  stable  23:36:42
+  done baker_14_vinyl_alcohol  stable  23:37:36
+  done baker_20_hconh3_cation  stable  23:37:53
+  done baker_04_ch3o  open-shell (no stability step)  23:38:21
+  done baker_16_h2po4_anion  stable  23:39:07
+  done baker_22_hconhoh  stable  23:39:18
+  done baker_19_hnccs  stable  23:39:39
+  done baker_23_hcn_h2  stable  23:39:49
+  done baker_24_h2cnh  stable  23:40:04
+  done baker_25_hcnh2  stable  23:40:24
+  done baker_02_hcch  stable  23:40:32
+  done baker_03_h2co  stable  23:40:45
+  done baker_01_hcn  stable  23:41:07
+  done baker_15_hocl  stable  23:41:13
+  done sharada_08_alanine  stable  23:44:57
+  done sharada_09_icr  stable  01:19:10
+packed job finished: 22 structures  Thu Sep 10 01:19:10 CEST 2026

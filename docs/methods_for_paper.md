@@ -8,6 +8,14 @@ a fact could not be established from the repo, it says **NOT FOUND**.
 Verified 2026-08-24 against the working tree and the cluster home
 `/home/energy/s242862` (referred to below as `~`).
 
+**Terminology, 2026-09-07.** The paper (`docs/chapter_omol25.tex`) names the
+two groups **closed-shell** (⟨S²⟩ = 0) and **broken-symmetry** (⟨S²⟩ > 0).
+This document and the CSV columns keep the internal names: `stable` /
+`unstable`, `RKS-stable` / `RKS-unstable`, `unstable_ts`, `group_rxn`,
+`group_local`. The mapping is one-to-one: stable = closed-shell,
+unstable = broken-symmetry. "Restricted surface" and "ground-state surface"
+are surfaces, not groups, and keep their names in the paper.
+
 ---
 
 ## 1. How the reactions were selected
@@ -446,12 +454,15 @@ reference to `.k` anywhere in the optimizer.
 
 `fmax = 0.05` acts on `NEBOptimizer.get_residual()`, which returns
 `self.neb.get_residual()` — the **projected band force** in ASE convention, that
-is the largest per-atom force norm over the band after projection. Three
-distinct quantities must be kept apart:
+is the largest Cartesian component of the projected NEB force, taken over all
+images (`np.linalg.norm(imgforce.reshape(-1), np.inf)` per image, maximum over
+the band; ASE 3.28 `ase/mep/neb.py`). It is *not* a per-atom norm — that is the
+BFGS convention (`OptimizableAtoms.gradient_norm`), used only for the endpoint
+relaxations. Three distinct quantities must be kept apart:
 
 | quantity | where | what it is |
 |---|---|---|
-| `f_band_final` | `results/neb_runs.csv` | projected band force, ASE norm convention, the criterion |
+| `f_band_final` | `results/neb_runs.csv` | projected band force, largest Cartesian component over the band, the criterion |
 | `f_model_norm_max` | `results/omol25_model_geoms.csv` | raw MLIP force at the TS image, largest per-atom norm |
 | `f_model_max` | `results/omol25_model_geoms.csv` | raw MLIP force at the TS image, largest Cartesian component |
 
@@ -855,9 +866,10 @@ CI-NEB run. The protocol is
 | optimiser | `NEBOptimizer` (ASE ODE solver), `steps=500` per phase | lines 214, 257 |
 | transition state | highest-energy image of the final band | line 235 |
 
-`fmax` here is the **ASE projected band force** — the largest per-atom force
-norm over the band — and not the largest raw Cartesian component. The two are
-different numbers; §3 keeps the three force conventions of this work apart.
+`fmax` here is the **ASE projected band force** — the largest Cartesian
+component of the *projected* NEB force over the band — and not the largest raw
+Cartesian component of the unprojected force. The two are different numbers;
+§3 keeps the three force conventions of this work apart.
 
 Slurm jobs behind the 33 geometries:
 
@@ -928,8 +940,9 @@ depth was too small by that amount; the null probe below exposed it.
 | `group_local` | derived here, from `s2_ts` |
 
 `f_rks` and `f_bs` use the same convention as `f_dft_max` in the audit table —
-largest Cartesian component — and **not** the ASE per-atom-norm convention that
-the NEB criterion uses. §3 keeps the three conventions apart.
+largest Cartesian component of the raw force — and **not** the projected band
+force that the NEB criterion uses (largest Cartesian component after
+projection). §3 keeps the three conventions apart.
 
 **The two class columns are not the same thing, and only one is authoritative
 here.** `group` is a *reaction* label derived from the **model geometries**:
@@ -1063,8 +1076,9 @@ rxn4513 0.1292, rxn1147 0.0985, rxn4522 0.0985, rxn4500 0.0901, rxn4518 0.0892,
 rxn6196 0.0812, rxn4113 0.0810, rxn2553 0.0788, rxn9246 0.0697, rxn0346 0.0551,
 rxn4498 0.0515. This is a property of band convergence, not a defect of the
 measurement, and it has two causes that compound. First, the NEB criterion is
-the projected band force in ASE per-atom-norm convention while `f_rks` is the
-largest raw Cartesian component — different numbers at the same point. Second,
+the largest Cartesian component of the *projected* band force while `f_rks` is
+the largest Cartesian component of the raw, unprojected force — different
+numbers at the same point. Second,
 the `converged` marker means *the ODE solver did not exit with an exception*,
 not *the tolerance was reached*; the mechanism is set out in §3 under **Run
 accounting**, and in `results/neb_runs.csv` 21 of 133 marked runs do not meet
