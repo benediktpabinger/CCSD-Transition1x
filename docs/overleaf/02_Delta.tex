@@ -1,7 +1,14 @@
-% Kapitel ch:delta: Construction and training, Results & Discussion.
-% Motivation steht in docs/introduction_v2.tex, Conclusion in
-% docs/discussion_delta.md. Zahlen stammen aus der Delta-Pipeline, nicht
-% aus results/*.csv.
+% Kapitel "A Delta-Learning Head for Level-of-Theory Correction".
+% Kopie aus der Thesis, hier abgelegt am 2026-09-07, damit der Text im Repo
+% verfuegbar ist. Nicht vom Repo geprueft; Zahlen stammen aus der
+% Delta-Pipeline, nicht aus results/*.csv.
+%
+% Bekannte Stellen im Entwurf:
+%   - "Protocol B: the surface" und "The earlier head" (mit Tabelle
+%     tab:delta-neb-results, Figuren fig:neb-results, fig:rmsd-parity und
+%     Tabelle tab:delta-audit) stehen ZWEIMAL hintereinander.
+%   - 2026-09-12: \section{Motivation} (Absaetze 1-4) nach docs/introduction.tex
+%     verschoben; Gleichungen und Architektur eroeffnen jetzt \section{Method}.
 %
 % ============================================================
 %  Chapter: A delta-learning head for level-of-theory correction
@@ -691,3 +698,435 @@ The references are restricted as well, by construction, and whether
 the restricted solution is the ground state at those transition states
 was not tested here. That is the question of Chapter~\ref{ch:mr}.
 
+
+% \paragraph{Protocol B: the surface.}
+% All 30 NEB runs converge, with MACE and with MACE+$\Delta$.
+% Table~\ref{tab:delta-neb-results} shows the outcome. On the low-MR
+% reactions the correction does its job: the barrier error drops from 166 to
+% 52\,meV, and the transition states the corrected model finds are as close
+% to the reference as those of bare MACE (0.016 vs.\ 0.015\,\AA). The
+% correction improves the energetics without damaging the surface. On the
+% mid- and high-MR reactions the barriers underestimate the reference by
+% ${\sim}200$\,meV, as in Protocol A, and on the high tier bare MACE is
+% closer to the reference than the corrected model. The geometries suffer far
+% less than the barriers: in every tier the found transition states stay
+% within 0.1\,\AA{} of the reference.
+
+% \begin{table}[htbp]
+%   \centering
+%   \caption{Protocol B: NEB-driven results by MR tier. Barrier error against
+%   the reference barrier; Kabsch RMSD of the found transition state against
+%   the reference transition state (mean / median).}
+%   \label{tab:delta-neb-results}
+%   \begin{tabular}{llrrc}
+%     \toprule
+%     Tier & Method & barrier MAE (meV) & barrier bias (meV) & TS RMSD (\AA) \\
+%     \midrule
+%     low  & MACE          & 166.0 & $+166$ & 0.015 / 0.012 \\
+%          & MACE+$\Delta$ &  52.1 & $+22$  & 0.016 / 0.010 \\
+%     \midrule
+%     mid  & MACE          & 233.8 & $+45$  & 0.092 / 0.035 \\
+%          & MACE+$\Delta$ & 211.6 & $-204$ & 0.065 / 0.034 \\
+%     \midrule
+%     high & MACE          &  94.4 & $-3$   & 0.061 / 0.054 \\
+%          & MACE+$\Delta$ & 236.4 & $-235$ & 0.081 / 0.049 \\
+%     \bottomrule
+%   \end{tabular}
+% \end{table}
+
+% \paragraph{The earlier head.}
+% Section~\ref{sec:delta-architecture} described the earlier head, whose
+% active weights sat on rotation-dependent features. To measure the
+% consequence directly, we rotate each benchmark transition state into 24
+% random orientations and evaluate $\Delta$ for each. With the earlier head,
+% $\Delta$ varies by 212\,meV on average and up to 422\,meV; with the
+% corrected head it varies by less than 0.01\,meV, the level of float32
+% noise, same as MACE itself. Table~\ref{tab:delta-audit} lists the effect on
+% the benchmark: the corrected head predicts better forces on all 30
+% reactions, and it repairs the transition-state geometries. With the earlier
+% head, NEB found structures twice as far from the reference as bare MACE;
+% the corrected head restores MACE's geometry quality. The rough surface was
+% a property of the defect, not of the method.
+
+% \begin{table}[htbp]
+%   \centering
+%   \caption{Earlier head vs.\ corrected head on the 30 benchmark reactions.
+%   Rotation spread: max$-$min of $\Delta$ over 24 random orientations of the
+%   transition state, averaged over reactions.}
+%   \label{tab:delta-audit}
+%   \begin{tabular}{lrr}
+%     \toprule
+%     & earlier head & corrected head \\
+%     \midrule
+%     Rotation spread of $\Delta$ (meV) & 212 & $<0.01$ \\
+%     eMAE, Protocol A (meV) & 63.7 & 55.6 \\
+%     fMAE, Protocol A (meV/\AA) & 76.4 & 48.0 \\
+%     TS RMSD, Protocol B (\AA, mean) & 0.101 & 0.054 \\
+%     Barrier MAE, Protocol B, low MR (meV) & 89.3 & 52.1 \\
+%     \bottomrule
+%   \end{tabular}
+% \end{table}
+
+% \paragraph{The MR limit.}
+% Both protocols draw the same line. Where the labels of both levels are
+% reliable, the correction works: the barrier error drops by a factor of
+% three, at fixed geometries and when the model searches for the transition
+% state itself. Where multireference character makes the labels unreliable,
+% the correction makes barriers worse than the uncorrected baseline. This is
+% a property of delta-learning, not of this head: the head learns the
+% difference between two single-reference DFT levels, and where both levels
+% are wrong, that difference carries no information about the true surface.
+% A correction can only be as good as the labels it learns from. What happens
+% on these multireference reactions, and how the corrected model compares to
+% models trained natively at the target level, is the subject of
+% Chapter~[Y].
+
+
+% \section{Evaluation protocol}
+% \label{sec:delta-protocol}
+
+% Sections~\ref{sec:delta-fixed} and \ref{sec:delta-barriers} hold the geometries fixed.
+% Every method is evaluated on the last ten images of the converged ORCA
+% \mbox{wB97M-V/def2-TZVP} CI-NEB band for each of the 30 benchmark reactions, giving 300
+% structures. No optimisation takes place, so geometry error cannot enter, and the
+% comparison isolates the accuracy of the energy and the forces.
+
+% Four conventions are fixed here and used unchanged throughout the chapter.
+
+% \paragraph{Energy anchoring.} Each method's profile is referred to its own first image,
+% $\Delta E_m(i) = E_m(i) - E_m(0)$. Constant offsets between levels of theory cancel
+% exactly, and the metric measures profile shape only. The error at image 0 is identically
+% zero for every method, so nine of the ten images carry information.
+
+% \paragraph{Force error.} The force MAE is a mean over all Cartesian components, not over
+% per-atom vector norms. The norm convention would give a systematically larger number
+% (roughly $\sqrt{3}$ for isotropic errors) and the two must not be compared.
+
+% \paragraph{Cosine similarity.} Computed per atom, as the angle between the predicted and
+% reference three-vector, averaged over all atoms with $|\mathbf{F}| > 10^{-6}$\,eV/\AA{}
+% in both structures.
+
+% \paragraph{Aggregation.} Metrics are computed per reaction and then averaged over the 30
+% reactions, so each reaction carries equal weight. For energies this coincides with
+% pooling, since every reaction contributes ten images; for forces it does not, because
+% reactions differ in atom count. The pooled force MAE differs from the reported value by
+% 0.4\,meV/\AA.
+
+% \section{Energies and forces at fixed geometry}
+% \label{sec:delta-fixed}
+
+% \begin{table}[h]
+% \centering
+% \caption{Fixed-geometry accuracy against \mbox{wB97M-V/def2-TZVP}, 30 reactions,
+% 300 structures. The wB97X-D3 column is a level of theory rather than a model, and gives
+% the size of the functional and basis gap being corrected. $R^2$ is computed within each
+% reaction against the identity and then averaged.}
+% \label{tab:delta-fixed}
+% \begin{tabular}{lccc}
+% \hline
+%  & MACE & MACE+delta & wB97X-D3 \\
+% \hline
+% Energy MAE (meV)      & 107.6  & \textbf{63.7}   & 94.9 \\
+% Energy bias (meV)     & $+77.4$ & \textbf{$-3.9$} & $+84.8$ \\
+% $R^2$                 & 0.9734 & \textbf{0.9899} & 0.9781 \\
+% Force MAE (meV/\AA)   & 138.9  & \textbf{76.4}   & 130.9 \\
+% Force cosine          & 0.3223 & \textbf{0.5134} & 0.3216 \\
+% \hline
+% \end{tabular}
+% \end{table}
+
+% The energy MAE falls by 41\,\% and the force MAE by 45\,\%. The bias of $+77.4$\,meV is
+% removed to within 4\,meV, and $R^2$ increases, so the improvement is not a trade of bias
+% against scatter.
+
+% Two of the entries in Table~\ref{tab:delta-fixed} are a check on the premise rather than
+% a result. The cosine similarity of bare MACE against \mbox{wB97M-V} (0.3223) equals that
+% of \mbox{wB97X-D3} against \mbox{wB97M-V} (0.3216) to three decimals, and the force MAEs
+% of the two agree to within 8\,meV/\AA. MACE reproduces the force directions of its
+% training level, and its disagreement with \mbox{wB97M-V} is the disagreement between the
+% two functionals. What the head adds is the difference between those two columns.
+
+% \section{Barriers at fixed geometry}
+% \label{sec:delta-barriers}
+
+% The forward barrier is taken as the maximum of the anchored profile over the ten-image
+% band, $E_a = \max_i [E(i) - E(0)]$. This is a discrete band maximum, not an interpolated
+% or reoptimised saddle point, so every method is biased low by the same discretisation;
+% the bias largely cancels in the comparison because all methods share the geometries.
+
+% \begin{table}[h]
+% \centering
+% \caption{Forward barrier error at fixed geometry, 30 reactions, in meV. The two
+% references answer different questions: \mbox{wB97M-V} is the level the head was trained
+% to reproduce, CCSD(T) is an external check.}
+% \label{tab:delta-barriers}
+% \begin{tabular}{lcccc}
+% \hline
+%  & \multicolumn{2}{c}{vs \mbox{wB97M-V}} & \multicolumn{2}{c}{vs CCSD(T)} \\
+%  & bias & MAE & bias & MAE \\
+% \hline
+% MACE           & $+114.1$ & 168.4 & $+197.7$ & 226.0 \\
+% MACE+delta     & $-33.6$  & \textbf{124.3} & $+50.0$ & \textbf{141.7} \\
+% \mbox{wB97M-V} & ---      & ---   & $+83.6$  & 103.8 \\
+% \mbox{wB97X-D3} & $+148.2$ & 151.3 & $+231.8$ & 231.8 \\
+% \hline
+% \end{tabular}
+% \end{table}
+
+% The ratio of bias to MAE reads directly as the systematic fraction of the error.
+% Against CCSD(T), \mbox{wB97X-D3} sits at $231.8/231.8 = 1.00$: every one of the 30
+% reactions errs in the same direction, which is what a pure functional error looks like.
+% MACE inherits most of it (0.87). After correction the ratio is 0.35. The head removes
+% the systematic component and leaves the reaction-to-reaction variance.
+
+% The head is trained to reproduce \mbox{wB97M-V}, so \mbox{wB97M-V}'s own error against
+% CCSD(T) of 103.8\,meV is the lowest value it can reach. Of the 122.2\,meV between MACE
+% and that floor, the head recovers 84.3\,meV, or 69\,\%.
+
+% CCSD(T) is a single-reference method (Section~\ref{sec:background-ccsdt}). On reactions
+% selected for multireference character it is least reliable exactly where it is most
+% needed, and the corresponding entries in Section~\ref{sec:delta-tiers} carry that
+% qualification.
+
+% \section{NEB-driven evaluation}
+% \label{sec:delta-neb}
+
+% Sections~\ref{sec:delta-fixed} and \ref{sec:delta-barriers} removed geometry error by
+% construction. This section restores it. Each model relaxes the endpoints with BFGS to
+% $f_{\max} = 0.05$\,eV/\AA, optimises a ten-image band initialised from the Transition1x
+% path with plain NEB to $f_{\max} = 0.15$\,eV/\AA, and then runs CI-NEB to
+% $f_{\max} = 0.05$\,eV/\AA{} within a 500-step budget. The transition state is the
+% highest-energy image of the model's own final band, and geometry agreement is measured
+% as the Kabsch RMSD against the ORCA \mbox{wB97M-V} transition state, with proper
+% rotations only and fixed atom order.
+
+% \begin{table}[h]
+% \centering
+% \caption{NEB-driven results, 30 reactions, with the fixed-geometry values of
+% Table~\ref{tab:delta-barriers} repeated for comparison. Barrier errors in meV, RMSD
+% in \AA.}
+% \label{tab:delta-neb}
+% \begin{tabular}{lcc|cc}
+% \hline
+%  & \multicolumn{2}{c|}{NEB-driven} & \multicolumn{2}{c}{fixed geometry} \\
+%  & MACE & MACE+delta & MACE & MACE+delta \\
+% \hline
+% Barrier bias vs \mbox{wB97M-V} & $+69.1$ & $-117.1$ & $+114.1$ & $-33.6$ \\
+% Barrier MAE vs \mbox{wB97M-V}  & 164.7   & 173.6    & 168.4    & 124.3 \\
+% Barrier MAE vs CCSD(T)         & 212.2   & 167.6    & 226.0    & 141.7 \\
+% TS RMSD                        & \textbf{0.056} & 0.101 & --- & --- \\
+% \hline
+% \end{tabular}
+% \end{table}
+
+% The geometry result is unambiguous. Bare MACE places the transition state at 0.056\,\AA{}
+% from the ORCA reference and the corrected model at 0.101\,\AA, and the ordering holds in
+% every multireference tier (Section~\ref{sec:delta-tiers}), so it is not carried by one
+% group of reactions.
+
+% The barrier result depends on the reference. Against \mbox{wB97M-V}, bare MACE is
+% marginally better than the corrected model (164.7 against 173.6\,meV); against CCSD(T),
+% the corrected model is clearly better (167.6 against 212.2\,meV). The signs explain the
+% reversal. Bare MACE overestimates the \mbox{wB97M-V} barrier by 69.1\,meV and the
+% corrected model underestimates it by 117.1\,meV, while \mbox{wB97M-V} itself lies
+% 83.6\,meV above CCSD(T) (Table~\ref{tab:delta-barriers}). The corrected model's
+% underestimate therefore cancels against the reference's overestimate,
+% $-117.1 + 83.6 = -33.5$\,meV, which is its bias against CCSD(T). Neither ranking is
+% meaningful without naming the reference it is measured against.
+
+% What survives both references is the comparison between the two columns of the same
+% model. Driving its own optimisation costs the corrected model 49\,meV against
+% \mbox{wB97M-V} and 26\,meV against CCSD(T), while bare MACE loses 3.7\,meV and gains
+% 13.8\,meV. The correction transfers to the fixed-geometry barrier and does not transfer
+% to the NEB-driven one.
+
+% The NEB-driven bias of the corrected model is $-117.1$\,meV against a fixed-geometry
+% value of $-33.6$\,meV: the barriers come out systematically too low, which is consistent
+% with the band settling somewhere other than the saddle point. The mechanism is not
+% established here.
+
+% The result stands regardless of the mechanism: the same head improves pointwise energies
+% and forces and degrades the geometry it converges on. Energy accuracy and geometry
+% accuracy are two properties of a model, and this head has them moving in opposite
+% directions.
+
+% \paragraph{Convergence.} All 30 runs of both models wrote a convergence marker, and both
+% reached $f_{\max} \leq 0.05$\,eV/\AA{} on 24 of 30. Six runs terminated with $f_{\max}$
+% between 0.064 and 0.132\,eV/\AA{} after 447--772 optimiser steps, while every other run
+% finished within 434 steps; the step counter carries across both NEB phases, so the CI-NEB
+% phase receives what remains of the 500-step budget rather than a fresh one, and these six
+% exhausted it. Five of the six are the same reactions for both models. The defensible
+% statement is that 30/30 terminated with a marker and 24/30 additionally reached
+% $f_{\max} \leq 0.05$\,eV/\AA. Two of the six, \texttt{rxn7949} and \texttt{rxn7937}, are
+% high-MR reactions, so the high-tier NEB numbers below rest in part on bands that did not
+% converge.
+
+% The correction changes the cost of the optimisation, not its convergence behaviour. The
+% corrected model takes more steps than bare MACE on 25 of 30 reactions, with a median
+% ratio of 2.2 and a total of 5352 against 4142 steps, a factor of 1.29 overall. The mean
+% of the per-reaction ratios is 15.9, which is dominated by reactions where bare MACE
+% converged in one to four steps and is not a useful summary.
+
+% \section{Stratification by multireference character}
+% \label{sec:delta-tiers}
+
+% The 30 benchmark reactions were ranked by $N_{\text{FOD}}$
+% (Section~\ref{sec:background-mr-diagnostics}) and split into three tiers of ten:
+% ranks 1--10 high, 11--20 mid, 21--30 low. No metric definition changes between tiers;
+% only the subset does.
+
+% \begin{table}[h]
+% \centering
+% \caption{Fixed-geometry metrics by FOD tier, MACE $\rightarrow$ MACE+delta, $n = 10$
+% per tier. Energy and force MAE in meV and meV/\AA{} against \mbox{wB97M-V}; barrier MAE
+% in meV against the \mbox{wB97M-V} NEB barrier.}
+% \label{tab:delta-tiers}
+% \begin{tabular}{lccc}
+% \hline
+% tier & energy MAE & force MAE & barrier MAE \\
+% \hline
+% high & $88.7 \rightarrow 73.5$  & $160.4 \rightarrow 87.0$ & $81.2 \rightarrow 150.9$ \\
+% mid  & $148.2 \rightarrow 70.0$ & $151.9 \rightarrow 80.1$ & $254.0 \rightarrow 135.8$ \\
+% low  & $86.0 \rightarrow 47.6$  & $104.2 \rightarrow 62.0$ & $169.9 \rightarrow 86.4$ \\
+% \hline
+% \end{tabular}
+% \end{table}
+
+% Energies and forces improve in all three tiers. Barriers improve in the mid and low
+% tiers and degrade in the high tier, where bare MACE has the lowest error of the three
+% methods.
+
+% The same split appears in the NEB-driven barriers against \mbox{wB97M-V}, where bare
+% MACE gives 94.4, 233.8 and 166.0\,meV for the high, mid and low tier and the corrected
+% model gives 272.1, 159.4 and 89.3\,meV. Bare MACE is better on the high tier by a factor
+% of 2.9 and worse on the other two. It is also closer in transition-state RMSD in every
+% tier (0.061, 0.092, 0.015\,\AA{} against 0.134, 0.116, 0.053\,\AA).
+
+% Bare MACE's high-tier barrier MAE of 81.2\,meV is its lowest of the three tiers and lies
+% below \mbox{wB97X-D3}'s 124.4\,meV on the same reactions. Its energy MAE on that tier
+% (88.7\,meV) is not correspondingly low. The two are not consistent with each other and
+% the discrepancy is not resolved here.
+
+% Against CCSD(T), the high tier gives MACE 238.8, MACE+delta 175.5 and \mbox{wB97M-V}
+% itself 225.8\,meV. The corrected model does not outperform its own training target;
+% CCSD(T) is the least reliable yardstick on precisely these reactions, and no argument is
+% built on this ordering.
+
+% The tier pattern is consistent with the scope of the correction. The head learns the
+% difference between two single-reference functionals. Where the \mbox{wB97X-D3} labels
+% are themselves unreliable, that difference is not the quantity that needs correcting.
+% The head does not become useless there, as the energy and force columns show, but the
+% improvement stops converting into better barriers.
+
+% With $n = 10$ per tier and no confidence intervals, barrier MAEs are sensitive to single
+% reactions, and tier-to-tier differences below the spread of individual reaction errors
+% are not resolved.
+
+% \section{Comparison with models trained at the reference level}
+% \label{sec:delta-omol}
+
+% The delta head reaches \mbox{wB97M-V} accuracy by correcting a model trained elsewhere.
+% The alternative is to train on \mbox{wB97M-V}-level data directly, which is what the
+% OMol25 dataset~\cite{omol25} provides and what UMA~\cite{uma} and eSEN~\cite{esen} are
+% trained on. This section places the head against that alternative.
+
+% The comparison uses the 22 benchmark reactions for which the restricted Kohn--Sham
+% solution is the stable SCF solution. On the remaining reactions the
+% \mbox{wB97M-V/def2-TZVP} reference is not the electronic ground state
+% (Section~\ref{sec:background-stability}), and a deviation from it measures a property of
+% the reference rather than of the model. Restricting to the stable subset removes that
+% term. The tier labels used elsewhere in this chapter do not carry over to this subset and
+% are not used here. Geometries, metrics and conventions are otherwise those of
+% Section~\ref{sec:delta-protocol}.
+
+% \begin{table}[h]
+% \centering
+% \caption{Fixed-geometry accuracy on the 22 RKS-stable reactions, evaluated against both
+% levels of theory. Energy MAE in meV, force MAE in meV/\AA.}
+% \label{tab:delta-omol}
+% \begin{tabular}{lcc|cc}
+% \hline
+%  & \multicolumn{2}{c|}{vs \mbox{wB97M-V}} & \multicolumn{2}{c}{vs \mbox{wB97X-D3}} \\
+%  & energy & force & energy & force \\
+% \hline
+% UMA-S       & \textbf{5.1} & 11.5 & 99.4 & 131.1 \\
+% UMA-M       & 5.3 & \textbf{10.8} & 99.9 & 130.8 \\
+% eSEN        & \textbf{4.9} & 12.7 & 99.3 & 131.2 \\
+% MACE+delta  & 62.1 & 72.4 & 111.1 & 143.5 \\
+% MACE        & 109.3 & 130.6 & \textbf{41.5} & \textbf{33.4} \\
+% \mbox{wB97X-D3} & 98.8 & 130.9 & --- & --- \\
+% \hline
+% \end{tabular}
+% \end{table}
+
+% Read across the rows rather than down the columns. UMA-S disagrees with
+% \mbox{wB97X-D3} by 99.4\,meV and 131.1\,meV/\AA; the two functionals disagree with each
+% other by 98.8\,meV and 130.9\,meV/\AA. The same holds for UMA-M and eSEN. Their
+% disagreement with \mbox{wB97X-D3} is the functional gap, which places them on the
+% \mbox{wB97M-V} surface. MACE shows the mirror image against its own training level
+% (41.5\,meV, cosine 0.955). Each model reproduces the level of theory it was trained on.
+
+% Relative to bare MACE's 109.3\,meV, the delta head closes 43\,\% of the distance to the
+% reference and the OMol25-trained models close 95\,\%. The models also have no failure
+% cases on this set: their worst single-reaction energy MAEs are 12.2, 12.4 and 8.9\,meV,
+% against 181.6\,meV for MACE+delta and 281.9\,meV for MACE.
+
+% This is not an architecture comparison. UMA and eSEN are evaluated at the level of theory
+% they were trained on and MACE is not, so the quantity being measured is what the training
+% data provides. Two further points bear on how far the numbers can be pushed. OMol25 uses
+% def2-TZVPD, while the reference here is def2-TZVP, so the models reach these values
+% across a basis mismatch. Charge and spin were left at the fairchem defaults, neutral
+% closed-shell singlet, which is correct for this set and is a default rather than an
+% assertion. The relationship between the OMol25 training data and Transition1x is taken up
+% in Chapter~\ref{ch:reference}.
+
+% Cosine similarity is not informative in this regime. The OMol25 models score 0.82--0.84
+% despite force MAEs an order of magnitude better than MACE's 0.955 against its own level,
+% because once the errors are small the residual concentrates on atoms with near-zero
+% forces, whose direction is ill-defined.
+
+% \section{Limitations}
+% \label{sec:delta-limitations}
+
+% \paragraph{The correction is a functional and basis correction.} It targets the gap
+% defined in Equation~\ref{eq:delta-def} and nothing else. Where the \mbox{wB97X-D3}
+% labels are unreliable for reasons of multireference character, the head has no access to
+% that error, and Section~\ref{sec:delta-tiers} shows where this becomes visible.
+
+% \paragraph{The offset is removed, the variance is not.} The bias against CCSD(T) falls
+% from 0.87 of the MAE to 0.35. What remains is reaction-to-reaction scatter that is not
+% predictable from the features the head sees.
+
+% \paragraph{Pointwise accuracy does not imply a better optimisation surface.} The head
+% improves energies and forces at fixed geometry and degrades the transition-state
+% geometries obtained by driving NEB with it. In its present form it should be used to
+% evaluate energies on geometries produced by another method, not to produce the
+% geometries.
+
+% \paragraph{Generalisation across reactions is the limiting factor.} $\Delta$ is smooth
+% within a reaction and varies between reactions. The head is asked to transfer a
+% geometry-dependent correction to reactions it has not seen, and the residual error is
+% concentrated there.
+
+% \paragraph{Training and evaluation geometries differ in origin.} The head is trained on
+% Transition1x \mbox{wB97X-D3} path geometries and evaluated on ORCA \mbox{wB97M-V} path
+% geometries. Both are reaction-path structures and the evaluation is closer to deployment
+% for it, but it is not an in-distribution test.
+
+% \section{Summary}
+% \label{sec:delta-summary}
+
+% A 65\,600-parameter readout head on a frozen MACE backbone, trained on 80\,592 labelled
+% geometries, moves fixed-geometry energies from 107.6 to 63.7\,meV and forces from 138.9
+% to 76.4\,meV/\AA{} against \mbox{wB97M-V/def2-TZVP}, and recovers 69\,\% of the
+% achievable improvement in barrier heights against CCSD(T). Driving NEB with the same
+% head raises the barrier error from 124.3 to 173.6\,meV against \mbox{wB97M-V} and the
+% transition-state RMSD from 0.056 to 0.101\,\AA{} relative to bare MACE. Against CCSD(T)
+% the corrected model retains an advantage over bare MACE in the NEB-driven barriers
+% (167.6 against 212.2\,meV), so the barrier ranking depends on the reference; the geometry
+% ranking does not. The improvement is confined to the energy, and the degradation is
+% confined to the geometry.
+
+% The tier analysis marks the boundary of the correction: it works where the training
+% labels are reliable and stops converting into better barriers where they are not. That
+% boundary is where Chapter~\ref{ch:reference} begins.

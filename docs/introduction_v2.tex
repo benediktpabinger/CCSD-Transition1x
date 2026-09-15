@@ -19,14 +19,15 @@ PaiNN model trained on its ${\sim}10$ million reaction-path geometries
 reproduces DFT energies and forces at a fraction of the cost. However,
 Transition1x was computed at \mbox{$\omega$B97X-D3/6-31G(d)}, a
 comparatively cheap level of theory chosen to make the generation of
-ten million data points computationally feasible. For reaction
-barriers, more accurate levels of theory exist. The range-separated
+ten million data points computationally feasible. More accurate
+levels of theory exist. The range-separated
 meta-GGA $\omega$B97M-V with a triple-$\zeta$ basis is among the most
 accurate DFT methods for barrier heights~\cite{mardirossian2016,
-goerigk2017}. Any model trained on Transition1x inherits the errors of
-its reference level, so upgrading the level of theory is desirable.
+goerigk2017}. Any model trained on the Transition1x dataset can only
+be as accurate as the level of theory the dataset was generated with,
+so upgrading the level of theory is desirable.
 
-Such an upgrade does not require repeating the NEB searches at the
+Such an upgrade does not necessarily require repeating the NEB searches at the
 higher level of theory. A dataset like Transition1x consists of two
 things: the geometries, which sample the configuration space along
 reaction paths, and the energy and force labels attached to them. The
@@ -43,50 +44,88 @@ unrestricted Kohn--Sham\footnote{Chapter~\ref{ch:delta} uses restricted
 Kohn--Sham throughout. The implications of unrestricted versus
 restricted Kohn--Sham are discussed in Chapter~\ref{ch:mr}.}.
 
-In Chapter~\ref{ch:delta}, we pursue a different goal: reaching the
-higher level of theory while relabelling only a small fraction of the
-data. About 80\,000 geometries, under 1\,\% of the dataset, are
-relabelled. A MACE model is trained on Transition1x
-(Section~\ref{sec:mace-training}), and a small correction head on top
-of it (Section~\ref{sec:delta-architecture}) learns the difference
-between the two levels. This is feasible with so little data because
+In Chapter~\ref{ch:delta}, we pursue a different goal. Relabelling a
+whole dataset costs one calculation per geometry at the higher level,
+and any way to reach that level at a fraction of the cost is
+desirable. We therefore ask whether it can be reached by relabelling
+only a small part of the data: about 80\,000 geometries, under 1\,\%
+of the dataset. A MACE model is trained on Transition1x to predict the cheap level,
+\mbox{$\omega$B97X-D3/6-31G(d)} (Section~\ref{sec:mace-training}), and
+a small correction head on top of it
+(Section~\ref{sec:delta-architecture}) learns the difference between
+the cheap and the expensive level, \mbox{$\omega$B97M-V/def2-TZVP}. This is feasible with so little data because
 the difference is nearly constant within a reaction
 (Section~\ref{sec:delta-data}): a smooth offset is far easier to learn
 than the potential energy surface itself. Base model and correction
 head combine into one corrected potential, MACE+$\Delta$, which can be
 used wherever MACE can: for single-point predictions or as the
 potential driving a NEB optimisation. The chapter evaluates it on 30
-test reactions in three tiers of multireference character, at fixed
-geometries and in searches the model drives itself. It finds that the
-correction reaches the higher level where the restricted solution is
-the ground state: force errors drop to a third in every tier and
-barrier errors to a third on the low-MR reactions, while on the mid-
-and high-MR reactions the correction overshoots.
+test reactions grouped by multireference (MR) character, at
+fixed geometries and in searches the model drives itself. It finds that the force errors drop to a third on all reactions, and
+that the correction reproduces the higher level where the
+multireference character is low: there the barrier errors drop to a
+third as well, while on the mid- and high-MR reactions the correction
+overshoots.
 
 % ---------------------------------------------------------------- Teil 2
 
-Chapter~\ref{ch:delta} raised the level of theory of the labels and left
-the geometries unchanged, on the premise that changing the labels is
-enough to lift the model to the higher level of theory. That is how the
-field raises fidelity: delta learning~\cite{ramakrishnan2015},
-multi-fidelity training~\cite{messerly2025}, dataset
-merging~\cite{shiota2024}, reactive potentials with semi-empirical
-geometries~\cite{ren2026} and OMol25 itself~\cite{omol25} all supply
-labels at a higher level of theory, OMol25 even unrestricted, and none
-re-optimises the path at that level. This chapter challenges that
-premise and asks: are better labels enough for a model to learn the
-surface well enough for transition state searches?
+Chapter~\ref{ch:delta} raises the level of theory of the labels and
+leaves the geometries unchanged, on the premise that changing the labels is
+enough to lift the model to the higher level of theory. That is how the field raises fidelity: delta
+learning~\cite{ramakrishnan2015}, multi-fidelity
+training~\cite{messerly2025}, dataset merging~\cite{shiota2024} and
+reactive potentials with semi-empirical geometries~\cite{ren2026} all
+supply labels at a higher level of theory on geometries they do not
+re-optimise. OMol25~\cite{omol25} went one step further: it took
+Transition1x, a dataset labelled restricted at a cheap level of
+theory, and relabelled it unrestricted at an expensive one, again
+without re-optimising a single path. Two questions lie underneath this
+practice, and this thesis asks both:
 
-The OMol25 models are the test case for this question. OMol25 is the
-strategy taken to its end: every label recomputed at
+\noindent
+\begin{minipage}{\linewidth}
+\begin{description}
+  \item[Research question 1 (RQ1)] Can a model be lifted to a higher
+    level of theory by relabelling only a subset of its training data?
+  \item[Research question 2 (RQ2)] Can a model learn a surface from
+    paths that were never relaxed on that surface?
+\end{description}
+\end{minipage}
+
+RQ1 was the task this thesis was set. RQ2 arose during that work: the
+OMol25 models, used along the way as a point of comparison, did not
+find the restricted reference transition states on some reactions but
+different structures. The reason is that their labels are
+unrestricted, so the models search for transition states with broken
+spin symmetry, while the references were optimised with restricted
+spin symmetry. Whether the models can find those broken-symmetry
+transition states at all had been tested nowhere, because the
+published benchmarks only use restricted references, as the rest of
+this chapter shows (see the Preface).
+
+Chapter~\ref{ch:delta} answers RQ1. For that chapter, RQ2 needs no
+test: both levels of theory are restricted, and when the transition
+states are searched with DFT at either level, the two results lie
+within 0.007\,\AA{} of each other. A path relaxed at the cheap level therefore already comes within that
+distance of the transition state found at the expensive one, and
+relabelling the path is enough.
+
+This stops being true when the spin formalism changes as well. At a
+broken-symmetry transition state the restricted solution is not the
+ground state (Section~\ref{sec:background-spin}), and the transition
+state found unrestricted can lie far from the one found restricted,
+which the path passes through. A path relaxed restricted then holds
+no transition state of the surface its unrestricted labels describe,
+and RQ2 becomes a real question. OMol25
+is exactly this case: every label recomputed unrestricted at
 \mbox{$\omega$B97M-V/def2-TZVPD}, on the inherited Transition1x
-geometries and on many structures beyond them~\cite{omol25}. If the
-level of theory was what was missing, models trained on OMol25 handle
-the hard reactions.
+geometries and on many structures beyond them~\cite{omol25}.
+Chapter~\ref{ch:mr} asks RQ2 there.
 
 The published benchmarks that test the OMol25 models at locating
-transition states report high success rates. Four OMol25 models, three
-of them used in this chapter, reach the reference saddle in 91.8\,\% of
+transition states report high success rates. According to them, four
+OMol25 models, three
+of them used in Chapter~\ref{ch:mr}, reach the reference saddle in 91.8\,\% of
 automated transition-state searches, and an MLIP search is recommended
 as the default first stage of such searches~\cite{marks2026}. Hait et
 al. use eSEN to produce the starting guess for a DFT transition-state
@@ -104,15 +143,15 @@ unrestricted training data, and did not test it. Marks et al. report
 nothing about the SCF solution of their references, so we ran the
 stability analysis ourselves, at the paper's own level of theory. Of
 the 25 even-electron references, 24 are closed-shell and one is
-broken-symmetry (Appendix~\ref{app:marks}). That one was still
-optimised on the restricted surface, so it is not a stationary point
-of the ground-state surface and should not count as a reference; a
-model that reproduces the restricted saddle matches it and is scored
-correct.
+broken-symmetry (Appendix~\ref{app:marks}). That one was still optimised restricted, so it is not a transition
+state of the ground-state surface and should not serve as a
+reference. It does, and so a model that finds the same restricted
+structure is scored as a success, although the true transition state
+lies elsewhere.
 
 The structures are not rare. OMol25 reports $\langle S^2 \rangle >
-0.001$ for just under 5\,\% of its unrestricted Transition1x
-configurations~\cite{omol25}. That number counts every configuration of
+0.001$, that is, broken-symmetry solutions, for just under 5\,\% of
+its unrestricted Transition1x configurations~\cite{omol25}. That number counts every configuration of
 a reaction path, most of which lie near reactant and product where the
 restricted solution is stable, so the share at the saddle points
 themselves is not known and can be assumed to be higher. In the
@@ -122,7 +161,8 @@ Where a transition state is an open-shell singlet, quantum chemistry
 has a rule. The affordable treatment is broken-symmetry unrestricted
 DFT~\cite{grafenstein2002}, and the geometry is optimised on that
 surface, because the restricted saddle is not a stationary point of
-it~\cite{crawford2001}. Label and geometry belong to one surface. The
+it~\cite{crawford2001}. The label should be computed on the surface the
+geometry was optimised on. The
 benchmarks above and the training data behind the OMol25 models each
 depart from this rule, in different ways (Table~\ref{tab:surfaces}).
 
@@ -136,22 +176,23 @@ broken-symmetry transition state lie.}
 \toprule
  & geometry & label \\
 \midrule
-rule for an open-shell singlet & broken-symmetry & broken-symmetry \\
+rule & broken-symmetry & broken-symmetry \\
 benchmark references (Appendix~\ref{app:marks}, \cite{hait2025, marks2026}) & restricted & restricted \\
-OMol25 training data~\cite{omol25} & restricted & unrestricted \\
+OMol25 training data~\cite{omol25} & restricted & broken-symmetry \\
 \bottomrule
 \end{tabular}
 \end{table}
 
 The benchmark references are restricted throughout, geometry and label,
-which is why a model that reproduces the restricted saddle matches them.
+which is why a model that reproduces the restricted saddle matches them
+(Table~\ref{tab:surfaces}).
 The OMol25 training data keeps half of the rule: the Transition1x
 geometries come from restricted searches that never tested the
 solution~\cite{schreiner2022}, and OMol25 recomputed their labels
 unrestricted and left the geometries where they were~\cite{omol25}.
 Whether half is enough has not been measured.
 
-The second chapter attempts to close that gap. From the Transition1x
+Chapter~\ref{ch:mr} attempts to close that gap. From the Transition1x
 test split it selects reactions of high multireference character,
 where broken-symmetry solutions are expected at the transition state,
 together with a mid- and a low-MR group as control. The OMol25 models
@@ -168,7 +209,7 @@ closed-shell one.
 They are not. At broken-symmetry transition states the models deliver
 structures that are not stationary points of the ground-state surface,
 and their forces there deviate more from DFT than at closed-shell ones.
-The chapter traces this to the training data. The training geometries
-of the broken-symmetry reactions lie on a slope of the ground-state
-surface, so the models have seen no stationary point in the
-broken-symmetry transition-state region.
+The chapter traces this to the training data. The training geometries of the broken-symmetry reactions are not
+stationary points of the ground-state surface: the force there is
+not zero, so the models have never seen a transition state of that
+surface, only the region around it.

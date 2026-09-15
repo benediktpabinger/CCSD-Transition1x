@@ -218,6 +218,39 @@ want('%s (%d)  & -- & $%.3f$ & $%.2f$' % (NUN, len(t2u), med(t2u, 'f_rks'), med(
 want('(nine %s, three %s)' % (NST, NUN), 'Fussnote Nachoptimierung')
 assert len(T2) == 33 and len(t2s) == 18 and len(t2u) == 15
 
+# --- Versionstest ORCA 5.0.4 gegen die OMol25-Labels (ORCA 6.0.0) ----------
+# results/omol25_label_compare.csv aus pipeline/omol25_label_compare.py.
+V = list(csv.DictReader(io.open('results/omol25_label_compare.csv', encoding='utf-8')))
+vc = [r for r in V if r['group'] == 'closed']
+vb = [r for r in V if r['group'] == 'bs']
+assert len(V) == 44 and len(vc) == 27 and len(vb) == 17, 'Versionstest: Zeilenzahl'
+assert max(float(r['rmsd_A']) for r in V) <= 1e-6, 'Versionstest: Geometrie nicht identisch'
+dE = [float(r['d_rks_mev']) for r in vc] + [float(r['d_bs_mev']) for r in vb]
+assert max(abs(x) for x in dE) < 0.1, 'Versionstest: |dE| >= 0.1 meV'
+assert -0.10 <= min(dE) and max(dE) <= -0.06, 'Versionstest: Offset ausserhalb -0.10..-0.06'
+dF = [float(r['dF_rks_max']) for r in vc] + [float(r['dF_bs_max']) for r in vb]
+assert max(dF) <= 0.02, 'Versionstest: dF > 0.02 eV/A'
+assert all(r['omol_surface'] == 'gebrochen' and r['omol_unrestricted'] == '1' for r in vb), \
+    'Versionstest: OMol25-Label nicht auf der gebrochenen Loesung'
+assert max(abs(float(r['s2_ours']) - float(r['s2_omol'])) for r in vb) < 0.007, 'Versionstest: <S^2>'
+dep = [float(r['depth_mev']) for r in vb]
+assert round(min(dep)) == 16 and round(max(dep)) == 616, 'Versionstest: Bruchtiefe-Spanne'
+want('44 of them are in the release', 'Versionstest Treffer')
+want('agree to under $0.1$~meV in energy and $0.02$~eV', 'Versionstest dE/dF')
+want('at all %d broken-symmetry geometries the OMol25 label sits on the' % len(vb), 'Versionstest BS')
+
+# ---------------------------------------------------- Delta-Tiers (Kapitel 3) in der T1x-Stabilitaet
+import json
+D30 = json.load(io.open('results/delta_fixed_head/full_benchmark_results.json', encoding='utf-8'))['reactions']
+tier = {r['rxn']: r['group'] for r in D30}
+t1g = {r['rxn']: r['group'] for r in T1}
+assert len(tier) == 30 and all(x in t1g for x in tier), 'Delta-Tiers: nicht alle 30 in hinge_t1x'
+WORDS = {0: 'none', 1: 'one', 7: 'seven'}
+bs = {t: sum(1 for x, g in tier.items() if g == t and t1g[x] == 'unstable') for t in ('high', 'mid', 'low')}
+want('The 30 reactions of Chapter~\\ref{ch:delta} are all among the 45', 'Delta-Tiers Teilmenge')
+want('the ground state is broken-symmetry for %s of the ten high-MR, %s of the ten mid-MR and %s of the ten low-MR reactions'
+     % (WORDS[bs['high']], WORDS[bs['mid']], WORDS[bs['low']]), 'Delta-Tiers BS-Anteile')
+
 print('VERIFY chapter_omol25.tex gegen die Tabellen')
 for x in bad:
     print('  FEHL ' + x)

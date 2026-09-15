@@ -1,8 +1,3 @@
-% Kapitel ch:delta: Construction and training, Results & Discussion.
-% Motivation steht in docs/introduction_v2.tex, Conclusion in
-% docs/discussion_delta.md. Zahlen stammen aus der Delta-Pipeline, nicht
-% aus results/*.csv.
-%
 % ============================================================
 %  Chapter: A delta-learning head for level-of-theory correction
 %  Requires: booktabs not used; \hline style consistent with theory chapter
@@ -13,16 +8,12 @@
 \chapter{A Delta-Learning Head for Level-of-Theory Correction}
 \label{ch:delta}
 
-\section{Construction and Training}
+\section{Method}
 \label{sec:delta-overview}
 
-This chapter answers RQ1, whether a model can be lifted to a higher
-level of theory by relabelling only a subset of its training data.
-About 80\,000 geometries, under 1\,\% of the dataset, are relabelled;
-the paths
-themselves stay where Transition1x relaxed them, at
-\mbox{$\omega$B97X-D3/6-31G(d)}, and are not re-optimised at the new
-level. A MACE model is trained on Transition1x
+The goal is to reach the higher level of theory while relabelling only
+a small fraction of the data. About 80\,000 geometries, under 1\,\% of
+the dataset, are relabelled. A MACE model is trained on Transition1x
 (Section~\ref{sec:mace-training}), and a small correction head on top
 of it (Section~\ref{sec:delta-architecture}) learns the difference
 between the two levels,
@@ -44,12 +35,8 @@ cluster, for one reason: the head is trained on energies and forces at
 (Section~\ref{sec:background-beyond}). The largest reactive dataset at
 that level holds 3119 configurations~\cite{allen2026}.
 
-Throughout this thesis, MACE is the MACE model trained on
-Transition1x at \mbox{$\omega$B97X-D3/6-31G(d)}, the base model of the
-correction, and MACE+$\Delta$ is the same model with the correction
-head attached, approximating \mbox{$\omega$B97M-V/def2-TZVP}. Base model and correction
-head combine into one corrected potential; the superscript denotes the
-level of theory a prediction approximates:
+Base model and correction head combine into one corrected potential;
+the superscript denotes the level of theory a prediction approximates:
 %
 \begin{equation}
 E_{\text{MACE}+\Delta}^{\,\omega\text{B97M-V/def2-TZVP}}(\mathbf{R})
@@ -69,9 +56,8 @@ E_{\text{MACE}}^{\,\omega\text{B97X-D3/6-31G(d)}}(\mathbf{R})
 %
 The correction forces are analytic gradients of the head's output.
 
-Architecturally, this sum is a single network
-(Figure~\ref{fig:mace-delta-arch}): the frozen MACE encoder with two
-readout heads --- the original energy readout, yielding
+Architecturally, this sum is a single network: the frozen MACE encoder
+with two readout heads --- the original energy readout, yielding
 $E_{\text{MACE}}$, and the newly trained correction head, yielding
 $\Delta$ (Section~\ref{sec:delta-architecture}). The forces in
 Eq.~\eqref{eq:delta-forces} are computed as the exact derivative of the
@@ -118,8 +104,7 @@ the resulting structure: one shared encoder, two readouts, one forward pass.
 \label{sec:mace-training}
 
 We trained a MACE model from scratch on the Transition1x training split, using
-the dataset's \mbox{$\omega$B97X-D3/6-31G(d)} energies and forces as targets. A full
-pass over the ${\sim}9$ million training geometries per epoch is impractical,
+the dataset's \mbox{$\omega$B97X-D3/6-31G(d)} energies and forces as targets. A full pass over the ${\sim}9$ million training geometries per epoch is impractical,
 so each epoch used a random subsample of 100{,}000 geometries. Training ran for
 362 epochs, i.e.\ 36.2 million samples --- about four passes over the full
 dataset. Table~\ref{tab:mace-settings} lists the settings.
@@ -147,18 +132,18 @@ dataset. Table~\ref{tab:mace-settings} lists the settings.
 
 On the Transition1x test split the model reaches a force RMSE of
 81\,meV/\AA, compared to 102\,meV/\AA{} for the PaiNN model that the
-Transition1x authors trained on the same data~\cite{schreiner2022}.
+Transition1x authors trained on the same data as a
+baseline~\cite{Schreiner2022}. 
 
-\subsection{Correction head: architecture}
+\subsection{Correction head}
 \label{sec:delta-architecture}
 
 The head works on the features of the frozen encoder. For every atom, the
 encoder produces 17{,}408 numbers; 2{,}048 of them are rotation-invariant
 scalars (1{,}024 from each of the two layers, Table~\ref{tab:mace-features}),
-the rest rotate with the molecule. The head reads only the scalars: $\Delta$ must not change when the
-molecule is rotated, and an output that does not rotate can only be
-built from inputs that do not rotate. The directional features still
-matter, but only inside
+the rest rotate with the molecule. The head reads only the scalars ---
+$\Delta$ must not depend on orientation, and a readout onto a scalar can only
+draw on scalar inputs. The directional features still matter, but only inside
 the encoder, where the tensor products of one layer turn them into the
 scalars of the next. A small MLP (64 channels, SiLU, 131{,}136 parameters)
 maps the scalars to one contribution per atom; the sum over atoms is
@@ -167,8 +152,28 @@ and encoder, so the corrected potential is conservative.
 
 
 
-\paragraph{An earlier version of the head.} It declared its input
-incorrectly: it labelled 1{,}024 direction-dependent components as scalars, put all of its weights on
+\begin{table}[htbp]
+  \centering
+  \caption{Per-atom features of the MACE encoder (1{,}024 channels per layer,
+  $l$ up to 3). Each channel of layer 1 carries one scalar and 15
+  direction-dependent components; layer 2, the last layer, outputs scalars
+  only. The correction head reads the $l=0$ column.}
+  \label{tab:mace-features}
+  \begin{tabular}{lccccc}
+    \toprule
+    & $l=0$ ($0e$) & $l=1$ ($1o$) & $l=2$ ($2e$) & $l=3$ ($3o$) & total \\
+    & invariant & \multicolumn{3}{c}{rotate with the molecule} & \\
+    \midrule
+    Interaction layer 1 & 1{,}024 & 3{,}072 & 5{,}120 & 7{,}168 & 16{,}384 \\
+    Interaction layer 2 & 1{,}024 & --- & --- & --- & 1{,}024 \\
+    \midrule
+    Node features (concatenated) & \textbf{2{,}048} & 3{,}072 & 5{,}120 & 7{,}168 & 17{,}408 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+An earlier version of the head declared its input incorrectly. It labelled
+1{,}024 direction-dependent components as scalars, put all of its weights on
 them, and ignored the true scalars. As a result, $\Delta$ changed when the
 molecule was rotated, by 212\,meV on average across the benchmark transition
 states. We found the error by counting parameters: the head had
@@ -184,8 +189,7 @@ Section~\ref{sec:delta-results} compares both versions.
 
 The head is trained on geometries for which both level of theory labels are known.
 Transition1x already stores the $\omega$B97X-D3/6-31G(d) energies and forces;
-we recompute the same geometries, unchanged from Transition1x, at
-$\omega$B97M-V/def2-TZVP and subtract:
+we recompute the same geometries at $\omega$B97M-V/def2-TZVP and subtract:
 \begin{equation}
   \Delta E = E_{\omega\text{B97M-V/def2-TZVP}} - E_{\omega\text{B97X-D3/6-31G(d)}},
   \qquad
@@ -207,15 +211,12 @@ transition state, and the transition state itself is always among them. A
 uniform selection of 20 geometries would give no such guarantee.
 
 We recomputed each selected geometry with a single-point
-energy-and-gradient calculation at $\omega$B97M-V/def2-TZVP,
-restricted\footnote{Restricted was the program default for a singlet
-input, not a deliberate choice; what the choice implies is the subject
-of Chapter~\ref{ch:mr}, and why the default persists is discussed in
-Chapter~\ref{ch:conclusion}.} (ORCA, RIJCOSX, TightSCF). For three reactions some of these calculations did not complete; we
+energy-and-gradient calculation at $\omega$B97M-V/def2-TZVP (ORCA, RIJCOSX,
+TightSCF). For three reactions some of these calculations did not complete; we
 discarded reactions with fewer than 15 finished geometries, leaving 4{,}997
 reactions and 80{,}592 training geometries, each with an energy and a force
 target. This amounts to ${\sim}100{,}000$ DFT calculations, 3--4 days on the
-cluster, and under 1\,\% of the dataset (Chapter~\ref{ch:introduction}).
+cluster, and under 1\,\% of the dataset (Section~\ref{sec:delta-motivation}).
 
 For validation we relabelled 225 reactions from the Transition1x validation
 split in the same way (10{,}600 geometries, 2{,}240 of them with force
@@ -271,19 +272,17 @@ relabelling of Section~\ref{sec:delta-data}.
   \end{tabular}
 \end{table}
 
-The last two rows use different validation quantities on purpose. The
-scheduler lowers the learning rate when the total loss on a fixed
-sample of 1{,}024 validation geometries stops improving. The
-checkpoint that is kept is the epoch with the lowest force loss on
-the 2{,}240 force-labelled validation geometries, because the head is
-deployed to drive NEB optimisations, and there the forces are what
-matters.
+The last two rows use different validation sets on purpose. The scheduler
+needs a stable, broad signal to decide when to lower the learning rate; the
+mixed sample provides that. The saved checkpoint should instead be the one
+that predicts forces best, because the head is deployed to drive NEB
+optimisations, where accurate forces are more important.
 
 
 \subsection{Evaluation protocol}
 \label{sec:delta-protocol}
 
-The model is built; now we test it. We run $\omega$B97M-V/def2-TZVP reference
+The model is built; now we test it. We run wB97M-V/def2-TZVP reference
 calculations on reactions from the Transition1x test split, select 30 of
 them stratified by multireference character, and compare MACE and
 MACE+$\Delta$ against the reference in two ways: as single points on fixed
@@ -291,33 +290,31 @@ reference geometries, and with the model driving the NEB optimisation
 itself.
 
 \paragraph{Reference.}
-We run a restricted $\omega$B97M-V/def2-TZVP CI-NEB for each reaction of the Transition1x
+We run a wB97M-V/def2-TZVP RKS CI-NEB for each reaction of the Transition1x
 test split. This level of theory is the natural reference: it is exactly
 what MACE+$\Delta$ is trained to approximate. Each converged run yields the
 quantities we later compare against: ten geometries along the reaction path,
-each with its $\omega$B97M-V/def2-TZVP energy and forces; the transition-state geometry (the
+each with its wB97M-V energy and forces; the transition-state geometry (the
 highest image of the band); and the reference barrier that follows from the
 energies. A model can therefore be tested on every level --- energies and
 forces at given geometries, the barrier height, and the transition-state
 structure it finds itself. For 279 of the 287 test-split reactions the NEB
 converges; the remaining eight are discarded from every step that follows.
-One limitation applies: for reactions with strong multireference
-character the reference itself is single-reference DFT, restricted.
-Agreement with it then shows that the head has learned what it was
-trained on, the restricted $\omega$B97M-V/def2-TZVP surface, not that
-the prediction is closer to the true surface.
+One limitation applies: for reactions with strong multireference character
+the reference itself is single-reference DFT, so agreement there means
+agreement with RKS wB97M-V, not with the true surface.
 
 \begin{table}[htbp]
   \centering
-  \caption{Settings of the $\omega$B97M-V/def2-TZVP reference CI-NEB.}
+  \caption{Settings of the wB97M-V/def2-TZVP reference CI-NEB.}
   \label{tab:reference-neb}
   \begin{tabular}{ll}
     \toprule
     Setting & Value \\
     \midrule
-    Level of theory & $\omega$B97M-V/def2-TZVP (def2/J, RIJCOSX, TightSCF; ORCA) \\
+    Level of theory & wB97M-V/def2-TZVP (def2/J, RIJCOSX, TightSCF; ORCA) \\
     Band & 10 images: reactant, 8 interior images, product \\
-    Starting band & final $\omega$B97X-D3/6-31G(d) NEB images from Transition1x \\
+    Starting band & final wB97X-D3 NEB images from Transition1x \\
     Endpoint relaxation & BFGS, $f_{\max} = 0.05$\,eV/\AA \\
     NEB stage & ASE NEBOptimizer, $f_{\max} = 0.15$\,eV/\AA \\
     CI-NEB stage & climbing image on, $f_{\max} = 0.05$\,eV/\AA \\
@@ -330,11 +327,14 @@ the prediction is closer to the true surface.
 
 
 \paragraph{Reactions stratified by multireference character.}
-The correction is expected to behave differently at high and low
-multireference character, so the test reactions are grouped by it.
+We want to test whether the correction performs equally well on reactions
+with high multireference character versus low multireference character:
+The correction learns from DFT labels, and these labels get worse as MR
+character grows. The correction may therefore work on some reactions and
+fail on others, and we stratify to see this difference.
 We therefore compute $N_{\mathrm{FOD}}$ at the
 reference transition states (PBE/def2-SVP, Fermi smearing,
-$T_{\mathrm{el}} = 5000$\,K; see Section~\ref{sec:background-beyond} for details), where we expect
+$T_{\mathrm{el}} = 5000$\,K; see Section~?? for details), where we expect
 the multireference character to be highest, rank the 279 reactions by it,
 and select 10 high-MR reactions from the top of the ranking, 10 mid-MR
 reactions spread across the middle, and 10 low-MR reactions from the
@@ -342,30 +342,25 @@ bottom. The 30 reactions are unimolecular CHNO reactions of 10 to 14 atoms,
 all neutral singlets. None of them appear in the training or validation
 data of the head or of the base model.
 
-\paragraph{Evaluating performance on single-point predictions on fixed geometries.}
-First, we want to test how accurate the single-point predictions are: energies, forces and
+\paragraph{Evaluating performance on single point predictions on fixed geometries}
+We want to test how accurate the single points predictions are: energies, forces and
 barriers. Whether a model also finds good geometries on its own is a
-separate question and left to the NEB-driven evaluation. In this
-fixed-geometry evaluation every method therefore computes single
-points on the same fixed geometries, and no atom is moved.
+separate question and left to Protocol B. All methods therefore compute
+single points on the same fixed geometries, and no method moves an atom.
 
 We want to answer two questions. First: MACE is trained to approximate
-$\omega$B97X-D3/6-31G(d) --- does it reproduce $\omega$B97X-D3/6-31G(d) energies and forces well?
-Second: MACE+$\Delta$ is trained to approximate $\omega$B97M-V/def2-TZVP --- does
-it reproduce $\omega$B97M-V/def2-TZVP energies and forces well? Both terms of
-Eq.~\eqref{eq:delta-energy} are error sources, so both have to be
-accurate on their own. The first question tests the base model; the
-second tests the corrected model.
+wB97X-D3/6-31G(d) --- does it reproduce wB97X-D3 energies and forces well?
+Second: MACE+$\Delta$ is trained to approximate wB97M-V/def2-TZVP --- does
+it reproduce wB97M-V energies and forces well? The first question tests the
+premise of Eq.~(X.2); the second tests the correction.
 
-Both questions are evaluated on the same geometries: the ten images
-of the converged $\omega$B97M-V/def2-TZVP reference band of each
-reaction, 300 geometries in total, from reactant over the transition
-state to product. Each geometry needs a reference value at both
-levels. The $\omega$B97M-V/def2-TZVP energies and forces are those
-of the NEB run itself; the $\omega$B97X-D3/6-31G(d) energies and
-forces are not available, so we compute them as single points on all
-300 geometries with ORCA. MACE is also compared against the
-$\omega$B97M-V/def2-TZVP reference as a control.
+Both questions are evaluated on the ten images of the converged reference
+band of each reaction, 300 geometries in total, covering the path from
+reactant to product including the transition state. For the second question
+the reference values exist already: the band comes with wB97M-V energies
+and forces at every image. For the first question they do not, so we
+compute wB97X-D3/6-31G(d) single points on all 300 geometries with ORCA.
+MACE is also compared against the wB97M-V reference as a control.
 
 Per reaction, we subtract each method's energy at the first image from its
 ten energies. This removes the constant ${\sim}3$\,eV offset between the
@@ -376,32 +371,29 @@ reactions and reported by MR tier.
 
 \paragraph{Evaluating performance on NEB driven TS search and barrier prediction.}
 We want to test whether the models can do what they are built for: find a transition
-state and a barrier on their own. The fixed-geometry evaluation cannot answer this. A model can predict accurate energies at
+state and a barrier on their own. Protocol A cannot answer this. A model can predict accurate energies at
 given geometries and still have a surface that is too rough to optimise on.
 
 Each model runs the full workflow itself: it relaxes reactant and product,
 then drives a CI-NEB with the same settings as the reference
 (Table~\ref{tab:reference-neb}). We compare two outcomes. The barrier the
-model finds is compared against the reference barrier. The transition-state geometry
+model finds is compared against the reference barrier. The transition state geometry
 the model finds is compared against the reference transition state, as
 Kabsch RMSD over all atoms. The first measures the energetics of the
 surface, the second its shape.
 
-\section{Results \& Discussion}
-\label{sec:delta-results}
+\section{Results}
 
-\paragraph{Evaluating performance on single-point predictions on fixed geometries: how well does MACE reproduce its target level $\omega$B97X-D3/6-31G(d)?}
-The first question was whether MACE reproduces its own target level
-and therefore serves as a base that predicts the cheap level
-accurately before the head corrects it. It does: on the 300 benchmark
-geometries, MACE deviates from the $\omega$B97X-D3/6-31G(d)
+\paragraph{Evaluating performance on single point predictions on fixed geometries: How does the MACE reproduce its target level wB97M-V/def2-TZVP}
+The first question was whether MACE reproduces its own target level. It
+does: on the 300 benchmark geometries, MACE deviates from the wB97X-D3
 single points by 42\,meV in energy and 38\,meV/\AA{} in forces (force
 cosine 0.95). For comparison, the two DFT levels differ by 95\,meV and
-140\,meV/\AA{} ($\omega$B97X-D3 rows of Table~\ref{tab:delta-sp-results}). The
+140\,meV/\AA{} (wB97X-D3 rows of Table~\ref{tab:delta-sp-results}). The
 baseline error is two to four times smaller than the gap the head is
 trained to correct.
 
-This error still matters. Subtracting the target from Eq.~\eqref{eq:delta-energy} and
+This error still matters. Subtracting the target from Eq.~(X.2) and
 inserting $E^{\text{wB97X}}$ splits the error of the corrected model into
 two parts:
 \begin{equation}
@@ -412,64 +404,49 @@ two parts:
 \underbrace{\left(\Delta - \left(E^{\text{wB97M}} - E^{\text{wB97X}}\right)\right)}_{\text{head error}} .
 \label{eq:error-split}
 \end{equation}
-The head can only reduce the second term; the first passes through
-unchanged. This bounds what the correction can achieve: MACE alone
-misses its own level by 42\,meV on these geometries, that error
-enters MACE+$\Delta$ unchanged, and the corrected model ends at a
-total error of 56\,meV (next paragraph). Any further improvement
-therefore has to come from the base model as much as from the head.
+The head can only shrink the second term. The first term passes through
+unchanged. MACE+$\Delta$ reaches a total error of 56\,meV, and 42\,meV of
+baseline error sit underneath. Further improvement requires a better base
+model, not a better head.
 
 
-\paragraph{Evaluating performance on single-point predictions on fixed geometries: how well does MACE+$\Delta$ reproduce its target level $\omega$B97M-V/def2-TZVP?}
+\paragraph{Evaluating performance on single point predictions on fixed geometries: How does MACE+$\Delta$ reproduce its target level wB97MV/def2TZVP}
 The second question was whether the correction brings MACE closer to the
-target level. It does at low multireference character, and it
-overshoots at mid and high. Table~\ref{tab:delta-sp-results} and
+target level. It does where the labels are reliable, and it overshoots
+where they are not. Table~\ref{tab:delta-sp-results} and
 Figures~\ref{fig:barrier-errors} and \ref{fig:force-errors} show this by MR
 tier.
 
-All numbers that follow are deviations of MACE and MACE+$\Delta$ from
-the $\omega$B97M-V/def2-TZVP reference on the 300 fixed geometries:
-energies and forces image by image, and the barrier as the maximum of
-the energy profile. The forces are the clear win: they improve on all 30 reactions, in every
-tier (force MAE against the reference, MACE $\rightarrow$ MACE+$\Delta$,
-low, mid and high MR: 104 $\rightarrow$ 32, 152 $\rightarrow$ 53,
-160 $\rightarrow$ 59\,meV/\AA). Figure~\ref{fig:force-errors} shows why. MACE's force error
+The forces are the clear win: they improve on all 30 reactions, in every
+tier (104 $\rightarrow$ 32, 152 $\rightarrow$ 53, 160 $\rightarrow$
+59\,meV/\AA). Figure~\ref{fig:force-errors} shows why. MACE's force error
 against the reference is essentially the level gap itself, and the
 correction removes most of it. The energies improve in every tier as well,
 most strongly at low MR (86 $\rightarrow$ 30\,meV), only marginally at high
 MR (89 $\rightarrow$ 83\,meV).
 
-The barriers behave differently from tier to tier. On the low-MR
-reactions the correction cuts the error
+The barriers split. On the low-MR reactions the correction cuts the error
 from 170 to 47\,meV and removes the bias of the level of theory gap ($+170
 \rightarrow +21$\,meV): in Figure~\ref{fig:barrier-errors}, the orange
 points move onto the reference line. On the mid- and high-MR reactions they
 move past it, and the overestimation turns into an underestimation of
 similar size ($-134$ and $-184$\,meV bias).
 
-Eq.~\eqref{eq:error-split} splits the barrier bias of each tier into
-two parts: the error of MACE against its own level, and the error of
-the head against the true gap between the two levels.
-Figure~\ref{fig:bias-decomposition} shows both. At low MR both are
-small, and the corrected barrier lands on the reference. At mid MR
-the MACE error stays small, but the head predicts a larger gap than
-there is, so the corrected barrier goes past the reference. At high
-MR the MACE error is large as well, and both errors push the barrier
-below the reference.\footnote{The average
-over all 30 reactions (168 vs.\ 127\,meV,
-Table~\ref{tab:delta-sp-results}) is misleading: it mixes a threefold
-improvement on one third of the benchmark with a comparable deterioration
-on another. The tiers carry the information. The off-scale reaction in the
-mid panel, rxn0896, is a baseline failure, not a correction failure:
-$\omega$B97X-D3/6-31G(d) itself lies within 42\,meV of the reference, while MACE misses its
-own level by 514\,meV.\label{fn:all30}}
+Eq.~(\ref{eq:error-split}) splits each bias into a baseline part and a head
+part; Figure~\ref{fig:bias-decomposition} shows the decomposition. The
+pattern is simple: at low MR both parts are small, and the correction
+arrow ends almost exactly where it should. At mid MR the head
+over-corrects, because the true gap between the functionals shrinks with
+MR character while the head applies the gap it learned: the dark tip of
+the correction arrow is the overshoot. At high MR the baseline fails as
+well, and both parts push the barrier down.
 
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{Pictures/bias_decomposition_v4.png}
-  \caption{Fixed geometries, barrier bias decomposed via
-  Eq.~\eqref{eq:error-split}, by MR tier. Dashed lines mark the two
-  levels of theory; both models start at the $\omega$B97X-D3/6-31G(d) level.
+  \caption{Barrier bias decomposed via Eq.~(\ref{eq:error-split}), by MR
+  tier. Dashed lines mark the two levels of theory; both models start at
+  the wB97X-D3 level.
   MACE carries one error, its deviation from its own
   target level, $E_{\text{MACE}} - E^{\text{wB97X}}$ (teal).
   MACE+$\Delta$ carries two errors: the same baseline error
@@ -485,10 +462,19 @@ own level by 514\,meV.\label{fn:all30}}
 \end{figure}
 
 
+\footnote{The average
+over all 30 reactions (168 vs.\ 127\,meV,
+Table~\ref{tab:delta-sp-results}) is misleading: it mixes a threefold
+improvement on one third of the benchmark with a comparable deterioration
+on another. The tiers carry the information. The off-scale reaction in the
+mid panel, rxn0896, is a baseline failure, not a correction failure:
+wB97X-D3 itself lies within 42\,meV of the reference, while MACE misses its
+own level by 514\,meV.}
+
 \begin{table}[htbp]
   \centering
-  \caption{Fixed geometries: comparison against the
-  $\omega$B97M-V/def2-TZVP reference, by MR tier (10 reactions each). eMAE: MAE of
+  \caption{Protocol A: fixed-geometry comparison against the
+  wB97M-V/def2-TZVP reference, by MR tier (10 reactions each). eMAE: MAE of
   the image-0-anchored energy profiles. fMAE: force MAE per image. Barrier
   error: profile maximum vs.\ reference profile maximum.}
   \label{tab:delta-sp-results}
@@ -496,19 +482,26 @@ own level by 514\,meV.\label{fn:all30}}
     \toprule
     Tier & Method & eMAE (meV) & fMAE (meV/\AA) & barrier MAE (meV) & barrier bias (meV) \\
     \midrule
-    low  & $\omega$B97X-D3      &  80.7 & 107.2 & 136.0 & $+136$ \\
+    low  & wB97X-D3      &  80.7 & 107.2 & 136.0 & $+136$ \\
          & MACE          &  86.0 & 104.2 & 169.8 & $+170$ \\
          & MACE+$\Delta$ &  29.6 &  31.6 &  47.0 & $+21$ \\
     \midrule
-    mid  & $\omega$B97X-D3      & 120.1 & 151.1 & 193.4 & $+185$ \\
+    mid  & wB97X-D3      & 120.1 & 151.1 & 193.4 & $+185$ \\
          & MACE          & 148.2 & 151.9 & 254.0 & $+151$ \\
          & MACE+$\Delta$ &  54.3 &  53.0 & 147.1 & $-134$ \\
     \midrule
-    high & $\omega$B97X-D3      &  83.9 & 162.4 & 124.4 & $+124$ \\
+    high & wB97X-D3      &  83.9 & 162.4 & 124.4 & $+124$ \\
          & MACE          &  88.7 & 160.4 &  81.2 & $+21$ \\
          & MACE+$\Delta$ &  82.8 &  59.3 & 186.3 & $-184$ \\
     \midrule
-    all\textsuperscript{\ref{fn:all30}}  & $\omega$B97X-D3      &  94.9 & 140.2 & 151.3 & $+148$ \\
+    all\footnote{The average
+over all 30 reactions (168 vs.\ 127\,meV,
+Table~\ref{tab:delta-sp-results}) is misleading: it mixes a threefold
+improvement on one third of the benchmark with a comparable deterioration
+on another. The tiers carry the information. The off-scale reaction in the
+mid panel, rxn0896, is a baseline failure, not a correction failure:
+wB97X-D3 itself lies within 42\,meV of the reference, while MACE misses its
+own level by 514\,meV.}  & wB97X-D3      &  94.9 & 140.2 & 151.3 & $+148$ \\
     (30) & MACE          & 107.6 & 138.9 & 168.4 & $+114$ \\
          & MACE+$\Delta$ &  55.6 &  48.0 & 126.8 & $-99$ \\
     \bottomrule
@@ -518,11 +511,11 @@ own level by 514\,meV.\label{fn:all30}}
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{Pictures/barrier_errors_dumbbell_v4_2.png}
-  \caption{Fixed geometries, by MR tier. Top: per-reaction barrier error of MACE
-  (teal) and MACE+$\Delta$ (orange) against the $\omega$B97M-V/def2-TZVP
+  \caption{Protocol A by MR tier. Top: per-reaction barrier error of MACE
+  (teal) and MACE+$\Delta$ (orange) against the wB97M-V/def2-TZVP
   reference; triangles mark off-scale values. Bottom: the absolute barriers
-  of the same reactions as grouped bars (left to right: $\omega$B97X-D3/6-31G(d) DFT, MACE,
-  $\omega$B97M-V/def2-TZVP reference, MACE+$\Delta$; models in dark, the DFT level they
+  of the same reactions as grouped bars (left to right: wB97X-D3 DFT, MACE,
+  wB97M-V reference, MACE+$\Delta$; models in dark, the DFT level they
   approximate in light). Thin vertical guides and the reaction labels
   connect the two panels. Errors are 1--5\,\% of the barrier heights.}
   \label{fig:barrier-errors}
@@ -531,59 +524,49 @@ own level by 514\,meV.\label{fn:all30}}
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{Pictures/force_errors_dumbbell.png}
-  \caption{Fixed geometries, forces: per-reaction force MAE against the
-  $\omega$B97M-V/def2-TZVP reference, by MR tier. Each connected pair is one
+  \caption{Protocol A, forces: per-reaction force MAE against the
+  wB97M-V/def2-TZVP reference, by MR tier. Each connected pair is one
   reaction (teal: MACE, orange: MACE+$\Delta$); the light tick marks the
-  $\omega$B97X-D3/6-31G(d) single points, i.e.\ the level gap itself. MACE sits on the
+  wB97X-D3 single points, i.e.\ the level gap itself. MACE sits on the
   level gap almost everywhere, and the correction removes most of it ---
   the force error drops on all 30 reactions, in every tier.}
   \label{fig:force-errors}
 \end{figure}
 
-
-\paragraph{Evaluating performance on NEB driven TS search and barrier prediction: how well do the models perform when used end to end?}
-In the fixed-geometry evaluation no geometries were optimised; every method was evaluated on
+\paragraph{Evaluating performance on NEB driven TS search and barrier prediction: How well do the models perform when used end to end}
+In Protocol A no geometries were optimised; every method was evaluated on
 the same fixed reference structures. Now the models do the work themselves:
 they relax the endpoints, drive the CI-NEB, and deliver a transition state
 and a barrier. All 30 runs converge, with MACE and with MACE+$\Delta$.
 
-We look at the geometries first. All numbers below are Kabsch RMSD
-between two transition-state geometries, medians over the 30
-reactions. Before asking whether the correction improves the
-geometries, we ask how much they could improve at all. Three
-distances answer this:
+We look at the geometries first, where the question is whether there is
+anything to improve at all. To see how much the level upgrade changes
+them, we compare the wB97X-D3 transition states to the wB97M-V reference
+transition states over the 30 benchmark reactions (Kabsch RMSD): they
+differ by 0.007\,\AA{} (median). The geometries of the cheap level are
+already very close to the target. MACE finds transition states within
+0.015\,\AA{} (median) of its own target level, and therefore also within
+0.017\,\AA{} of the reference. Its geometry error towards its own level is
+thus already twice the gap the correction is meant to close. We cannot
+expect the correction to improve the geometries meaningfully; it can only
+introduce another error. It does not: in Figure~\ref{fig:rmsd-parity}
+almost all points lie on the parity line, and the mean RMSD to the
+reference changes from 0.056 to 0.054\,\AA{}
+(Table~\ref{tab:delta-neb-results}).
 
-\begin{itemize}
-  \item cheap-level DFT transition state to expensive-level DFT
-    transition state: 0.007\,\AA{}. This is how far the level upgrade
-    moves the transition state, and the most a correction could gain.
-  \item MACE transition state to cheap-level DFT transition state:
-    0.015\,\AA{}. This is MACE's error against its own level.
-  \item MACE transition state to expensive-level reference:
-    0.017\,\AA{}. This is MACE's error against the target.
-\end{itemize}
-
-MACE's own error is already twice the most the correction could
-gain, so it cannot improve the geometries by much; it can only make
-them worse. It does not: in Figure~\ref{fig:rmsd-parity} almost all
-points lie on the parity line, and the RMSD to the reference goes
-from 0.017 to 0.016\,\AA{} in the median and from 0.056 to
-0.054\,\AA{} in the mean (Table~\ref{tab:delta-neb-results}).
-
-The barriers repeat the pattern of the fixed-geometry evaluation
+The barriers repeat the pattern of the fixed geometry evaluation
 (Table~\ref{tab:delta-neb-results}, Figure~\ref{fig:neb-results}). On the
 low-MR reactions the error drops from 166 to 52\,meV with near-zero bias.
 On the mid- and high-MR reactions the corrected barriers underestimate the
 reference by ${\sim}200$\,meV, and on the high tier bare MACE is closer.
 The decomposition behind Figure~\ref{fig:bias-decomposition} applies
-unchanged: the barriers at the transition states the models found
-themselves show the same errors as at the fixed geometries, and no
-new one. That the correction improves the low-MR barriers without damaging
+unchanged: letting the models relax the geometries adds no new error of
+its own. That the correction improves the low-MR barriers without damaging
 the surface is not self-evident, as the next paragraph shows.
 
 \begin{table}[htbp]
   \centering
-  \caption{NEB-driven results by MR tier. Barrier error against
+  \caption{Protocol B: NEB-driven results by MR tier. Barrier error against
   the reference barrier; Kabsch RMSD of the found transition state against
   the reference transition state (mean / median).}
   \label{tab:delta-neb-results}
@@ -609,10 +592,10 @@ the surface is not self-evident, as the next paragraph shows.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{Pictures/neb_results.png}
-  \caption{NEB-driven, by MR tier. Top: barrier error of MACE
-  (teal) and MACE+$\Delta$ (orange) against the $\omega$B97M-V/def2-TZVP NEB reference;
+  \caption{Evaluating performance on NEB driven TS search and barrier prediction by MR tier. Top: NEB-driven barrier error of MACE
+  (teal) and MACE+$\Delta$ (orange) against the wB97M-V NEB reference;
   triangles mark off-scale values. Bottom: the absolute NEB barriers of
-  the same reactions (left to right: MACE NEB, $\omega$B97M-V/def2-TZVP NEB reference,
+  the same reactions (left to right: MACE NEB, wB97M-V NEB reference,
   MACE+$\Delta$ NEB). Thin vertical guides and the reaction labels connect
   the two panels.}
   \label{fig:neb-results}
@@ -621,8 +604,8 @@ the surface is not self-evident, as the next paragraph shows.
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=0.7\textwidth]{Pictures/rmsd_parity.png}
-  \caption{NEB-driven, geometries: TS RMSD of the MACE+$\Delta$ NEB versus
-  the MACE NEB, both measured against the $\omega$B97M-V/def2-TZVP NEB transition state
+  \caption{Evaluating performance on NEB driven TS search, geometries: TS RMSD of the MACE+$\Delta$ NEB versus
+  the MACE NEB, both measured against the wB97M-V NEB transition state
   (log--log; the dashed line is parity). Points on the diagonal mean the
   correction leaves the geometry quality unchanged, which holds for almost
   all reactions; the labelled outliers are the exceptions in both
@@ -641,7 +624,8 @@ noise, same as MACE itself. Table~\ref{tab:delta-audit} lists the effect on
 the benchmark: the corrected head predicts better forces on all 30
 reactions, and it repairs the transition-state geometries. With the earlier
 head, NEB found structures twice as far from the reference as bare MACE;
-the corrected head restores MACE's geometry quality.
+the corrected head restores MACE's geometry quality. The rough surface was
+a property of the defect, not of the method.
 
 \begin{table}[htbp]
   \centering
@@ -654,40 +638,24 @@ the corrected head restores MACE's geometry quality.
     & earlier head & corrected head \\
     \midrule
     Rotation spread of $\Delta$ (meV) & 212 & $<0.01$ \\
-    eMAE, fixed geometries (meV) & 63.7 & 55.6 \\
-    fMAE, fixed geometries (meV/\AA) & 76.4 & 48.0 \\
-    TS RMSD, NEB-driven (\AA, mean) & 0.101 & 0.054 \\
-    Barrier MAE, NEB-driven, low MR (meV) & 89.3 & 52.1 \\
+    eMAE, Protocol A (meV) & 63.7 & 55.6 \\
+    fMAE, Protocol A (meV/\AA) & 76.4 & 48.0 \\
+    TS RMSD, Evaluating performance on NEB driven TS search (\AA, mean) & 0.101 & 0.054 \\
+    Barrier MAE, Evaluating performance on NEB driven TS search and barrier prediction, low MR (meV) & 89.3 & 52.1 \\
     \bottomrule
   \end{tabular}
 \end{table}
 
-% ---- ab hier steht im Entwurf "Protocol B: the surface" + "The earlier head"
-% ---- ein zweites Mal, wortgleich inkl. Tabellen und Figuren. In dieser
-% ---- Kopie weggelassen; der Text oben ist der vollstaendige Block.
-
-\paragraph{Why bare MACE is closer at high MR.} On the high-MR
-reactions the uncorrected model is closer to the reference than the
-corrected one. It is right for the wrong reason. The cheap level lies
-$+124$\,meV above the reference in this tier
-(Table~\ref{tab:delta-sp-results}). MACE is trained to reproduce the
-cheap level, so it should lie there too; it lies at $+21$\,meV,
-because it misses its own level by about $-100$\,meV. That error
-happens to cancel most of the gap, and bare MACE lands near the
-reference by accident. The head then subtracts the gap, as it was
-trained to, from a MACE barrier that is already $100$\,meV too low,
-and the corrected barrier ends at $-184$\,meV. Two errors that cancel
-in the uncorrected model add up in the corrected one. The NEB-driven
-searches show the same: MACE at $-3$\,meV, MACE+$\Delta$ at
-$-235$\,meV (Table~\ref{tab:delta-neb-results}).
-
-\paragraph{Where the correction stops.}
-Both evaluations draw the same line: the correction works where
-multireference character is low and overshoots where it is high. Why
-the head corrects too far there is not resolved in this chapter. Both
-labels are restricted at every geometry, so the difference is well
-defined and learnable in principle; the cause is not in the labels.
-The references are restricted as well, by construction, and whether
-the restricted solution is the ground state at those transition states
-was not tested here. That is the question of Chapter~\ref{ch:mr}.
-
+\paragraph{The MR limit.}
+Both protocols draw the same line. Where the labels of both levels are
+reliable, the correction works: the barrier error drops by a factor of
+three, at fixed geometries and when the model searches for the transition
+state itself. Where multireference character makes the labels unreliable,
+the correction makes barriers worse than the uncorrected baseline. This is
+a property of delta-learning, not of this head: the head learns the
+difference between two single-reference DFT levels, and where both levels
+are wrong, that difference carries no information about the true surface.
+A correction can only be as good as the labels it learns from. What happens
+on these multireference reactions, and how the corrected model compares to
+models trained natively at the target level, is the subject of
+Chapter~[Y].

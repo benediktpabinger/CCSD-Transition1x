@@ -541,9 +541,15 @@ used 5.0.4 (recorded in the provenance written by
 [`pipeline/orca_neb_omol25.py`](../pipeline/orca_neb_omol25.py):
 `'orca_version': '5.0.4 (OMol25 used 6.0.0)'`), and no 6.0.0 calculation exists
 anywhere in this work. And the route to the broken-symmetry solution differs:
-`STABPerform` here, a 20° β-space rotation in OMol25. The second difference was
-measured — see *Cross-check against the OMol25 symmetry-breaking protocol*
-below — the first was not. Do not write "identical to OMol25".
+`STABPerform` here, a 20° β-space rotation in OMol25. Both differences were
+measured: the route on all 135 model geometries (*Cross-check* below), the
+version at the 45 Transition1x transition states against the published
+OMol25 labels (`pipeline/omol25_label_compare.py` →
+`results/omol25_label_compare.csv`, 2026-09-12): 44 of 45 in the release,
+agreement to under 0.1 meV with a constant offset of −0.06 to −0.10 meV,
+forces within 0.02 eV/Å, all 17 broken-symmetry labels on the broken
+solution. Still do not write "identical to OMol25": the settings are the
+same, the code version is not.
 
 Verbatim from
 [`pipeline/job_orca_omol25_probe.sh`](../pipeline/job_orca_omol25_probe.sh):
@@ -704,9 +710,10 @@ The three hardest rows agree: rxn0894/UMA-M (⟨S²⟩ 1.038358 both, ΔE
 −1.2·10⁻⁹ Ha), rxn8885/UMA-S (1.024370 / 1.024371, +1.7·10⁻¹¹ Ha),
 rxn8837/UMA-S (1.009993 / 1.009994, +1.7·10⁻⁹ Ha).
 
-*Scope of the test.* Both sides ran under ORCA 5.0.4. No calculation with ORCA
-6.0.0 exists in this work, so the version difference to OMol25 is untouched by
-this comparison. The test covers the symmetry-breaking route only.
+*Scope of the test.* Both sides ran under ORCA 5.0.4, so this comparison
+covers the symmetry-breaking route only. The version difference was measured
+separately, against the published OMol25 labels at the 45 Transition1x
+transition states (see *The single points* above).
 
 ### Definitions, kept apart on purpose
 

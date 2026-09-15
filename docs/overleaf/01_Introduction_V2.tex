@@ -1,12 +1,227 @@
-% Background, Endfassung im Aufbau. Ein Begriff pro Absatz, drei bis fuenf
-% Saetze, keine Verweise auf Ergebnisse der Arbeit. Referenzen:
-% docs/background_refs.bib. Verlauf: docs/chapter_background_v2.tex,
-% Thesis-Kopie: docs/chapter_background.tex.
+% Overleaf-Datei 01_Introduction_V2.tex, Spiegel in docs/overleaf/.
+% Stand: Overleaf-Fassung vom 2026-09-14 plus die dort noetigen Korrekturen;
+% Schluss ab "overfitting" aus docs/background.tex uebernommen.
+% Nur zusammen mit der Overleaf-Datei aendern.
 
+% Introduction der Thesis, Entwurf 2026-09-12. Zwei Teile: (1) die Motivation
+% des Delta-Kapitels, aus chapter_delta.tex \section{Motivation} hierher
+% gezogen (Absaetze 1-4 dort; Gleichungen und Architektur bleiben im
+% Kapitel); (2) das Setting des OMol25-Kapitels in der zuletzt vereinbarten
+% Fassung. Labels: ch:background, ch:delta, ch:mr, sec:mace-training,
+% sec:delta-architecture, sec:delta-data, sec:mr-methods, app:marks.
+
+\chapter{Introduction}
+\label{ch:introduction}
+
+% ---------------------------------------------------------------- Teil 1
+% Wortlaut aus chapter_delta.tex \section{Motivation}, Absaetze 1-4.
+% Geaendert nur: Platzhalter aufgeloest, Praemisse benannt, Gleichungen und
+% Architektur im Kapitel belassen, Roadmap angehaengt.
+
+Machine-learned interatomic potentials (MLIPs) such as PaiNN or MACE
+are commonly trained on DFT calculations. Transition1x~\cite{schreiner2022} demonstrated this: a
+PaiNN model trained on its ${\sim}10$ million reaction-path geometries
+reproduces DFT energies and forces at a fraction of the cost. However,
+Transition1x was computed at \mbox{$\omega$B97X-D3/6-31G(d)}, a
+comparatively cheap level of theory chosen to make the generation of
+ten million data points computationally feasible. More accurate
+levels of theory exist. The range-separated
+meta-GGA $\omega$B97M-V with a triple-$\zeta$ basis is among the most
+accurate DFT methods for barrier heights~\cite{mardirossian2016,
+goerigk2017}. Any model trained on the Transition1x dataset can only
+be as accurate as the level of theory the dataset was generated with,
+so upgrading the level of theory is desirable.
+
+Such an upgrade does not necessarily require repeating the NEB searches at the
+higher level of theory. A dataset like Transition1x consists of two
+things: the geometries, which sample the configuration space along
+reaction paths, and the energy and force labels attached to them. The
+premise is that the geometries remain valid at any level of theory:
+an MLIP only needs them to cover the relevant region, which the
+Transition1x paths already do. Only the labels are tied to the cheap
+level. Replacing them requires one single-point calculation per
+geometry at the higher level; this is what relabelling means.
+
+OMol25~\cite{omol25} relabelled the entire Transition1x dataset at
+\mbox{$\omega$B97M-V/def2-TZVPD}\footnote{def2-TZVPD adds diffuse
+functions to def2-TZVP; this work omits them for cost.} using
+unrestricted Kohn--Sham\footnote{Chapter~\ref{ch:delta} uses restricted
+Kohn--Sham throughout. The implications of unrestricted versus
+restricted Kohn--Sham are discussed in Chapter~\ref{ch:mr}.}.
+
+In Chapter~\ref{ch:delta}, we pursue a different goal. Relabelling a
+whole dataset costs one calculation per geometry at the higher level,
+and any way to reach that level at a fraction of the cost is
+desirable. We therefore ask whether it can be reached by relabelling
+only a small part of the data: about 80\,000 geometries, under 1\,\%
+of the dataset. A MACE model is trained on Transition1x to predict the cheap level,
+\mbox{$\omega$B97X-D3/6-31G(d)} (Section~\ref{sec:mace-training}), and
+a small correction head on top of it
+(Section~\ref{sec:delta-architecture}) learns the difference between
+the cheap and the expensive level, \mbox{$\omega$B97M-V/def2-TZVP}. This is feasible with so little data because
+the difference is nearly constant within a reaction
+(Section~\ref{sec:delta-data}): a smooth offset is far easier to learn
+than the potential energy surface itself. Base model and correction
+head combine into one corrected potential, MACE+$\Delta$, which can be
+used wherever MACE can: for single-point predictions or as the
+potential driving a NEB optimisation. The chapter evaluates it on 30
+test reactions grouped by multireference (MR) character, at fixed
+geometries and in searches the model drives itself. It finds that the force errors drop to a third on all reactions, and
+that the correction reproduces the higher level where the
+multireference character is low: there the barrier errors drop to a
+third as well, while on the mid- and high-MR reactions the correction
+overshoots.
+
+% ---------------------------------------------------------------- Teil 2
+
+Chapter~\ref{ch:delta} raises the level of theory of the labels and
+leaves the geometries unchanged, on the premise that changing the labels is
+enough to lift the model to the higher level of theory. That is how the field raises fidelity: delta
+learning~\cite{ramakrishnan2015}, multi-fidelity
+training~\cite{messerly2025}, dataset merging~\cite{shiota2024} and
+reactive potentials with semi-empirical geometries~\cite{ren2026} all
+supply labels at a higher level of theory on geometries they do not
+re-optimise. OMol25~\cite{omol25} went one step further: it took
+Transition1x, a dataset labelled restricted at a cheap level of
+theory, and relabelled it unrestricted at an expensive one, again
+without re-optimising a single path. Two questions lie underneath this
+practice, and this thesis asks both:
+
+\noindent
+\begin{minipage}{\linewidth}
+\begin{description}
+  \item[Research question 1 (RQ1)] \textbf{Can a model be lifted to a higher
+    level of theory by relabelling only a subset of its training data?}
+  \item[Research question 2 (RQ2)] \textbf{Can a model learn a surface from
+    paths that were never relaxed on that surface?}
+\end{description}
+\end{minipage}
+
+RQ1 was the task this thesis was set. RQ2 arose during that work: the
+OMol25 models, used along the way as a point of comparison, did not
+find the restricted reference transition states on some reactions but
+different structures. The reason is that their labels are
+unrestricted, so the models search for transition states with broken
+spin symmetry, while the references were optimised with restricted
+spin symmetry. Whether the models can find those broken-symmetry
+transition states at all had been tested nowhere, because the
+published benchmarks only use restricted references, as the rest of
+this chapter shows (see the Preface).
+
+Chapter~\ref{ch:delta} answers RQ1. For that chapter, RQ2 needs no
+test: both levels of theory are restricted, and when the transition
+states are searched with DFT at either level, the two results lie
+within 0.007\,\AA{} of each other. A path relaxed at the cheap level therefore already comes within that
+distance of the transition state found at the expensive one, and
+relabelling the path is enough.
+
+This stops being true when the spin formalism changes as well. At a
+broken-symmetry transition state the restricted solution is not the
+ground state (Section~\ref{sec:background-spin}), and the transition
+state found unrestricted can lie far from the one found restricted,
+which the path passes through. A path relaxed restricted then holds
+no transition state of the surface its unrestricted labels describe,
+and RQ2 becomes a real question. OMol25
+is exactly this case: every label recomputed unrestricted at
+\mbox{$\omega$B97M-V/def2-TZVPD}, on the inherited Transition1x
+geometries and on many structures beyond them~\cite{omol25}.
+Chapter~\ref{ch:mr} asks RQ2 there.
+
+The published benchmarks that test the OMol25 models at locating
+transition states report high success rates. According to them, four
+OMol25 models, three
+of them used in Chapter~\ref{ch:mr}, reach the reference saddle in 91.8\,\% of
+automated transition-state searches, and an MLIP search is recommended
+as the default first stage of such searches~\cite{marks2026}. Hait et
+al. use eSEN to produce the starting guess for a DFT transition-state
+optimisation, and the DFT optimisation converges from that guess in
+fewer steps than from a guess produced with DFT alone~\cite{hait2025}.
+
+What these benchmarks do not measure is the outcome at broken-symmetry
+transition states, because both test against transition states
+optimised on the restricted surface. Hait et al. say so: they
+re-optimised their 121 references unrestricted, 27 broke spin symmetry
+and moved away from the supplied saddle, and all 27 were excluded as
+defective references rather than replaced~\cite{hait2025}. The authors
+expected models like eSEN to be challenged by these cases even with
+unrestricted training data, and did not test it. Marks et al. report
+nothing about the SCF solution of their references, so we ran the
+stability analysis ourselves, at the paper's own level of theory. Of
+the 25 even-electron references, 24 are closed-shell and one is
+broken-symmetry (Appendix~\ref{app:marks}). That one was still optimised restricted, so it is not a transition
+state of the ground-state surface and should not serve as a
+reference. It does, and so a model that finds the same restricted
+structure is scored as a success, although the true transition state
+lies elsewhere.
+
+The structures are not rare. OMol25 reports $\langle S^2 \rangle >
+0.001$, that is, broken-symmetry solutions, for just under 5\,\% of
+its unrestricted Transition1x configurations~\cite{omol25}. That number counts every configuration of
+a reaction path, most of which lie near reactant and product where the
+restricted solution is stable, so the share at the saddle points
+themselves is not known and can be assumed to be higher. In the
+reference set of Hait et al. it is a fifth~\cite{hait2025}.
+
+Where a transition state is an open-shell singlet, quantum chemistry
+has a rule. The affordable treatment is broken-symmetry unrestricted
+DFT~\cite{grafenstein2002}, and the geometry is optimised on that
+surface, because the restricted saddle is not a stationary point of
+it~\cite{crawford2001}. The label should be computed on the surface the
+geometry was optimised on. The
+benchmarks above and the training data behind the OMol25 models each
+depart from this rule, in different ways (Table~\ref{tab:surfaces}).
+
+\begin{table}[h]
+\centering
+\small
+\caption{On which surface the geometry and the label of a
+broken-symmetry transition state lie.}
+\label{tab:surfaces}
+\begin{tabular}{@{}lll@{}}
+\toprule
+ & geometry & label \\
+\midrule
+rule & broken-symmetry & broken-symmetry \\
+benchmark references (Appendix~\ref{app:marks}, \cite{hait2025, marks2026}) & restricted & restricted \\
+OMol25 training data~\cite{omol25} & restricted & broken-symmetry \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The benchmark references are restricted throughout, geometry and label,
+which is why a model that reproduces the restricted saddle matches them
+(Table~\ref{tab:surfaces}).
+The OMol25 training data keeps half of the rule: the Transition1x
+geometries come from restricted searches that never tested the
+solution~\cite{schreiner2022}, and OMol25 recomputed their labels
+unrestricted and left the geometries where they were~\cite{omol25}.
+Whether half is enough has not been measured.
+
+Chapter~\ref{ch:mr} attempts to close that gap. From the Transition1x
+test split it selects reactions of high multireference character,
+where broken-symmetry solutions are expected at the transition state,
+together with a mid- and a low-MR group as control. The OMol25 models
+UMA-S, UMA-M and eSEN then drive the NEB searches, and every transition
+state they find is re-evaluated with unrestricted DFT, the protocol
+OMol25 used for its labels, extended by a stability analysis. The
+stability analysis decides whether the ground state at the structure
+the model found is closed-shell or broken-symmetry, and it splits the
+transition states into these two groups. On the two groups the same
+metrics are applied, to test whether the models are equally successful
+at finding a transition state in a broken-symmetry region as in a
+closed-shell one.
+
+They are not. At broken-symmetry transition states the models deliver
+structures that are not stationary points of the ground-state surface,
+and their forces there deviate more from DFT than at closed-shell ones.
+The chapter traces this to the training data. The training geometries of the broken-symmetry reactions are not
+stationary points of the ground-state surface: the force there is
+not zero, so the models have never seen a transition state of that
+surface, only the region around it.
+
+\newpage
 \chapter{Background and Theory}
-\label{ch:background}
 
-% =====================================================================
 \section{Potential Energy Surfaces}
 \label{sec:background-pes}
 
@@ -16,14 +231,12 @@
 Nuclei are thousands of times heavier than electrons. On the timescale of
 nuclear motion the electrons adjust instantly, so the electronic problem can
 be solved with the nuclei held fixed at positions $\mathbf{R}$,
-%
 \begin{equation}
   \hat{H}_\text{el}(\mathbf{R})\, \psi_k(\mathbf{r};\mathbf{R})
   = E_k(\mathbf{R})\, \psi_k(\mathbf{r};\mathbf{R}),
   \qquad E_0 \le E_1 \le \dots
   \label{eq:electronic-schrodinger}
 \end{equation}
-%
 The lowest eigenvalue $E_0(\mathbf{R})$, computed for every nuclear
 arrangement, is the potential energy surface (PES). The nuclei move on it and
 feel the force $-\nabla E_0(\mathbf{R})$. The approximation holds when the
@@ -64,7 +277,6 @@ energy level. Common practice lets the geometry level be the lower one,
 because structures depend less on functional and basis set than
 energies~\cite{bursch2022}.
 
-% =====================================================================
 \section{Electronic Structure Methods}
 \label{sec:background-electronic}
 
@@ -83,6 +295,7 @@ well it did within its ansatz, not whether the ansatz is a
 sufficiently accurate description of the molecule. That takes a
 separate test (Section~\ref{sec:background-stability}).
 
+% =====================================================================
 \subsection{Single-Reference and Multireference Systems}
 \label{sec:sr-vs-mr}
 
@@ -121,6 +334,7 @@ Methods are built for one of the two cases:
 \end{itemize}
 
 The following sections treat single-reference methods.
+
 
 \subsection{Kohn--Sham Density Functional Theory}
 \label{sec:background-dft}
@@ -165,21 +379,20 @@ orbitals. Two properties of the iteration:
   \item it converges to the stationary point the starting guess leads to;
   \item a stationary point is not necessarily the lowest one.
 \end{itemize}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 Equation~\eqref{eq:ks-energy} and the SCF iteration leave three things
-unspecified (Figure~\ref{fig:choices}). The term $E_\text{XC}$ needs a
-formula; this is the choice of functional
-(Section~\ref{sec:background-functionals}). The orbitals $\phi_i$ need a
-mathematical form in which they can be stored and optimised; this is the
-choice of basis set (Section~\ref{sec:background-basis}). And each orbital
-carries a spin; whether spin-up and spin-down electrons must share the same
-orbital or may have different ones is the choice of spin treatment
+unspecified (Figure~\ref{fig:choices}). The term $E_\text{XC}$ needs a formula; this is the choice of
+functional (Section~\ref{sec:background-functionals}). The orbitals
+$\phi_i$ need a mathematical form in which they can be stored and
+optimised; this is the choice of basis set
+(Section~\ref{sec:background-basis}). And each orbital carries a spin;
+whether spin-up and spin-down electrons must share the same orbital or may
+have different ones is the choice of spin treatment
 (Section~\ref{sec:background-spin}). The first two are named in the level
-of theory, written functional/basis.
+of theory, written functional/basis. 
 
 \begin{figure}[h]
 \centering
-% Preamble needs: \usepackage{tikz} \usetikzlibrary{calc, fit, positioning, decorations.pathreplacing, arrows.meta, backgrounds}
 \resizebox{\linewidth}{!}{%
 \begin{tikzpicture}[
   box/.style={draw, rounded corners=3pt, align=center, font=\small,
@@ -314,6 +527,7 @@ Three levels of theory appear in this thesis:
     diffuse functions added to the basis. The level of OMol25.
 \end{itemize}
 
+
 \subsection{Basis Sets}
 \label{sec:background-basis}
 
@@ -344,7 +558,9 @@ The size of the basis set is a trade-off. A small basis restricts the
 orbitals to shapes close to those of the free atoms and is cheap. A large
 basis lets the orbitals adapt to the molecule and approaches the basis set
 limit, at a cost that grows formally as $\mathcal{O}(N^4)$ in the number of
-functions. A basis set is described by three properties:
+functions.
+
+A basis set is described by three properties:
 
 \begin{itemize}
   \item \textbf{Functions per valence orbital.} One function fixes the
@@ -384,6 +600,9 @@ functional/basis, for example \mbox{$\omega$B97X-D3/6-31G(d)}. The two
 errors are independent: a larger basis does not correct the functional,
 and a better functional does not correct a small basis. A third choice
 remains to define a Kohn--Sham calculation: the treatment of spin.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Spin States of a Molecule}
 \label{sec:background-spinstates}
@@ -474,10 +693,6 @@ orbital. Beyond a certain bond length it appears, lies below the RKS
 solution, and has one electron on each atom. The same happens at
 transition states in which a bond is broken~\cite{bursch2022}.
 
-% TODO (mit Literatur): Absatz "Broken symmetry and the multireference
-% case" -- open-shell singlet = MR-Fall aus sec:sr-vs-mr; BS als
-% Ein-Determinanten-Naeherung, MR-Methoden als exakte Behandlung.
-
 \subsection{Breaking the Symmetry and Testing for It}
 \label{sec:background-stability}
 
@@ -526,13 +741,16 @@ that geometry is also a stationary point of the broken-symmetry surface is
 a separate question, answered by the gradient of the broken-symmetry
 solution at that geometry.
 
+
+% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Beyond Kohn--Sham DFT}
 \label{sec:background-beyond}
 
 The presentation follows Jensen~\cite{jensen2017}, Chapter 4. This work
 considered a coupled cluster method as target level and attempted a
 multireference method for reference geometries; neither enters the
-final results. They are described here as far as needed to follow why.
+final results. They are described here as far as
+needed to follow why.
 
 \paragraph{CCSD(T).} DFT approximates the correlation between electrons
 with the functional. Coupled cluster calculates it from the wavefunction.
@@ -644,6 +862,7 @@ A converged CI-NEB gives a transition state and a barrier on the surface
 it was run on. The transition state is a maximum along the path and a
 minimum perpendicular to it. That it has exactly one negative Hessian
 eigenvalue is not verified unless a frequency calculation follows.
+
 
 % =====================================================================
 \section{Machine-Learned Interatomic Potentials}

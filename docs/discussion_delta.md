@@ -1,3 +1,5 @@
+> Superseded 2026-09-14: the current Conclusion & Outlook text is docs/overleaf/04_Conclusion_Outlook.tex (mirror of Overleaf). This file is the draft history.
+
 # Discussion, delta chapter
 
 Written 2026-09-11 in this chat. Numbers from `docs/chapter_delta.tex`
