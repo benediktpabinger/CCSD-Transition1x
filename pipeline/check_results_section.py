@@ -56,6 +56,20 @@ want('gives %d closed-shell and %d broken-symmetry structures, with no borderlin
      % (sum(1 for v in s2 if v == 0), sum(1 for v in s2 if v > 0),
         min(v for v in s2 if v > 0)), 'S2-Verteilung')
 want('%d %s and %d %s structures' % (len(stab), NST, len(unst), NUN), 'Gruppen n')
+# ---- MR-Kontrolle innerhalb der Straten (Discussion, Alternative explanations)
+strat = {r['rxn']: r['stratum'] for r in P}
+hcs = [r for r in M if strat[r['rxn']] == 'high' and r['unstable_ts'] == '0']
+hbs = [r for r in M if strat[r['rxn']] == 'high' and r['unstable_ts'] == '1']
+lcs = [r for r in M if strat[r['rxn']] == 'low' and r['unstable_ts'] == '0']
+want('is %.3f~eV\,\AA$^{-1}$ in the low-MR tier and %.3f in the high-MR tier, and the force error %.3f against %.3f'
+     % (med(lcs, 'f_dft_max'), med(hcs, 'f_dft_max'), med(lcs, 'f_err_mae'), med(hcs, 'f_err_mae')), 'MR-Kontrolle closed-shell')
+want('%d of the %d model transition states are closed-shell and %d broken-symmetry; the low-MR tier holds %d'
+     % (len(hcs), len(hcs) + len(hbs), len(hbs), len(lcs)), 'MR-Kontrolle n')
+want('%.3f against %.3f in residual force and %.3f against %.3f in force error'
+     % (med(hbs, 'f_dft_max'), med(hcs, 'f_dft_max'), med(hbs, 'f_err_mae'), med(hcs, 'f_err_mae')), 'MR-Kontrolle high')
+t1h_bs = [T1r for T1r in T1 if strat[T1r['rxn']] == 'high' and T1r['group_local'] == 'unstable']
+t1h_cs = [T1r for T1r in T1 if strat[T1r['rxn']] == 'high' and T1r['group_local'] == 'stable']
+want('(%.2f against %.2f)' % (med(t1h_bs, 'f_bs'), med(t1h_cs, 'f_bs')), 'MR-Kontrolle Leiter')
 grp = {r['rxn']: r['group_rxn'] for r in P}
 want('which gives %d %s and %d %s reactions'
      % (sum(1 for g in grp.values() if g == 'unstable'), NUN,

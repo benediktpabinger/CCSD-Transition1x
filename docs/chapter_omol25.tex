@@ -703,12 +703,27 @@ points are not transition states of the surface the labels describe,
 and it is the change of spin formalism, not the change of level, that
 moved the transition state away from them (Table~\ref{tab:ladder}).
 
-\paragraph{Alternative explanations.} It is not a convergence artefact: the
-force error is measured at fixed geometries, with no optimisation
-involved. It is not a matter of breaking depth: the error does not
-correlate with it. It is not an energy problem: the energies at the
-delivered structures are within chemical accuracy for almost all of
-them.
+\paragraph{Alternative explanations.} It is not a convergence
+artefact: the force error is measured at fixed geometries, with no
+optimisation involved. It is not a matter of breaking depth: the
+error does not correlate with it. It is not an energy problem: the
+energies at the delivered structures are within chemical accuracy
+for almost all of them. It is partly multireference character as
+such: among the closed-shell structures alone, the median DFT
+residual force at the model transition state is 0.030~eV\,\AA$^{-1}$ in
+the low-MR tier and 0.082 in the high-MR tier, and the force error
+0.004 against 0.018, with no broken symmetry involved,\footnote{In
+the high-MR tier, 28 of the 78 model transition states are closed-shell
+and 50 broken-symmetry; the low-MR tier holds 30, all closed-shell.}
+and Chapter~\ref{ch:delta} saw the same dependence in MACE on its own
+level. The broken-symmetry effect comes on top of it. Within the
+high-MR tier, at equal multireference character, the broken-symmetry
+structures are still worse than the closed-shell ones, 0.127 against
+0.082 in residual force and 0.025 against 0.018 in force error, and
+their training points lie three times further off the transition
+state (1.70 against 0.58). That remaining factor of about 1.5 is what
+the training data explain; the pooled factor of 2.5 between the two
+groups contains both effects.
 
 \paragraph{Other reactive data in OMol25.} Transition1x is not the only
 reactive data in OMol25, and one might object that the models learned
