@@ -108,11 +108,11 @@ test: both levels of theory are restricted, and when the transition
 states are searched with DFT at either level, the two results lie
 within 0.007\,\AA{} of each other. A path relaxed at the cheap level therefore already comes within that
 distance of the transition state found at the expensive one, and
-relabelling the path is enough.
+relabelling the path without re-optimising it is enough.
 
 This stops being true when the spin formalism changes as well. At a
-broken-symmetry transition state the restricted solution is not the
-ground state (Section~\ref{sec:background-spin}), and the transition
+broken-symmetry transition state the restricted solution is unstable
+(Section~\ref{sec:background-stability}), and the transition
 state found unrestricted can lie far from the one found restricted,
 which the path passes through. A path relaxed restricted then holds
 no transition state of the surface its unrestricted labels describe,
@@ -144,7 +144,7 @@ nothing about the SCF solution of their references, so we ran the
 stability analysis ourselves, at the paper's own level of theory. Of
 the 25 even-electron references, 24 are closed-shell and one is
 broken-symmetry (Appendix~\ref{app:marks}). That one was still optimised restricted, so it is not a transition
-state of the ground-state surface and should not serve as a
+state of the unrestricted surface and should not serve as a
 reference. It does, and so a model that finds the same restricted
 structure is scored as a success, although the true transition state
 lies elsewhere.
@@ -199,7 +199,7 @@ together with a mid- and a low-MR group as control. The OMol25 models
 UMA-S, UMA-M and eSEN then drive the NEB searches, and every transition
 state they find is re-evaluated with unrestricted DFT, the protocol
 OMol25 used for its labels, extended by a stability analysis. The
-stability analysis decides whether the ground state at the structure
+stability analysis decides whether the lowest solution at the structure
 the model found is closed-shell or broken-symmetry, and it splits the
 transition states into these two groups. On the two groups the same
 metrics are applied, to test whether the models are equally successful
@@ -207,9 +207,9 @@ at finding a transition state in a broken-symmetry region as in a
 closed-shell one.
 
 They are not. At broken-symmetry transition states the models deliver
-structures that are not stationary points of the ground-state surface,
+structures that are not stationary points of the unrestricted surface,
 and their forces there deviate more from DFT than at closed-shell ones.
 The chapter traces this to the training data. The training geometries of the broken-symmetry reactions are not
-stationary points of the ground-state surface: the force there is
+stationary points of the unrestricted surface: the force there is
 not zero, so the models have never seen a transition state of that
 surface, only the region around it.

@@ -31,10 +31,11 @@ a small part of its training data. Chapter~\ref{ch:delta} answers it.
 The second question arose during that work. The OMol25 models were
 used along the way as a point of comparison, and on some reactions
 they did not find the restricted reference transition states but
-different structures. The reason turned out to be that their labels
-are unrestricted, so the models search for transition states with
+different structures. The reason turned out to be that they are
+trained on unrestricted labels, so the models search for transition
+states with
 broken spin symmetry, while the references we worked with were
-optimised with restricted spin symmetry. Whether the models can find
+optimised with restricted spin symmetry. Whether the OMol25 models can find
 those broken-symmetry transition states at all became research
 question 2.
 

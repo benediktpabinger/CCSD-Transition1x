@@ -52,12 +52,12 @@ for old in ('RKS-stable', 'RKS stable', 'RKS-unstable', 'RKS unstable',
 
 # ---------------------------------------------------- Klassifikation
 s2 = [abs(float(r['s2_ts'])) for r in M]
-want('zero for %d and at least $%.4f$ for the other %d'
-     % (sum(1 for v in s2 if v == 0), min(v for v in s2 if v > 0),
-        sum(1 for v in s2 if v > 0)), 'S2-Verteilung')
+want('gives %d closed-shell and %d broken-symmetry structures, with no borderline case: the smallest non-zero value is $%.4f$'
+     % (sum(1 for v in s2 if v == 0), sum(1 for v in s2 if v > 0),
+        min(v for v in s2 if v > 0)), 'S2-Verteilung')
 want('%d %s and %d %s structures' % (len(stab), NST, len(unst), NUN), 'Gruppen n')
 grp = {r['rxn']: r['group_rxn'] for r in P}
-want('This gives %d %s and %d %s reactions'
+want('which gives %d %s and %d %s reactions'
      % (sum(1 for g in grp.values() if g == 'unstable'), NUN,
         sum(1 for g in grp.values() if g == 'stable'), NST), 'Reaktionsgruppen')
 strat = {}
@@ -106,11 +106,9 @@ for key, lab in MODELS:
     s = [r for r in stab if r['model'] == key]
     u = [r for r in unst if r['model'] == key]
     parts.append((med(s, 'f_err_mae'), med(u, 'f_err_mae')))
-want('medians of %.4f against %.4f~eV\\,\\AA$^{-1}$ for UMA-S, %.4f against %.4f for UMA-M and %.4f against %.4f for eSEN --- factors of %.1f, %.1f and %.1f'
+want('broken-symmetry: %.4f against %.4f~eV\\,\\AA$^{-1}$ for UMA-S, %.4f against %.4f for UMA-M and %.4f against %.4f for eSEN, factors of %.1f, %.1f and %.1f'
      % (parts[0] + parts[1] + parts[2] + tuple(u / s for s, u in parts)), 'MAE je Modell')
-want('median rises from %.4f to %.4f, and the largest single component from %.4f to %.4f'
-     % (med(stab, 'f_err_mae'), med(unst, 'f_err_mae'),
-        med(stab, 'f_err_max'), med(unst, 'f_err_max')), 'MAE gepoolt')
+want('median rises from %.4f to %.4f' % (med(stab, 'f_err_mae'), med(unst, 'f_err_mae')), 'MAE gepoolt')
 ms, mu = med(stab, 'f_err_mae'), med(unst, 'f_err_mae')
 a = sum(1 for r in unst if float(r['f_err_mae']) < ms)
 b = sum(1 for r in stab if float(r['f_err_mae']) > mu)
@@ -121,7 +119,6 @@ want('%d of the %d %s structures lie below the %s median' % (a, len(unst), NUN, 
      'Ueberlappung a')
 want('%d of the %d %s structures above the %s one' % (b, len(stab), NST, NUN),
      'Ueberlappung b')
-want('holds %d of the %d structures' % (ov, len(M)), 'Ueberlappungsbereich')
 dep = [float(r['depth_ts_mev']) for r in unst]
 want('spans %.1f to %.0f~meV' % (min(dep), max(dep)), 'Tiefenspanne')
 from scipy.stats import spearmanr  # noqa: E402
@@ -189,21 +186,12 @@ want('counts as %s if at least one of its three transition states' % NUN,
 # ---------------------------------------------------- Leiter
 t1s = [r for r in T1 if r['group_local'] == 'stable']
 t1u = [r for r in T1 if r['group_local'] == 'unstable']
-want('$%.4f$~eV\\,\\AA$^{-1}$ for the %s and $%.4f$ for the %s reactions, %d of %d below $0.05$'
-     % (med(t1s, 'f_ref'), NST, med(t1u, 'f_ref'), NUN,
-        sum(1 for r in T1 if float(r['f_ref']) < 0.05), len(T1)), 'Leiter T1x-Level')
-want('the median is $%.2f$ and the smallest value $%.3f$'
-     % (med(T1, 'f_rks'), min(float(r['f_rks']) for r in T1)), 'Leiter RKS')
-want('$%.3f$ for the %s and $%.3f$ for the %s' % (med(t1s, 'f_rks'), NST, med(t1u, 'f_rks'), NUN),
-     'Leiter RKS je Gruppe')
 # Die Faktoren sind, wie in hinge_tables.py (CORE) eingefroren, Mediane der
 # Verhaeltnisse je Reaktion (Spalte ratio), nicht Verhaeltnisse der Mediane.
-want('residual force is $%.3f$, a factor of $%.2f$'
-     % (med(t1u, 'f_bs'), med(t1u, 'ratio')), 'Leiter BS')
 t2s = [r for r in T2 if r['group_local'] == 'stable']
 t2u = [r for r in T2 if r['group_local'] == 'unstable']
-want('drops to $%.3f$ and $%.3f$' % (med(t2s, 'f_rks'), med(t2u, 'f_rks')), 'Leiter nachopt RKS')
-want('It is $%.2f$ at the re-optimised saddles, a factor of $%.0f$'
+want('restricted surface ($%.3f$ and $%.3f$)' % (med(t2s, 'f_rks'), med(t2u, 'f_rks')), 'Leiter nachopt RKS')
+want('is still off, $%.2f$, a factor of $%.0f$'
      % (med(t2u, 'f_bs'), med(t2u, 'ratio')), 'Leiter nachopt BS')
 want('%s (%d)     & $%.4f$ & $%.3f$ & $%.3f$' % (NST, len(t1s), med(t1s, 'f_ref'),
                                                  med(t1s, 'f_rks'), med(t1s, 'f_bs')),
@@ -211,10 +199,6 @@ want('%s (%d)     & $%.4f$ & $%.3f$ & $%.3f$' % (NST, len(t1s), med(t1s, 'f_ref'
 want('%s (%d)  & $%.4f$ & $%.3f$ & $%.3f$' % (NUN, len(t1u), med(t1u, 'f_ref'),
                                               med(t1u, 'f_rks'), med(t1u, 'f_bs')),
      'Tabelle Zeile 2')
-want('%s (%d)     & -- & $%.3f$ & $%.3f$' % (NST, len(t2s), med(t2s, 'f_rks'), med(t2s, 'f_bs')),
-     'Tabelle Zeile 3')
-want('%s (%d)  & -- & $%.3f$ & $%.2f$' % (NUN, len(t2u), med(t2u, 'f_rks'), med(t2u, 'f_bs')),
-     'Tabelle Zeile 4')
 want('(nine %s, three %s)' % (NST, NUN), 'Fussnote Nachoptimierung')
 assert len(T2) == 33 and len(t2s) == 18 and len(t2u) == 15
 
@@ -235,9 +219,20 @@ assert all(r['omol_surface'] == 'gebrochen' and r['omol_unrestricted'] == '1' fo
 assert max(abs(float(r['s2_ours']) - float(r['s2_omol'])) for r in vb) < 0.007, 'Versionstest: <S^2>'
 dep = [float(r['depth_mev']) for r in vb]
 assert round(min(dep)) == 16 and round(max(dep)) == 616, 'Versionstest: Bruchtiefe-Spanne'
-want('44 of them are in the release', 'Versionstest Treffer')
+want('44 of our 45 transition states are in the release', 'Versionstest Treffer')
 want('agree to under $0.1$~meV in energy and $0.02$~eV', 'Versionstest dE/dF')
 want('at all %d broken-symmetry geometries the OMol25 label sits on the' % len(vb), 'Versionstest BS')
+
+# ---------------------------------------------------- NEB-Schritte
+okN = [float(r['n_steps']) for r in N.values() if r['criterion_met'] == '1']
+noN = [r for r in N.values() if r['criterion_met'] == '0']
+lim = [r for r in noN if r['converged_marker'] == '1']
+want('converged after a median of %d optimiser steps' % st.median(okN), 'NEB Schritte konvergiert')
+okM = sum(1 for r in N.values() if r['converged_marker'] == '1')
+want('reported success in %d of the %d searches' % (okM, len(N)), 'Optimierer-Erfolgsmarker')
+want('%d at the step limit, after a median of %d steps, and %s aborted by the solver'
+     % (len(lim), st.median([float(r['n_steps']) for r in lim]), {2: 'two'}[len(noN) - len(lim)]),
+     'NEB Schritte nicht konvergiert')
 
 # ---------------------------------------------------- Delta-Tiers (Kapitel 3) in der T1x-Stabilitaet
 import json
@@ -248,7 +243,7 @@ assert len(tier) == 30 and all(x in t1g for x in tier), 'Delta-Tiers: nicht alle
 WORDS = {0: 'none', 1: 'one', 7: 'seven'}
 bs = {t: sum(1 for x, g in tier.items() if g == t and t1g[x] == 'unstable') for t in ('high', 'mid', 'low')}
 want('The 30 reactions of Chapter~\\ref{ch:delta} are all among the 45', 'Delta-Tiers Teilmenge')
-want('the ground state is broken-symmetry for %s of the ten high-MR, %s of the ten mid-MR and %s of the ten low-MR reactions'
+want('the lowest solution is broken-symmetry for %s of the ten high-MR, %s of the ten mid-MR and %s of the ten low-MR reactions'
      % (WORDS[bs['high']], WORDS[bs['mid']], WORDS[bs['low']]), 'Delta-Tiers BS-Anteile')
 
 print('VERIFY chapter_omol25.tex gegen die Tabellen')

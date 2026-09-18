@@ -12,9 +12,10 @@ multireference character. They were placed out of scope. Problems arose,
 and they are not needed for the question of this thesis: the models were
 trained on \mbox{$\omega$B97M-V/def2-TZVPD} and are trying to find the
 transition states of that surface, so the reference stays at that level.
-A reference closer to the exact surface would answer a different
-question, and a model agreeing with it would be right for the wrong
-reason. No multireference barrier enters this work.
+A multireference reference
+would test a different question: whether the models agree with a
+surface they were never trained on. Where they did, it would be by
+accident. No multireference barrier enters this work.
 
 \paragraph{The overall problem: active space selection.} Every
 multireference method needs an active space, and the result depends on
@@ -22,9 +23,10 @@ it. autoCAS~\cite{stein2019autocas} selects the space from a DMRG
 calculation over all valence orbitals, which was not practical for
 molecules of this size. AVAS~\cite{sayfutyarova2017} and selection by
 hand require experience that could not be acquired within the time of
-this work. A smaller choice of molecules for this part of the test set
-would have avoided this. This is also why the standard protocol, NEVPT2
-energies on unrestricted geometries, was not carried out.
+this work. Smaller molecules in this part of the test set would have avoided
+this. NEVPT2, the standard protocol for energies on unrestricted
+geometries, builds on a CASSCF wavefunction and therefore needs the
+same active space, so it was not carried out either.
 
 \paragraph{The additional problem for geometries: active space
 consistency.} Starting from the DFT transition state, AVAS selected a
@@ -47,8 +49,14 @@ The re-selection in the optimised orbital basis is what the autoCAS
 authors recommend for a single structure~\cite{stein2019autocas}; the
 iteration above applies it to a moving geometry.
 
-Significant time of this work went into this attempt. To the author's
-knowledge, transition-state geometries optimised at a multireference
-level do not exist as a benchmark set, which is why it was worth trying
-and is documented here.
+A significant part of the time of this work went into this attempt.
+Benchmark sets with transition-state geometries optimised at a
+multireference level are rare; the standard one holds eleven
+pericyclic hydrocarbon reactions with CASSCF and CASPT2 transition
+structures~\cite{guner2003}, and nothing comparable exists for
+reactions of the size and diversity of Transition1x. The iteration
+above might be one way such a set could be attempted. For the question
+of this thesis it was not needed: the models are trained on the \mbox{$\omega$B97M-V/def2-TZVPD}
+surface and are tested against it, and that reference stands on its
+own.
 

@@ -13,9 +13,10 @@ multireference character. They were placed out of scope. Problems arose,
 and they are not needed for the question of this thesis: the models were
 trained on \mbox{$\omega$B97M-V/def2-TZVPD} and are trying to find the
 transition states of that surface, so the reference stays at that level.
-A reference closer to the exact surface would answer a different
-question, and a model agreeing with it would be right for the wrong
-reason. No multireference barrier enters this work.
+A multireference reference
+would test a different question: whether the models agree with a
+surface they were never trained on. Where they did, it would be by
+accident. No multireference barrier enters this work.
 
 \paragraph{The overall problem: active space selection.} Every
 multireference method needs an active space, and the result depends on
@@ -23,9 +24,10 @@ it. autoCAS~\cite{stein2019autocas} selects the space from a DMRG
 calculation over all valence orbitals, which was not practical for
 molecules of this size. AVAS~\cite{sayfutyarova2017} and selection by
 hand require experience that could not be acquired within the time of
-this work. A smaller choice of molecules for this part of the test set
-would have avoided this. This is also why the standard protocol, NEVPT2
-energies on unrestricted geometries, was not carried out.
+this work. Smaller molecules in this part of the test set would have avoided
+this. NEVPT2, the standard protocol for energies on unrestricted
+geometries, builds on a CASSCF wavefunction and therefore needs the
+same active space, so it was not carried out either.
 
 \paragraph{The additional problem for geometries: active space
 consistency.} Starting from the DFT transition state, AVAS selected a
@@ -48,10 +50,16 @@ The re-selection in the optimised orbital basis is what the autoCAS
 authors recommend for a single structure~\cite{stein2019autocas}; the
 iteration above applies it to a moving geometry.
 
-Significant time of this work went into this attempt. To the author's
-knowledge, transition-state geometries optimised at a multireference
-level do not exist as a benchmark set, which is why it was worth trying
-and is documented here.
+A significant part of the time of this work went into this attempt.
+Benchmark sets with transition-state geometries optimised at a
+multireference level are rare; the standard one holds eleven
+pericyclic hydrocarbon reactions with CASSCF and CASPT2 transition
+structures~\cite{guner2003}, and nothing comparable exists for
+reactions of the size and diversity of Transition1x. The iteration
+above might be one way such a set could be attempted. For the question
+of this thesis it was not needed: the models are trained on the \mbox{$\omega$B97M-V/def2-TZVPD}
+surface and are tested against it, and that reference stands on its
+own.
 
 \chapter{Conclusion \& Outlook}
 \label{ch:conclusion}
@@ -61,31 +69,36 @@ lifted to a higher level of theory by relabelling only a subset of its
 training data. The answer is yes, certainly as long as the spin
 formalism is not changed with the labels, and Allen et
 al.~\cite{allen2026} and DeePEST-OS~\cite{ren2026} have shown the same
-at scale. Three things are certain. The correction reaches the higher
-level of theory on the low-MR reactions, where the restricted solution
-is the ground state: the barrier error drops to a third, in single
-points and in searches the model drives itself, and the force error
-drops to a third in every tier, with under 1\,\% of the dataset
-relabelled. The correction does not change the quality of the
-geometries: the transition states found with MACE+$\Delta$ lie as
-close to the reference as those found with MACE (mean RMSD 0.054
-against 0.056\,\AA, Figure~\ref{fig:rmsd-parity}). No improvement was
-to be made here, since the transition states of
-\mbox{$\omega$B97X-D3/6-31G(d)} and \mbox{$\omega$B97M-V/def2-TZVP}
-lie within 0.007\,\AA{} of each other, below the geometry error of the
-base model.
+at scale. With under 1\,\% of the dataset relabelled, the following
+was achieved:
+
+\begin{itemize}
+  \item the force error drops to a third, in every tier and on every
+    reaction;
+  \item the energies improve in every tier;
+  \item the geometries stay as good as MACE's: the transition states
+    found with MACE+$\Delta$ lie as close to the reference as those
+    found with MACE (mean RMSD 0.054 against 0.056\,\AA,
+    Figure~\ref{fig:rmsd-parity}). No improvement was to be made
+    here, since the transition states of
+    \mbox{$\omega$B97X-D3/6-31G(d)} and \mbox{$\omega$B97M-V/def2-TZVP}
+    lie within 0.007\,\AA{} of each other, below the geometry error
+    of the base model.
+\end{itemize}
+
+The barriers depend on the multireference character. On the low-MR
+reactions the barrier error drops to a third, in single points and in
+searches the model drives itself. At mid and high multireference
+character the correction overshoots. Chapter~\ref{ch:mr} showed that
+at mid MR the restricted reference is sound, so the overshoot there
+is the head's error, while at high MR the restricted reference is
+unstable at seven of ten transition states and therefore not a valid
+target.
 
 The correction is bounded by the base model. MACE alone misses its
 own level by 42\,meV, that error enters MACE+$\Delta$ unchanged, and
 the head cannot reduce it (Eq.~\eqref{eq:error-split}); the corrected
 model ends at 56\,meV.
-
-At mid and high multireference character the correction overshoots,
-and Chapter~\ref{ch:mr} shows that the two tiers differ. In the mid
-tier the restricted reference is the ground state at nine of ten
-transition states, so the overshoot is the head's error. In the high
-tier it is the ground state at only three of ten, so there the
-reference itself was the wrong target.
 
 Four changes could have made the correction better.
 
@@ -105,7 +118,7 @@ Four changes could have made the correction better.
     solution is unstable, the head learns a difference between two
     restricted energies. Relabelling those points unrestricted, with a
     stability analysis, would give it a difference that describes the
-    ground state.
+    unrestricted surface.
   \item \textbf{A better base.} Every improvement of MACE on its own
     level transfers one to one, because that term passes through the
     sum unchanged.
@@ -119,40 +132,54 @@ The correction was not pushed further, because the principle had been
 shown at scale by others~\cite{allen2026, ren2026}; the open question
 was where relabelling stops, which is what Chapter~\ref{ch:mr} took up.
 
-RQ2 asked whether a model can learn a surface from paths that were
-never relaxed on that surface. The answer is only partly where the
-surface has its saddle somewhere else than the path does, and that is
-the case whenever relabelling changes the spin formalism. OMol25 is
-that case: it relabelled the whole Transition1x set and moved the
-labels from the restricted surface to the DFT ground-state surface,
-using unrestricted DFT at \mbox{$\omega$B97M-V/def2-TZVPD}.
-Chapter~\ref{ch:mr} shows the limit: unrestricted labels on paths that
-were never re-optimised unrestricted contain no broken-symmetry saddle
-geometry, so the models cannot learn where the saddle of that surface
-lies. Figure~\ref{fig:pes} gives the intuition: a schematic of the
-same geometries on the surface they were relaxed on and on the
-surface they were labelled on.
+RQ2 asked whether a model can learn a surface by relabelling paths
+that were never relaxed on that surface. It does when only the level
+of theory changes. It does not when the spin formalism changes as
+well: the broken-symmetry transition state lies too far away, the
+path holds no point of it, and the models never see one. OMol25 is
+that case: it relabelled the whole Transition1x set unrestricted at
+\mbox{$\omega$B97M-V/def2-TZVPD} without re-optimising a path.
+Chapter~\ref{ch:mr} tested three of its models on 45 Transition1x
+reactions and found:
+
+\begin{itemize}
+  \item at broken-symmetry transition states the models deliver
+    structures that are not stationary points of the unrestricted
+    surface, with DFT residual forces 2.5 times those of the
+    closed-shell group, while their own forces report convergence;
+  \item their force error there is two to three times larger, while
+    the energies stay within chemical accuracy;
+  \item the barrier error is a geometry error: the spread of the DFT
+    barrier over the three model geometries is 32 times larger;
+  \item the training data explain it: the stored transition states
+    are not transition states of the unrestricted surface, and the
+    change of spin formalism, not the change of level, is responsible.
+\end{itemize}
+
+Figure~\ref{fig:pes} gives the intuition: a schematic of the same
+geometries on the surface they were relaxed on and on the surface the
+labels were computed on.
 
 \begin{figure}[t]
   \centering
   \includegraphics[width=\textwidth]{Pictures/fig_pes.png}
   \caption{Schematic of the mechanism, not a computed surface. The same
   geometries of a broken-symmetry reaction are shown on the restricted
-  surface they were relaxed on (top) and on the ground-state surface
-  they were labelled on (bottom). On the restricted surface the
+  surface they were relaxed on (top) and on the unrestricted surface
+  the labels were computed on (bottom). On the restricted surface the
   transition state is a saddle and the band with its stored NEB history
-  (white dots) lies on the minimum-energy path. On the ground-state
+  (white dots) lies on the minimum-energy path. On the unrestricted
   surface the same band lies on a slope, the force at the transition
   state is not zero (arrows), and the saddle lies elsewhere. Right: the
   energy along the band on each surface.}
   \label{fig:pes}
 \end{figure}
 
-Transition1x is not the only reactive data in OMol25, but no geometry
-in OMol25 was relaxed at the level the labels use, and the other
+Transition1x is not the only reactive data in OMol25, but no reaction
+path in OMol25 was relaxed at the level the labels use, and the other
 organic reaction paths, Grambow and RGD1, were optimised restricted and
 interpolated rather than relaxed~\cite{omol25}. A saddle of the
-ground-state surface at the OMol25 level therefore does not exist
+unrestricted surface at the OMol25 level therefore does not exist
 anywhere in the training data.
 
 \paragraph{Unrestricted labels need new paths.} We therefore conclude that a
@@ -196,7 +223,7 @@ unrestricted and then removed~\cite{hait2025}. The benchmark of Marks
 et al.~\cite{marks2026} holds one among 25, optimised restricted like
 the rest (Appendix~\ref{app:marks}). If the reference saddle is
 restricted, a model that finds the restricted saddle passes, even
-where the restricted solution is not the ground state.
+where the restricted solution is unstable.
 
 No benchmark exists that tests models at broken-symmetry transition
 states. We see this as a gap in the literature: the reported success
