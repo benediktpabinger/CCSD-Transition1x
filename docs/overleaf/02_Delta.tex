@@ -109,12 +109,12 @@ the resulting structure: one shared encoder, two readouts, one forward pass.
 
 \begin{figure}[t]
   \centering
-  \includegraphics[width=0.95\textwidth]{Pictures/mace_delta_architecture_v3.png}
+  \includegraphics[width=0.95\textwidth]{Pictures/mace_delta_architecture_v4.png}
   \caption{Structure of MACE+$\Delta$. One forward pass through the frozen
   encoder produces the per-atom features; 2{,}048 of the 17{,}408 numbers per
-  atom are rotation-invariant. The original energy readout predicts the
-  energy at the baseline level from all channels; the correction head
-  predicts the shift to the target level from the invariant channels only.
+  atom are rotation-invariant. Both readouts read these invariant
+  channels: the original energy readout predicts the energy at the
+  baseline level, the correction head the shift to the target level.
   Both output one number per atom, summed over atoms, and the sum of the two
   results is the corrected prediction.}
   \label{fig:mace-delta-arch}
