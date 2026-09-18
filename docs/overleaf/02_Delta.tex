@@ -486,20 +486,15 @@ own level by 517\,meV.\label{fn:all30}}
 \begin{figure}[htbp]
   \centering
   \includegraphics[width=\textwidth]{Pictures/bias_decomposition_v5.png}
-  \caption{Fixed geometries, barrier bias decomposed via
-  Eq.~\eqref{eq:error-split}, by MR tier. Dashed lines mark the two
-  levels of theory; both models start at the $\omega$B97X/6-31G(d) level.
-  MACE carries one error, its deviation from its own
-  target level, $E_{\text{MACE}} - E^{\omega\text{B97X}}$ (teal).
-  MACE+$\Delta$ carries two errors: the same baseline error
-  $E_{\text{MACE}} - E^{\omega\text{B97X}}$, and the head's error in predicting
-  the level-of-theory gap,
-  $\Delta - (E^{\omega\text{B97M}} - E^{\omega\text{B97X}})$, the dark part of the
-  correction arrow; the light part removes exactly the gap,
-  $E^{\omega\text{B97M}} - E^{\omega\text{B97X}}$. The head error is
-  small in every tier; the baseline error grows with multireference
-  character and dominates at high MR. Bare MACE sits near the reference
-  at high MR only because its baseline error happens to cancel the
+  \caption{Barrier bias at fixed geometries, decomposed by
+  Eq.~\eqref{eq:error-split}, per MR tier. Dashed lines: the
+  $\omega$B97X/6-31G(d) level and the reference. Teal arrow: the
+  baseline error of MACE against its own level; light orange: the level
+  gap the head removes; dark orange: the head's error against that gap;
+  black tick: the resulting bias, MACE on the left, MACE+$\Delta$ on
+  the right. The head error stays small in every tier, the baseline
+  error grows with multireference character, and at high MR bare MACE
+  lands near the reference only because its baseline error cancels the
   level gap.}
   \label{fig:bias-decomposition}
 \end{figure}
