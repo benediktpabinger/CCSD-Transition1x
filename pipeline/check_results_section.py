@@ -61,7 +61,7 @@ strat = {r['rxn']: r['stratum'] for r in P}
 hcs = [r for r in M if strat[r['rxn']] == 'high' and r['unstable_ts'] == '0']
 hbs = [r for r in M if strat[r['rxn']] == 'high' and r['unstable_ts'] == '1']
 lcs = [r for r in M if strat[r['rxn']] == 'low' and r['unstable_ts'] == '0']
-want('is %.3f~eV\,\AA$^{-1}$ in the low-MR tier and %.3f in the high-MR tier, and the force error %.3f against %.3f'
+want('is %.3f~eV\\,\\AA$^{-1}$ in the low-MR tier and %.3f in the high-MR tier, and the force error %.3f against %.3f'
      % (med(lcs, 'f_dft_max'), med(hcs, 'f_dft_max'), med(lcs, 'f_err_mae'), med(hcs, 'f_err_mae')), 'MR-Kontrolle closed-shell')
 want('%d of the %d model transition states are closed-shell and %d broken-symmetry; the low-MR tier holds %d'
      % (len(hcs), len(hcs) + len(hbs), len(hbs), len(lcs)), 'MR-Kontrolle n')
