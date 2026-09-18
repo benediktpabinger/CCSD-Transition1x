@@ -19,9 +19,15 @@
 % Architektur im Kapitel belassen, Roadmap angehaengt.
 
 Machine-learned interatomic potentials (MLIPs) such as PaiNN or MACE
-are commonly trained on DFT calculations. Transition1x~\cite{schreiner2022} demonstrated this: a
-PaiNN model trained on its ${\sim}10$ million reaction-path geometries
-reproduces DFT energies and forces at a fraction of the cost. However,
+are commonly trained on DFT calculations. Trained on reaction paths,
+they can search transition states and predict barriers at a fraction
+of the cost of DFT. Transition1x~\cite{schreiner2022} was the first
+large dataset built for this purpose: 9.6 million DFT energies and
+forces on and around the reaction paths of 10\,073 organic reactions,
+where earlier datasets held equilibrium structures and their
+surroundings. It demonstrated that a PaiNN model trained on these
+${\sim}10$ million reaction-path geometries reproduces DFT energies
+and forces. However,
 Transition1x was computed at \mbox{$\omega$B97X/6-31G(d)}, a
 comparatively cheap level of theory chosen to make the generation of
 ten million data points computationally feasible. More accurate
