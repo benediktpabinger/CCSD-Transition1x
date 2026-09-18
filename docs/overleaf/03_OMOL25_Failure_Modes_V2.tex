@@ -155,7 +155,7 @@ is used to search the transition state and evaluate the barrier height by runnin
 45 reactions, for 135 searches in total (fairchem 2.20.0, ASE 3.28.0). All three
 run on the \texttt{omol} task head at charge 0 and spin multiplicity 1. %matching the neutral singlet the DFT side treats.
 
-\textbf{Band initialization:} We initialise each band with the final \mbox{$\omega$B97X-D3/6-31G(d)} band stored in
+\textbf{Band initialization:} We initialise each band with the final \mbox{$\omega$B97X/6-31G(d)} band stored in
 Transition1x, ten images including reactant and product, and re-relax the two
 endpoints with the respective model (BFGS, $0.05$~eV\,\AA$^{-1}$).
 
@@ -370,13 +370,13 @@ relaxed, and where their labels were computed, in the two datasets.}
 \cmidrule(lr){2-3} \cmidrule(l){4-5}
  & level of theory & spin formalism & level of theory & spin formalism \\
 \midrule
-Transition1x & $\omega$B97X-D3/6-31G(d) & restricted & $\omega$B97X-D3/6-31G(d) & restricted \\
-OMol25       & $\omega$B97X-D3/6-31G(d) & restricted & $\omega$B97M-V/def2-TZVPD & unrestricted \\
+Transition1x & $\omega$B97X/6-31G(d) & restricted & $\omega$B97X/6-31G(d) & restricted \\
+OMol25       & $\omega$B97X/6-31G(d) & restricted & $\omega$B97M-V/def2-TZVPD & unrestricted \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-From here on, the Transition1x level is \mbox{$\omega$B97X-D3/6-31G(d)}
+From here on, the Transition1x level is \mbox{$\omega$B97X/6-31G(d)}
 and the OMol25 level \mbox{$\omega$B97M-V/def2-TZVPD}. A level names
 functional and basis only; the spin formalism is stated separately, as
 the restricted or the unrestricted surface.
@@ -400,7 +400,7 @@ states in three steps: at the Transition1x level, as stored with the
 dataset; at the OMol25 level on the restricted surface; and at the
 OMol25 level on the unrestricted surface (Sec.~\ref{sec:dft}). The first step confirms that the
 geometries are relaxed at their own level. The second isolates what
-the change of level from \mbox{$\omega$B97X-D3/6-31G(d)} to
+the change of level from \mbox{$\omega$B97X/6-31G(d)} to
 \mbox{$\omega$B97M-V/def2-TZVPD} does, the third what the change of spin
 formalism from restricted to unrestricted does.
 As a control, we re-optimise the transition states at the OMol25
@@ -659,7 +659,7 @@ is relaxed.}
     & \multicolumn{3}{c}{median residual force [eV\,\AA$^{-1}$]} \\
     \cmidrule(l){2-4}
     & step 1 & step 2 & step 3 \\
-    & $\omega$B97X-D3/6-31G(d) & $\omega$B97M-V/def2-TZVPD & $\omega$B97M-V/def2-TZVPD \\
+    & $\omega$B97X/6-31G(d) & $\omega$B97M-V/def2-TZVPD & $\omega$B97M-V/def2-TZVPD \\
     & restricted & restricted & unrestricted$^{a}$ \\
     & as relaxed & level changed & spin formalism changed \\
     \midrule

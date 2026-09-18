@@ -49,7 +49,7 @@ MEAS = "measure residual force at"
 
 box(XS[0], Y, "geometries", ["Transition1x", "transition states"],
     small_above="45 geometries", small_below="as stored in the dataset")
-box(XS[1], Y, "step 1", ["ωB97X-D3/6-31G(d)", "restricted"], small_above=MEAS)
+box(XS[1], Y, "step 1", ["ωB97X/6-31G(d)", "restricted"], small_above=MEAS)
 box(XS[2], Y, "step 2", ["ωB97M-V/def2-TZVPD", "restricted"], small_above=MEAS, fc=BLUE)
 box(XS[3], Y, "step 3", ["ωB97M-V/def2-TZVPD", "unrestricted"], small_above=MEAS,
     small_below="with stability analysis", fc=RED)

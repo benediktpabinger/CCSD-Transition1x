@@ -81,7 +81,7 @@ was achieved:
     found with MACE (mean RMSD 0.054 against 0.056\,\AA,
     Figure~\ref{fig:rmsd-parity}). No improvement was to be made
     here, since the transition states of
-    \mbox{$\omega$B97X-D3/6-31G(d)} and \mbox{$\omega$B97M-V/def2-TZVP}
+    \mbox{$\omega$B97X/6-31G(d)} and \mbox{$\omega$B97M-V/def2-TZVP}
     lie within 0.007\,\AA{} of each other, below the geometry error
     of the base model.
 \end{itemize}
@@ -89,9 +89,10 @@ was achieved:
 The barriers depend on the multireference character. On the low-MR
 reactions the barrier error drops to a third, in single points and in
 searches the model drives itself. At mid and high multireference
-character the correction overshoots. Chapter~\ref{ch:mr} showed that
-at mid MR the restricted reference is sound, so the overshoot there
-is the head's error, while at high MR the restricted reference is
+character the correction overshoots, and the overshoot is mostly the
+base model's error, which grows with multireference character and
+passes through the head unchanged. Chapter~\ref{ch:mr} showed that
+at mid MR the restricted reference is sound, while at high MR it is
 unstable at seven of ten transition states and therefore not a valid
 target.
 
@@ -103,6 +104,9 @@ model ends at 56\,meV.
 Four changes could have made the correction better.
 
 \begin{itemize}
+  \item \textbf{A better base.} Every improvement of MACE on its own
+    level transfers one to one, because that term passes through the
+    sum unchanged.
   \item \textbf{A trainable encoder.} The head reads frozen features,
     which is why the baseline passes through. Unfreezing the last MACE
     layer or the readout on the same 80\,000 points would let the model
@@ -113,15 +117,12 @@ Four changes could have made the correction better.
     the difference from scalar features alone. A feature that tracks
     multireference character, such as $N_\text{FOD}$ or the
     $\langle S^2 \rangle$ of the label, would let the head learn that
-    the gap shrinks instead of over-correcting.
+    the gap shrinks where it still over-corrects, at mid MR.
   \item \textbf{Labels on the right surface.} Where the restricted
     solution is unstable, the head learns a difference between two
     restricted energies. Relabelling those points unrestricted, with a
     stability analysis, would give it a difference that describes the
     unrestricted surface.
-  \item \textbf{A better base.} Every improvement of MACE on its own
-    level transfers one to one, because that term passes through the
-    sum unchanged.
 \end{itemize}
 
 The limits of this chapter are its 30 reactions, the restricted

@@ -286,7 +286,7 @@ hybrid & a constant fraction of exact exchange, computed from the occupied
 range-separated hybrid & the same, but the fraction of exact exchange
   depends on the interelectronic distance: small at short range, full at
   long range, switched by an error function with parameter $\omega$ &
-  $\omega$B97X-D3, $\omega$B97M-V \\
+  $\omega$B97X, $\omega$B97M-V \\
 double hybrid & the unoccupied orbitals, through a second-order
   perturbation (MP2) or random-phase correlation term & B2PLYP \\
 \bottomrule
@@ -296,14 +296,16 @@ double hybrid & the unoccupied orbitals, through a second-order
 Dispersion, the weak attraction between non-bonded atoms, is missing from
 all rungs and is added as a correction: D3~\cite{grimme2010} as an
 empirical pairwise term, VV10~\cite{vydrov2010} as a functional of the
-density. The suffix -D3 or -V in a functional name says which.
+density. The suffix -D3 or -V in a functional name says which; a name
+without suffix, such as $\omega$B97X, carries none.
 
 Three levels of theory appear in this thesis:
 
 \begin{itemize}
-  \item \textbf{$\omega$B97X-D3/6-31G(d)}~\cite{lin2013}: range-separated
-    hybrid GGA with D3 dispersion, small basis. The level of Transition1x,
-    chosen for the cost of ten thousand NEB runs.
+  \item \textbf{$\omega$B97X/6-31G(d)}~\cite{chai2008}: range-separated
+    hybrid GGA without dispersion correction, small basis. The level of
+    Transition1x, chosen for the cost of ten thousand NEB runs and for
+    compatibility with ANI-1x~\cite{schreiner2022}.
   \item \textbf{$\omega$B97M-V/def2-TZVP}~\cite{mardirossian2016}:
     range-separated hybrid meta-GGA with VV10 dispersion, triple-zeta
     basis. The target level of the delta correction. In the GMTKN55
@@ -382,7 +384,7 @@ used for & Transition1x & delta target level & OMol25 \\
 \end{table}
 
 Functional and basis set together are the level of theory, written
-functional/basis, for example \mbox{$\omega$B97X-D3/6-31G(d)}. The two
+functional/basis, for example \mbox{$\omega$B97X/6-31G(d)}. The two
 errors are independent: a larger basis does not correct the functional,
 and a better functional does not correct a small basis. A third choice
 remains to define a Kohn--Sham calculation: the treatment of spin.
@@ -950,7 +952,7 @@ gas phase; the reactions are unimolecular rearrangements and
 dissociations of these small organic molecules.
 
 \paragraph{Geometries.} For every reaction a CI-NEB with ten images was
-run at the \mbox{$\omega$B97X-D3/6-31G(d)} level in ORCA. The level was
+run at the \mbox{$\omega$B97X/6-31G(d)} level in ORCA. The level was
 chosen for the cost of twelve thousand NEB runs. The band converged for
 10\,073 reactions, with the criterion that the maximal perpendicular force
 on the path does not exceed 0.05~eV\,\AA$^{-1}$. Every intermediate band
@@ -1106,7 +1108,7 @@ models with conservative forces.}
 \toprule
 model & training data & level of theory & role \\
 \midrule
-MACE & Transition1x & $\omega$B97X-D3/6-31G(d) & base model, Chapter~\ref{ch:delta} \\
+MACE & Transition1x & $\omega$B97X/6-31G(d) & base model, Chapter~\ref{ch:delta} \\
 MACE+$\Delta$ & MACE plus correction head & $\omega$B97M-V/def2-TZVP & this work, Chapter~\ref{ch:delta} \\
 UMA-S, UMA-M~\cite{uma} & OMol25 and others & $\omega$B97M-V/def2-TZVPD & Chapter~\ref{ch:mr} \\
 eSEN~\cite{esen} & OMol25 & $\omega$B97M-V/def2-TZVPD & Chapter~\ref{ch:mr} \\

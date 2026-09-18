@@ -17,7 +17,7 @@ Machine-learned interatomic potentials (MLIPs) such as PaiNN or MACE
 are commonly trained on DFT calculations. Transition1x~\cite{schreiner2022} demonstrated this: a
 PaiNN model trained on its ${\sim}10$ million reaction-path geometries
 reproduces DFT energies and forces at a fraction of the cost. However,
-Transition1x was computed at \mbox{$\omega$B97X-D3/6-31G(d)}, a
+Transition1x was computed at \mbox{$\omega$B97X/6-31G(d)}, a
 comparatively cheap level of theory chosen to make the generation of
 ten million data points computationally feasible. More accurate
 levels of theory exist. The range-separated
@@ -50,7 +50,7 @@ and any way to reach that level at a fraction of the cost is
 desirable. We therefore ask whether it can be reached by relabelling
 only a small part of the data: about 80\,000 geometries, under 1\,\%
 of the dataset. A MACE model is trained on Transition1x to predict the cheap level,
-\mbox{$\omega$B97X-D3/6-31G(d)} (Section~\ref{sec:mace-training}), and
+\mbox{$\omega$B97X/6-31G(d)} (Section~\ref{sec:mace-training}), and
 a small correction head on top of it
 (Section~\ref{sec:delta-architecture}) learns the difference between
 the cheap and the expensive level, \mbox{$\omega$B97M-V/def2-TZVP}. This is feasible with so little data because
