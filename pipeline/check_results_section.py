@@ -65,8 +65,18 @@ want('is %.3f~eV\\,\\AA$^{-1}$ in the low-MR tier and %.3f in the high-MR tier, 
      % (med(lcs, 'f_dft_max'), med(hcs, 'f_dft_max'), med(lcs, 'f_err_mae'), med(hcs, 'f_err_mae')), 'MR-Kontrolle closed-shell')
 want('%d of the %d model transition states are closed-shell and %d broken-symmetry; the low-MR tier holds %d'
      % (len(hcs), len(hcs) + len(hbs), len(hbs), len(lcs)), 'MR-Kontrolle n')
+nf = {r['rxn']: float(r['nfod']) for r in P}
+hcs_n = [nf[r['rxn']] for r in hcs]; lo_, hi_ = min(hcs_n), max(hcs_n)
+hbs_m = [r for r in hbs if lo_ <= nf[r['rxn']] <= hi_]
+want('(%.2f to %.2f, medians %.2f and %.2f; %d closed-shell and %d broken-symmetry structures)'
+     % (lo_, hi_, st.median(hcs_n), st.median(nf[r['rxn']] for r in hbs_m), len(hcs), len(hbs_m)), 'MR-Kontrolle Bereich')
 want('%.3f against %.3f in residual force and %.3f against %.3f in force error'
-     % (med(hbs, 'f_dft_max'), med(hcs, 'f_dft_max'), med(hbs, 'f_err_mae'), med(hcs, 'f_err_mae')), 'MR-Kontrolle high')
+     % (med(hbs_m, 'f_dft_max'), med(hcs, 'f_dft_max'), med(hbs_m, 'f_err_mae'), med(hcs, 'f_err_mae')), 'MR-Kontrolle high (Bereich)')
+from scipy.stats import spearmanr as _sp  # noqa: E402
+cs_all = [r for r in M if r['unstable_ts'] == '0']; bs_all = [r for r in M if r['unstable_ts'] == '1']
+def _rho(rows, k): return _sp([nf[r['rxn']] for r in rows], [float(r[k]) for r in rows]).correlation
+want(r'$\rho = %.2f$ for the residual force and $%.2f$ for the force error over all %d structures' % (_rho(cs_all, 'f_dft_max'), _rho(cs_all, 'f_err_mae'), len(cs_all)), 'Spearman closed-shell')
+want(r'($\rho = %.2f$ and $%.2f$ over all %d)' % (_rho(bs_all, 'f_dft_max'), _rho(bs_all, 'f_err_mae'), len(bs_all)), 'Spearman broken-symmetry')
 t1h_bs = [T1r for T1r in T1 if strat[T1r['rxn']] == 'high' and T1r['group_local'] == 'unstable']
 t1h_cs = [T1r for T1r in T1 if strat[T1r['rxn']] == 'high' and T1r['group_local'] == 'stable']
 want('(%.2f against %.2f)' % (med(t1h_bs, 'f_bs'), med(t1h_cs, 'f_bs')), 'MR-Kontrolle Leiter')

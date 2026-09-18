@@ -718,13 +718,21 @@ the high-MR tier, 28 of the 78 model transition states are closed-shell
 and 50 broken-symmetry; the low-MR tier holds 30, all closed-shell.}
 and Chapter~\ref{ch:delta} saw the same dependence in MACE on its own
 level. The broken-symmetry effect comes on top of it. Within the
-high-MR tier, at equal multireference character, the broken-symmetry
-structures are still worse than the closed-shell ones, 0.127 against
-0.082 in residual force and 0.025 against 0.018 in force error, and
-their training points lie three times further off the transition
-state (1.70 against 0.58). That remaining factor of about 1.5 is what
-the training data explain; the pooled factor of 2.5 between the two
-groups contains both effects.
+high-MR tier, restricted to the $N_\mathrm{FOD}$ range that both groups
+share (0.70 to 0.90, medians 0.79 and 0.78; 28 closed-shell and 29
+broken-symmetry structures), the broken-symmetry structures are still
+worse than the closed-shell ones, 0.137 against 0.082 in residual
+force and 0.028 against 0.018 in force error, and their training
+points lie three times further off the transition state (1.70 against
+0.58). The two effects also behave differently: within the
+closed-shell group the error rises with $N_\mathrm{FOD}$ (Spearman
+$\rho = 0.61$ for the residual force and $0.73$ for the force error over
+all 82 structures), within the broken-symmetry group it does not
+($\rho = -0.17$ and $-0.22$ over all 53). Multireference character acts
+continuously; broken symmetry acts as a step that comes with the
+existence of the lower solution. That step, a factor of about 1.6, is
+what the training data explain; the pooled factor of 2.5 between the
+two groups contains both effects.
 
 \paragraph{Other reactive data in OMol25.} Transition1x is not the only
 reactive data in OMol25, and one might object that the models learned
