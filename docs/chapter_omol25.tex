@@ -521,18 +521,17 @@ has a meaningful effect on the barrier.
 \begin{figure}[t]
   \centering
   \includegraphics[width=\linewidth]{Pictures/fig3.png}
-  \caption{Energy error (A) and geometry error (B) of the model barriers.
-  (A)~One dot is one reaction and one model: the structures of that model,
-  evaluated with the model and with DFT,
-  $|\Delta E^\ddagger_\mathrm{model} - \Delta E^\ddagger_\mathrm{DFT}|$.
-  Solid bars are means, dashed bars medians; the named reaction sets the
-  mean of each broken-symmetry group almost alone.
-  (B)~One dot is one reaction: the structures of all three models,
-  evaluated with DFT only, $\max - \min$ of the three barriers. A reaction
-  counts as broken-symmetry if at least one of its three transition states
-  has $\langle S^2\rangle > 0$.
-  The green line marks 1~kcal/mol (43~meV) for orientation only. DFT at the
-  OMol25 level on the unrestricted surface (Sec.~\ref{sec:dft}).}
+  \caption{Energy error (A) and geometry error (B) of the model
+  barriers. (A)~One dot per reaction and model: the barrier over that
+  model's own structures, computed with the model and with DFT, and the
+  absolute difference between the two. Solid bars are means, dashed bars
+  medians; the named reaction sets the mean of its broken-symmetry group
+  almost alone. (B)~One dot per reaction: the three DFT barriers over
+  the structures of the three models, largest minus smallest. A reaction
+  counts as broken-symmetry if at least one of its three transition
+  states has $\langle S^2\rangle > 0$. The green line marks 1~kcal/mol
+  (43~meV) for orientation. DFT at the OMol25 level on the unrestricted
+  surface (Sec.~\ref{sec:dft}).}
   \label{fig:barrier}
 \end{figure}
 
