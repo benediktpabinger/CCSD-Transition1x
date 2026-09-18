@@ -105,9 +105,6 @@ for key, lab in MODELS:
     u = [r for r in unst if r['model'] == key]
     want('%s %.3f against %.3f' % (lab, med(s, 'f_dft_max'), med(u, 'f_dft_max')),
          'DFT ' + lab)
-    want('%s %.3f/%.3f, %.3f/%.3f' % (lab, med(s, 'f_model_max'), med(s, 'f_dft_max'),
-                                      med(u, 'f_model_max'), med(u, 'f_dft_max')),
-         'Caption Fig 1 ' + lab)
 es, eu = ([r for r in g if r['model'] == 'esen'] for g in (stab, unst))
 want('(%.3f against %.3f)' % (med(eu, 'f_model_max'), med(es, 'f_model_max')),
      'eSEN Modell niedriger')
