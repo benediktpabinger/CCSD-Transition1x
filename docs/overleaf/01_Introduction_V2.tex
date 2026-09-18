@@ -45,8 +45,11 @@ reaction paths, and the energy and force labels attached to them. The
 premise is that the geometries remain valid at any level of theory:
 an MLIP only needs them to cover the relevant region, which the
 Transition1x paths already do. Only the labels are tied to the cheap
-level. Replacing them requires one single-point calculation per
-geometry at the higher level; this is what relabelling means.
+level. Replacing them requires one single-point calculation per geometry at
+the higher level; this is what relabelling means. It is far cheaper
+than relaxing the paths again at that level, which would take hundreds
+of gradient calculations per reaction instead of one per geometry
+kept.
 
 OMol25~\cite{omol25} relabelled the entire Transition1x dataset at
 \mbox{$\omega$B97M-V/def2-TZVPD}\footnote{def2-TZVPD adds diffuse
