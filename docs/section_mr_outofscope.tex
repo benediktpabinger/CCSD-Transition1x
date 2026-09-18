@@ -21,15 +21,16 @@ accident. No multireference barrier enters this work.
 multireference method needs an active space, and the result depends on
 it. autoCAS~\cite{stein2019autocas} selects the space from a DMRG
 calculation over all valence orbitals, which was not practical for
-molecules of this size. AVAS~\cite{sayfutyarova2017} and selection by
+molecules of this size. Smaller molecules in this part of the test set
+would have avoided this. AVAS~\cite{sayfutyarova2017} and selection by
 hand require experience that could not be acquired within the time of
-this work. Smaller molecules in this part of the test set would have avoided
-this. NEVPT2, the standard protocol for energies on unrestricted
-geometries, builds on a CASSCF wavefunction and therefore needs the
-same active space, so it was not carried out either.
+this work and was not part of the thesis plan either. NEVPT2, the
+standard protocol for energies on unrestricted geometries, builds on a
+CASSCF wavefunction and therefore needs the same active space, so it
+was not carried out either.
 
-\paragraph{The additional problem for geometries: active space
-consistency.} Starting from the DFT transition state, AVAS selected a
+\paragraph{The additional problem for obtaining multireference-optimised
+geometries: active space consistency.} Starting from the DFT transition state, AVAS selected a
 space, CASSCF optimised a transition state with it, and AVAS at the
 optimised geometry returned a different space. The geometry had been
 optimised on a surface that does not belong to it. A possible solution is
