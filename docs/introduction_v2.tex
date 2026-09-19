@@ -5,6 +5,98 @@
 % Fassung. Labels: ch:background, ch:delta, ch:mr, sec:mace-training,
 % sec:delta-architecture, sec:delta-data, sec:mr-methods, app:marks.
 
+\chapter*{Terminology and abbreviations}
+\addcontentsline{toc}{chapter}{Terminology and abbreviations}
+
+\section*{Terminology}
+
+\begin{description}
+  \item[closed-shell / broken-symmetry] a structure at which the
+    restricted solution is stable / unstable
+    (Section~\ref{sec:background-stability}).
+  \item[stable / unstable] the restricted solution has no / has a lower
+    unrestricted solution below it
+    (Section~\ref{sec:background-stability}).
+  \item[restricted surface] the RKS energy at every geometry
+    (Section~\ref{sec:background-stability}).
+  \item[unrestricted surface] the lowest UKS solution at every geometry,
+    found with the stability analysis; where the restricted solution is
+    stable the two surfaces coincide
+    (Section~\ref{sec:background-stability}).
+  \item[level of theory] functional and basis set, written
+    functional/basis, for example \mbox{$\omega$B97X/6-31G(d)}; it says
+    nothing about the spin formalism (Section~\ref{sec:background-basis}).
+  \item[Transition1x level / OMol25 level] \mbox{$\omega$B97X/6-31G(d)}
+    / \mbox{$\omega$B97M-V/def2-TZVPD} (Section~\ref{sec:labels}).
+  \item[OMol25 protocol] the complete recipe of the OMol25 labels:
+    level, unrestricted spin formalism and the route to the
+    broken-symmetry solution (Section~\ref{sec:dft}).
+  \item[residual force] the largest force component at a geometry on a
+    given surface; zero at a transition state relaxed on that surface
+    (Sections~\ref{sec:background-neb} and \ref{sec:labels}).
+  \item[relabelling] recomputing the energy and force labels of stored
+    geometries at another level of theory, without re-optimising the
+    geometries (Chapter~\ref{ch:introduction}).
+  \item[single point] an energy and force calculation at a fixed
+    geometry, without optimisation.
+  \item[breaking depth] the energy by which the broken-symmetry
+    solution lies below the restricted one,
+    $E_\mathrm{RKS} - E_\mathrm{BS}$
+    (Section~\ref{sec:background-stability}).
+  \item[MR tiers (low, mid, high)] the test reactions grouped by
+    $N_\mathrm{FOD}$ at the reference transition state
+    (Sections~\ref{sec:delta-protocol} and \ref{sec:reactions}).
+  \item[level gap] the difference between the two levels of theory at a
+    geometry, what the correction head is trained to predict
+    (Chapter~\ref{ch:delta}).
+  \item[baseline error / head error] the two terms of the error split:
+    MACE against its own level, and the head against the true level gap
+    (Eq.~\eqref{eq:error-split}).
+  \item[chemical accuracy] 1~kcal/mol, 43~meV
+    (Section~\ref{sec:background-stationary}).
+\end{description}
+
+\section*{Abbreviations}
+
+\begin{description}
+  \item[ANI-1x] dataset of Smith et al., \mbox{$\omega$B97X/6-31G(d)}
+  \item[ASE] Atomic Simulation Environment
+  \item[AVAS] atomic valence active space
+  \item[BFGS] Broyden--Fletcher--Goldfarb--Shanno optimiser
+  \item[BS] broken-symmetry
+  \item[CASSCF] complete active space self-consistent field
+  \item[CCSD(T)] coupled cluster with single, double and perturbative
+    triple excitations
+  \item[CI-NEB] climbing-image nudged elastic band
+  \item[DFT] density functional theory
+  \item[DMRG] density matrix renormalisation group
+  \item[eSEN] equivariant Smooth Energy Network
+  \item[GGA] generalised gradient approximation
+  \item[HOMO / LUMO] highest occupied / lowest unoccupied molecular orbital
+  \item[MACE] the MACE model trained on Transition1x
+    (Chapter~\ref{ch:delta})
+  \item[MACE+$\Delta$] MACE with the correction head attached
+  \item[MAE] mean absolute error
+  \item[MLIP] machine-learned interatomic potential
+  \item[MR] multireference
+  \item[NEB] nudged elastic band
+  \item[NEVPT2] $n$-electron valence state second-order perturbation
+    theory
+  \item[$N_\mathrm{FOD}$] fractional occupation number weighted density
+  \item[ODE] ordinary differential equation (the NEB optimiser)
+  \item[OMol25] Open Molecules 2025
+  \item[PES] potential energy surface
+  \item[RIJCOSX] resolution-of-identity and chain-of-spheres
+    approximations for the Coulomb and exchange integrals
+  \item[RKS / UKS] restricted / unrestricted Kohn--Sham
+  \item[RMSD] root-mean-square deviation
+  \item[RQ1, RQ2] research questions 1 and 2
+  \item[SCF] self-consistent field
+  \item[TS] transition state
+  \item[UMA] Universal Model for Atoms (UMA-S, UMA-M)
+  \item[XC] exchange--correlation
+\end{description}
+
 \chapter{Introduction}
 \label{ch:introduction}
 
