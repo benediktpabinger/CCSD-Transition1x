@@ -340,7 +340,9 @@ Methods are built for one of the two cases:
   \item \textbf{Single-reference methods} start from one determinant:
     Hartree--Fock, Kohn--Sham DFT, coupled cluster.
   \item \textbf{Multireference methods} optimise several determinants at
-    once: CASSCF, NEVPT2 (Section~\ref{sec:background-beyond}).
+    once: CASSCF (complete active space self-consistent field) and
+    NEVPT2 ($n$-electron valence state second-order perturbation theory),
+    Section~\ref{sec:background-beyond}.
 \end{itemize}
 
 The following sections treat single-reference methods.
@@ -500,8 +502,8 @@ below and adds one.}
 \toprule
 rung & adds & example \\
 \midrule
-LDA & the density $\rho$ at each point & SVWN \\
-GGA & the gradient of the density, $\nabla\rho$ & PBE \\
+LDA (local density approximation) & the density $\rho$ at each point & SVWN \\
+GGA (generalised gradient approximation) & the gradient of the density, $\nabla\rho$ & PBE \\
 meta-GGA & the kinetic energy density of the occupied orbitals, $\tau$,
   and/or the Laplacian of the density, $\nabla^2\rho$ & TPSS \\
 hybrid & a constant fraction of exact exchange, computed from the occupied
@@ -718,7 +720,8 @@ one exists. The symmetry has to be broken on purpose. Two ways:
 
 \begin{itemize}
   \item \textbf{Perturb the starting guess}, typically by mixing the
-    $\beta$ HOMO and LUMO. The SCF then starts outside the symmetric
+    $\beta$ HOMO and LUMO, the highest occupied and the lowest
+    unoccupied orbital. The SCF then starts outside the symmetric
     solution and usually converges to the lower one. It can also fall back
     to the RKS solution; a closed-shell result then does not say whether a
     lower solution exists.
