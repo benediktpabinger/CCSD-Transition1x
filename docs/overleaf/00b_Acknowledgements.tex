@@ -25,13 +25,14 @@ just one useful Slack message away.
 
 \vspace{2em}
 
-\noindent\textbf{\thesisauthor}, Thesis Author, MSc Engineering Physics, DTU
-\bigskip
+% name / role / affiliation, one block per person
+\newcommand{\person}[3]{\par\noindent\begin{minipage}{\linewidth}\raggedright
+  \textbf{#1}\\[1pt]
+  #2\\[1pt]
+  {\small #3}
+\end{minipage}\par\vspace{1.2em}}
 
-\noindent\textbf{Arghya Bhowmik}, Thesis Supervisor, Associate Professor, Department of Energy Conversion and Storage, Atomic Scale Materials Modelling, DTU
-\bigskip
-
-\noindent\textbf{Emma Christine Lei Hovmand}, Co-supervisor, PhD Student, Department of Energy Conversion and Storage, Atomic Scale Materials Modelling, DTU
-\bigskip
-
-\noindent\textbf{Andreas Burger}, Co-supervisor, PhD, University of Toronto, Vector Institute
+\person{\thesisauthor}{Thesis Author}{MSc Engineering Physics, DTU}
+\person{Arghya Bhowmik}{Thesis Supervisor}{Associate Professor, Atomic Scale Materials Modelling, Department of Energy Conversion and Storage, DTU}
+\person{Emma Christine Lei Hovmand}{Co-supervisor}{PhD Student, Atomic Scale Materials Modelling, Department of Energy Conversion and Storage, DTU}
+\person{Andreas Burger}{Co-supervisor}{PhD, University of Toronto, Vector Institute}
