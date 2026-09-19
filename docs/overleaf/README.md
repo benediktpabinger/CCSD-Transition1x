@@ -8,7 +8,7 @@ Overleaf counterpart. Drafts and history stay in docs/.
 |---|---|---|---|
 | 00_Preface.tex | Frontmatter/Approval.tex | Approval page + Preface on the scope of the project | chat only |
 | 00a_Abstract.tex | Frontmatter/Abstract.tex | Abstract | chat only |
-| 00b_Acknowledgements.tex | Frontmatter/Acknowledgements.tex | Acknowledgements (template placeholders, to be filled) | chat only |
+| 00b_Acknowledgements.tex | Frontmatter/Acknowledgements.tex | Acknowledgements | chat only |
 | 01_Introduction_V2.tex | Chapters/01_Introduction_V2.tex | Introduction + Background and Theory | introduction_v2.tex + background.tex |
 | 02_Delta.tex | Chapters/02_Delta.tex | Chapter 3, delta head | chapter_delta.tex |
 | 03_OMOL25_Failure_Modes_V2.tex | Chapters/03_OMOL25_Failure_Modes_V2.tex | Chapter 4, OMol25, sections 4.1 and 4.2 | chapter_omol25.tex |
