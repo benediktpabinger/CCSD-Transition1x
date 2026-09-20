@@ -1,0 +1,68 @@
+% Overleaf-Datei (Name zu bestaetigen), Spiegel in docs/overleaf/.
+% Nur zusammen mit der Overleaf-Datei aendern.
+% Inhalt: Approval-Seite und Preface zum Umfang des Projekts.
+
+\section*{Approval}
+This thesis has been prepared over six months at the Department of
+Energy Conversion and Storage, DTU Energy, at the Technical University
+of Denmark, DTU, in partial fulfilment of the requirements for the
+degree Master of Science in Engineering, MSc Eng.
+
+It is assumed that the reader has a basic knowledge of quantum
+chemistry and machine learning.
+
+Artificial intelligence tools were used during the thesis work as
+support tools. Claude (Anthropic), in the chat interface and through
+Claude Code, was used for help with code development and debugging,
+for the analysis and
+plotting scripts, for checking the reported numbers against the
+result files, for literature search, and for language correction and
+the revision of the report text, which the author drafted and edited
+throughout. The tools were used as assistance during the working
+process, not as a replacement for independent analysis or scientific
+judgement. All AI-generated suggestions were reviewed, edited and
+checked before being included in the thesis. The calculations, the
+modelling choices, the results, the discussion and the conclusions
+are the responsibility of the author.
+
+\vfill
+
+\begin{center}
+\namesigdate{\thesisauthor~-~\studentnumber}
+\end{center}
+
+\vfill
+
+\newpage
+\section*{Preface regarding the scope of this project}
+\addcontentsline{toc}{section}{Preface}
+This thesis was originally set up to answer only one of the two
+research questions that will be explained in the introduction,
+research question 1: whether a machine-learning potential trained on
+Transition1x can be lifted to a higher level of theory by relabelling
+a small part of its training data. Chapter~\ref{ch:delta} answers it.
+
+The second question arose during that work. The OMol25 models were
+used along the way as a point of comparison, and on some reactions
+they did not find the restricted reference transition states but
+different structures. The reason turned out to be that they are
+trained on unrestricted labels, while the references we worked with
+were optimised with restricted spin symmetry, which does not allow
+broken-symmetry solutions. Where a transition state has one, the models
+and our references describe different surfaces. Whether the OMol25
+models can find the transition states of the unrestricted surface
+there, although their training paths were never relaxed on it, became
+research question 2.
+
+Research question 2 was not part of the original scope. It was
+followed for two reasons, and the change of direction was agreed with
+the supervisors at every step. Research question 1 had meanwhile also
+been addressed by others in related settings: relabelling with a small subset works.
+Research question 2 had not been tested systematically, because the
+published benchmarks score the models against restricted references.
+We therefore wanted to address that gap. Chapter~\ref{ch:mr} is the
+result.
+
+This is only the short account; the introduction explains both
+questions, and the opening of Chapter~\ref{ch:mr} explains how the
+second follows from the first.

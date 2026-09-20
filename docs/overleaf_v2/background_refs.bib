@@ -1,0 +1,856 @@
+% Alle Keys, die in docs/chapter_background.tex, chapter_delta.tex,
+% chapter_omol25.tex und section_mr_feasibility.tex mit \cite vorkommen,
+% plus die drei neuen fuer den ueberarbeiteten Background (seeger1977,
+% cizek1967, noodleman1981). 43 Eintraege.
+%
+% Geprueft am 2026-09-07 per Websuche gegen Verlagsseiten / arXiv / ADS:
+% Autoren, Titel, Journal, Band, Seiten, DOI. Wo eine Angabe nicht
+% bestaetigt werden konnte, fehlt sie (keine geratenen Seitenzahlen).
+%
+% Zwei Hinweise:
+%  * chapter_delta.tex zitiert "Schreiner2022" (gross), chapter_background.tex
+%    "schreiner2022" (klein). BibTeX-Keys sind case-sensitiv; hier steht nur
+%    schreiner2022. Im Delta-Kapitel den Key anpassen.
+%  * orca_manual, qchem_manual, nwchem sind die Handbuecher, weil der Text
+%    daraus woertlich zitiert. Die Zitate selbst habe ich NICHT geprueft.
+%    pyscf und psi4 sind die Software-Paper (der Text zitiert dort keine
+%    Handbuchstelle woertlich). Die Software-Paper zu ORCA 5, Q-Chem 5 und
+%    NWChem stehen zusaetzlich unter orca5, qchem5, nwchem2020.
+
+% ---------------------------------------------------------------- PES, NEB
+@article{eyring1935,
+  author  = {Eyring, Henry},
+  title   = {The activated complex in chemical reactions},
+  journal = {J. Chem. Phys.},
+  volume  = {3},
+  number  = {2},
+  pages   = {107--115},
+  year    = {1935},
+  doi     = {10.1063/1.1749604}
+}
+
+@article{fukui1981,
+  author  = {Fukui, Kenichi},
+  title   = {The path of chemical reactions -- the {IRC} approach},
+  journal = {Acc. Chem. Res.},
+  volume  = {14},
+  number  = {12},
+  pages   = {363--368},
+  year    = {1981},
+  doi     = {10.1021/ar00072a001}
+}
+
+@incollection{jonsson1998,
+  author    = {J{\'o}nsson, Hannes and Mills, Greg and Jacobsen, Karsten W.},
+  title     = {Nudged elastic band method for finding minimum energy paths of transitions},
+  booktitle = {Classical and Quantum Dynamics in Condensed Phase Simulations},
+  editor    = {Berne, Bruce J. and Ciccotti, Giovanni and Coker, David F.},
+  publisher = {World Scientific},
+  address   = {Singapore},
+  pages     = {385--404},
+  year      = {1998},
+  doi       = {10.1142/9789812839664_0016}
+}
+
+@article{henkelman2000tangent,
+  author  = {Henkelman, Graeme and J{\'o}nsson, Hannes},
+  title   = {Improved tangent estimate in the nudged elastic band method for finding minimum energy paths and saddle points},
+  journal = {J. Chem. Phys.},
+  volume  = {113},
+  number  = {22},
+  pages   = {9978--9985},
+  year    = {2000},
+  doi     = {10.1063/1.1323224}
+}
+
+@article{henkelman2000cineb,
+  author  = {Henkelman, Graeme and Uberuaga, Blas P. and J{\'o}nsson, Hannes},
+  title   = {A climbing image nudged elastic band method for finding saddle points and minimum energy paths},
+  journal = {J. Chem. Phys.},
+  volume  = {113},
+  number  = {22},
+  pages   = {9901--9904},
+  year    = {2000},
+  doi     = {10.1063/1.1329672}
+}
+
+@article{makri2019preconditioning,
+  author  = {Makri, Stela and Ortner, Christoph and Kermode, James R.},
+  title   = {A preconditioning scheme for minimum energy path finding methods},
+  journal = {J. Chem. Phys.},
+  volume  = {150},
+  number  = {9},
+  pages   = {094109},
+  year    = {2019},
+  doi     = {10.1063/1.5064465}
+}
+
+% ---------------------------------------------------------------- DFT
+@article{grimme2010,
+  author  = {Grimme, Stefan and Antony, Jens and Ehrlich, Stephan and Krieg, Helge},
+  title   = {A consistent and accurate ab initio parametrization of density functional dispersion correction ({DFT-D}) for the 94 elements {H}--{Pu}},
+  journal = {J. Chem. Phys.},
+  volume  = {132},
+  number  = {15},
+  pages   = {154104},
+  year    = {2010},
+  doi     = {10.1063/1.3382344}
+}
+
+@article{vydrov2010,
+  author  = {Vydrov, Oleg A. and Van Voorhis, Troy},
+  title   = {Nonlocal van der {Waals} density functional: {The} simpler the better},
+  journal = {J. Chem. Phys.},
+  volume  = {133},
+  number  = {24},
+  pages   = {244103},
+  year    = {2010},
+  doi     = {10.1063/1.3521275}
+}
+
+@article{lin2013,
+  author  = {Lin, You-Sheng and Li, Guan-De and Mao, Shan-Ping and Chai, Jeng-Da},
+  title   = {Long-range corrected hybrid density functionals with improved dispersion corrections},
+  journal = {J. Chem. Theory Comput.},
+  volume  = {9},
+  number  = {1},
+  pages   = {263--272},
+  year    = {2013},
+  doi     = {10.1021/ct300715s}
+}
+
+@article{mardirossian2016,
+  author  = {Mardirossian, Narbe and Head-Gordon, Martin},
+  title   = {{$\omega$B97M-V}: {A} combinatorially optimized, range-separated hybrid, meta-{GGA} density functional with {VV10} nonlocal correlation},
+  journal = {J. Chem. Phys.},
+  volume  = {144},
+  number  = {21},
+  pages   = {214110},
+  year    = {2016},
+  doi     = {10.1063/1.4952647}
+}
+
+@article{goerigk2017,
+  author  = {Goerigk, Lars and Hansen, Andreas and Bauer, Christoph and Ehrlich, Stephan and Najibi, Asim and Grimme, Stefan},
+  title   = {A look at the density functional theory zoo with the advanced {GMTKN55} database for general main group thermochemistry, kinetics and noncovalent interactions},
+  journal = {Phys. Chem. Chem. Phys.},
+  volume  = {19},
+  number  = {48},
+  pages   = {32184--32215},
+  year    = {2017},
+  doi     = {10.1039/C7CP04913G}
+}
+
+@article{bursch2022,
+  author  = {Bursch, Markus and Mewes, Jan-Michael and Hansen, Andreas and Grimme, Stefan},
+  title   = {Best-practice {DFT} protocols for basic molecular computational chemistry},
+  journal = {Angew. Chem. Int. Ed.},
+  volume  = {61},
+  number  = {42},
+  pages   = {e202205735},
+  year    = {2022},
+  doi     = {10.1002/anie.202205735}
+}
+
+% ---------------------------------------------------------------- Spin, Stabilitaet
+@article{cizek1967,
+  author  = {{\v{C}}{\'i}{\v{z}}ek, Ji{\v{r}}{\'i} and Paldus, Josef},
+  title   = {Stability conditions for the solutions of the {Hartree}--{Fock} equations for atomic and molecular systems. {Application} to the pi-electron model of cyclic polyenes},
+  journal = {J. Chem. Phys.},
+  volume  = {47},
+  number  = {10},
+  pages   = {3976--3985},
+  year    = {1967},
+  doi     = {10.1063/1.1701562}
+}
+
+@article{seeger1977,
+  author  = {Seeger, Rolf and Pople, John A.},
+  title   = {Self-consistent molecular orbital methods. {XVIII}. {Constraints} and stability in {Hartree}--{Fock} theory},
+  journal = {J. Chem. Phys.},
+  volume  = {66},
+  number  = {7},
+  pages   = {3045--3050},
+  year    = {1977},
+  doi     = {10.1063/1.434318}
+}
+
+@article{noodleman1981,
+  author  = {Noodleman, Louis},
+  title   = {Valence bond description of antiferromagnetic coupling in transition metal dimers},
+  journal = {J. Chem. Phys.},
+  volume  = {74},
+  number  = {10},
+  pages   = {5737--5743},
+  year    = {1981},
+  doi     = {10.1063/1.440939}
+}
+
+% ---------------------------------------------------------------- SR/MR, Diagnostik
+@article{raghavachari1989,
+  author  = {Raghavachari, Krishnan and Trucks, Gary W. and Pople, John A. and Head-Gordon, Martin},
+  title   = {A fifth-order perturbation comparison of electron correlation theories},
+  journal = {Chem. Phys. Lett.},
+  volume  = {157},
+  number  = {6},
+  pages   = {479--483},
+  year    = {1989},
+  doi     = {10.1016/S0009-2614(89)87395-6}
+}
+
+@article{scuseria1991,
+  author  = {Scuseria, Gustavo E.},
+  title   = {Analytic evaluation of energy gradients for the singles and doubles coupled cluster method including perturbative triple excitations: {Theory} and applications to {FOOF} and {Cr$_2$}},
+  journal = {J. Chem. Phys.},
+  volume  = {94},
+  number  = {1},
+  pages   = {442--447},
+  year    = {1991},
+  doi     = {10.1063/1.460359}
+}
+
+@article{lee1989,
+  author  = {Lee, Timothy J. and Taylor, Peter R.},
+  title   = {A diagnostic for determining the quality of single-reference electron correlation methods},
+  journal = {Int. J. Quantum Chem.},
+  volume  = {36},
+  number  = {S23},
+  pages   = {199--207},
+  year    = {1989},
+  doi     = {10.1002/qua.560360824}
+}
+
+@article{grimme2015,
+  author  = {Grimme, Stefan and Hansen, Andreas},
+  title   = {A practicable real-space measure and visualization of static electron-correlation effects},
+  journal = {Angew. Chem. Int. Ed.},
+  volume  = {54},
+  number  = {42},
+  pages   = {12308--12313},
+  year    = {2015},
+  doi     = {10.1002/anie.201501887}
+}
+
+@article{tishchenko2008,
+  author  = {Tishchenko, Oksana and Zheng, Jingjing and Truhlar, Donald G.},
+  title   = {Multireference model chemistries for thermochemical kinetics},
+  journal = {J. Chem. Theory Comput.},
+  volume  = {4},
+  number  = {8},
+  pages   = {1208--1219},
+  year    = {2008},
+  doi     = {10.1021/ct800077r}
+}
+
+@article{angeli2001,
+  author  = {Angeli, Celestino and Cimiraglia, Renzo and Evangelisti, Stefano and Leininger, Thierry and Malrieu, Jean-Paul},
+  title   = {Introduction of $n$-electron valence states for multireference perturbation theory},
+  journal = {J. Chem. Phys.},
+  volume  = {114},
+  number  = {23},
+  pages   = {10252--10264},
+  year    = {2001},
+  doi     = {10.1063/1.1361246}
+}
+
+@article{sayfutyarova2017,
+  author  = {Sayfutyarova, Elvira R. and Sun, Qiming and Chan, Garnet Kin-Lic and Knizia, Gerald},
+  title   = {Automated construction of molecular active spaces from atomic valence orbitals},
+  journal = {J. Chem. Theory Comput.},
+  volume  = {13},
+  number  = {9},
+  pages   = {4063--4078},
+  year    = {2017},
+  doi     = {10.1021/acs.jctc.7b00128}
+}
+
+@article{stein2019autocas,
+  author  = {Stein, Christopher J. and Reiher, Markus},
+  title   = {{autoCAS}: {A} program for fully automated multiconfigurational calculations},
+  journal = {J. Comput. Chem.},
+  volume  = {40},
+  number  = {25},
+  pages   = {2216--2226},
+  year    = {2019},
+  doi     = {10.1002/jcc.25869}
+}
+
+@article{bensberg2023,
+  author  = {Bensberg, Moritz and Reiher, Markus},
+  title   = {Corresponding active orbital spaces along chemical reaction paths},
+  journal = {J. Phys. Chem. Lett.},
+  volume  = {14},
+  number  = {8},
+  pages   = {2112--2118},
+  year    = {2023},
+  doi     = {10.1021/acs.jpclett.2c03905}
+}
+
+@article{seal2025wasp,
+  author  = {Seal, Aniruddha and Perego, Simone and Hennefarth, Matthew R. and Raucci, Umberto and Bonati, Luigi and Ferguson, Andrew L. and Parrinello, Michele and Gagliardi, Laura},
+  title   = {Weighted active space protocol for multireference machine-learned potentials},
+  journal = {Proc. Natl. Acad. Sci. U.S.A.},
+  volume  = {122},
+  number  = {38},
+  pages   = {e2513693122},
+  year    = {2025},
+  doi     = {10.1073/pnas.2513693122}
+}
+
+@article{page2003,
+  author  = {Page, Christopher S. and Olivucci, Massimo},
+  title   = {Ground and excited state {CASPT2} geometry optimizations of small organic molecules},
+  journal = {J. Comput. Chem.},
+  volume  = {24},
+  number  = {3},
+  pages   = {298--309},
+  year    = {2003},
+  doi     = {10.1002/jcc.10145}
+}
+
+@article{park2019,
+  author  = {Park, Jae Woo},
+  title   = {Analytical gradient theory for strongly contracted ({SC}) and partially contracted ({PC}) $N$-electron valence state perturbation theory ({NEVPT2})},
+  journal = {J. Chem. Theory Comput.},
+  volume  = {15},
+  number  = {10},
+  pages   = {5417--5425},
+  year    = {2019},
+  doi     = {10.1021/acs.jctc.9b00762}
+}
+
+% ---------------------------------------------------------------- MLIPs
+@article{behler2007,
+  author  = {Behler, J{\"o}rg and Parrinello, Michele},
+  title   = {Generalized neural-network representation of high-dimensional potential-energy surfaces},
+  journal = {Phys. Rev. Lett.},
+  volume  = {98},
+  number  = {14},
+  pages   = {146401},
+  year    = {2007},
+  doi     = {10.1103/PhysRevLett.98.146401}
+}
+
+@article{bartok2010gap,
+  author  = {Bart{\'o}k, Albert P. and Payne, Mike C. and Kondor, Risi and Cs{\'a}nyi, G{\'a}bor},
+  title   = {Gaussian approximation potentials: {The} accuracy of quantum mechanics, without the electrons},
+  journal = {Phys. Rev. Lett.},
+  volume  = {104},
+  number  = {13},
+  pages   = {136403},
+  year    = {2010},
+  doi     = {10.1103/PhysRevLett.104.136403}
+}
+
+@inproceedings{schutt2021painn,
+  author    = {Sch{\"u}tt, Kristof T. and Unke, Oliver T. and Gastegger, Michael},
+  title     = {Equivariant message passing for the prediction of tensorial properties and molecular spectra},
+  booktitle = {Proceedings of the 38th International Conference on Machine Learning},
+  series    = {Proceedings of Machine Learning Research},
+  volume    = {139},
+  pages     = {9377--9388},
+  year      = {2021},
+  url       = {https://proceedings.mlr.press/v139/schutt21a.html}
+}
+
+@inproceedings{batatia2022,
+  author    = {Batatia, Ilyes and Kov{\'a}cs, D{\'a}vid P{\'e}ter and Simm, Gregor N. C. and Ortner, Christoph and Cs{\'a}nyi, G{\'a}bor},
+  title     = {{MACE}: {Higher} order equivariant message passing neural networks for fast and accurate force fields},
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume    = {35},
+  year      = {2022},
+  url       = {https://proceedings.neurips.cc/paper_files/paper/2022/hash/4a36c3c51af11ed9f34615b81edb5bbc-Abstract-Conference.html}
+}
+
+@article{ramakrishnan2015,
+  author  = {Ramakrishnan, Raghunathan and Dral, Pavlo O. and Rupp, Matthias and von Lilienfeld, O. Anatole},
+  title   = {Big data meets quantum chemistry approximations: {The} $\Delta$-machine learning approach},
+  journal = {J. Chem. Theory Comput.},
+  volume  = {11},
+  number  = {5},
+  pages   = {2087--2096},
+  year    = {2015},
+  doi     = {10.1021/acs.jctc.5b00099}
+}
+
+@article{smith2019ani1ccx,
+  author  = {Smith, Justin S. and Nebgen, Benjamin T. and Zubatyuk, Roman and Lubbers, Nicholas and Devereux, Christian and Barros, Kipton and Tretiak, Sergei and Isayev, Olexandr and Roitberg, Adrian E.},
+  title   = {Approaching coupled cluster accuracy with a general-purpose neural network potential through transfer learning},
+  journal = {Nat. Commun.},
+  volume  = {10},
+  pages   = {2903},
+  year    = {2019},
+  doi     = {10.1038/s41467-019-10827-4}
+}
+
+@misc{esen,
+  author        = {Fu, Xiang and Wood, Brandon M. and Barroso-Luque, Luis and Levine, Daniel S. and Gao, Meng and Dzamba, Misko and Zitnick, C. Lawrence},
+  title         = {Learning smooth and expressive interatomic potentials for physical property prediction},
+  year          = {2025},
+  eprint        = {2502.12147},
+  archivePrefix = {arXiv},
+  primaryClass  = {cs.LG},
+  doi           = {10.48550/arXiv.2502.12147}
+}
+
+@misc{uma,
+  author        = {Wood, Brandon M. and others},
+  title         = {{UMA}: {A} family of universal models for atoms},
+  year          = {2025},
+  eprint        = {2506.23971},
+  archivePrefix = {arXiv},
+  primaryClass  = {physics.chem-ph},
+  doi           = {10.48550/arXiv.2506.23971},
+  note          = {Also in Advances in Neural Information Processing Systems 38 (2025)}
+}
+
+% ---------------------------------------------------------------- Datensaetze
+@article{schreiner2022,
+  author  = {Schreiner, Mathias and Bhowmik, Arghya and Vegge, Tejs and Busk, Jonas and Winther, Ole},
+  title   = {{Transition1x} -- a dataset for building generalizable reactive machine learning potentials},
+  journal = {Sci. Data},
+  volume  = {9},
+  pages   = {779},
+  year    = {2022},
+  doi     = {10.1038/s41597-022-01870-w}
+}
+
+@misc{omol25,
+  author        = {Levine, Daniel S. and Shuaibi, Muhammed and others},
+  title         = {The {Open Molecules 2025} ({OMol25}) dataset, evaluations, and models},
+  year          = {2025},
+  eprint        = {2505.08762},
+  archivePrefix = {arXiv},
+  primaryClass  = {physics.chem-ph},
+  doi           = {10.48550/arXiv.2505.08762}
+}
+
+% ---------------------------------------------------------------- Programme
+@misc{orca_manual,
+  author = {{FACCTs GmbH}},
+  title  = {{ORCA} 5.0 manual},
+  year   = {2022},
+  url    = {https://www.faccts.de/docs/orca/5.0/manual/},
+  note   = {Accessed 2026-09-07}
+}
+
+@article{orca5,
+  author  = {Neese, Frank},
+  title   = {Software update: {The} {ORCA} program system---{Version} 5.0},
+  journal = {WIREs Comput. Mol. Sci.},
+  volume  = {12},
+  number  = {5},
+  pages   = {e1606},
+  year    = {2022},
+  doi     = {10.1002/wcms.1606}
+}
+
+@misc{qchem_manual,
+  author = {{Q-Chem, Inc.}},
+  title  = {{Q-Chem} 5.1 user's manual},
+  year   = {2018},
+  url    = {https://manual.q-chem.com/5.1/},
+  note   = {Accessed 2026-09-07}
+}
+
+@article{qchem5,
+  author  = {Epifanovsky, Evgeny and Gilbert, Andrew T. B. and Feng, Xintian and others},
+  title   = {Software for the frontiers of quantum chemistry: {An} overview of developments in the {Q-Chem} 5 package},
+  journal = {J. Chem. Phys.},
+  volume  = {155},
+  number  = {8},
+  pages   = {084801},
+  year    = {2021},
+  doi     = {10.1063/5.0055522}
+}
+
+@article{pyscf,
+  author  = {Sun, Qiming and Zhang, Xing and Banerjee, Samragni and others},
+  title   = {Recent developments in the {PySCF} program package},
+  journal = {J. Chem. Phys.},
+  volume  = {153},
+  number  = {2},
+  pages   = {024109},
+  year    = {2020},
+  doi     = {10.1063/5.0006074}
+}
+
+@article{psi4,
+  author  = {Smith, Daniel G. A. and Burns, Lori A. and Simmonett, Andrew C. and others},
+  title   = {{PSI4} 1.4: {Open}-source software for high-throughput quantum chemistry},
+  journal = {J. Chem. Phys.},
+  volume  = {152},
+  number  = {18},
+  pages   = {184108},
+  year    = {2020},
+  doi     = {10.1063/5.0006002}
+}
+
+@misc{nwchem,
+  author = {{NWChem developers}},
+  title  = {{NWChem} documentation: {SCF} and {DFT} multiplicity keywords},
+  url    = {https://nwchemgit.github.io/},
+  note   = {Accessed 2026-09-07}
+}
+
+
+% ---------------------------------------------------------------- DFT-Grundlagen (2026-09-08 geprueft, APS)
+@article{hohenberg1964,
+  author  = {Hohenberg, Pierre and Kohn, Walter},
+  title   = {Inhomogeneous electron gas},
+  journal = {Phys. Rev.},
+  volume  = {136},
+  number  = {3B},
+  pages   = {B864--B871},
+  year    = {1964},
+  doi     = {10.1103/PhysRev.136.B864}
+}
+
+@article{kohn1965,
+  author  = {Kohn, Walter and Sham, Lu Jeu},
+  title   = {Self-consistent equations including exchange and correlation effects},
+  journal = {Phys. Rev.},
+  volume  = {140},
+  number  = {4A},
+  pages   = {A1133--A1138},
+  year    = {1965},
+  doi     = {10.1103/PhysRev.140.A1133}
+}
+
+% ---------------------------------------------------------------- Lehrbuecher (2026-09-08 geprueft, Verlagsseiten)
+@book{jensen2017,
+  author    = {Jensen, Frank},
+  title     = {Introduction to Computational Chemistry},
+  edition   = {3},
+  publisher = {Wiley},
+  address   = {Chichester},
+  year      = {2017},
+  isbn      = {978-1-118-82599-0}
+}
+
+@book{koch2001,
+  author    = {Koch, Wolfram and Holthausen, Max C.},
+  title     = {A Chemist's Guide to Density Functional Theory},
+  edition   = {2},
+  publisher = {Wiley-VCH},
+  address   = {Weinheim},
+  year      = {2001},
+  isbn      = {978-3-527-30372-4},
+  doi       = {10.1002/3527600043}
+}
+
+@book{szabo1996,
+  author    = {Szabo, Attila and Ostlund, Neil S.},
+  title     = {Modern Quantum Chemistry: Introduction to Advanced Electronic Structure Theory},
+  publisher = {Dover},
+  address   = {Mineola, NY},
+  year      = {1996},
+  isbn      = {978-0-486-69186-2}
+}
+
+@inproceedings{perdew2001,
+  author    = {Perdew, John P. and Schmidt, Karla},
+  title     = {Jacob's ladder of density functional approximations for the exchange-correlation energy},
+  booktitle = {Density Functional Theory and Its Application to Materials},
+  series    = {AIP Conference Proceedings},
+  volume    = {577},
+  pages     = {1--20},
+  year      = {2001},
+  doi       = {10.1063/1.1390175}
+}
+
+% ---------------------------------------------------------------- Basissaetze (2026-09-08 geprueft)
+@article{hariharan1973,
+  author  = {Hariharan, P. C. and Pople, J. A.},
+  title   = {The influence of polarization functions on molecular orbital hydrogenation energies},
+  journal = {Theor. Chim. Acta},
+  volume  = {28},
+  number  = {3},
+  pages   = {213--222},
+  year    = {1973},
+  doi     = {10.1007/BF00533485}
+}
+
+@article{weigend2005,
+  author  = {Weigend, Florian and Ahlrichs, Reinhart},
+  title   = {Balanced basis sets of split valence, triple zeta valence and quadruple zeta valence quality for {H} to {Rn}: {Design} and assessment of accuracy},
+  journal = {Phys. Chem. Chem. Phys.},
+  volume  = {7},
+  number  = {18},
+  pages   = {3297--3305},
+  year    = {2005},
+  doi     = {10.1039/b508541a}
+}
+
+@article{rappoport2010,
+  author  = {Rappoport, Dmitrij and Furche, Filipp},
+  title   = {Property-optimized {Gaussian} basis sets for molecular response calculations},
+  journal = {J. Chem. Phys.},
+  volume  = {133},
+  number  = {13},
+  pages   = {134105},
+  year    = {2010},
+  doi     = {10.1063/1.3484283}
+}
+
+% ---------------------------------------------------------------- MLIP-Reviews (2026-09-09 geprueft)
+@article{behler2021,
+  author  = {Behler, J{\"o}rg},
+  title   = {Four generations of high-dimensional neural network potentials},
+  journal = {Chem. Rev.},
+  volume  = {121},
+  number  = {16},
+  pages   = {10037--10072},
+  year    = {2021},
+  doi     = {10.1021/acs.chemrev.0c00868}
+}
+
+@article{unke2021,
+  author  = {Unke, Oliver T. and Chmiela, Stefan and Sauceda, Huziel E. and Gastegger, Michael and Poltavsky, Igor and Sch{\"u}tt, Kristof T. and Tkatchenko, Alexandre and M{\"u}ller, Klaus-Robert},
+  title   = {Machine learning force fields},
+  journal = {Chem. Rev.},
+  volume  = {121},
+  number  = {16},
+  pages   = {10142--10186},
+  year    = {2021},
+  doi     = {10.1021/acs.chemrev.0c01111}
+}
+
+@article{deringer2019,
+  author  = {Deringer, Volker L. and Caro, Miguel A. and Cs{\'a}nyi, G{\'a}bor},
+  title   = {Machine learning interatomic potentials as emerging tools for materials science},
+  journal = {Adv. Mater.},
+  volume  = {31},
+  number  = {46},
+  pages   = {1902765},
+  year    = {2019},
+  doi     = {10.1002/adma.201902765}
+}
+
+% ---------------------------------------------------------------- ML-Training (2026-09-09 geprueft)
+@book{goodfellow2016,
+  author    = {Goodfellow, Ian and Bengio, Yoshua and Courville, Aaron},
+  title     = {Deep Learning},
+  publisher = {MIT Press},
+  address   = {Cambridge, MA},
+  year      = {2016},
+  isbn      = {978-0-262-03561-3}
+}
+
+@inproceedings{kingma2015adam,
+  author    = {Kingma, Diederik P. and Ba, Jimmy},
+  title     = {Adam: {A} method for stochastic optimization},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2015},
+  eprint    = {1412.6980},
+  archivePrefix = {arXiv}
+}
+
+@inproceedings{loshchilov2019adamw,
+  author    = {Loshchilov, Ilya and Hutter, Frank},
+  title     = {Decoupled weight decay regularization},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2019},
+  eprint    = {1711.05101},
+  archivePrefix = {arXiv}
+}
+
+% ---------------------------------------------------------------- Software (2026-09-09 geprueft)
+@article{larsen2017ase,
+  author  = {Larsen, Ask Hjorth and Mortensen, Jens J{\o}rgen and Blomqvist, Jakob and others},
+  title   = {The atomic simulation environment---a {Python} library for working with atoms},
+  journal = {J. Phys.: Condens. Matter},
+  volume  = {29},
+  number  = {27},
+  pages   = {273002},
+  year    = {2017},
+  doi     = {10.1088/1361-648X/aa680e}
+}
+
+@misc{fairchem,
+  author = {{FAIR Chemistry}},
+  title  = {fairchem: {FAIR} {Chemistry}'s library of machine learning methods for chemistry},
+  year   = {2026},
+  url    = {https://github.com/facebookresearch/fairchem},
+  note   = {Version 2.20.0, accessed 2026-09-09}
+}
+
+@misc{mace_code,
+  author = {{MACE developers}},
+  title  = {{MACE} software package, version 0.3.15},
+  year   = {2026},
+  url    = {https://github.com/ACEsuit/mace},
+  note   = {Code repository}
+}
+
+@article{grambow2020,
+  author  = {Grambow, Colin A. and Pattanaik, Lagnajit and Green, William H.},
+  title   = {Reactants, products, and transition states of elementary chemical reactions based on quantum chemistry},
+  journal = {Sci. Data},
+  volume  = {7},
+  pages   = {137},
+  year    = {2020},
+  doi     = {10.1038/s41597-020-0460-4}
+}
+
+% --- Setting des OMol25-Kapitels (2026-09-10); Metadaten via Crossref/arXiv/EuropePMC geprueft
+@misc{marks2026,
+  author        = {Marks, Jonah and Vandezande, Jonathon and Gomes, Joseph},
+  title         = {Reliable and efficient automated transition-state searches with machine-learned interatomic potentials},
+  year          = {2026},
+  eprint        = {2604.00405},
+  archivePrefix = {arXiv}
+}
+
+@article{hait2025,
+  author  = {Hait, Diptarka and Estrada Pab{\'o}n, Jan D. and St{\"o}hr, Martin and Mart{\'i}nez, Todd J.},
+  title   = {Locating ab initio transition states via geodesic construction on machine-learned potential energy surfaces},
+  journal = {J. Chem. Theory Comput.},
+  volume  = {21},
+  number  = {22},
+  pages   = {11632--11644},
+  year    = {2025},
+  doi     = {10.1021/acs.jctc.5c01221},
+  note    = {arXiv:2507.17968}
+}
+
+@article{grafenstein2002,
+  author  = {Gr{\"a}fenstein, J{\"u}rgen and Kraka, Elfi and Filatov, Michael and Cremer, Dieter},
+  title   = {Can unrestricted density-functional theory describe open shell singlet biradicals?},
+  journal = {Int. J. Mol. Sci.},
+  volume  = {3},
+  number  = {4},
+  pages   = {360--394},
+  year    = {2002},
+  doi     = {10.3390/i3040360}
+}
+
+@article{crawford2001,
+  author  = {Crawford, T. Daniel and Kraka, Elfi and Stanton, John F. and Cremer, Dieter},
+  title   = {Problematic p-benzyne: orbital instabilities, biradical character, and broken symmetry},
+  journal = {J. Chem. Phys.},
+  volume  = {114},
+  number  = {24},
+  pages   = {10638--10650},
+  year    = {2001},
+  doi     = {10.1063/1.1373433}
+}
+
+@article{messerly2025,
+  author  = {Messerly, Mitchell and Matin, Sakib and Allen, Alice E. A. and Nebgen, Benjamin and Barros, Kipton and Smith, Justin S. and Lubbers, Nicholas and Messerly, Richard},
+  title   = {Multi-fidelity learning for interatomic potentials: low-level forces and high-level energies are all you need},
+  journal = {Mach. Learn.: Sci. Technol.},
+  volume  = {6},
+  number  = {3},
+  pages   = {035066},
+  year    = {2025},
+  doi     = {10.1088/2632-2153/ae040b}
+}
+
+@misc{shiota2024,
+  author        = {Shiota, Tomoya and Ishihara, Kenji and Do, Tuan Minh and Mori, Toshio and Mizukami, Wataru},
+  title         = {Taming multi-domain, -fidelity data: towards foundation models for atomistic scale simulations},
+  year          = {2024},
+  eprint        = {2412.13088},
+  archivePrefix = {arXiv}
+}
+
+@article{asgeirsson2021,
+  author  = {{\'A}sgeirsson, Vilhj{\'a}lmur and Birgisson, Benedikt O. and Bjornsson, Ragnar and Becker, Ute and Neese, Frank and Riplinger, Christoph and J{\'o}nsson, Hannes},
+  title   = {Nudged elastic band method for molecular reactions using energy-weighted springs combined with eigenvector following},
+  journal = {J. Chem. Theory Comput.},
+  volume  = {17},
+  number  = {8},
+  pages   = {4929--4945},
+  year    = {2021},
+  doi     = {10.1021/acs.jctc.1c00462}
+}
+
+@article{ren2026,
+  author  = {Ren, Kaipai and Tang, Kun and Zhao, Yujing and Zhang, Lei and Du, Jian and Meng, Qingwei and Liu, Qilei},
+  title   = {Reactive machine learning potential for accelerating transition state search in organic synthesis},
+  journal = {Nat. Commun.},
+  volume  = {17},
+  pages   = {6253},
+  year    = {2026},
+  doi     = {10.1038/s41467-026-72945-0}
+}
+
+@article{allen2026,
+  author  = {Allen, Alice E. A. and Li, Rui and Matin, Sakib and Zhang, Xing and Nebgen, Benjamin and Lubbers, Nicholas and Smith, Justin S. and Messerly, Richard and Tretiak, Sergei and Chan, Garnet Kin-Lic and Barros, Kipton},
+  title   = {Reactive chemistry at the unrestricted coupled cluster level: high-throughput calculations for training machine learning potentials},
+  journal = {J. Chem. Theory Comput.},
+  volume  = {22},
+  number  = {14},
+  pages   = {7286--7296},
+  year    = {2026},
+  doi     = {10.1021/acs.jctc.6c00247}
+}
+
+@article{marks2024fsm,
+  author  = {Marks, Jonah and Gomes, Joseph},
+  title   = {Incorporation of internal coordinates interpolation into the freezing string method},
+  journal = {J. Chem. Theory Comput.},
+  volume  = {21},
+  number  = {23},
+  pages   = {12110--12120},
+  year    = {2025},
+  doi     = {10.1021/acs.jctc.5c01492},
+  note    = {Reference transition states and FSM code at \url{https://github.com/thegomeslab/fsm}.}
+}
+
+@article{guner2003,
+  author  = {Guner, Vildan and Khuong, Kelli S. and Leach, Andrew G. and Lee, Patrick S. and Bartberger, Michael D. and Houk, K. N.},
+  title   = {A Standard Set of Pericyclic Reactions of Hydrocarbons for the Benchmarking of Computational Methods: The Performance of ab Initio, Density Functional, {CASSCF}, {CASPT2}, and {CBS-QB3} Methods for the Prediction of Activation Barriers, Reaction Energetics, and Transition State Geometries},
+  journal = {J. Phys. Chem. A},
+  volume  = {107},
+  number  = {51},
+  pages   = {11445--11459},
+  year    = {2003},
+  doi     = {10.1021/jp035501w}
+}
+
+@article{chai2008,
+  author  = {Chai, Jeng-Da and Head-Gordon, Martin},
+  title   = {Systematic optimization of long-range corrected hybrid density functionals},
+  journal = {J. Chem. Phys.},
+  volume  = {128},
+  number  = {8},
+  pages   = {084106},
+  year    = {2008},
+  doi     = {10.1063/1.2834918}
+}
+
+% RGD1 and ANI-1xBB: reactive data inside OMol25 (Chapter 3, "Other reactive data").
+@article{zhao2023rgd1,
+  author  = {Zhao, Qiyuan and Vaddadi, Sai Mahit and Woulfe, Michael and Ogunfowora, Lawal A. and Garimella, Sanjay S. and Isayev, Olexandr and Savoie, Brett M.},
+  title   = {Comprehensive exploration of graphically defined reaction spaces},
+  journal = {Sci. Data},
+  volume  = {10},
+  pages   = {145},
+  year    = {2023},
+  doi     = {10.1038/s41597-023-02043-z}
+}
+
+@article{zhang2025ani1xbb,
+  author  = {Zhang, Shuhao and Zubatyuk, Roman and Yang, Yinuo and Roitberg, Adrian and Isayev, Olexandr},
+  title   = {{ANI-1xBB}: An {ANI}-based reactive potential for small organic molecules},
+  journal = {J. Chem. Theory Comput.},
+  volume  = {21},
+  number  = {9},
+  pages   = {4365--4374},
+  year    = {2025},
+  doi     = {10.1021/acs.jctc.5c00347}
+}
+
+% Najibi & Goerigk 2018: the GMTKN55 assessment of wB97M-V (the 2017 GMTKN55 paper does not contain it).
+@article{najibi2018,
+  author  = {Najibi, Asim and Goerigk, Lars},
+  title   = {The nonlocal kernel in van der {W}aals density functionals as an additive correction: An extensive analysis with special emphasis on the {B97M-V} and {$\omega$B97M-V} approaches},
+  journal = {J. Chem. Theory Comput.},
+  volume  = {14},
+  number  = {11},
+  pages   = {5725--5738},
+  year    = {2018},
+  doi     = {10.1021/acs.jctc.8b00842}
+}

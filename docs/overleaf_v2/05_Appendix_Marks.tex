@@ -1,0 +1,85 @@
+% Overleaf-Datei, Spiegel in docs/overleaf/. Nur zusammen mit Overleaf aendern.
+% Appendix A: Stabilitaetsanalyse der Marks-Referenzen (app:marks).
+% Zahlen aus marks_stability/marks_stability.csv, Text aus
+% marks_stability/REPORT.md. \appendix hier entfernen, falls main.tex
+% bereits in den Anhang schaltet.
+
+\appendix
+\chapter{Stability of the Marks et al.\ reference transition states}
+\label{app:marks}
+
+Marks et al.~\cite{marks2026} do not report the SCF solution at their
+reference saddles. We ran the stability analysis ourselves, at the
+paper's level, \mbox{$\omega$B97X-V/def2-TZVP}, so that the result
+describes the surface the references were optimised on.
+
+The geometries come from the FSM repository of the Gomes
+group\footnote{\texttt{github.com/thegomeslab/fsm}, released with
+Marks and Gomes~\cite{marks2024fsm} at the same level of theory.}. Five Sharada
+references coincide with Baker references, so the set holds 28
+distinct structures, three of them open-shell. The 25 closed-shell
+singlets were tested with the protocol of Section~\ref{sec:dft} in
+ORCA 5.0.4: a restricted single point with gradient, which confirms
+that every geometry is a stationary point at this level, then an
+unrestricted single point with stability analysis and restart where
+the restricted solution is unstable.
+
+24 of the 25 are stable, none marginally: the smallest stability
+eigenvalue is $+0.021$~au, an order of magnitude above the marginal
+cases of the Transition1x set. The one unstable reference is the
+transition state of bicyclo[1.1.0]butane to trans-butadiene, with
+$\langle S^2\rangle = 0.19$ and a breaking depth of 13.7~meV; Hait et
+al.~\cite{hait2025} found the same structure unstable at
+B3LYP/def2-SVP. It is still the restricted saddle, and the models
+reproduce it: under CI-NEB all four reach it in three to four gradient
+calls. The reactions they fail on most often are stable ones.
+
+With one unstable reference among 25, this benchmark cannot show
+whether instability affects transition-state search. That the Baker
+and Sharada reactions are almost uniformly stable is the finding; the
+question needs a set selected for multireference character, which is
+what Chapter~\ref{ch:mr} uses.
+
+\begin{table}[h]
+\centering
+\small
+\caption{Stability analysis of the 25 closed-shell reference
+transition states of Marks et al.~\cite{marks2026} at
+\mbox{$\omega$B97X-V/def2-TZVP}, ordered by the lowest eigenvalue of
+the stability analysis, $\lambda_{\min}$. Reaction names as in the
+paper's tables. Sharada references that coincide with a Baker
+reference are listed once.}
+\label{tab:marks-stability}
+\begin{tabular}{@{}llrcr@{}}
+\toprule
+reference & reaction & $\lambda_{\min}$ (au) & $\langle S^2\rangle$ & depth (meV) \\
+\midrule
+Baker 6 / Sharada 5 & bicyclo[1.1.0]butane $\rightarrow$ trans-butadiene & $-0.0104$ & 0.19 & 13.7 \\
+\midrule
+Baker 18  & HNCCS $\rightarrow$ HNC + CS                          & $+0.0213$ & 0 & -- \\
+Sharada 7 & cis,cis-2,4-hexadiene $\leftrightarrow$ 3,4-dimethylcyclobutene & $+0.0343$ & 0 & -- \\
+Sharada 2 & SiH$_2$ + H$_2$ $\rightarrow$ SiH$_4$                & $+0.0438$ & 0 & -- \\
+Baker 17  & SiH$_2$ + CH$_3$CH$_3$ $\rightarrow$ SiH$_3$CH$_2$CH$_3$ & $+0.0440$ & 0 & -- \\
+Baker 11 / Sharada 4 & CH$_3$CH$_3$ $\rightarrow$ CH$_2$CH$_2$ + H$_2$ & $+0.0451$ & 0 & -- \\
+Baker 24  & HCNH$_2$ $\rightarrow$ HCN + H$_2$                     & $+0.0489$ & 0 & -- \\
+Baker 3 / Sharada 1 & H$_2$CO $\rightarrow$ H$_2$ + CO             & $+0.0505$ & 0 & -- \\
+Sharada 9 & silyl ketene acetal $\rightarrow$ silyl ester (Ireland--Claisen) & $+0.0505$ & 0 & -- \\
+Baker 23  & H$_2$CNH $\rightarrow$ HCNH$_2$                        & $+0.0509$ & 0 & -- \\
+Baker 8 / Sharada 6 & parent Diels--Alder cycloaddition           & $+0.0577$ & 0 & -- \\
+Baker 9   & s-tetrazine $\rightarrow$ 2\,HCN + N$_2$               & $+0.0738$ & 0 & -- \\
+Baker 22  & HNC + H$_2$ $\rightarrow$ H$_2$CNH                     & $+0.0785$ & 0 & -- \\
+Baker 16  & Claisen rearrangement                                  & $+0.0817$ & 0 & -- \\
+Baker 13 / Sharada 3 & acetaldehyde keto--enol tautomerism         & $+0.0850$ & 0 & -- \\
+Baker 10  & trans-butadiene $\rightarrow$ cis-butadiene            & $+0.0989$ & 0 & -- \\
+Baker 20  & acrolein rotational TS                                 & $+0.1037$ & 0 & -- \\
+Baker 21  & HCONHOH $\rightarrow$ HCOHNHO                          & $+0.1084$ & 0 & -- \\
+Baker 14  & HCOCl $\rightarrow$ HCl + CO                           & $+0.1088$ & 0 & -- \\
+Baker 12  & CH$_3$CH$_2$F $\rightarrow$ CH$_2$CH$_2$ + HF           & $+0.1195$ & 0 & -- \\
+Baker 1   & HCN $\rightarrow$ HNC                                  & $+0.1360$ & 0 & -- \\
+Baker 2   & HCCH $\rightarrow$ CCH$_2$                             & $+0.1459$ & 0 & -- \\
+Sharada 8 & alanine dipeptide C5 $\leftrightarrow$ C7$_\mathrm{ax}$ & $+0.1575$ & 0 & -- \\
+Baker 19  & HCONH$_3^+$ $\rightarrow$ NH$_4^+$ + CO                & $+0.1578$ & 0 & -- \\
+Baker 15  & H$_2$O + PO$_3^-$ $\rightarrow$ H$_2$PO$_4^-$          & $+0.2299$ & 0 & -- \\
+\bottomrule
+\end{tabular}
+\end{table}

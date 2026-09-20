@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """Die drei Paperfiguren, fertig gerendert, ohne Handzuschnitt.
 
-    Pictures/Fig1.png            Restkraft Modell gegen DFT     (Results Fig 1)
+    Pictures/Fig1_v2.png         Restkraft Modell gegen DFT     (Results Fig 1)
+                                 (Fig1.png ist der Stand ohne offene Marker)
     Pictures/fig2_force_mae.png  Kraftfehler MAE                (Results Fig 2)
-    Pictures/fig3.png            Barrierenfehler A + Spread B   (Results Fig 3)
+    Pictures/fig3_v2.png         Barrierenfehler A + Spread B   (Results Fig 3)
+                                 (fig3.png ist der Stand ohne offene Kreise)
 
 Gleiche Daten, gleiche Rechnung, gleiche Farben und Seeds wie die Vorlagen
 (fig_silent_v2 in plot_omol25_figs.py, plot_fig2.py, plot_fig3.py). Was sich
@@ -59,6 +61,29 @@ BASE_RC = {
 ROWS = list(csv.DictReader(open(os.path.join(RES, 'omol25_model_geoms.csv'),
                                 encoding='utf-8')))
 
+# Suchen, deren Band das Kriterium f_max < 0.05 nicht erreicht hat (23 von 135).
+# Fig 3 zeichnet sie als offene Kreise; gerechnet wird weiter ueber alle.
+UNCONV = {(r['rxn'], r['model'])
+          for r in csv.DictReader(open(os.path.join(RES, 'neb_runs.csv'),
+                                       encoding='utf-8'))
+          if r['criterion_met'] == '0'}
+
+
+def _scatter_open(ax, x, y, open_, c, s, alpha, zorder):
+    """Punkte wie bisher; die mit open_ markierten als offene Kreise."""
+    ax.scatter(x[~open_], y[~open_], s=s, c=c, alpha=alpha, lw=0.5,
+               edgecolor='white', zorder=zorder)
+    ax.scatter(x[open_], y[open_], s=s, facecolors='none', edgecolors=c,
+               lw=1.3, alpha=0.95, zorder=zorder)
+
+
+def _key_open(ax, label, **kw):
+    """Schluessel fuer die offenen Kreise, einmal pro Panel."""
+    key = [Line2D([], [], marker='o', ls='', ms=6.5, mfc='none', mec=GREY,
+                  mew=1.3, label=label)]
+    ax.legend(handles=key, fontsize=7.4, frameon=True, framealpha=0.96,
+              edgecolor='#ccc', handlelength=1.0, borderpad=0.6, **kw)
+
 
 def _save(fig, name):
     os.makedirs(OUT, exist_ok=True)
@@ -81,6 +106,7 @@ def fig1():
     s2 = np.abs(np.array([float(r['s2_ts']) for r in rows]))
     mdl = np.array([r['model'] for r in rows])
     brk = s2 > S2_BREAK
+    unc = np.array([(r['rxn'], r['model']) in UNCONV for r in rows])
 
     fig, axs = plt.subplots(1, 3, figsize=(13.2, 5.2), sharex=True, sharey=True)
     lo = min(fm.min(), fd.min()) * 0.55
@@ -92,11 +118,17 @@ def fig1():
         s, u = sel & ~brk, sel & brk
         ax.plot([lo, hi], [lo, hi], color='#444', lw=1.2, ls='--', zorder=2,
                 label='MLIP = DFT')
-        ax.scatter(fm[s], fd[s], s=34, c=C_ST, alpha=0.85, lw=0, zorder=4,
-                   label='%s,  %s   (n=%d)' % (NAME_ST, S2_ST, s.sum()))
-        ax.scatter(fm[u], fd[u], s=40, c=C_UN, alpha=0.85, lw=0, marker='D',
+        # Band nicht konvergiert: gleiche Form, offen; n zaehlt weiter alle
+        ax.scatter(fm[s & ~unc], fd[s & ~unc], s=34, c=C_ST, alpha=0.85, lw=0,
                    zorder=4,
+                   label='%s,  %s   (n=%d)' % (NAME_ST, S2_ST, s.sum()))
+        ax.scatter(fm[u & ~unc], fd[u & ~unc], s=40, c=C_UN, alpha=0.85, lw=0,
+                   marker='D', zorder=4,
                    label='%s,  %s   (n=%d)' % (NAME_UN, S2_UN, u.sum()))
+        ax.scatter(fm[s & unc], fd[s & unc], s=34, facecolors='none',
+                   edgecolors=C_ST, lw=1.3, alpha=0.95, zorder=4)
+        ax.scatter(fm[u & unc], fd[u & unc], s=40, facecolors='none',
+                   edgecolors=C_UN, lw=1.3, alpha=0.95, marker='D', zorder=4)
         drawn += int(s.sum() + u.sum())
         for mm, c in ((s, C_ST), (u, C_UN)):
             x0, y0 = np.median(fm[mm]), np.median(fd[mm])
@@ -120,6 +152,9 @@ def fig1():
         h.append(Line2D([], [], marker='+', ms=13, mec=GREY, mew=1.8,
                         ls='none'))
         l.append('group median')
+        h.append(Line2D([], [], marker='o', ls='', ms=6, mfc='none', mec=GREY,
+                        mew=1.3))
+        l.append('open: band not converged')
         lg = ax.legend(h, l, loc='lower right', fontsize=7.5, frameon=True,
                        framealpha=0.95, edgecolor='#ddd', borderpad=0.5)
         lg.get_frame().set_facecolor('white')
@@ -128,7 +163,7 @@ def fig1():
     axs[0].set_ylabel(r'$\max_i |F_i^{\,\mathrm{DFT}}|$  at the identical'
                       '\n'
                       r'geometry   [eV Å$^{-1}$]')
-    p = _save(fig, 'Fig1.png')
+    p = _save(fig, 'Fig1_v2.png')
     print('   Fig 1: %d Punkte gezeichnet, %d Zeilen' % (drawn, len(rows)))
     for x in med:
         print('   %-6s model/DFT  closed-shell %.3f/%.3f   broken-symmetry %.3f/%.3f'
@@ -219,6 +254,7 @@ def _draw_barrier_err(axs):
     ub = np.abs(col('s2_ts')) > S2_BREAK
     mm = np.array([r['model'] for r in rr])
     rxn = np.array([r['rxn'] for r in rr])
+    unc = np.array([(r['rxn'], r['model']) in UNCONV for r in rr])
 
     jit = np.random.default_rng(5)
     out = []
@@ -227,8 +263,8 @@ def _draw_barrier_err(axs):
         summ, n = {}, {}
         for x0, grp, c in ((0, sel & ~ub, C_ST), (1, sel & ub, C_UN)):
             v = err[grp]
-            ax.scatter(x0 + jit.uniform(-0.15, 0.15, len(v)), v, s=36, c=c,
-                       alpha=0.60, lw=0.5, edgecolor='white', zorder=1)
+            _scatter_open(ax, x0 + jit.uniform(-0.15, 0.15, len(v)), v,
+                          unc[grp], c, s=36, alpha=0.60, zorder=1)
             mn, md = float(v.mean()), float(np.median(v))
             summ[x0], n[x0] = (mn, md), int(grp.sum())
             ax.plot([x0 - 0.28, x0 + 0.28], [mn, mn], color=c, lw=2.8,
@@ -266,6 +302,7 @@ def _draw_barrier_err(axs):
             # einmal sagen, was der Pfeil misst
             ax.text(2.52, a1 * 1.45, 'MAE ratio', fontsize=7.4, color=GREY,
                     ha='center', va='bottom')
+            _key_open(ax, 'band not converged', loc='lower right')
         ax.set_title(LBL[m], loc='left', pad=8)
         ax.axhline(0.0434, color=GREEN, lw=1.0, ls='--', zorder=0)
         ax.set_xlim(-0.62, 3.02)
@@ -294,7 +331,7 @@ def _draw_spread(ax):
     by = collections.defaultdict(dict)
     for r in ROWS:
         by[r['rxn']][r['model']] = r
-    rx, spread, unst = [], [], []
+    rx, spread, unst, unc = [], [], [], []
     for k, v in by.items():
         if len(v) < 3:
             continue
@@ -302,8 +339,9 @@ def _draw_spread(ax):
         rx.append(k)
         spread.append((b.max() - b.min()) * 1000.0)
         unst.append(any(v[m]['unstable_ts'] == '1' for m in MODELS))
+        unc.append(any((k, m) in UNCONV for m in MODELS))
     rx = np.array(rx)
-    spread, unst = np.array(spread), np.array(unst)
+    spread, unst, unc = np.array(spread), np.array(unst), np.array(unc)
     CHEM = 43.4
 
     jit = np.random.default_rng(11)
@@ -313,8 +351,7 @@ def _draw_spread(ax):
     for x0, sel, c in ((0, ~unst, C_ST), (1, unst, C_UN)):
         v = spread[sel]
         xj = x0 + jit.uniform(-0.17, 0.17, len(v))
-        ax.scatter(xj, v, s=44, c=c, alpha=0.70, lw=0.5, edgecolor='white',
-                   zorder=3)
+        _scatter_open(ax, xj, v, unc[sel], c, s=44, alpha=0.70, zorder=3)
         mn, md = float(v.mean()), float(np.median(v))
         ax.plot([x0 - 0.26, x0 + 0.26], [mn, mn], color=c, lw=2.8, zorder=4,
                 solid_capstyle='butt')
@@ -351,6 +388,7 @@ def _draw_spread(ax):
                   'model geometries\nof one reaction   [meV]')
     ax.text(-0.92, CHEM * 1.75, 'chemical accuracy, 43 meV', fontsize=7.8,
             color=GREEN, ha='left', va='center')
+    _key_open(ax, 'at least one band\nnot converged', loc='upper left')
     return out, len(rx)
 
 
@@ -368,7 +406,7 @@ def fig3():
     b, nb = _draw_spread(ax_right)
     subfigs[1].text(0.02, 0.995, 'B', fontsize=16, fontweight='bold',
                     va='top', ha='left')
-    p = _save(fig, 'fig3.png')
+    p = _save(fig, 'fig3_v2.png')
     print('   Fig 3A: %d Zeilen' % na)
     for lab, n0, (mn0, md0), n1, (mn1, md1), f in a:
         print('   %-6s closed-shell n=%2d MAE %5.1f med %4.1f   '

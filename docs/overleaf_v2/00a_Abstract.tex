@@ -1,0 +1,65 @@
+% Overleaf-Datei (Name zu bestaetigen), Spiegel in docs/overleaf/.
+% Nur zusammen mit der Overleaf-Datei aendern.
+% Inhalt: Abstract.
+
+\section*{Abstract}
+\addcontentsline{toc}{section}{Abstract}
+
+Machine-learned interatomic potentials for reactions are trained on DFT
+labels, and the level of theory of those labels bounds their accuracy.
+The common way to raise the level of theory is relabelling: the geometries of an
+existing dataset are kept and only their energies and forces are
+recomputed at a higher level. This thesis asks two questions about
+that practice. RQ1: can a model be lifted to a higher level by
+relabelling only a subset of its training data? RQ2: can a model learn
+a surface from paths that were never relaxed on that surface?
+
+For RQ1, a MACE model is trained on Transition1x
+(\mbox{$\omega$B97X/6-31G(d)}), and a correction head on top of it
+is trained to predict the difference to \mbox{$\omega$B97M-V/def2-TZVP}
+from about 80\,000 geometries, under 1\,\% of the dataset, relabelled
+restricted at that level. It is tested on 30 reactions grouped by low, mid and high
+multireference character, at fixed geometries and in transition-state
+searches the model drives itself. Forces improve everywhere, and the
+transition-state searches deliver a transition state on every reaction. Barriers improve
+threefold for reactions of low multireference character; for reactions
+of mid and high multireference character the corrected barriers
+overshoot, mostly through the error of the MACE model on its own
+level, which the head cannot correct, and at high character the
+corrected barriers are worse than the uncorrected ones. The answer to RQ1 is yes, with the reservation of
+the reactions of high multireference character.
+
+In RQ1 the labels were raised to a higher level of theory while the
+spin formalism stayed restricted. In RQ2 we ask whether relabelling still
+works when the spin formalism changes as well. For that we turn to
+models trained on OMol25, which gave unrestricted labels at
+\mbox{$\omega$B97M-V/def2-TZVPD} to reaction paths that had been
+generated restricted, the Transition1x paths among them.
+
+Published
+benchmarks of these models report high success rates in
+transition-state search. None has tested the models systematically at
+broken-symmetry transition states. This work does so for three
+of the models: UMA-S, UMA-M and eSEN. We let them search the
+transition states of 45 Transition1x reactions. Each transition state
+the models deliver is evaluated with an unrestricted
+DFT single point and a stability analysis, which sorts the transition
+states into closed-shell and broken-symmetry. The models predict single-point energies well for both groups. But
+their force errors are two to three times larger at the
+broken-symmetry transition states. The structures they deliver there
+are therefore not stationary points of the unrestricted surface, with
+residual forces up to 3.4 times those of the closed-shell group. This
+inability to locate the transition state makes the barriers at the
+broken-symmetry reactions more than ten times less reliable than at the
+closed-shell ones. Two mechanisms are candidates for these errors. The first is the training data: the models learned from transition
+states found on the restricted surface, and these are furthest from
+being stationary points of the unrestricted surface at the
+broken-symmetry reactions. The second is the shape of the unrestricted
+surface, whose curvature changes abruptly where the broken-symmetry
+solution sets in, which may make it hard for a smooth model to learn.
+The data do not decide between the two.
+
+For practice, a stability analysis should precede any further use of a
+transition state whose multireference character cannot be ruled out.
+Fine-tuning the models on paths relaxed on the unrestricted surface
+would separate the two mechanisms and is left to future work.
