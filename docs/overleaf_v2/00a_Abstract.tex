@@ -17,10 +17,9 @@ a surface from paths that were never relaxed on that surface?
 For RQ1, a MACE model is trained on Transition1x
 (\mbox{$\omega$B97X/6-31G(d)}), and a correction head on top of it
 is trained to predict the difference to \mbox{$\omega$B97M-V/def2-TZVP}
-from about 80\,000 geometries, under 1\,\% of the dataset, relabelled
-restricted at that level. It is tested on 30 reactions grouped by low, mid and high
-multireference character. Forces improve everywhere, and the
-transition-state searches deliver a transition state on every reaction. Barriers improve
+from about 80\,000 geometries, under 1\,\% of the dataset. It is tested on 30 reactions grouped by low, mid and high
+multireference character. The force error drops to about a third on all reactions, and the
+corrected model locates the transition states accurately. Barriers improve
 threefold for reactions of low multireference character; for reactions
 of mid and high multireference character the corrected barriers
 overshoot, mostly through the error of the MACE model on its own
@@ -30,7 +29,8 @@ the reactions of high multireference character.
 In RQ1 the labels were raised to a higher level of theory while the
 spin formalism stayed restricted. In RQ2 we ask whether relabelling still
 works when the spin formalism changes as well. For that we turn to
-models trained on OMol25, which gave unrestricted labels at
+models trained on OMol25, the current frontier of general-purpose
+molecular potentials. OMol25 gave unrestricted labels at
 \mbox{$\omega$B97M-V/def2-TZVPD} to reaction paths that had been
 generated restricted, the Transition1x paths among them.
 
@@ -55,7 +55,9 @@ being stationary points of the unrestricted surface at the
 broken-symmetry reactions. The second is the shape of the unrestricted
 surface, whose curvature changes abruptly where the broken-symmetry
 solution sets in, which may make it hard for a smooth model to learn.
-The data do not decide between the two.
+The data do not decide between the two. We also find that the
+prediction quality of MACE and of the OMol25 models degrades with
+multireference character independently of broken symmetry.
 
 For practice, a stability analysis should precede any further use of a
 transition state whose multireference character cannot be ruled out.

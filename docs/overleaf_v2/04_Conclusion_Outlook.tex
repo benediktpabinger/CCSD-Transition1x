@@ -51,7 +51,10 @@ at. A possible solution is an iteration:
 
 The re-selection in the optimised orbital basis is what the autoCAS
 authors recommend for a single structure~\cite{stein2019autocas}; the
-iteration above applies it to a moving geometry.
+iteration above applies it to a moving geometry. Protocols that keep
+the active space consistent across geometries automatically have
+appeared only recently, each demonstrated on a single small
+system~\cite{bensberg2023, seal2025wasp}, and were not used here.
 
 A significant part of the time of this work went into this attempt.
 Benchmark sets with transition-state geometries optimised at a
@@ -129,7 +132,7 @@ Four changes could have made the correction better.
     which is why the baseline passes through. Unfreezing the last MACE
     layer or the readout on the same 80\,000 points would let the model
     move its own surface towards the target instead of adding an
-    offset. The risk is forgetting the cheap-level surface where the
+    offset. The risk is forgetting the lower-level surface where the
     relabelled points are sparse.
   \item \textbf{An input that sees the gap change.} The head predicts
     the difference from scalar features alone. A feature that tracks
@@ -191,8 +194,8 @@ training data offer an explanation for it, and the shape of the
 unrestricted surface is a second candidate.
 
 Figure~\ref{fig:pes} gives intuition for what happens when a
-broken-symmetry transition-state region is relabelled on cheap
-restricted paths in the training data: a schematic of the same
+broken-symmetry transition-state region is relabelled on restricted
+paths relaxed at a lower level in the training data: a schematic of the same
 geometries on the restricted surface they were relaxed on and on the
 unrestricted surface the labels were computed on. On the first the
 stored path holds the transition state; on the second it passes
@@ -247,35 +250,30 @@ met each of these and produced no reference that could be trusted. The
 third is what makes the default persist: a restricted saddle is a
 valid stationary point, the band converges, the frequency calculation
 shows one imaginary mode, the model trains, and a benchmark built the
-same way scores it correct. The default fails only against a check
-that nobody in the chain runs.
+same way scores it correct. The chain is internally
+consistent: every step rests on the same restricted solution and
+confirms the others. The default fails only against a check from
+outside, the stability analysis, which nobody in the chain runs.
 
-\paragraph{The benchmarks are run restricted too.} The benchmarks the models
-are tested against are run restricted, even where they contain
-reactions that should be treated unrestricted. The reference set of
-\'Asgeirsson et al.~\cite{asgeirsson2021} holds 27 such reactions
-among 121, which Hait et al. found when they re-optimised it
-unrestricted and then removed~\cite{hait2025}. The benchmark of Marks
-et al.~\cite{marks2026} holds one among 25, optimised restricted like
-the rest (Appendix~\ref{app:marks}). If the reference saddle is
-restricted, a model that finds the restricted saddle passes, even
-where the restricted solution is unstable.
+Two consequences follow: one for benchmarks, and one for anyone who runs
+a transition-state search. The question of the cause, the dependence on
+multireference character and a benchmark of optimised saddles are left
+to future work.
 
-Two consequences follow: one for benchmarks, and one for anyone who
-runs a transition-state search. The question of the cause is left to
-future work.
-
-\paragraph{Benchmarks: a test set at broken-symmetry transition states.}
+\paragraph{Benchmarks: closing the gap at broken-symmetry transition states.}
 No benchmark exists that tests models systematically at
 broken-symmetry transition states. We see this as a gap in the
-literature: the reported success
-rates were measured on restricted references, and it is easy to assume
-that they hold for all transition-state searches.
-This work shows that they do not, and closes the gap indirectly: the
-residual force at the structure a model delivers needs no reference
-saddle. A set of saddles optimised on the broken-symmetry
-surface and confirmed by a stability analysis would close it directly
-and give future models a benchmark to be tested against.
+literature: the reported success rates were measured on restricted
+references, and the broken-symmetry cases the benchmarks met were
+removed or left unchecked (Chapter~\ref{ch:introduction},
+Appendix~\ref{app:marks}). It is easy to assume that these success rates
+hold for all transition-state searches. This work shows that they do
+not, with a test that needs no reference saddles: one unrestricted DFT
+single point with a stability analysis at the structure a model
+delivers. It shows for any model and any reaction whether a stationary
+point of the unrestricted surface was found. This protocol exposed the
+shortcomings of current frontier models at broken-symmetry transition
+states, and it can serve as a test for future models.
 
 \paragraph{Practice: a stability analysis before trusting a saddle.} One unrestricted single point with a
 stability analysis tells whether the restricted solution is the ground
@@ -300,5 +298,27 @@ not on the restricted one. If the training data are the cause, the
 errors should disappear, and such paths are what a dataset like OMol25
 needs. If the shape of the surface is the cause, they should remain.
 
-In any case, the saddles optimised on the broken-symmetry surface would
-also work as a benchmark for future models to be tested against.
+\paragraph{Future work: multireference character.} All models of this
+thesis, MACE and the OMol25 models, lose accuracy with growing
+multireference character, whether or not symmetry is broken. Why they do
+so is open: such geometries may be rare in the training data, or the
+surface may be harder to fit there. How much the answer matters is a
+separate question. At high multireference character the DFT labels
+themselves become unreliable, so a model that reproduced them perfectly
+would inherit their error. This holds for every result of this thesis at
+such reactions: the models are measured against the surface they were
+trained on, not against the true one. The more consequential step may be
+labels from multireference methods. These need active spaces that stay
+consistent along a reaction path (Section~\ref{sec:mr-whynotmr}), and
+protocols that automate this have appeared only
+recently~\cite{bensberg2023, seal2025wasp}. Until they scale to datasets
+of this size, broken-symmetry DFT remains the affordable treatment of
+these transition states~\cite{grafenstein2002, crawford2001}.
+
+\paragraph{Future work: a benchmark of broken-symmetry saddles.} A set
+of saddles optimised on the broken-symmetry surface and confirmed by a
+stability analysis would add what the test above cannot give, the
+position of the transition state, and give future models a benchmark to
+be tested against. The unrestricted paths of the fine-tuning test
+proposed above (``Separating the two causes'') would deliver these
+saddles at the same time.

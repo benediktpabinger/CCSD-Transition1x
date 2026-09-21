@@ -88,7 +88,7 @@ single-point predictions or as the potential driving a NEB
 optimisation.
 
 MACE+$\Delta$ is built in two steps. First, a MACE base model is trained on
-Transition1x to predict the cheap level (Section~\ref{sec:mace-training}) --- the model whose level of theory we upgrade. It
+Transition1x to predict the lower level (Section~\ref{sec:mace-training}) --- the model whose level of theory we upgrade. It
 must exist first, because it provides both things the correction builds on:
 the baseline prediction $E_{\text{MACE}}$, and the frozen per-atom
 representation of molecular geometry from which the correction head reads.
@@ -415,7 +415,7 @@ surface, the second its shape.
 
 \paragraph{Evaluating performance on single-point predictions on fixed geometries: how well does MACE reproduce its target level $\omega$B97X/6-31G(d)?}
 The first question was whether MACE reproduces its own target level
-and therefore serves as a base that predicts the cheap level
+and therefore serves as a base that predicts the lower level
 accurately before the head corrects it. It does: on the 300 benchmark
 geometries, MACE deviates from the $\omega$B97X/6-31G(d)
 single points by 42\,meV in energy and 34\,meV/\AA{} in forces (force
@@ -578,13 +578,13 @@ geometries, we ask how much they could improve at all. Three
 distances answer this:
 
 \begin{itemize}
-  \item cheap-level DFT transition state, as stored in Transition1x, to
-    expensive-level DFT transition state: 0.007\,\AA{}. This is how far
+  \item lower-level DFT transition state, as stored in Transition1x, to
+    higher-level DFT transition state: 0.007\,\AA{}. This is how far
     the level upgrade moves the transition state, and the most a
     correction could gain.
-  \item MACE transition state to cheap-level DFT transition state:
+  \item MACE transition state to lower-level DFT transition state:
     0.015\,\AA{}. This is MACE's error against its own level.
-  \item MACE transition state to expensive-level reference:
+  \item MACE transition state to higher-level reference:
     0.017\,\AA{}. This is MACE's error against the target.
 \end{itemize}
 
@@ -726,7 +726,7 @@ and high MR. The overshoot
 comes from the base model. MACE misses its own level by $-91$\,meV
 at mid MR and by $-192$\,meV at high MR, and that error enters the
 corrected barrier unchanged (Figure~\ref{fig:bias-decomposition}).
-This is also why MACE looks right at high MR: the cheap level
+This is also why MACE looks right at high MR: the lower level
 lies $+213$\,meV above the reference, and MACE's own error cancels
 most of that gap. MACE lands near the reference by accident, at
 $+21$\,meV. The model-driven searches show the same, MACE at

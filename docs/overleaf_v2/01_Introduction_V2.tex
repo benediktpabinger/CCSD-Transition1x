@@ -125,9 +125,9 @@ Such an upgrade does not necessarily require repeating the NEB searches at the
 higher level of theory. A dataset like Transition1x consists of two
 things: the geometries, which sample the configuration space along
 reaction paths, and the energy and force labels attached to them. The
-premise is that the geometries remain valid at any level of theory:
+assumption is that the geometries remain valid at any level of theory:
 an MLIP only needs them to cover the relevant region, which the
-Transition1x paths already do. Only the labels are tied to the cheap
+Transition1x paths already do. Only the labels are tied to the lower
 level. Replacing them requires one single-point calculation per geometry at
 the higher level; this is what relabelling means. It is far easier
 than relaxing the paths again at that level, which would take hundreds
@@ -155,11 +155,11 @@ whole dataset costs one calculation per geometry at the higher level,
 and any way to reach that level at a fraction of the cost is
 desirable. We therefore ask whether it can be reached by relabelling
 only a small part of the data: about 80\,000 geometries, under 1\,\%
-of the dataset. A MACE model is trained on Transition1x to predict the cheap level,
+of the dataset. A MACE model is trained on Transition1x to predict the lower level,
 \mbox{$\omega$B97X/6-31G(d)} (Section~\ref{sec:mace-training}), and
 a small correction head on top of it
 (Section~\ref{sec:delta-architecture}) learns the difference between
-the cheap and the expensive level, \mbox{$\omega$B97M-V/def2-TZVP}. This is feasible with so little data because
+the lower and the higher level, \mbox{$\omega$B97M-V/def2-TZVP}. This is feasible with so little data because
 the difference is nearly constant within a reaction
 (Section~\ref{sec:delta-data}): a smooth offset is far easier to learn
 than the potential energy surface itself. Base model and correction
@@ -177,54 +177,53 @@ the correction unchanged.
 
 \section{When the spin formalism changes as well}
 
-The introduction so far describes what this thesis was set out to do.
+\emph{The introduction so far describes what this thesis was set out to do.
 RQ2 arose during that work. On some reactions the OMol25 models, used
 along the way as a point of comparison, delivered structures other than
 the restricted reference transition states this work had built and used
 for Chapter~\ref{ch:delta}. The reason turned out to be that they are trained on
 unrestricted labels, while the references we worked with were
 optimised with restricted spin symmetry, which does not allow
-broken-symmetry solutions. Where a transition state has one, the models
-and our references describe different surfaces. Whether these models
+broken-symmetry solutions. Whether these models
 can find broken-symmetry transition states had not been tested
 systematically, because the published benchmarks score the models
-against restricted references, as the rest of this chapter shows; the
-Preface gives the account. We therefore formulated a second research
-question.
+against restricted references, as the rest of this chapter shows. We
+therefore formulated a second research question.}
 
 \researchquestion{2 (RQ2)}{Can a model learn a surface from
 paths that were never relaxed on that surface?}
 
-Chapter~\ref{ch:delta} raises the level of theory of the labels and
-leaves the geometries unchanged, on the premise that changing the labels is
-enough to lift the model to the higher level of theory. That is how the field raises fidelity: transfer
+Chapter~\ref{ch:delta} rests on the assumption that the paths do not
+have to be re-optimised when the level of theory is raised. The
+assumption is shared across the field: transfer
 learning~\cite{smith2019ani1ccx}, multi-fidelity
 training~\cite{messerly2025} and delta learning on semi-empirical
 geometries~\cite{ren2026} all
 supply labels at a higher level of theory on geometries they do not
-re-optimise. OMol25~\cite{omol25} went one step further: it took
-Transition1x, a dataset generated restricted at a cheap level of
-theory, and relabelled the full set, not a fraction of it,
-unrestricted at an expensive one, again without re-optimising a single
-path.
+re-optimise.
 
-Chapter~\ref{ch:delta} answers RQ1. For that chapter, RQ2 needs no
-test: both levels of theory are restricted, and when the transition
-states are searched with DFT at either level, the two results lie
-a median of 0.007\,\AA{} apart. A path relaxed at the cheap level
-therefore already covers the immediate region the transition state
-lies in when calculated with the expensive method, and relabelling the
-path without re-optimising it is enough.
+In Chapter~\ref{ch:delta} this assumption is unproblematic. Both
+levels of theory are restricted, and the transition states optimised
+at the two levels differ by a median RMSD of only 0.007\,\AA{}: paths
+relaxed at the lower level already sample the transition-state region
+of the higher one.
 
 This stops being true when the spin formalism changes as well. At a
 broken-symmetry transition state the restricted solution is unstable
-(Section~\ref{sec:background-stability}), and the transition state
-found unrestricted can lie far from the one found restricted. A path
-relaxed restricted then no longer covers the region the transition
-state lies in when calculated unrestricted, and RQ2 becomes a real
-question. OMol25 is exactly this case: every Transition1x label
-recomputed unrestricted at \mbox{$\omega$B97M-V/def2-TZVPD}, on the
-inherited geometries~\cite{omol25}. Chapter~\ref{ch:mr} asks RQ2 there.
+(Section~\ref{sec:background-stability}), and the transition state found
+unrestricted can lie far from the one found restricted in configuration
+space. A path relaxed restricted then may no longer sample the
+transition-state region of the unrestricted surface, and RQ2 becomes a
+real question. OMol25 is an ideal test case for it. It takes over the
+geometries of many existing datasets, generated at lower levels of
+theory, and recomputes only their labels. For Transition1x, every label
+was recomputed unrestricted at \mbox{$\omega$B97M-V/def2-TZVPD} on the
+inherited geometries~\cite{omol25}.
+
+With this in mind, RQ2 can be stated more specifically: \emph{do models
+trained on OMol25 find broken-symmetry transition states as well as
+closed-shell ones?} The published benchmarks leave this question open,
+as the rest of this section shows, and Chapter~\ref{ch:mr} tests it.
 
 The published benchmarks that test the OMol25 models at locating
 transition states report high success rates. According to them, four
@@ -326,7 +325,9 @@ They are not. At broken-symmetry transition states the models deliver
 structures that are not stationary points of the unrestricted surface,
 and their forces there deviate more from DFT than at closed-shell ones.
 Part of this difference is multireference character itself, which is
-highest at the broken-symmetry reactions, but between structures of
+highest at the broken-symmetry reactions: the prediction quality of the
+OMol25 models degrades with it at closed-shell transition states too,
+as that of MACE does in Chapter~\ref{ch:delta}. Between structures of
 equal multireference character a difference remains.
 
 The chapter examines two candidate causes for it. The first is the
@@ -1466,6 +1467,7 @@ eSEN~\cite{esen} & OMol25 & $\omega$B97M-V/def2-TZVPD & Chapter~\ref{ch:mr} \\
 \end{tabular}
 \end{table}
 
+Table~\ref{tab:mlip-models} lists the models.
 MACE is trained on Transition1x alone and therefore specialised to reaction
 paths of small organic molecules at one level of theory. UMA and eSEN are
 general-purpose models trained on OMol25 and, for UMA, on further datasets

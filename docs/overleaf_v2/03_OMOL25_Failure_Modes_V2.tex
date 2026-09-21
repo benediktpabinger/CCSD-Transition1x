@@ -15,25 +15,28 @@
 \chapter{Higher-Fidelity Relabelling Without Re-optimising the Path Is Not Enough}
 \label{ch:mr}
 
+\emph{The opening of this chapter, up to Section~\ref{sec:omol-setup},
+briefly recaps the introduction and links Chapter~\ref{ch:delta} to
+this one.}
+
 The introduction asked two questions: whether a model can be lifted
 to a higher level of theory by relabelling only a subset of its
 training data (RQ1), and whether a model can learn a surface from
 paths that were never relaxed on that surface (RQ2).
 Chapter~\ref{ch:delta} answered RQ1. For that chapter, RQ2 needed no
-test: both levels of theory are restricted, and when the transition
-states are searched with DFT at either level, the two results lie
-a median of 0.007\,\AA{} apart. A path relaxed at the cheap level
-therefore already covers the immediate region the transition state
-lies in when calculated with the expensive method, and relabelling the
-path without re-optimising it is enough.
+test: both levels of theory are restricted, and the transition states
+optimised at the two levels differ by a median RMSD of only
+0.007\,\AA{}. Paths relaxed at the lower level therefore already sample
+the transition-state region of the higher one, and relabelling the
+paths without re-optimising them is enough.
 
 This stops being true when the spin formalism changes as well. At a
 broken-symmetry transition state the restricted solution is unstable
 (Section~\ref{sec:background-stability}), and the transition
-state found unrestricted can lie far from the one found restricted. A path
-relaxed restricted then no longer covers the region the transition
-state lies in when calculated unrestricted, and RQ2 becomes a real
-question.
+state found unrestricted can lie far from the one found restricted in
+configuration space. A path relaxed restricted then may no longer
+sample the transition-state region of the unrestricted surface, and RQ2
+becomes a real question.
 
 A subset-relabelling approach like that of Chapter~\ref{ch:delta}
 cannot answer it: a failure of
@@ -41,16 +44,17 @@ the corrected model could come from the head and its small training
 set, or from the training paths holding no transition state of that
 surface, and the two cannot be told apart. We therefore leave the
 correction head and the subset training behind and turn to OMol25, a
-dataset of more than 100 million DFT calculations. It relabelled
-Transition1x in full (training, validation and test split alike, all
-in its training split), with every label recomputed unrestricted at a
-higher level. We train nothing ourselves: we take three published
-models trained on OMol25, UMA-S, UMA-M and eSEN, and test them. This
-removes the first of the two causes: every label is relabelled and the
-models are large ones trained on all of it, so neither a subset nor a
-small head can be blamed. What remains is the second, training paths
-that were never relaxed on the surface of their labels, which is RQ2
-(Table~\ref{tab:delta-vs-omol}).
+dataset of more than 100 million DFT calculations. It takes over the
+geometries of many existing datasets, generated at lower levels of
+theory, and recomputes only their labels. Transition1x is one of them:
+it was relabelled in full (training, validation and test split alike,
+all in the OMol25 training split), with every label recomputed
+unrestricted at a higher level. We train nothing ourselves: we take three published
+models trained on OMol25, UMA-S, UMA-M and eSEN, and test them. Every
+label is relabelled and the models are large ones trained on all of it,
+so neither a subset nor a small head can be blamed for a failure. What
+remains is the training paths, which were never relaxed on the surface
+of their labels; that is RQ2 (Table~\ref{tab:delta-vs-omol}).
 
 \begin{table}[H]
 \centering
@@ -86,11 +90,13 @@ of the OMol25 training data, we select reactions where
 broken-symmetry transition states are expected, let the three models
 search them, and re-evaluate every transition state found with
 unrestricted DFT and a stability analysis, which sorts the structures
-into closed-shell and broken-symmetry. We then compare whether the
-models perform differently at the broken-symmetry transition states
-than at the closed-shell ones.
+into closed-shell and broken-symmetry. The models' predictions are
+measured against the DFT forces and energies of this re-evaluation, and
+we then compare whether the models perform differently at the
+broken-symmetry transition states than at the closed-shell ones.
 
 \section{Setup}
+\label{sec:omol-setup}
 
 \subsection{Reactions selected stratified by multireference character}
 \label{sec:reactions}
@@ -216,13 +222,11 @@ it. The single point gives three things:
   \item the DFT forces. They show whether the structure is a stationary
     point of the surface the labels describe: at a stationary point the
     force is zero, and a large force means the model stopped somewhere
-    else. The model predicts forces at this geometry as well, and the
-    difference between the model forces and the DFT forces is the
-    model's force error.
+    else. The deviation of the model forces from the DFT forces is the
+    force error.
   \item the DFT energy. It gives the barrier of the model's own
-    geometries on that surface. The model predicts this barrier as well,
-    and the difference between the model barrier and the DFT barrier is
-    the model's energy error.
+    geometries on that surface. The deviation of the model barrier from
+    the DFT barrier is the energy error.
   \item $\langle S^2\rangle$: whether that surface is closed-shell or
     broken-symmetry at this geometry. This is the classification of
     Section~\ref{sec:classification}.
@@ -352,7 +356,7 @@ is a yes-or-no answer. How far it lies below the restricted solution,
 the breaking depth $E_\mathrm{RKS} - E_\mathrm{BS}$
 (Section~\ref{sec:background-stability}), is a second number. We
 need it later to test whether the models' errors grow with the depth
-or only with the existence of a second solution
+or only with the existence of a lower broken-symmetry solution
 (Section~\ref{sec:results-ferr}). The depth needs two energies at the
 same geometry. $E_\mathrm{BS}$ is already there: it is the energy of
 the unrestricted run of Section~\ref{sec:dft}. $E_\mathrm{RKS}$ takes
@@ -360,7 +364,7 @@ one more calculation, a restricted single point at the same geometry
 and level, run without a stability analysis so that it stays on the
 restricted solution. We ran it for the 53 broken-symmetry structures. For
 the closed-shell structures the depth is zero by construction, since
-the stability analysis has found no second
+the stability analysis has found no lower
 solution.\footnote{One closed-shell structure was run anyway as a
 control: it comes out at $0.0008$~meV.}
 
@@ -372,7 +376,12 @@ by the models are examined. This one turns to the data the models were
 trained on. If the models fail at broken-symmetry transition states, a
 suspected cause is the training data, whose paths were never relaxed on
 the surface their labels describe. Here we measure how far they are
-from stationarity on that surface.
+from stationarity on that surface. We do so at the stored transition
+states of our 45 reactions: the transition-state geometry that
+Transition1x holds for each reaction, relaxed restricted at
+\mbox{$\omega$B97X/6-31G(d)}. OMol25 took these geometries over
+unchanged and relabelled them, so they are part of the models' training
+data.
 
 \paragraph{Terminology.} \emph{From here on, the Transition1x level is
 \mbox{$\omega$B97X/6-31G(d)} and the OMol25 level
@@ -389,11 +398,12 @@ Transition1x level. OMol25 kept the geometries and recomputed the labels
 on the unrestricted surface at the OMol25 level
 (Table~\ref{tab:t1x-vs-omol-labels}), so neither the level of theory nor
 the spin formalism of a label matches that of its geometry. Stationary
-points are specific to a surface: the stored transition states need not
-be stationary points of the label surface, whose transition state may
-lie elsewhere in configuration space. A model learns the surface its
-labels describe, so it learns the label surface from points displaced
-from its transition state rather than from the transition state itself.
+points are specific to a surface: the stored transition states are not
+necessarily stationary points of the label surface, whose transition
+state may lie elsewhere in configuration space. A model learns the surface its
+labels describe, so it has to learn the label surface from points
+displaced from its transition state rather than from the transition
+state itself.
 Figure~\ref{fig:pes} sketches this for a broken-symmetry
 reaction.\footnote{The label ``all iterations'' in the figure is a
 simplification: Transition1x kept a band only when it differed enough
@@ -648,11 +658,15 @@ closed-shell ones, rxn7945 and rxn7060. So the large spreads sit
 mostly, but not only, in the broken-symmetry group. The two reactions with the
 largest energy error in Panel~A, rxn8837 and rxn0894, are also among the
 three largest spreads in Panel~B. Three of the five, rxn8837, rxn0894
-and rxn8885, are reactions whose bands did not converge. In the 37
-reactions where all three searches converged, the median spread is 0.33
-and 4.59~meV, a factor of 14, with 13 of the 14 broken-symmetry
-reactions above 1~meV against four of the 23 closed-shell ones, and two
-reactions of each group above chemical accuracy.
+and rxn8885, are reactions whose bands did not converge. We therefore
+repeat the comparison without the eight reactions in which at least one
+of the three searches did not converge. In the remaining 37, the median
+spread is 0.33~meV at the closed-shell reactions and 4.59~meV at the
+broken-symmetry ones, a factor of 14. There, the spread exceeds 1~meV in
+13 of the 14 broken-symmetry reactions but in only four of the 23
+closed-shell ones, and it exceeds chemical accuracy in two reactions of
+each group. The difference between the groups therefore does not come
+from the unconverged searches, although they make it larger.
 
 Together, the two panels say where the barrier error comes from. The energy
 error is a few meV; the geometry error reaches electronvolts. The
@@ -734,8 +748,8 @@ broken-symmetry ones.
 
 \paragraph{Answer to RQ2.} The models locate the closed-shell
 transition states although their training paths were relaxed at another
-level, so a change of level alone does not keep a model from learning a
-surface from paths that were not relaxed on it. At broken-symmetry
+level: when only the level of theory changes, relabelling the paths
+without re-optimising them is sufficient. At broken-symmetry
 transition states, where the spin formalism changes as well, the models
 still reproduce the energies but deliver structures that are not
 stationary points of the unrestricted surface, with force errors two to
@@ -781,11 +795,11 @@ an explanation. On the label surface the stored transition states of
 the broken-symmetry reactions carry a median residual force of
 $1.64$~eV\,\AA$^{-1}$, against $0.61$ for the closed-shell ones, and it
 is the change of spin formalism, not the change of level, that
-separates the groups (Table~\ref{tab:ladder}). The same holds at equal
-multireference character: in the $N_\mathrm{FOD}$ range that both groups
-share, the stored transition states of the broken-symmetry reactions
-carry 1.70~eV\,\AA$^{-1}$, against 0.58 for the closed-shell ones. The
-difference is one of
+separates the groups (Table~\ref{tab:ladder}).\footnote{The same holds
+at equal multireference character: in the $N_\mathrm{FOD}$ range that
+both groups share, the stored transition states of the broken-symmetry
+reactions carry 1.70~eV\,\AA$^{-1}$, against 0.58 for the closed-shell
+ones.} The difference is one of
 degree: the closed-shell training points are not stationary on the
 label surface either, and the models still find those transition
 states. That the larger distance from stationarity causes the larger
@@ -834,6 +848,12 @@ observations.
 does not repair it: it corrects the energy, which was right, and keeps
 the geometry, which is wrong. The affected transition states have to
 be re-optimised on the unrestricted surface, and the stability
-analysis identifies them. A dataset that relabels paths with a
-different spin formalism should re-optimise them on the new surface.
+analysis identifies them.
+
+\paragraph{Implications for the models.} Re-optimising repairs a single
+search, not the models. What would repair the models depends on the
+cause of their errors. If the training data
+are the cause, training paths re-optimised on the unrestricted surface
+should remove the errors; if the shape of the unrestricted surface is
+the cause, they should not. This has not been tested.
 Chapter~\ref{ch:conclusion} takes this up.
