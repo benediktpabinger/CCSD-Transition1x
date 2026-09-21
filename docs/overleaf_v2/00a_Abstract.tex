@@ -19,14 +19,12 @@ For RQ1, a MACE model is trained on Transition1x
 is trained to predict the difference to \mbox{$\omega$B97M-V/def2-TZVP}
 from about 80\,000 geometries, under 1\,\% of the dataset, relabelled
 restricted at that level. It is tested on 30 reactions grouped by low, mid and high
-multireference character, at fixed geometries and in transition-state
-searches the model drives itself. Forces improve everywhere, and the
+multireference character. Forces improve everywhere, and the
 transition-state searches deliver a transition state on every reaction. Barriers improve
 threefold for reactions of low multireference character; for reactions
 of mid and high multireference character the corrected barriers
 overshoot, mostly through the error of the MACE model on its own
-level, which the head cannot correct, and at high character the
-corrected barriers are worse than the uncorrected ones. The answer to RQ1 is yes, with the reservation of
+level, which the head cannot correct. The answer to RQ1 is yes, with the reservation of
 the reactions of high multireference character.
 
 In RQ1 the labels were raised to a higher level of theory while the

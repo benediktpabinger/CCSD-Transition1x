@@ -67,6 +67,8 @@ own.
 \chapter{Conclusion \& Outlook}
 \label{ch:conclusion}
 
+\section{Research question 1: raising the level of theory with a subset of the labels}
+
 We return to Chapter~\ref{ch:delta} and RQ1, whether a model can be
 lifted to a higher level of theory by relabelling only a subset of its
 training data. The answer is yes, certainly as long as the spin
@@ -141,13 +143,15 @@ Four changes could have made the correction better.
     unrestricted surface.
 \end{itemize}
 
-The limits of this chapter are its 30 reactions, the restricted
+The limits of Chapter~\ref{ch:delta} are its 30 reactions, the restricted
 treatment throughout, and def2-TZVP without the diffuse functions of
 the target level.
 
 The correction was not pushed further, because the principle had been
 shown in related settings by others~\cite{allen2026, ren2026}; the open question
 was where relabelling stops, which is what Chapter~\ref{ch:mr} took up.
+
+\section{Research question 2: learning a surface from paths never relaxed on it}
 
 RQ2 asked whether a model can learn a surface by relabelling paths
 that were never relaxed on that surface. It does when only the level
@@ -210,18 +214,17 @@ force error falls to the closed-shell level only above a breaking depth
 of about 1.3~eV (Section~\ref{sec:omol-discussion}). Both causes may
 contribute.
 
-\paragraph{Unrestricted labels need new paths.} If the training data are
-the cause, a
-dataset like OMol25 is improved by adding paths relaxed on the surface
-it labels with: one unrestricted CI-NEB per affected reaction, with a
-stability analysis at the saddle to confirm that the path was relaxed
-on the broken-symmetry surface and not on the restricted one, so that
-the broken-symmetry transition states enter the training data as
-stationary points. Whether this removes the errors has not been tested.
-Fine-tuning the models on such paths is that test, and it also
-separates the two causes: if the training data are the cause, the
-errors should disappear; if the shape of the surface is the cause,
-they should remain.
+\paragraph{Limitations.} The sample is 45 reactions of small CHNO
+molecules selected for multireference character; the findings concern
+this class, not OMol25 as a whole. Of the four OMol25 models
+benchmarked by Marks et al., three were tested here; MACE-OMol25, the
+one with the highest success rate there, was not. This work contains no transition
+state relaxed on the broken-symmetry surface, no multireference
+reference (Section~\ref{sec:mr-whynotmr}), and no test of the models
+after fine-tuning on such saddles, the test named below that would
+separate the two candidate causes.
+
+\section{Implications and outlook}
 
 \paragraph{Why the restricted default persists.} We see three possible reasons why
 the field seems to overlook the unrestricted treatment when it builds
@@ -247,7 +250,7 @@ shows one imaginary mode, the model trains, and a benchmark built the
 same way scores it correct. The default fails only against a check
 that nobody in the chain runs.
 
-\paragraph{No benchmark until now has shown this error.} The benchmarks the models
+\paragraph{The benchmarks are run restricted too.} The benchmarks the models
 are tested against are run restricted, even where they contain
 reactions that should be treated unrestricted. The reference set of
 \'Asgeirsson et al.~\cite{asgeirsson2021} holds 27 such reactions
@@ -258,28 +261,44 @@ the rest (Appendix~\ref{app:marks}). If the reference saddle is
 restricted, a model that finds the restricted saddle passes, even
 where the restricted solution is unstable.
 
+Two consequences follow: one for benchmarks, and one for anyone who
+runs a transition-state search. The question of the cause is left to
+future work.
+
+\paragraph{Benchmarks: a test set at broken-symmetry transition states.}
 No benchmark exists that tests models systematically at
 broken-symmetry transition states. We see this as a gap in the
 literature: the reported success
 rates were measured on restricted references, and it is easy to assume
-that they hold for all transition-state searches. This work shows that
-they do not. A set of saddles optimised on the broken-symmetry
-surface and confirmed by a stability analysis would give future
-models a benchmark to be tested against.
+that they hold for all transition-state searches.
+This work shows that they do not, and closes the gap indirectly: the
+residual force at the structure a model delivers needs no reference
+saddle. A set of saddles optimised on the broken-symmetry
+surface and confirmed by a stability analysis would close it directly
+and give future models a benchmark to be tested against.
 
-\paragraph{Recommendation: A stability analysis before trusting a saddle.} One unrestricted single point with a
+\paragraph{Practice: a stability analysis before trusting a saddle.} One unrestricted single point with a
 stability analysis tells whether the restricted solution is the ground
 state at a geometry, at the cost of one extra SCF. We recommend it at
 every transition state that is trusted further, as a training point,
 a reference, or a starting point, and whose multireference character
 cannot be ruled out.
 
-\paragraph{Limitations.} The sample is 45 reactions of small CHNO
-molecules selected for multireference character; the findings concern
-this class, not OMol25 as a whole. Of the four OMol25 models
-benchmarked by Marks et al., three were tested here; MACE-OMol25, the
-one with the highest success rate there, was not. This work contains no transition
-state relaxed on the broken-symmetry surface, no multireference
-reference (Section~\ref{sec:mr-whynotmr}), and no test of the models
-after fine-tuning on such saddles, the test named above that would
-separate the two candidate causes.
+\paragraph{Future work: separating the two causes.} Whether the
+training data or the shape of the unrestricted surface causes the
+larger errors at broken-symmetry transition states is left open by this
+work. Two steps would settle it. The first is more data: with 18
+broken-symmetry reactions the comparisons inside the group are not
+conclusive, and a larger set that covers the range of breaking depths
+evenly would show whether the error follows the distance of the
+training points from stationarity or the closeness to the onset of
+symmetry breaking. The second is the direct test: fine-tuning the
+models on paths relaxed on the unrestricted surface, one unrestricted
+CI-NEB per affected reaction, with a stability analysis at the saddle
+to confirm that the path was relaxed on the broken-symmetry surface and
+not on the restricted one. If the training data are the cause, the
+errors should disappear, and such paths are what a dataset like OMol25
+needs. If the shape of the surface is the cause, they should remain.
+
+In any case, the saddles optimised on the broken-symmetry surface would
+also work as a benchmark for future models to be tested against.

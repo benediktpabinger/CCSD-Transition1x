@@ -52,7 +52,7 @@ small head can be blamed. What remains is the second, training paths
 that were never relaxed on the surface of their labels, which is RQ2
 (Table~\ref{tab:delta-vs-omol}).
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \small
 \caption{The two relabelling setups of this thesis. The Transition1x
@@ -131,7 +131,7 @@ singlets, spanning five stoichiometries and mostly belonging to two isomer
 families, C$_3$H$_5$NO$_2$ (22 reactions) and C$_5$H$_5$NO (16).
 
 
-\begin{table}[h]
+\begin{table}[H]
 \caption{The benchmark set, curated from the $N_\mathrm{FOD}$ ranking of
 the 279 converged test-split reactions. One reaction falls in both the
 high- and mid-MR group, giving 45 reactions in total.}
@@ -263,7 +263,7 @@ solution, checked by stability analysis, which for a closed-shell
 structure coincides with the restricted surface. The chapter uses
 ``unrestricted surface'' in this sense throughout.}
 
-\begin{table}[h]
+\begin{table}[H]
 \caption{Electronic structure protocol of the OMol25 labels and of the labels
 in this work. Two rows differ: how the broken-symmetry solution is reached,
 which we changed deliberately, and the ORCA version. Both differences were
@@ -399,7 +399,7 @@ reaction.\footnote{The label ``all iterations'' in the figure is a
 simplification: Transition1x kept a band only when it differed enough
 from the last one kept (Section~\ref{sec:dataset-t1x}).}
 
-\begin{table}[h]
+\begin{table}[H]
 \centering
 \small
 \caption{Where the Transition1x transition-state geometries were
@@ -417,7 +417,7 @@ OMol25       & $\omega$B97X/6-31G(d) & restricted & $\omega$B97M-V/def2-TZVPD & 
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{Pictures/fig_pes.png}
   \caption{Schematic of the mechanism, not a computed surface. The same
@@ -440,7 +440,7 @@ value shows that the stored geometry is not a stationary point, and its
 magnitude measures how far from stationarity the geometry is.
 
 We measure the residual force at the 45 Transition1x transition
-states in three steps: at the Transition1x level, as stored with the
+states in three steps (Figure~\ref{fig:ladder-protocol}): at the Transition1x level, as stored with the
 dataset; at the OMol25 level on the restricted surface; and at the
 OMol25 level on the unrestricted surface (Sec.~\ref{sec:dft}). The first step confirms that the
 geometries are relaxed at their own level. The second isolates what
@@ -455,7 +455,7 @@ $0.059$ and $0.117$~eV\,\AA$^{-1}$.} and repeat steps 2 and 3 at the
 re-optimised geometries. If the spin-formalism effect survives, it is
 not a leftover of the level change.
 
-\begin{figure}[t]
+\begin{figure}[H]
   \centering
   \includegraphics[width=\textwidth]{Pictures/fig_ladder_protocol_v5.png}
   \caption{The residual-force protocol of Section~\ref{sec:labels}: the
@@ -479,6 +479,21 @@ $f_\mathrm{max}$ the NEB converges on
 the two groups of Section~\ref{sec:classification}: 82 closed-shell and 53
 broken-symmetry structures.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{Pictures/Fig1_v2.png}
+  \caption{Residual force at the transition state each model delivered,
+  according to the model against DFT at the same unrelaxed geometry
+  (45~reactions $\times$ 3~models, all 135 structures). Both axes give
+  the largest force component, $\max_i |F_i|$. DFT at the OMol25 level
+  on the unrestricted surface (Sec.~\ref{sec:dft}). Colours mark the two
+  groups of Section~\ref{sec:classification}, 82 closed-shell and 53
+  broken-symmetry structures; crosses are the group medians per model.
+  Open markers: the band of that search did not reach the convergence
+  criterion (Sec.~\ref{sec:neb}); the medians include them.}
+  \label{fig:silent}
+\end{figure}
+
 According to the model, both groups are equally converged: the median
 residual force is 0.0299~eV\,\AA$^{-1}$ at the closed-shell structures and
 0.0344 at the broken-symmetry ones, a factor of 1.15. For eSEN the
@@ -498,34 +513,6 @@ groups, so nothing in a search tells a broken-symmetry structure that
 is off the saddle from a closed-shell one that is on it. Only the DFT
 check shows the difference.
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{Pictures/Fig1_v2.png}
-  \caption{Residual force at the transition state each model delivered,
-  according to the model against DFT at the same unrelaxed geometry
-  (45~reactions $\times$ 3~models, all 135 structures). Both axes give
-  the largest force component, $\max_i |F_i|$. DFT at the OMol25 level
-  on the unrestricted surface (Sec.~\ref{sec:dft}). Colours mark the two
-  groups of Section~\ref{sec:classification}, 82 closed-shell and 53
-  broken-symmetry structures; crosses are the group medians per model.
-  Open markers: the band of that search did not reach the convergence
-  criterion (Sec.~\ref{sec:neb}); the medians include them.}
-  \label{fig:silent}
-\end{figure}
-
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=\linewidth]{Pictures/fig2_force_mae.png}
-  \caption{Force error at the transition state each model delivered:
-  the absolute difference between model force and DFT force, averaged
-  over all $3N$ Cartesian components, at the same unrelaxed geometry.
-  DFT at the OMol25 level on the unrestricted surface
-  (Sec.~\ref{sec:dft}); groups as in Fig.~\ref{fig:silent}. Dots are
-  single structures, bars the group medians with their 95\,\% bootstrap
-  intervals, and the arrow gives the ratio of the two medians.}
-  \label{fig:ferr}
-\end{figure}
 
 \subsection{The force error is larger at broken-symmetry transition states, by a factor of two to three}
 \label{sec:results-ferr}
@@ -540,6 +527,19 @@ structure is the absolute difference between model force and DFT
 force, averaged over all $3N$ components. It shows more directly why
 the models struggle at the broken-symmetry transition states: the
 force prediction itself is worse there.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\linewidth]{Pictures/fig2_force_mae.png}
+  \caption{Force error at the transition state each model delivered:
+  the absolute difference between model force and DFT force, averaged
+  over all $3N$ Cartesian components, at the same unrelaxed geometry.
+  DFT at the OMol25 level on the unrestricted surface
+  (Sec.~\ref{sec:dft}); groups as in Fig.~\ref{fig:silent}. Dots are
+  single structures, bars the group medians with their 95\,\% bootstrap
+  intervals, and the arrow gives the ratio of the two medians.}
+  \label{fig:ferr}
+\end{figure}
 
 The force error is larger at the broken-symmetry structures for every
 model. Medians over the structures of each group, closed-shell against
@@ -563,7 +563,16 @@ the error sits at the transition state, and wrong forces there mean the model
 cannot place it accurately. Section~\ref{sec:results-barrier} shows that this
 has a meaningful effect on the barrier.
 
-\begin{figure}[t]
+
+\subsection{The energy error is small and the geometry error is not}
+\label{sec:results-barrier}
+
+A model barrier can be wrong for two reasons. The model can assign the wrong
+energy to a given structure, or it can place the transition state at the
+wrong structure. Figure~\ref{fig:barrier} separates the two
+(Table~\ref{tab:panels}).
+
+\begin{figure}[!htbp]
   \centering
   \includegraphics[width=\linewidth]{Pictures/fig3_v2.png}
   \caption{Energy error (A) and geometry error (B) of the model
@@ -583,14 +592,6 @@ has a meaningful effect on the barrier.
   \label{fig:barrier}
 \end{figure}
 
-
-\subsection{The energy error is small and the geometry error is not}
-\label{sec:results-barrier}
-
-A model barrier can be wrong for two reasons. The model can assign the wrong
-energy to a given structure, or it can place the transition state at the
-wrong structure. Figure~\ref{fig:barrier} separates the two.
-
 Panel~A isolates the energy error. It takes the reactant and the
 transition state that one model found for a reaction and keeps both
 geometries fixed. The barrier between them is computed twice, once with the model and once with DFT single
@@ -605,7 +606,7 @@ barrier. Since the energy method is the same for all three, the
 barriers can differ only because the models stopped at different
 geometries. The spread between them is the geometry error.
 
-\begin{table}[t]
+\begin{table}[H]
   \centering
   \small
   \begin{tabular}{@{}lll@{}}
@@ -677,26 +678,7 @@ the label surface, the unrestricted surface at the OMol25 level. The
 measure for this is the residual force. We measure it in three steps,
 reported in Table~\ref{tab:ladder}, and each step tells one thing.
 
-Step 1 shows that the stored geometries are transition states at
-their own level, so nothing was off before relabelling. Step 2 shows
-that changing the level takes both groups equally far from
-stationarity, so the level cannot be what separates the groups. Step 3
-shows that changing the spin formalism affects only the broken-symmetry
-group, and by a lot: that is the separation. The closed-shell group
-shows what the level change alone does: its training points are equally
-far from stationarity, and the models still find its transition states.
-The broken-symmetry group has the spin-formalism change on top, its
-training points carry almost three times the residual force, and there
-the models do worse.
-
-\paragraph{Control.} \emph{Re-optimised restricted at the OMol25 level, the
-geometries are transition states of the restricted surface ($0.039$
-and $0.042$), and on the unrestricted surface the broken-symmetry group
-is still far from stationarity, $1.87$, a factor of $32$: the transition state of a path
-relaxed restricted is not a transition state of the unrestricted
-surface, at whichever level it is relaxed.}
-
-\begin{table}[t]
+\begin{table}[H]
   \centering
   \small
   \setlength{\tabcolsep}{5pt}
@@ -722,6 +704,25 @@ surface, at whichever level it is relaxed.}
   the restricted one, so the last two columns are equal there.}
   \label{tab:ladder}
 \end{table}
+
+Step 1 shows that the stored geometries are transition states at
+their own level, so nothing was off before relabelling. Step 2 shows
+that changing the level takes both groups equally far from
+stationarity, so the level cannot be what separates the groups. Step 3
+shows that changing the spin formalism affects only the broken-symmetry
+group, and by a lot: that is the separation. The closed-shell group
+shows what the level change alone does: its training points are equally
+far from stationarity, and the models still find its transition states.
+The broken-symmetry group has the spin-formalism change on top, its
+training points carry almost three times the residual force, and there
+the models do worse.
+
+\paragraph{Control.} \emph{Re-optimised restricted at the OMol25 level, the
+geometries are transition states of the restricted surface ($0.039$
+and $0.042$), and on the unrestricted surface the broken-symmetry group
+is still far from stationarity, $1.87$, a factor of $32$: the transition state of a path
+relaxed restricted is not a transition state of the unrestricted
+surface, at whichever level it is relaxed.}
 
 
 \subsection{Discussion}
