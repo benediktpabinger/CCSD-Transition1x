@@ -63,6 +63,7 @@ of their labels; that is RQ2 (Table~\ref{tab:delta-vs-omol}).
 paths are in both, unchanged; everything else is stronger in the
 second.}
 \label{tab:delta-vs-omol}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}llp{5.5cm}@{}}
 \toprule
  & Chapter~\ref{ch:delta} & this chapter \\
@@ -74,7 +75,7 @@ spin formalism of the labels & restricted & unrestricted \\
 level of the labels & $\omega$B97M-V/def2-TZVP & $\omega$B97M-V/def2-TZVPD \\
 model & MACE with a correction head & UMA-S, UMA-M, eSEN \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 Whether these models find broken-symmetry transition states has not
@@ -178,7 +179,7 @@ is used to search the transition state and evaluate the barrier height by runnin
 45 reactions, for 135 searches in total (fairchem 2.20.0, ASE 3.28.0). All three
 run on the \texttt{omol} task head at charge 0 and spin multiplicity 1. %matching the neutral singlet the DFT side treats.
 
-\textbf{Band initialization:} We initialise each band with the final \mbox{$\omega$B97X/6-31G(d)} band stored in
+\textbf{Band initialisation:} We initialise each band with the final \mbox{$\omega$B97X/6-31G(d)} band stored in
 Transition1x, ten images including reactant and product, and re-relax the two
 endpoints with the respective model (BFGS, $0.05$~eV\,\AA$^{-1}$).
 
@@ -427,21 +428,6 @@ OMol25       & $\omega$B97X/6-31G(d) & restricted & $\omega$B97M-V/def2-TZVPD & 
 \end{tabular}
 \end{table}
 
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=\textwidth]{Pictures/fig_pes.png}
-  \caption{Schematic of the mechanism, not a computed surface. The same
-  geometries of a broken-symmetry reaction are shown on the restricted
-  surface they were relaxed on (top) and on the unrestricted surface
-  the labels were computed on (bottom). On the restricted surface the
-  transition state is a saddle and the band with its stored NEB history
-  (white dots) lies on the minimum-energy path. On the unrestricted
-  surface the same band lies on a slope, the force at the transition
-  state is not zero (arrows), and the saddle lies elsewhere. Right: the
-  energy along the band on each surface.}
-  \label{fig:pes}
-\end{figure}
-
 To quantify how far the stored transition states are from stationarity
 on the label surface, we use the residual force: the largest force
 component on the atoms at the stored geometry, evaluated on the label
@@ -464,6 +450,21 @@ that did not (nine closed-shell, three broken-symmetry) stopped between
 $0.059$ and $0.117$~eV\,\AA$^{-1}$.} and repeat steps 2 and 3 at the
 re-optimised geometries. If the spin-formalism effect survives, it is
 not a leftover of the level change.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{Pictures/fig_pes.png}
+  \caption{Schematic of the mechanism, not a computed surface. The same
+  geometries of a broken-symmetry reaction are shown on the restricted
+  surface they were relaxed on (top) and on the unrestricted surface
+  the labels were computed on (bottom). On the restricted surface the
+  transition state is a saddle and the band with its stored NEB history
+  (white dots) lies on the minimum-energy path. On the unrestricted
+  surface the same band lies on a slope, the force at the transition
+  state is not zero (arrows), and the saddle lies elsewhere. Right: the
+  energy along the band on each surface.}
+  \label{fig:pes}
+\end{figure}
 
 \begin{figure}[H]
   \centering
@@ -619,6 +620,9 @@ geometries. The spread between them is the geometry error.
 \begin{table}[H]
   \centering
   \small
+  \caption{How the two panels of Fig.~\ref{fig:barrier} separate the two
+  sources of barrier error. R = reactant, TS = transition state.}
+  \label{tab:panels}
   \begin{tabular}{@{}lll@{}}
     \toprule
                           & Panel A                        & Panel B \\
@@ -633,9 +637,6 @@ geometries. The spread between them is the geometry error.
     Measures              & energy error                   & geometry error \\
     \bottomrule
   \end{tabular}
-  \caption{How the two panels of Fig.~\ref{fig:barrier} separate the two
-  sources of barrier error. R = reactant, TS = transition state.}
-  \label{tab:panels}
 \end{table}
 
 Panel~A shows that the energy prediction of the model is not the
@@ -696,6 +697,13 @@ reported in Table~\ref{tab:ladder}, and each step tells one thing.
   \centering
   \small
   \setlength{\tabcolsep}{5pt}
+  \caption{Median residual force at the 45 stored Transition1x
+  transition states, one change per step: the level in step 2, the
+  spin formalism in step 3 (Section~\ref{sec:labels}); numbers in
+  parentheses are reaction counts. $^{a}$Lowest unrestricted solution
+  (Sec.~\ref{sec:dft}). For the closed-shell group it coincides with
+  the restricted one, so the last two columns are equal there.}
+  \label{tab:ladder}
   \begin{tabular}{@{}lccc@{}}
     \toprule
     & \multicolumn{3}{c}{median residual force [eV\,\AA$^{-1}$]} \\
@@ -710,13 +718,6 @@ reported in Table~\ref{tab:ladder}, and each step tells one thing.
     \quad broken-symmetry (18)  & $0.0138$ & $0.589$ & $1.636$ \\
     \bottomrule
   \end{tabular}
-  \caption{Median residual force at the 45 stored Transition1x
-  transition states, one change per step: the level in step 2, the
-  spin formalism in step 3 (Section~\ref{sec:labels}); numbers in
-  parentheses are reaction counts. $^{a}$Lowest unrestricted solution
-  (Sec.~\ref{sec:dft}). For the closed-shell group it coincides with
-  the restricted one, so the last two columns are equal there.}
-  \label{tab:ladder}
 \end{table}
 
 Step 1 shows that the stored geometries are transition states at

@@ -612,6 +612,7 @@ accuracy.
 functionals~\cite{perdew2001}. Each rung uses the ingredients of the rungs
 below and adds one.}
 \label{tab:functionals}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}l p{7.4cm} l@{}}
 \toprule
 rung & adds & example \\
@@ -629,7 +630,7 @@ range-separated hybrid & the same, but the fraction of exact exchange
 double hybrid & the unoccupied orbitals, through a second-order
   perturbation (MP2) or random-phase correlation term & B2PLYP \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 Dispersion, the weak attraction between non-bonded atoms, is missing from
@@ -1455,6 +1456,7 @@ checkpoint on the earlier one.
 \caption{The models of this thesis. All are equivariant message-passing
 models with conservative forces.}
 \label{tab:mlip-models}
+\resizebox{\linewidth}{!}{%
 \begin{tabular}{@{}llll@{}}
 \toprule
 model & training data & level of theory & role \\
@@ -1464,7 +1466,7 @@ MACE+$\Delta$ & MACE plus correction head & $\omega$B97M-V/def2-TZVP & this work
 UMA-S, UMA-M~\cite{uma} & OMol25 and others & $\omega$B97M-V/def2-TZVPD & Chapter~\ref{ch:mr} \\
 eSEN~\cite{esen} & OMol25 & $\omega$B97M-V/def2-TZVPD & Chapter~\ref{ch:mr} \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 Table~\ref{tab:mlip-models} lists the models.

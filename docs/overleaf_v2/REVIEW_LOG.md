@@ -311,6 +311,19 @@ One fix made (approved): the two tables that were never cited in the text now ar
 
 Deliberately NOT done, because the author did not want to risk disturbing the text before submission: `et al.\ ` in three places of the introduction (spacing only); writing out "Fig." / "Sec." in four running-text places of Chapter 4 (elsewhere "Figure" / "Section"). Judgement call noted for the defence: the title of Chapter 4 ("... Without Re-optimising the Path Is Not Enough") says what was not enough, not what would have been enough; the cause is left open on purpose. Still open from before: B7 (what the 478 steps count), K8 (three figure files exist only on Overleaf).
 
+## O. Acknowledgements (2026-09-21 evening)
+
+One sentence added at the end of the paragraph to the supervisor, the author's own wording: "I am super excited for what comes next." Deliberately unspecific (the author continues with a PhD in the group and wanted to say so only very carefully).
+
+## P. Check of the compiled PDF (Thesis_Benedikt_Pabinger_Final.pdf, 2026-09-21 evening)
+
+The author compiled in Overleaf and sent the 76-page PDF. Read against the repository: every change of 2026-09-20/21 is in it (abstract, acknowledgements sentence, research-question boxes, restructured introduction and conclusion, Chapter 3 and 4 edits, float order, corrected bibliography with najibi2018 / zhao2023rgd1 / zhang2025ani1xbb, no unresolved citation). Layout points seen only in the PDF, all four approved ("alle") and done by a script that checks that no word of the text changed:
+- Four tables ran past the right margin: `tab:functionals` (Table 2.1), `tab:mlip-models` (2.8), `tab:delta-vs-omol` (4.1), `tab:marks-stability` (A.1). Each tabular is now wrapped in `\resizebox{\linewidth}{!}{...}` (the command is already used for Figure 2.1); the type gets 4 to 12 % smaller, content unchanged.
+- Page 42 was two thirds empty because `fig:pes` (`[H]`) did not fit. Letting only that figure float would have put Figure 4.2 (`[H]`) in front of Figure 4.1, so instead the two measurement paragraphs ("To quantify how far ...", "We measure the residual force ...") were moved in front of the figure block; both figures keep `[H]` and their order. No wording change. To be checked in the next PDF.
+- "Band initialization:" -> "Band initialisation:" (the same line goes on "We initialise").
+- Captions of `tab:panels` (4.5) and `tab:ladder` (4.6) moved above the table, like all other tables.
+Not in our files, for the author to do in the Overleaf template: delete the placeholder lines "ISSN: [0000-0000]" / "ISBN: [000-00-0000-000-0]" on the colophon page; sign and date the Approval page in the PDF.
+
 ## Counts (update as we go)
 
 CHANGED 51 (A1, A2, A3, A4, A5, A8, A12, B1, B2, B11, B14, B17, C1, C2, C3, C5, D1, D2, D3, D6, D7, D10, E1, E2, E3, E4, E5, E6, E7, E8, E10, E12, F1, F2, F4, F5, F7, G1, G2, G3, G4, H1, H2, H3, J1, J2, J3, J4, J5, J6, J7). KEPT 71. NEEDS DATA 2 (B7, K8). OPEN 0.
