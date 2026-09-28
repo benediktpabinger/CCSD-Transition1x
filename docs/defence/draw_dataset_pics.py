@@ -456,8 +456,8 @@ def panel_rq(ax, mode):
     ax.plot(px, py, pz_old, color="#6f6f75", lw=1.3)
     for i, (x, y) in enumerate(zip(px, py)):
         top = max(pz_old[i], pz_new[i]) if i in sel else pz_old[i]
-        ax.plot([x, x], [y, y], [floor, top], color="#9a9a9a", lw=0.8, alpha=0.9)
-    ax.scatter(px, py, [floor] * len(px), s=26, color="#9a9a9a", depthshade=False)
+        ax.plot([x, x], [y, y], [floor, top], color="#6e6e74", lw=0.7, alpha=0.8)
+    ax.scatter(px, py, [floor] * len(px), s=22, color="#6e6e74", depthshade=False)
     ax.scatter(px, py, pz_old, s=55, color="#b8b8bd", edgecolor=INK, lw=1.1, depthshade=False)
     ax.scatter(px[sel], py[sel], pz_new[sel], s=55, color=NEW, edgecolor=INK, lw=1.1, depthshade=False)
     if mode == "rq2":
