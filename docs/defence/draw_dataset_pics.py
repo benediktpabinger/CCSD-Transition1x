@@ -216,3 +216,49 @@ fig.subplots_adjust(left=0.01, right=0.99, top=0.95, bottom=0.14, wspace=0.05)
 fig.savefig(OUT + "pic_relabelling_3d.png", dpi=220, transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_relabelling_3d.png")
+
+
+# 7. one panel, both surfaces: old (grey) and new (orange) slightly different,
+#    same floor geometries, stems up to the label heights on both surfaces
+fig = plt.figure(figsize=(9, 6))
+ax = fig.add_subplot(1, 1, 1, projection="3d")
+floor = -1.55
+z_old = pes(xx3, yy3, "cheap")
+z_new = pes(xx3, yy3, "expensive") + 0.32
+ax.plot_surface(xx3, yy3, z_old, color="#bfbfc4", alpha=0.10, linewidth=0, antialiased=True, shade=True)
+ax.plot_wireframe(xx3, yy3, z_old, rstride=20, cstride=20, color="#8c8c92", linewidth=0.5, alpha=0.5)
+ax.plot_surface(xx3, yy3, z_new, color="#f0b88a", alpha=0.10, linewidth=0, antialiased=True, shade=True)
+ax.plot_wireframe(xx3, yy3, z_new, rstride=20, cstride=20, color=NEW, linewidth=0.5, alpha=0.5)
+ax.contour(xx3, yy3, z_old, levels=np.linspace(-0.95, 0.35, 14), zdir="z", offset=floor,
+           colors="#8c8c92", linewidths=0.7, alpha=0.6)
+px, py = path_points()
+pz_old = pes(px, py, "cheap")
+pz_new = pes(px, py, "expensive") + 0.32
+ax.plot(px, py, pz_old, color="#6f6f75", lw=1.3)
+ax.plot(px, py, pz_new, color=NEW, lw=1.3)
+for x, y, zo, zn in zip(px, py, pz_old, pz_new):
+    ax.plot([x, x], [y, y], [floor, max(zo, zn)], color=INK, lw=0.7, alpha=0.5)
+ax.scatter(px, py, [floor] * len(px), s=26, color=INK, depthshade=False)
+ax.scatter(px, py, pz_old, s=55, color="#b8b8bd", edgecolor=INK, lw=1.1, depthshade=False)
+ax.scatter(px, py, pz_new, s=55, color=NEW, edgecolor=INK, lw=1.1, depthshade=False)
+ax.set_zlim(floor, 0.8); ax.set_xlim(-1.9, 1.9); ax.set_ylim(-1.9, 1.9)
+ax.view_init(elev=26, azim=-38)
+ax.set_xticks([]); ax.set_yticks([]); ax.set_zticks([])
+ax.set_zlabel("energy", fontsize=10, color=GREY, labelpad=-8)
+ax.xaxis.pane.fill = ax.yaxis.pane.fill = ax.zaxis.pane.fill = False
+for a in (ax.xaxis, ax.yaxis, ax.zaxis):
+    a.pane.set_edgecolor("#dddddd")
+ax.grid(False)
+# legend as text
+ax.text2D(0.02, 1.10, "grey: " + chr(969) + "B97X/6-31G(d), the surface the path was relaxed on",
+          transform=ax.transAxes, fontsize=10.5, color="#6f6f75", va="top")
+ax.text2D(0.02, 1.05, "orange: " + chr(969) + "B97M-V/def2-TZVP, the surface of the new labels",
+          transform=ax.transAxes, fontsize=10.5, color=NEW, va="top")
+ax.text2D(0.02, 1.00, "black dots: the stored geometries, unchanged",
+          transform=ax.transAxes, fontsize=10.5, color=INK, va="top")
+ax.text2D(0.5, 0.0, "relabelling: one single point per geometry on the new surface, no new path search",
+          transform=ax.transAxes, fontsize=10.5, color=INK, ha="center", va="top")
+fig.subplots_adjust(left=0.0, right=1.0, top=0.9, bottom=0.05)
+fig.savefig(OUT + "pic_relabelling_3d_v2.png", dpi=220, transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_relabelling_3d_v2.png")
