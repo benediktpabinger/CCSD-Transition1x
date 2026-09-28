@@ -599,3 +599,42 @@ axr.text(0.5, 35.5, "basis functions per carbon atom", ha="center", fontsize=9.5
 fig.savefig(OUT + "pic_level_of_theory.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_level_of_theory.png")
+
+
+# 15. ways to raise the fidelity: three rows, Transition1x -> upgrade
+fig, ax = plt.subplots(figsize=(12, 4.6))
+ax.set_xlim(0, 12); ax.set_ylim(0, 4.6); ax.axis("off")
+rows = [
+    (3.55, "Functional", "the approximation for exchange\nand correlation, Jacob's ladder",
+     chr(969) + "B97X", "range-separated hybrid", chr(969) + "B97M-V", "one rung higher, with dispersion"),
+    (2.35, "Basis set", "the functions the orbitals\nare built from",
+     "6-31G(d)", "double zeta, 15 functions per C", "def2-TZVP", "triple zeta, 31 functions per C"),
+    (1.15, "Spin formalism", "whether spin-up and spin-down\nelectrons share the same orbitals",
+     "restricted", "shared orbitals, the default", "unrestricted", "own orbitals, lower where a bond\nis half broken: broken symmetry"),
+]
+def cell(x, y, w, h, fc, ec):
+    ax.add_patch(FancyBboxPatch((x, y - h / 2), w, h, boxstyle="round,pad=0.02,rounding_size=0.08", fc=fc, ec=ec, lw=1.2))
+# column headers
+ax.text(4.55, 4.35, "Transition1x", ha="center", fontsize=12.5, color="#6f6f75", fontweight="bold")
+ax.text(9.1, 4.35, "upgrade", ha="center", fontsize=12.5, color=NEW, fontweight="bold")
+for y, name, desc, a, adesc, b, bdesc in rows:
+    ax.text(0.25, y + 0.16, name, fontsize=12.5, color=MID, fontweight="bold", va="center")
+    ax.text(0.25, y - 0.24, desc, fontsize=9, color=MID, va="center", linespacing=1.25)
+    cell(3.2, y, 2.7, 0.92, "#ececef", "#b8b8bd")
+    ax.text(4.55, y + 0.16, a, ha="center", va="center", fontsize=12, color="#6f6f75", fontweight="bold")
+    ax.text(4.55, y - 0.24, adesc, ha="center", va="center", fontsize=8.8, color="#6f6f75")
+    cell(7.75, y, 2.7, 0.92, "#fbe7d6", NEW)
+    ax.text(9.1, y + 0.16, b, ha="center", va="center", fontsize=12, color=NEW, fontweight="bold")
+    ax.text(9.1, y - 0.24, bdesc, ha="center", va="center", fontsize=8.8, color=NEW, linespacing=1.2)
+    ax.add_patch(FancyArrowPatch((6.05, y), (7.6, y), arrowstyle="-|>", mutation_scale=18, lw=2, color="#9a9a9a"))
+# brace: level of theory
+ax.plot([10.75, 10.9, 10.9, 10.75], [4.05, 4.05, 1.85, 1.85], color="#9a9a9a", lw=1.4)
+ax.plot([10.9, 11.05], [2.95, 2.95], color="#9a9a9a", lw=1.4)
+ax.text(11.15, 2.95, "level of theory", fontsize=11, color=MID, va="center")
+ax.plot([10.75, 10.9, 10.9, 10.75], [1.6, 1.6, 0.7, 0.7], color=NEW, lw=1.4)
+ax.plot([10.9, 11.05], [1.15, 1.15], color=NEW, lw=1.4)
+ax.text(11.15, 1.15, "a different surface\nwhere a bond breaks", fontsize=10, color=NEW, va="center", linespacing=1.25)
+ax.text(6.85, 0.25, "each step: higher accuracy, higher cost", ha="center", fontsize=10.5, color=MID, style="italic")
+fig.savefig(OUT + "pic_fidelity_table.png", dpi=220, bbox_inches="tight", transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_fidelity_table.png")
