@@ -411,13 +411,14 @@ def pes_bs(x, y):
     v = (x - y) / np.sqrt(2.0)          # across the path
     # trough across the path direction, with a small bump at u = 0 inside it,
     # so the trough's highest point (the new saddle) sits at (u, v) = (0, 0.75)
-    across = np.exp(-((v - 0.75) ** 2) / 0.22)
-    along = 0.55 + 0.45 * (1.0 - np.exp(-(u ** 2) / 0.3))
-    return pes(x, y, "cheap") + 0.32 - 0.55 * across * along
+    across = np.exp(-((v - 0.85) ** 2) / 0.30)
+    along = 0.45 + 0.55 * (1.0 - np.exp(-(u ** 2) / 0.35))
+    ridge = 0.35 * np.exp(-(v ** 2) / 0.12) * np.exp(-(u ** 2) / 0.6)   # the restricted saddle region is raised
+    return pes(x, y, "cheap") + 0.32 - 0.95 * across * along + ridge
 
 
 def saddle_of(f):
-    u, v = 0.0, 0.75
+    u, v = 0.0, 0.85
     x = (u + v) / np.sqrt(2.0); y = (u - v) / np.sqrt(2.0)
     return x, y, f(x, y)
 
