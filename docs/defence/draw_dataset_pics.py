@@ -265,7 +265,7 @@ print("written", OUT + "pic_relabelling_3d_v2.png")
 
 
 # 8. two panels: left the cheap surface alone, arrow, right both surfaces
-def panel3d(ax, both):
+def panel3d(ax, both, bands=False):
     floor = -1.55
     z_old = pes(xx3, yy3, "cheap")
     ax.plot_surface(xx3, yy3, z_old, color="#bfbfc4", alpha=0.10, linewidth=0, antialiased=True, shade=True)
@@ -274,6 +274,21 @@ def panel3d(ax, both):
                colors="#8c8c92", linewidths=0.7, alpha=0.6)
     px, py = path_points()
     pz_old = pes(px, py, "cheap")
+    if bands:
+        # the intermediate NEB bands, from the straight interpolation to the final path
+        t = np.linspace(-1.05, 1.05, 10)
+        y_start = py[-1] / px[-1] * t - 0.55 * np.sin(np.pi * t)   # first band, bowed the other way
+        for w, alpha in [(0.0, 0.35), (0.4, 0.45), (0.72, 0.55)]:
+            bx, by = t, (1 - w) * y_start + w * py
+            bz = pes(bx, by, "cheap")
+            ax.plot(bx, by, bz, color="#8c8c92", lw=0.9, alpha=alpha)
+            ax.scatter(bx, by, [floor] * len(bx), s=10, color=INK, alpha=alpha, depthshade=False)
+            ax.scatter(bx, by, bz, s=22, color="#d0d0d4", edgecolor=INK, lw=0.6, alpha=alpha + 0.2, depthshade=False)
+            if both:
+                bzn = pes(bx, by, "expensive") + 0.32
+                ax.scatter(bx, by, bzn, s=22, color=NEW, edgecolor=INK, lw=0.6, alpha=alpha + 0.2, depthshade=False)
+            for x, y, z in zip(bx, by, bz):
+                ax.plot([x, x], [y, y], [floor, z], color=INK, lw=0.3, alpha=0.18)
     ax.plot(px, py, pz_old, color="#6f6f75", lw=1.3)
     top = pz_old
     if both:
@@ -317,3 +332,24 @@ fig.subplots_adjust(left=0.0, right=1.0, top=0.90, bottom=0.08, wspace=0.02)
 fig.savefig(OUT + "pic_relabelling_3d_v3.png", dpi=220, transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_relabelling_3d_v3.png")
+
+
+# 9. as 8, but with the intermediate NEB bands that Transition1x also keeps
+fig = plt.figure(figsize=(14, 5.6))
+axl = fig.add_subplot(1, 2, 1, projection="3d"); panel3d(axl, both=False, bands=True)
+axr = fig.add_subplot(1, 2, 2, projection="3d"); panel3d(axr, both=True, bands=True)
+axl.set_title("Transition1x", fontsize=13, fontweight="bold", color=INK, pad=14)
+axr.set_title("relabelled", fontsize=13, fontweight="bold", color=INK, pad=14)
+axl.text2D(0.5, 0.0, "every NEB iteration kept: paths relaxed and labelled at " + chr(969) + "B97X/6-31G(d)",
+           transform=axl.transAxes, ha="center", va="top", fontsize=10.5, color="#8c8c92")
+axr.text2D(0.5, 0.0, "same geometries, new labels at " + chr(969) + "B97M-V/def2-TZVP", transform=axr.transAxes,
+           ha="center", va="top", fontsize=10.5, color=NEW)
+arr = FancyArrowPatch((0.47, 0.5), (0.53, 0.5), transform=fig.transFigure,
+                      arrowstyle="-|>", mutation_scale=26, lw=3, color=NEW)
+fig.patches.append(arr)
+fig.text(0.5, 0.56, "one single point" + chr(10) + "per geometry", ha="center", va="bottom", fontsize=10.5, color=NEW, linespacing=1.3)
+fig.text(0.5, 0.44, "no new" + chr(10) + "path search", ha="center", va="top", fontsize=10.5, color="#9a9a9a", linespacing=1.3)
+fig.subplots_adjust(left=0.0, right=1.0, top=0.90, bottom=0.08, wspace=0.02)
+fig.savefig(OUT + "pic_relabelling_3d_v4.png", dpi=220, transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_relabelling_3d_v4.png")
