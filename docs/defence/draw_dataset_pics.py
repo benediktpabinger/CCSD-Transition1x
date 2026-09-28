@@ -387,16 +387,16 @@ def panel_equilibrium(ax):
 fig = plt.figure(figsize=(14, 5.6))
 axl = fig.add_subplot(1, 2, 1, projection="3d"); panel_equilibrium(axl)
 axr = fig.add_subplot(1, 2, 2, projection="3d"); panel3d(axr, both=False, bands=True)
-axl.set_title("equilibrium datasets (QM9, ANI-1x)", fontsize=13, fontweight="bold", color=INK, pad=14)
-axr.set_title("Transition1x", fontsize=13, fontweight="bold", color=INK, pad=14)
+axl.set_title("equilibrium datasets (QM9, ANI-1x)", fontsize=13, fontweight="bold", color="#7f7f86", pad=14)
+axr.set_title("Transition1x", fontsize=13, fontweight="bold", color="#7f7f86", pad=14)
 axl.text2D(0.5, 0.0, "structures at and near the minima; the transition-state region is empty",
-           transform=axl.transAxes, ha="center", va="top", fontsize=10.5, color="#8c8c92")
+           transform=axl.transAxes, ha="center", va="top", fontsize=10.5, color="#7f7f86")
 axr.text2D(0.5, 0.0, "reaction paths, every NEB iteration kept; the transition-state region is sampled",
-           transform=axr.transAxes, ha="center", va="top", fontsize=10.5, color=INK)
+           transform=axr.transAxes, ha="center", va="top", fontsize=10.5, color="#7f7f86")
 arr = FancyArrowPatch((0.47, 0.5), (0.53, 0.5), transform=fig.transFigure,
                       arrowstyle="-|>", mutation_scale=26, lw=3, color="#9a9a9a")
 fig.patches.append(arr)
-fig.text(0.5, 0.56, "2022", ha="center", va="bottom", fontsize=11, color="#9a9a9a")
+fig.text(0.5, 0.56, "sampling the" + chr(10) + "reaction paths", ha="center", va="bottom", fontsize=10.5, color="#7f7f86", linespacing=1.3)
 fig.subplots_adjust(left=0.0, right=1.0, top=0.90, bottom=0.08, wspace=0.02)
 fig.savefig(OUT + "pic_t1x_vs_equilibrium.png", dpi=220, transparent=True)
 plt.close(fig)
