@@ -565,3 +565,37 @@ ax.set_title("energy along a reaction path, both surfaces", fontsize=13, fontwei
 fig.savefig(OUT + "pic_path_two_surfaces.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_path_two_surfaces.png")
+
+
+# 14. level of theory: functional ladder and basis-set size
+fig, (axl, axr) = plt.subplots(1, 2, figsize=(7.2, 4.2), gridspec_kw={"width_ratios": [1.15, 1], "wspace": 0.35})
+rungs = ["LDA", "GGA", "meta-GGA", "hybrid", "range-separated\nhybrid", "range-separated\nhybrid meta-GGA"]
+for k, name in enumerate(rungs):
+    y = k
+    col = "#8c8c92" if k < 4 else ("#8c8c92" if k == 4 else NEW)
+    axl.plot([0.25, 0.75], [y, y], color="#bbbbbb", lw=2.2)
+    axl.text(0.78, y, name, fontsize=9.5, color=MID, va="center", ha="left")
+axl.plot([0.25, 0.25], [-0.3, len(rungs) - 0.7], color="#bbbbbb", lw=2.2)
+axl.plot([0.75, 0.75], [-0.3, len(rungs) - 0.7], color="#bbbbbb", lw=2.2)
+axl.scatter([0.5], [4], s=90, color="#b8b8bd", edgecolor=INK, lw=1.2, zorder=5)
+axl.text(0.5, 3.62, chr(969) + "B97X", ha="center", va="top", fontsize=10, color="#6f6f75", fontweight="bold")
+axl.scatter([0.5], [5], s=90, color=NEW, edgecolor=INK, lw=1.2, zorder=5)
+axl.text(0.5, 5.32, chr(969) + "B97M-V", ha="center", fontsize=10, color=NEW, fontweight="bold")
+axl.annotate("", xy=(0.5, 4.85), xytext=(0.5, 4.15), arrowprops=dict(arrowstyle="-|>", color=NEW, lw=1.6))
+axl.set_xlim(0, 2.2); axl.set_ylim(-0.6, 5.9); axl.axis("off")
+axl.set_title("functional", fontsize=12, fontweight="bold", color=MID)
+axl.text(0.5, -0.55, "Jacob's ladder", ha="center", fontsize=9.5, color=MID, style="italic")
+# basis set: functions per carbon atom as bars
+names = ["6-31G(d)", "def2-TZVP"]; nfn = [15, 31]; cols = ["#b8b8bd", NEW]
+axr.bar([0, 1], nfn, width=0.55, color=cols, edgecolor=INK, lw=1.0)
+for i, (n, nm) in enumerate(zip(nfn, names)):
+    axr.text(i, n + 1.2, str(n), ha="center", fontsize=10.5, color=MID, fontweight="bold")
+    axr.text(i, -2.5, nm, ha="center", va="top", fontsize=10, color="#6f6f75" if i == 0 else NEW, fontweight="bold")
+axr.text(0.5, -8.5, "double zeta  " + chr(8594) + "  triple zeta,\npolarisation on all atoms", ha="center", va="top", fontsize=9.5, color=MID)
+axr.annotate("", xy=(0.72, 22), xytext=(0.28, 22), arrowprops=dict(arrowstyle="-|>", color=NEW, lw=1.6))
+axr.set_xlim(-0.6, 1.6); axr.set_ylim(-14, 38); axr.axis("off")
+axr.set_title("basis set", fontsize=12, fontweight="bold", color=MID)
+axr.text(0.5, 35.5, "basis functions per carbon atom", ha="center", fontsize=9.5, color=MID, style="italic")
+fig.savefig(OUT + "pic_level_of_theory.png", dpi=220, bbox_inches="tight", transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_level_of_theory.png")
