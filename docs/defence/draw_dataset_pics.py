@@ -496,3 +496,34 @@ for mode, name, head, sub in [
     fig.savefig(OUT + name, dpi=220, transparent=True)
     plt.close(fig)
     print("written", OUT + name)
+
+
+# 12. restricted vs unrestricted: the H2 dissociation curve
+r = np.linspace(0.45, 3.4, 500)
+r0, D, a = 0.74, 1.0, 1.9
+e_u = D * (1 - np.exp(-a * (r - r0))) ** 2 - D          # unrestricted: goes to the atoms
+r_cf = 1.25                                               # where the restricted solution becomes unstable
+e_r = e_u + np.where(r > r_cf, 0.62 * (1 - np.exp(-1.1 * (r - r_cf))) ** 2, 0.0)   # restricted: same up to r_cf, then above, levelling off higher
+fig, ax = plt.subplots(figsize=(6.4, 4.2))
+ax.plot(r, e_r, color="#8c8c92", lw=2.4, label="restricted (RKS)")
+ax.plot(r, e_u, color=NEW, lw=2.4, label="unrestricted (UKS)")
+ax.plot(r[r <= r_cf], e_u[r <= r_cf], color="#8c8c92", lw=2.4)
+ax.axvline(r_cf, color="#bbbbbb", lw=1, ls=":")
+ax.text(r_cf - 0.05, 0.05, "all electrons paired:\nsame energy", ha="right", va="bottom", fontsize=10, color="#6f6f75")
+ax.text(r_cf + 0.08, 0.05, "bond half broken:\nunrestricted lies lower,\nbroken-symmetry solution", ha="left", va="bottom", fontsize=10, color=NEW)
+ax.annotate("", xy=(2.6, e_u[np.searchsorted(r, 2.6)]), xytext=(2.6, e_r[np.searchsorted(r, 2.6)]),
+            arrowprops=dict(arrowstyle="<->", color=MID, lw=1))
+ax.text(2.66, 0.5 * (e_u[np.searchsorted(r, 2.6)] + e_r[np.searchsorted(r, 2.6)]), "breaking depth", fontsize=9.5, color=MID, va="center")
+ax.set_xlabel("bond length", fontsize=11, color=MID)
+ax.set_ylabel("energy", fontsize=11, color=MID)
+ax.set_xticks([]); ax.set_yticks([])
+ax.set_ylim(-1.1, 0.55)
+for sp in ("top", "right"):
+    ax.spines[sp].set_visible(False)
+for sp in ("left", "bottom"):
+    ax.spines[sp].set_color("#bbbbbb")
+ax.legend(loc="upper right", frameon=False, fontsize=10.5, labelcolor=[ "#6f6f75", NEW])
+ax.set_title("two spin formalisms, two surfaces", fontsize=13, fontweight="bold", color=MID)
+fig.savefig(OUT + "pic_rks_uks.png", dpi=220, bbox_inches="tight", transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_rks_uks.png")
