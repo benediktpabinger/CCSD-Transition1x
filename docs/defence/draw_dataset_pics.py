@@ -414,7 +414,7 @@ def pes_bs(x, y):
     across = np.exp(-((v - 0.85) ** 2) / 0.30)
     along = 0.45 + 0.55 * (1.0 - np.exp(-(u ** 2) / 0.35))
     ridge = 0.35 * np.exp(-(v ** 2) / 0.12) * np.exp(-(u ** 2) / 0.6)   # the restricted saddle region is raised
-    return pes(x, y, "cheap") + 0.32 - 0.95 * across * along + ridge
+    return pes(x, y, "cheap") + 0.75 - 0.95 * across * along + ridge
 
 
 def saddle_of(f):
@@ -465,8 +465,8 @@ def panel_rq(ax, mode):
         ax.scatter([sx], [sy], [sz], s=170, marker="*", color=NEW, edgecolor=INK, lw=0.8, depthshade=False)
         ax.scatter([sx], [sy], [floor], s=70, marker="*", color=NEW, edgecolor=INK, lw=0.6, depthshade=False)
         ax.plot([sx, sx], [sy, sy], [floor, sz], color=NEW, lw=0.9, ls="--", alpha=0.8)
-    ax.set_zlim(floor, 0.8); ax.set_xlim(-1.9, 1.9); ax.set_ylim(-1.9, 1.9)
-    ax.view_init(elev=26, azim=-38)
+    ax.set_zlim(floor, 1.25 if mode == "rq2" else 0.8); ax.set_xlim(-1.9, 1.9); ax.set_ylim(-1.9, 1.9)
+    ax.view_init(elev=22 if mode == "rq2" else 26, azim=-38)
     ax.set_xticks([]); ax.set_yticks([]); ax.set_zticks([])
     ax.set_zlabel("energy", fontsize=10, color=GREY, labelpad=-8)
     ax.xaxis.pane.fill = ax.yaxis.pane.fill = ax.zaxis.pane.fill = False
@@ -479,7 +479,7 @@ MID = "#7f7f86"
 for mode, name, head, sub in [
         ("rq1", "pic_rq1_3d.png", "relabel a few geometries, not all",
          "two single points at the better level; the many others keep their old labels"),
-        ("rq2", "pic_rq2_3d.png", "relabel on a surface with a different shape",
+        ("rq2", "pic_rq2_3d_v2.png", "relabel on a surface with a different shape",
          "labels from the unrestricted surface; its transition state (star) lies beside the path")]:
     fig = plt.figure(figsize=(7, 5.6))
     ax = fig.add_subplot(1, 1, 1, projection="3d"); panel_rq(ax, mode)
