@@ -401,3 +401,79 @@ fig.subplots_adjust(left=0.0, right=1.0, top=0.90, bottom=0.08, wspace=0.02)
 fig.savefig(OUT + "pic_t1x_vs_equilibrium.png", dpi=220, transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_t1x_vs_equilibrium.png")
+
+
+# 11. the two questions as two edits of the relabelling picture
+def pes_bs(x, y):
+    """the surface of the other spin formalism: a lowered channel beside the
+    restricted path, so the lowest saddle sits beside the path, not on it"""
+    u = (x + y) / np.sqrt(2.0)          # along the path
+    v = (x - y) / np.sqrt(2.0)          # across the path
+    # trough across the path direction, with a small bump at u = 0 inside it,
+    # so the trough's highest point (the new saddle) sits at (u, v) = (0, 0.75)
+    across = np.exp(-((v - 0.75) ** 2) / 0.22)
+    along = 0.55 + 0.45 * (1.0 - np.exp(-(u ** 2) / 0.3))
+    return pes(x, y, "cheap") + 0.32 - 0.55 * across * along
+
+
+def saddle_of(f):
+    u, v = 0.0, 0.75
+    x = (u + v) / np.sqrt(2.0); y = (u - v) / np.sqrt(2.0)
+    return x, y, f(x, y)
+
+
+def panel_rq(ax, mode):
+    floor = -1.55
+    z_old = pes(xx3, yy3, "cheap")
+    ax.plot_surface(xx3, yy3, z_old, color="#bfbfc4", alpha=0.10, linewidth=0, antialiased=True, shade=True)
+    ax.plot_wireframe(xx3, yy3, z_old, rstride=20, cstride=20, color="#8c8c92", linewidth=0.5, alpha=0.5)
+    ax.contour(xx3, yy3, z_old, levels=np.linspace(-0.95, 0.35, 14), zdir="z", offset=floor,
+               colors="#8c8c92", linewidths=0.7, alpha=0.6)
+    px, py = path_points()
+    pz_old = pes(px, py, "cheap")
+    if mode == "rq1":
+        z_new = pes(xx3, yy3, "expensive") + 0.32
+        pz_new = pes(px, py, "expensive") + 0.32
+        sel = [3, 4, 6]
+    else:
+        z_new = pes_bs(xx3, yy3)
+        pz_new = pes_bs(px, py)
+        sel = list(range(len(px)))
+    ax.plot_surface(xx3, yy3, z_new, color="#f0b88a", alpha=0.10, linewidth=0, antialiased=True, shade=True)
+    ax.plot_wireframe(xx3, yy3, z_new, rstride=20, cstride=20, color=NEW, linewidth=0.5, alpha=0.5)
+    ax.plot(px, py, pz_old, color="#6f6f75", lw=1.3)
+    for i, (x, y) in enumerate(zip(px, py)):
+        top = max(pz_old[i], pz_new[i]) if i in sel else pz_old[i]
+        ax.plot([x, x], [y, y], [floor, top], color=INK, lw=0.7, alpha=0.5)
+    ax.scatter(px, py, [floor] * len(px), s=26, color=INK, depthshade=False)
+    ax.scatter(px, py, pz_old, s=55, color="#b8b8bd", edgecolor=INK, lw=1.1, depthshade=False)
+    ax.scatter(px[sel], py[sel], pz_new[sel], s=55, color=NEW, edgecolor=INK, lw=1.1, depthshade=False)
+    if mode == "rq2":
+        sx, sy, sz = saddle_of(pes_bs)
+        ax.scatter([sx], [sy], [sz], s=170, marker="*", color=NEW, edgecolor=INK, lw=0.8, depthshade=False)
+        ax.scatter([sx], [sy], [floor], s=70, marker="*", color=NEW, edgecolor=INK, lw=0.6, depthshade=False)
+        ax.plot([sx, sx], [sy, sy], [floor, sz], color=NEW, lw=0.9, ls="--", alpha=0.8)
+    ax.set_zlim(floor, 0.8); ax.set_xlim(-1.9, 1.9); ax.set_ylim(-1.9, 1.9)
+    ax.view_init(elev=26, azim=-38)
+    ax.set_xticks([]); ax.set_yticks([]); ax.set_zticks([])
+    ax.set_zlabel("energy", fontsize=10, color=GREY, labelpad=-8)
+    ax.xaxis.pane.fill = ax.yaxis.pane.fill = ax.zaxis.pane.fill = False
+    for a in (ax.xaxis, ax.yaxis, ax.zaxis):
+        a.pane.set_edgecolor("#dddddd")
+    ax.grid(False)
+
+
+MID = "#7f7f86"
+for mode, name, head, sub in [
+        ("rq1", "pic_rq1_3d.png", "relabel a few geometries, not all",
+         "a few single points at the better level; the rest keeps its old labels"),
+        ("rq2", "pic_rq2_3d.png", "relabel on a surface with a different shape",
+         "labels from the unrestricted surface; its transition state (star) lies beside the path")]:
+    fig = plt.figure(figsize=(7, 5.6))
+    ax = fig.add_subplot(1, 1, 1, projection="3d"); panel_rq(ax, mode)
+    ax.set_title(head, fontsize=13, fontweight="bold", color=MID, pad=14)
+    ax.text2D(0.5, 0.0, sub, transform=ax.transAxes, ha="center", va="top", fontsize=10.5, color=MID)
+    fig.subplots_adjust(left=0.0, right=1.0, top=0.90, bottom=0.08)
+    fig.savefig(OUT + name, dpi=220, transparent=True)
+    plt.close(fig)
+    print("written", OUT + name)
