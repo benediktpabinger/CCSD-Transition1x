@@ -414,7 +414,7 @@ def pes_bs(x, y):
     across = np.exp(-((v - 1.1) ** 2) / 0.35)
     along = 0.45 + 0.55 * (1.0 - np.exp(-(u ** 2) / 0.35))
     ridge = 0.65 * np.exp(-(v ** 2) / 0.16) * np.exp(-(u ** 2) / 0.7)   # the restricted saddle region is raised
-    return pes(x, y, "cheap") + 1.35 - 1.0 * across * along + ridge
+    return pes(x, y, "cheap") + 1.9 - 1.0 * across * along + ridge
 
 
 def saddle_of(f):
@@ -470,9 +470,9 @@ def panel_rq(ax, mode):
         ax.scatter([sx], [sy], [sz], s=170, marker="*", color=NEW, edgecolor=INK, lw=0.8, depthshade=False)
         ax.scatter([sx], [sy], [floor], s=70, marker="*", color=NEW, edgecolor=INK, lw=0.6, depthshade=False)
         ax.plot([sx, sx], [sy, sy], [floor, sz], color=NEW, lw=0.9, ls="--", alpha=0.8)
-    ax.set_zlim(floor, 1.9 if mode == "rq2" else 0.8); ax.set_xlim(-1.9, 1.9); ax.set_ylim(-1.9, 1.9)
+    ax.set_zlim(floor, 2.5 if mode == "rq2" else 0.8); ax.set_xlim(-1.9, 1.9); ax.set_ylim(-1.9, 1.9)
     if mode == "rq2":
-        ax.set_box_aspect((1, 1, 1.15))
+        ax.set_box_aspect((1, 1, 1.35))
     ax.view_init(elev=20 if mode == "rq2" else 26, azim=-38)
     ax.set_xticks([]); ax.set_yticks([]); ax.set_zticks([])
     ax.set_zlabel("energy", fontsize=10, color=GREY, labelpad=-8)
