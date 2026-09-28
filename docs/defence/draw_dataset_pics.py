@@ -353,3 +353,51 @@ fig.subplots_adjust(left=0.0, right=1.0, top=0.90, bottom=0.08, wspace=0.02)
 fig.savefig(OUT + "pic_relabelling_3d_v4.png", dpi=220, transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_relabelling_3d_v4.png")
+
+
+# 10. what Transition1x changed: left, equilibrium datasets sample around the
+#     minima only; right, Transition1x samples the reaction paths
+def panel_equilibrium(ax):
+    floor = -1.55
+    z_old = pes(xx3, yy3, "cheap")
+    ax.plot_surface(xx3, yy3, z_old, color="#bfbfc4", alpha=0.10, linewidth=0, antialiased=True, shade=True)
+    ax.plot_wireframe(xx3, yy3, z_old, rstride=20, cstride=20, color="#8c8c92", linewidth=0.5, alpha=0.5)
+    ax.contour(xx3, yy3, z_old, levels=np.linspace(-0.95, 0.35, 14), zdir="z", offset=floor,
+               colors="#8c8c92", linewidths=0.7, alpha=0.6)
+    rng = np.random.default_rng(3)
+    for cx, cy in [(-1.0, -0.9), (1.0, 0.9)]:
+        n = 22
+        r = np.clip(np.abs(rng.normal(0, 0.22, n)), 0, 0.42); th = rng.uniform(0, 2 * np.pi, n)
+        qx, qy = cx + r * np.cos(th), cy + r * np.sin(th)
+        qz = pes(qx, qy, "cheap")
+        for x, y, z in zip(qx, qy, qz):
+            ax.plot([x, x], [y, y], [floor, z], color=INK, lw=0.4, alpha=0.3)
+        ax.scatter(qx, qy, [floor] * n, s=14, color=INK, alpha=0.7, depthshade=False)
+        ax.scatter(qx, qy, qz, s=30, color="#b8b8bd", edgecolor=INK, lw=0.8, depthshade=False)
+    ax.set_zlim(floor, 0.8); ax.set_xlim(-1.9, 1.9); ax.set_ylim(-1.9, 1.9)
+    ax.view_init(elev=26, azim=-38)
+    ax.set_xticks([]); ax.set_yticks([]); ax.set_zticks([])
+    ax.set_zlabel("energy", fontsize=10, color=GREY, labelpad=-8)
+    ax.xaxis.pane.fill = ax.yaxis.pane.fill = ax.zaxis.pane.fill = False
+    for a in (ax.xaxis, ax.yaxis, ax.zaxis):
+        a.pane.set_edgecolor("#dddddd")
+    ax.grid(False)
+
+
+fig = plt.figure(figsize=(14, 5.6))
+axl = fig.add_subplot(1, 2, 1, projection="3d"); panel_equilibrium(axl)
+axr = fig.add_subplot(1, 2, 2, projection="3d"); panel3d(axr, both=False, bands=True)
+axl.set_title("equilibrium datasets (QM9, ANI-1x)", fontsize=13, fontweight="bold", color=INK, pad=14)
+axr.set_title("Transition1x", fontsize=13, fontweight="bold", color=INK, pad=14)
+axl.text2D(0.5, 0.0, "structures at and near the minima; the transition-state region is empty",
+           transform=axl.transAxes, ha="center", va="top", fontsize=10.5, color="#8c8c92")
+axr.text2D(0.5, 0.0, "reaction paths, every NEB iteration kept; the transition-state region is sampled",
+           transform=axr.transAxes, ha="center", va="top", fontsize=10.5, color=INK)
+arr = FancyArrowPatch((0.47, 0.5), (0.53, 0.5), transform=fig.transFigure,
+                      arrowstyle="-|>", mutation_scale=26, lw=3, color="#9a9a9a")
+fig.patches.append(arr)
+fig.text(0.5, 0.56, "2022", ha="center", va="bottom", fontsize=11, color="#9a9a9a")
+fig.subplots_adjust(left=0.0, right=1.0, top=0.90, bottom=0.08, wspace=0.02)
+fig.savefig(OUT + "pic_t1x_vs_equilibrium.png", dpi=220, transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_t1x_vs_equilibrium.png")
