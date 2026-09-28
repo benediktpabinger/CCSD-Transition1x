@@ -411,14 +411,14 @@ def pes_bs(x, y):
     v = (x - y) / np.sqrt(2.0)          # across the path
     # trough across the path direction, with a small bump at u = 0 inside it,
     # so the trough's highest point (the new saddle) sits at (u, v) = (0, 0.75)
-    across = np.exp(-((v - 0.85) ** 2) / 0.30)
+    across = np.exp(-((v - 1.1) ** 2) / 0.35)
     along = 0.45 + 0.55 * (1.0 - np.exp(-(u ** 2) / 0.35))
-    ridge = 0.35 * np.exp(-(v ** 2) / 0.12) * np.exp(-(u ** 2) / 0.6)   # the restricted saddle region is raised
-    return pes(x, y, "cheap") + 1.35 - 0.95 * across * along + ridge
+    ridge = 0.65 * np.exp(-(v ** 2) / 0.16) * np.exp(-(u ** 2) / 0.7)   # the restricted saddle region is raised
+    return pes(x, y, "cheap") + 1.35 - 1.0 * across * along + ridge
 
 
 def saddle_of(f):
-    u, v = 0.0, 0.85
+    u, v = 0.0, 1.1
     x = (u + v) / np.sqrt(2.0); y = (u - v) / np.sqrt(2.0)
     return x, y, f(x, y)
 
@@ -456,11 +456,16 @@ def panel_rq(ax, mode):
     ax.plot(px, py, pz_old, color="#6f6f75", lw=1.3)
     for i, (x, y) in enumerate(zip(px, py)):
         top = max(pz_old[i], pz_new[i]) if i in sel else pz_old[i]
-        ax.plot([x, x], [y, y], [floor, top], color=INK, lw=0.7, alpha=0.5)
-    ax.scatter(px, py, [floor] * len(px), s=26, color=INK, depthshade=False)
+        ax.plot([x, x], [y, y], [floor, top], color="#9a9a9a", lw=0.8, alpha=0.9)
+    ax.scatter(px, py, [floor] * len(px), s=26, color="#9a9a9a", depthshade=False)
     ax.scatter(px, py, pz_old, s=55, color="#b8b8bd", edgecolor=INK, lw=1.1, depthshade=False)
     ax.scatter(px[sel], py[sel], pz_new[sel], s=55, color=NEW, edgecolor=INK, lw=1.1, depthshade=False)
     if mode == "rq2":
+        # the minimum energy path of the unrestricted surface, through its own saddle
+        uu = np.linspace(-1.34, 1.34, 200); vv = 1.1 * np.exp(-(uu ** 2) / 0.45)
+        mx, my = (uu + vv) / np.sqrt(2.0), (uu - vv) / np.sqrt(2.0)
+        ax.plot(mx, my, pes_bs(mx, my), color=NEW, lw=1.6, ls="--")
+        ax.plot(mx, my, [floor] * len(mx), color=NEW, lw=1.2, ls="--", alpha=0.8)
         sx, sy, sz = saddle_of(pes_bs)
         ax.scatter([sx], [sy], [sz], s=170, marker="*", color=NEW, edgecolor=INK, lw=0.8, depthshade=False)
         ax.scatter([sx], [sy], [floor], s=70, marker="*", color=NEW, edgecolor=INK, lw=0.6, depthshade=False)
