@@ -117,7 +117,7 @@ arr = FancyArrowPatch((0.435, 0.52), (0.565, 0.52), transform=fig.transFigure,
 fig.patches.append(arr)
 fig.text(0.5, 0.60, "one single point\nper geometry", ha="center", va="bottom",
          fontsize=10.5, color=NEW, linespacing=1.3)
-fig.text(0.5, 0.45, "no new" + chr(10) + "path search", ha="center", va="top", fontsize=10.5, color=INK, linespacing=1.3)
+fig.text(0.5, 0.45, "no new" + chr(10) + "path search", ha="center", va="top", fontsize=10.5, color="#9a9a9a", linespacing=1.3)
 finish(fig, "pic_relabelling.png")
 
 
@@ -169,7 +169,7 @@ arr = FancyArrowPatch((0.455, 0.52), (0.545, 0.52), transform=fig.transFigure,
 fig.patches.append(arr)
 fig.text(0.5, 0.58, "one single point" + chr(10) + "per geometry", ha="center", va="bottom",
          fontsize=10.5, color=NEW, linespacing=1.3)
-fig.text(0.5, 0.46, "no new" + chr(10) + "path search", ha="center", va="top", fontsize=10.5, color=INK, linespacing=1.3)
+fig.text(0.5, 0.46, "no new" + chr(10) + "path search", ha="center", va="top", fontsize=10.5, color="#9a9a9a", linespacing=1.3)
 finish(fig, "pic_relabelling_config.png")
 
 
@@ -211,7 +211,7 @@ arr = FancyArrowPatch((0.47, 0.5), (0.53, 0.5), transform=fig.transFigure,
                       arrowstyle="-|>", mutation_scale=26, lw=3, color=NEW)
 fig.patches.append(arr)
 fig.text(0.5, 0.56, "one single point" + chr(10) + "per geometry", ha="center", va="bottom", fontsize=10.5, color=NEW, linespacing=1.3)
-fig.text(0.5, 0.44, "no new" + chr(10) + "path search", ha="center", va="top", fontsize=10.5, color=INK, linespacing=1.3)
+fig.text(0.5, 0.44, "no new" + chr(10) + "path search", ha="center", va="top", fontsize=10.5, color="#9a9a9a", linespacing=1.3)
 fig.subplots_adjust(left=0.01, right=0.99, top=0.95, bottom=0.14, wspace=0.05)
 fig.savefig(OUT + "pic_relabelling_3d.png", dpi=220, transparent=True)
 plt.close(fig)
@@ -262,3 +262,58 @@ fig.subplots_adjust(left=0.0, right=1.0, top=0.9, bottom=0.05)
 fig.savefig(OUT + "pic_relabelling_3d_v2.png", dpi=220, transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_relabelling_3d_v2.png")
+
+
+# 8. two panels: left the cheap surface alone, arrow, right both surfaces
+def panel3d(ax, both):
+    floor = -1.55
+    z_old = pes(xx3, yy3, "cheap")
+    ax.plot_surface(xx3, yy3, z_old, color="#bfbfc4", alpha=0.10, linewidth=0, antialiased=True, shade=True)
+    ax.plot_wireframe(xx3, yy3, z_old, rstride=20, cstride=20, color="#8c8c92", linewidth=0.5, alpha=0.5)
+    ax.contour(xx3, yy3, z_old, levels=np.linspace(-0.95, 0.35, 14), zdir="z", offset=floor,
+               colors="#8c8c92", linewidths=0.7, alpha=0.6)
+    px, py = path_points()
+    pz_old = pes(px, py, "cheap")
+    ax.plot(px, py, pz_old, color="#6f6f75", lw=1.3)
+    top = pz_old
+    if both:
+        z_new = pes(xx3, yy3, "expensive") + 0.32
+        ax.plot_surface(xx3, yy3, z_new, color="#f0b88a", alpha=0.10, linewidth=0, antialiased=True, shade=True)
+        ax.plot_wireframe(xx3, yy3, z_new, rstride=20, cstride=20, color=NEW, linewidth=0.5, alpha=0.5)
+        pz_new = pes(px, py, "expensive") + 0.32
+        ax.plot(px, py, pz_new, color=NEW, lw=1.3)
+        top = np.maximum(pz_old, pz_new)
+    for x, y, zt in zip(px, py, top):
+        ax.plot([x, x], [y, y], [floor, zt], color=INK, lw=0.7, alpha=0.5)
+    ax.scatter(px, py, [floor] * len(px), s=26, color=INK, depthshade=False)
+    ax.scatter(px, py, pz_old, s=55, color="#b8b8bd", edgecolor=INK, lw=1.1, depthshade=False)
+    if both:
+        ax.scatter(px, py, pz_new, s=55, color=NEW, edgecolor=INK, lw=1.1, depthshade=False)
+    ax.set_zlim(floor, 0.8); ax.set_xlim(-1.9, 1.9); ax.set_ylim(-1.9, 1.9)
+    ax.view_init(elev=26, azim=-38)
+    ax.set_xticks([]); ax.set_yticks([]); ax.set_zticks([])
+    ax.set_zlabel("energy", fontsize=10, color=GREY, labelpad=-8)
+    ax.xaxis.pane.fill = ax.yaxis.pane.fill = ax.zaxis.pane.fill = False
+    for a in (ax.xaxis, ax.yaxis, ax.zaxis):
+        a.pane.set_edgecolor("#dddddd")
+    ax.grid(False)
+
+
+fig = plt.figure(figsize=(14, 5.6))
+axl = fig.add_subplot(1, 2, 1, projection="3d"); panel3d(axl, both=False)
+axr = fig.add_subplot(1, 2, 2, projection="3d"); panel3d(axr, both=True)
+axl.set_title("Transition1x", fontsize=13, fontweight="bold", color=INK, pad=14)
+axr.set_title("relabelled", fontsize=13, fontweight="bold", color=INK, pad=14)
+axl.text2D(0.5, 0.0, "path relaxed and labelled at " + chr(969) + "B97X/6-31G(d)", transform=axl.transAxes,
+           ha="center", va="top", fontsize=10.5, color="#8c8c92")
+axr.text2D(0.5, 0.0, "same geometries, new labels at " + chr(969) + "B97M-V/def2-TZVP", transform=axr.transAxes,
+           ha="center", va="top", fontsize=10.5, color=NEW)
+arr = FancyArrowPatch((0.47, 0.5), (0.53, 0.5), transform=fig.transFigure,
+                      arrowstyle="-|>", mutation_scale=26, lw=3, color=NEW)
+fig.patches.append(arr)
+fig.text(0.5, 0.56, "one single point" + chr(10) + "per geometry", ha="center", va="bottom", fontsize=10.5, color=NEW, linespacing=1.3)
+fig.text(0.5, 0.44, "no new" + chr(10) + "path search", ha="center", va="top", fontsize=10.5, color="#9a9a9a", linespacing=1.3)
+fig.subplots_adjust(left=0.0, right=1.0, top=0.90, bottom=0.08, wspace=0.02)
+fig.savefig(OUT + "pic_relabelling_3d_v3.png", dpi=220, transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_relabelling_3d_v3.png")
