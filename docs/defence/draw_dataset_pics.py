@@ -638,3 +638,40 @@ ax.text(6.85, 0.25, "each step: higher accuracy, higher cost", ha="center", font
 fig.savefig(OUT + "pic_fidelity_table.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_fidelity_table.png")
+
+
+# 16. compact fidelity tables for the two questions
+def compact_table(name, rows, note):
+    fig, ax = plt.subplots(figsize=(6.4, 2.4))
+    ax.set_xlim(0, 6.4); ax.set_ylim(-0.25, 2.4); ax.axis("off")
+    ax.text(2.35, 2.2, "Transition1x", ha="center", fontsize=10.5, color="#6f6f75", fontweight="bold")
+    ax.text(5.05, 2.2, "relabelled", ha="center", fontsize=10.5, color=NEW, fontweight="bold")
+    for y, label, a, b, changed in rows:
+        col_b = NEW if changed else "#8c8c92"
+        fc_b = "#fbe7d6" if changed else "#ececef"
+        ec_b = NEW if changed else "#b8b8bd"
+        ax.text(0.05, y, label, fontsize=10.5, color=MID, va="center", fontweight="bold")
+        ax.add_patch(FancyBboxPatch((1.45, y - 0.22), 1.8, 0.44, boxstyle="round,pad=0.02,rounding_size=0.06", fc="#ececef", ec="#b8b8bd", lw=1))
+        ax.text(2.35, y, a, ha="center", va="center", fontsize=10, color="#6f6f75", fontweight="bold")
+        ax.add_patch(FancyBboxPatch((4.15, y - 0.22), 1.8, 0.44, boxstyle="round,pad=0.02,rounding_size=0.06", fc=fc_b, ec=ec_b, lw=1))
+        ax.text(5.05, y, b, ha="center", va="center", fontsize=10, color=col_b, fontweight="bold")
+        ax.add_patch(FancyArrowPatch((3.35, y), (4.05, y), arrowstyle="-|>", mutation_scale=14, lw=1.6,
+                                     color=NEW if changed else "#c8c8cc"))
+        if not changed:
+            ax.text(5.05, y - 0.36, "unchanged", ha="center", va="center", fontsize=8, color="#9a9a9a", style="italic")
+    ax.text(3.2, -0.08, note, ha="center", va="center", fontsize=9.5, color=MID, style="italic")
+    fig.savefig(OUT + name, dpi=220, bbox_inches="tight", transparent=True)
+    plt.close(fig)
+    print("written", OUT + name)
+
+
+compact_table("pic_table_rq1.png", [
+    (1.75, "Functional", chr(969) + "B97X", chr(969) + "B97M-V", True),
+    (1.2, "Basis set", "6-31G(d)", "def2-TZVP", True),
+    (0.6, "Spin formalism", "restricted", "restricted", False),
+], "only the level of theory changes, on a subset of the data")
+compact_table("pic_table_rq2.png", [
+    (1.75, "Functional", chr(969) + "B97X", chr(969) + "B97M-V", True),
+    (1.2, "Basis set", "6-31G(d)", "def2-TZVPD", True),
+    (0.6, "Spin formalism", "restricted", "unrestricted", True),
+], "level and spin formalism change, on all of the data (OMol25)")
