@@ -434,7 +434,18 @@ def panel_rq(ax, mode):
     if mode == "rq1":
         z_new = pes(xx3, yy3, "expensive") + 0.32
         pz_new = pes(px, py, "expensive") + 0.32
-        sel = [3, 4, 6]
+        sel = [4, 6]
+        # the many stored geometries of the earlier NEB bands, cheap labels only
+        t = np.linspace(-1.05, 1.05, 10)
+        y_start = py[-1] / px[-1] * t - 0.55 * np.sin(np.pi * t)
+        for w, alpha in [(0.0, 0.35), (0.4, 0.45), (0.72, 0.55)]:
+            bx, by = t, (1 - w) * y_start + w * py
+            bz = pes(bx, by, "cheap")
+            ax.plot(bx, by, bz, color="#8c8c92", lw=0.9, alpha=alpha)
+            ax.scatter(bx, by, [floor] * len(bx), s=10, color=INK, alpha=alpha, depthshade=False)
+            ax.scatter(bx, by, bz, s=22, color="#d0d0d4", edgecolor=INK, lw=0.6, alpha=alpha + 0.2, depthshade=False)
+            for x, y, z in zip(bx, by, bz):
+                ax.plot([x, x], [y, y], [floor, z], color=INK, lw=0.3, alpha=0.18)
     else:
         z_new = pes_bs(xx3, yy3)
         pz_new = pes_bs(px, py)
@@ -466,7 +477,7 @@ def panel_rq(ax, mode):
 MID = "#7f7f86"
 for mode, name, head, sub in [
         ("rq1", "pic_rq1_3d.png", "relabel a few geometries, not all",
-         "a few single points at the better level; the rest keeps its old labels"),
+         "two single points at the better level; the many others keep their old labels"),
         ("rq2", "pic_rq2_3d.png", "relabel on a surface with a different shape",
          "labels from the unrestricted surface; its transition state (star) lies beside the path")]:
     fig = plt.figure(figsize=(7, 5.6))
