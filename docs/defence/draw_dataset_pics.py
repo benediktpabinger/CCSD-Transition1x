@@ -527,3 +527,41 @@ ax.set_title("two spin formalisms, two surfaces", fontsize=13, fontweight="bold"
 fig.savefig(OUT + "pic_rks_uks.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_rks_uks.png")
+
+
+# 13. energy along a reaction path, restricted and unrestricted surface, schematic
+x = np.linspace(0, 1, 500)
+e_rks = np.exp(-((x - 0.5) ** 2) / 0.04) - 0.3 * x
+depth = 0.42 * np.exp(-((x - 0.5) ** 2) / 0.018)        # unstable region around the barrier
+e_uks = e_rks - depth
+fig, ax = plt.subplots(figsize=(7.2, 4.2))
+ax.fill_between(x, e_uks, e_rks, color=NEW, alpha=0.12, lw=0)
+ax.plot(x, e_rks, color="#8c8c92", lw=2.4, label="restricted surface")
+ax.plot(x, e_uks, color=NEW, lw=2.4, label="unrestricted surface")
+i_ts = np.argmax(e_rks)
+ax.scatter([x[i_ts]], [e_rks[i_ts]], s=90, color="white", edgecolor="#6f6f75", lw=1.8, zorder=5)
+ax.annotate("", xy=(x[i_ts], e_uks[i_ts] + 0.01), xytext=(x[i_ts], e_rks[i_ts] - 0.01),
+            arrowprops=dict(arrowstyle="<->", color=MID, lw=1))
+ax.text(x[i_ts] + 0.02, 0.5 * (e_uks[i_ts] + e_rks[i_ts]), "breaking depth", fontsize=9.5, color=MID, va="center")
+ax.annotate("restricted transition state:\na saddle on the restricted surface,\na slope on the unrestricted one",
+            (x[i_ts], e_rks[i_ts]), xytext=(0.66, 0.95), fontsize=9.5, color="#6f6f75", ha="left", va="center",
+            arrowprops=dict(arrowstyle="-", color="#9a9a9a", lw=0.9))
+for xa, xb in [(0.02, 0.24), (0.76, 0.98)]:
+    y = -0.42
+    ax.plot([xa, xb], [y, y], color="#bbbbbb", lw=1)
+    ax.text(0.5 * (xa + xb), y - 0.05, "stable: both surfaces coincide", ha="center", va="top", fontsize=9, color=MID)
+ax.text(0.5, -0.47, "unstable: unrestricted lies below", ha="center", va="top", fontsize=9, color=NEW)
+ax.text(0.5, 0.06, "the unrestricted transition state\nlies off this path", ha="center", va="center", fontsize=9.5, color=NEW, style="italic")
+ax.set_xlabel("reaction coordinate, along the restricted path", fontsize=11, color=MID)
+ax.set_ylabel("energy", fontsize=11, color=MID)
+ax.set_xticks([]); ax.set_yticks([])
+ax.set_xlim(0, 1); ax.set_ylim(-0.62, 1.12)
+for sp in ("top", "right"):
+    ax.spines[sp].set_visible(False)
+for sp in ("left", "bottom"):
+    ax.spines[sp].set_color("#bbbbbb")
+ax.legend(loc="upper left", frameon=False, fontsize=10.5, labelcolor=["#6f6f75", NEW])
+ax.set_title("energy along a reaction path, both surfaces", fontsize=13, fontweight="bold", color=MID)
+fig.savefig(OUT + "pic_path_two_surfaces.png", dpi=220, bbox_inches="tight", transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_path_two_surfaces.png")
