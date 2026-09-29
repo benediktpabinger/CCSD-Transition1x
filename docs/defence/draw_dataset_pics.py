@@ -923,7 +923,7 @@ def mountains_lot5(ax):
     ax.fill_between(xs, 0, back, color="#dcdce0", lw=0)
     front = (1.6 + 3.0 * np.exp(-((xs - 3.0) ** 2) / 1.6) + 3.3 * np.exp(-((xs - 7.2) ** 2) / 1.8)
              + 0.3 * np.sin(xs * 4.1) * np.exp(-((xs - 5.1) ** 2) / 8))
-    front = front + 0.25 + 0.12 * np.sin(xs * 2.3 + 1) - 0.22 * np.exp(-((xs - 5.75) ** 2) / 0.12)
+    front = front + 0.25 + 0.12 * np.sin(xs * 2.3 + 1) - 0.55 * np.exp(-((xs - 5.75) ** 2) / 0.14)
     ax.fill_between(xs, 0, front, color="#b3b3ba", lw=0)
     ax.plot(xs, front, color=NEW, lw=1.4)
     for cx in (3.0, 7.2):
