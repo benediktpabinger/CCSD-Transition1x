@@ -675,3 +675,61 @@ compact_table("pic_table_rq2.png", [
     (1.2, "Basis set", "6-31G(d)", "def2-TZVPD", True),
     (0.6, "Spin formalism", "restricted", "unrestricted", True),
 ], "level and spin formalism change, on all of the data (OMol25)")
+
+
+# 17. the mountain-pass metaphor: finding the pass vs. a better altimeter
+def terrain(x, y):
+    return (np.exp(-((x) ** 2 + (y - 1.1) ** 2) / 0.6) + np.exp(-((x) ** 2 + (y + 1.1) ** 2) / 0.6)
+            + 0.35 * np.exp(-(x ** 2) / 0.5))
+
+
+gx, gy = np.meshgrid(np.linspace(-2.2, 2.2, 300), np.linspace(-2.2, 2.2, 300))
+gz = terrain(gx, gy)
+tx = np.linspace(-2.0, 2.0, 10)
+ty = 0.18 * np.sin(np.pi * tx / 2.0)          # the trail over the pass
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.8), gridspec_kw={"wspace": 0.3})
+for ax in axes:
+    ax.contour(gx, gy, gz, levels=np.linspace(0.15, 1.3, 12), colors="#9a9a9a", linewidths=0.8, alpha=0.7)
+    ax.set_xlim(-2.2, 2.2); ax.set_ylim(-2.2, 2.2); ax.set_aspect("equal")
+    ax.set_xticks([]); ax.set_yticks([])
+    for sp in ax.spines.values():
+        sp.set_color("#bbbbbb")
+    ax.text(-1.9, -1.95, "valley A", fontsize=10, color=MID)
+    ax.text(1.25, 1.85, "valley B", fontsize=10, color=MID)
+    ax.text(0, 1.1, "peak", fontsize=9, color=MID, ha="center", va="center")
+    ax.text(0, -1.1, "peak", fontsize=9, color=MID, ha="center", va="center")
+# left: the search, many tentative steps converging on the pass
+rng = np.random.default_rng(7)
+ax = axes[0]
+for k, w in enumerate([1.0, 0.6, 0.3, 0.0]):
+    # earlier bands bow over the shoulder of the peak and converge on the pass
+    wig = 0.85 * w * np.sin(np.pi * (tx + 2) / 4)
+    px_ = tx; py_ = ty + wig
+    ax.plot(px_, py_, color="#8c8c92", lw=1.0, ls="--" if w > 0 else "-", alpha=0.35 + 0.16 * k)
+    ax.scatter(px_, py_, s=12 if w > 0 else 40, color="#6f6f75" if w > 0 else "white", edgecolor="#6f6f75",
+               lw=0.8, alpha=0.5 + 0.12 * k, zorder=4)
+    if w > 0:
+        for x, y in zip(px_[1:-1], py_[1:-1]):
+            # a small slope measurement at each tentative step
+            ax.annotate("", xy=(x, y - 0.16), xytext=(x, y), arrowprops=dict(arrowstyle="-|>", color="#8c8c92", lw=0.6, mutation_scale=7))
+ax.scatter([0], [0], s=160, marker="*", color="white", edgecolor="#6f6f75", lw=1.2, zorder=6)
+ax.set_title("finding the pass", fontsize=13, fontweight="bold", color=MID)
+ax.text(0.5, -0.06, "walk, measure the slope, correct, walk again:\nhundreds of measurements for one pass", transform=ax.transAxes,
+        ha="center", va="top", fontsize=10.5, color=MID, linespacing=1.3)
+# right: the trail is marked, one reading per marker
+ax = axes[1]
+ax.plot(tx, ty, color="#6f6f75", lw=1.4)
+ax.scatter(tx, ty, s=40, color="white", edgecolor="#6f6f75", lw=1.2, zorder=4)
+ax.scatter([0], [0], s=160, marker="*", color="white", edgecolor="#6f6f75", lw=1.2, zorder=6)
+for x, y in zip(tx, ty):
+    ax.add_patch(FancyBboxPatch((x - 0.16, y + 0.22), 0.32, 0.2, boxstyle="round,pad=0.01,rounding_size=0.04", fc=NEW, ec=NEW, lw=1, zorder=5))
+    ax.text(x, y + 0.32, "h", ha="center", va="center", fontsize=8, color="white", zorder=6, style="italic")
+    ax.plot([x, x], [y + 0.05, y + 0.22], color=NEW, lw=0.8)
+ax.set_title("a better altimeter", fontsize=13, fontweight="bold", color=NEW)
+ax.text(0.5, -0.06, "the trail is marked: stand on each marker once\nand read the height again. one reading per marker", transform=ax.transAxes,
+        ha="center", va="top", fontsize=10.5, color=NEW, linespacing=1.3)
+arr = FancyArrowPatch((0.475, 0.52), (0.525, 0.52), transform=fig.transFigure, arrowstyle="-|>", mutation_scale=26, lw=3, color=NEW)
+fig.patches.append(arr)
+fig.savefig(OUT + "pic_mountain_pass.png", dpi=220, bbox_inches="tight", transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_mountain_pass.png")
