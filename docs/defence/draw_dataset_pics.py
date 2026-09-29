@@ -733,3 +733,66 @@ fig.patches.append(arr)
 fig.savefig(OUT + "pic_mountain_pass.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_mountain_pass.png")
+
+
+# 18. the mountain pass as an illustration, seen from the valley: the trail
+#     zigzags up the face to the notch between the two peaks
+from matplotlib.patches import Polygon
+def mountains(ax):
+    xs = np.linspace(0, 10, 600)
+    back = 4.2 + 0.9 * np.sin(xs * 1.1 + 0.4) + 0.5 * np.sin(xs * 2.7) + 0.25 * np.sin(xs * 5.3 + 1)
+    ax.fill_between(xs, 0, back, color="#dcdce0", lw=0)
+    front = (1.6 + 3.0 * np.exp(-((xs - 3.0) ** 2) / 1.6) + 3.3 * np.exp(-((xs - 7.2) ** 2) / 1.8)
+             + 0.3 * np.sin(xs * 4.1) * np.exp(-((xs - 5.1) ** 2) / 8))
+    ax.fill_between(xs, 0, front, color="#b3b3ba", lw=0)
+    ax.plot(xs, front, color="#8c8c92", lw=1.2)
+    for cx in (3.0, 7.2):
+        m = np.abs(xs - cx) < 0.6
+        ax.fill_between(xs[m], front[m] - 0.32, front[m], color="#f2f2f4", lw=0)
+    ip = np.argmin(np.where(np.abs(xs - 5.1) < 1.4, front, 99))
+    return xs, front, xs[ip], front[ip]
+
+
+def zigzag(x0, y0, x1, y1, n=10, legs=4, width=1.4):
+    # clean switchbacks: 'legs' straight legs alternating left/right, then resampled to n markers
+    knots_x = [x0]; knots_y = [y0]
+    for L in range(1, legs + 1):
+        f = L / legs
+        kx = x0 + (x1 - x0) * f + (width * (1 - f) if L % 2 else -width * (1 - f) * 0.9)
+        ky = y0 + (y1 - y0) * f
+        knots_x.append(kx); knots_y.append(ky)
+    knots_x[-1], knots_y[-1] = x1, y1
+    seg = np.cumsum([0] + [np.hypot(knots_x[k + 1] - knots_x[k], knots_y[k + 1] - knots_y[k]) for k in range(legs)])
+    t = np.linspace(0, seg[-1], n)
+    return np.interp(t, seg, knots_x), np.interp(t, seg, knots_y)
+
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.2), gridspec_kw={"wspace": 0.12})
+for k, ax in enumerate(axes):
+    xs, front, px, py = mountains(ax)
+    ax.set_xlim(0, 10); ax.set_ylim(-1.6, 6.2); ax.axis("off")
+    ax.scatter([px], [py + 0.1], s=220, marker="*", color="white", edgecolor="#6f6f75", lw=1.2, zorder=6)
+    ax.text(px, py + 0.5, "the pass", ha="center", fontsize=10, color=MID)
+    tx, ty = zigzag(1.4, 0.9, px, py - 0.05, legs=3, width=2.4)
+    if k == 0:
+        # dead ends: tentative routes that climb towards the peaks and stop
+        for (xa, ya, xb, yb) in [(1.6, 0.9, 2.9, 4.1), (1.6, 0.9, 6.6, 3.9)]:
+            dx, dy = zigzag(xa, ya, xb, yb, n=7, legs=3, width=0.7)
+            ax.plot(dx, dy, color="#6f6f75", lw=0.9, ls="--", alpha=0.45, zorder=4)
+            ax.scatter(dx, dy, s=12, color="#6f6f75", alpha=0.5, zorder=5)
+            ax.text(xb, yb + 0.12, chr(10005), ha="center", va="bottom", fontsize=9, color="#6f6f75", alpha=0.8)
+        ax.plot(tx, ty, color="#6f6f75", lw=1.2, zorder=4)
+        ax.scatter(tx, ty, s=30, color="white", edgecolor="#6f6f75", lw=0.9, zorder=5)
+        ax.set_title("finding the pass", fontsize=13, fontweight="bold", color=MID)
+        ax.text(5, -0.95, "walk, measure the slope, correct, walk again:" + chr(10) + "hundreds of measurements for one pass", ha="center", va="bottom", fontsize=10.5, color=MID, linespacing=1.3)
+    else:
+        ax.plot(tx, ty, color="#6f6f75", lw=1.2, zorder=4)
+        for x, y in zip(tx, ty):
+            ax.plot([x, x], [y, y + 0.42], color="#6f6f75", lw=1.2, zorder=5)
+            ax.add_patch(FancyBboxPatch((x - 0.17, y + 0.42), 0.34, 0.24, boxstyle="round,pad=0.01,rounding_size=0.04", fc=NEW, ec=NEW, zorder=6))
+            ax.text(x, y + 0.54, "h", ha="center", va="center", fontsize=8, color="white", style="italic", zorder=7)
+        ax.set_title("a better altimeter", fontsize=13, fontweight="bold", color=NEW)
+        ax.text(5, -0.95, "the trail is marked: stand on each marker once" + chr(10) + "and read the height again. one reading per marker", ha="center", va="bottom", fontsize=10.5, color=NEW, linespacing=1.3)
+fig.savefig(OUT + "pic_mountain_pass_illustration.png", dpi=220, bbox_inches="tight", transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_mountain_pass_illustration.png")
