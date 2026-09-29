@@ -967,3 +967,40 @@ ax.text(5, -1.1, "the pass moved and no marker leads there:" + chr(10) + "new re
 fig.savefig(OUT + "pic_mountain_pass_illustration_v5.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_mountain_pass_illustration_v5.png")
+
+
+# 22. RQ2 workflow: search with the OMol25 models, check with DFT, sort, compare
+fig, ax = plt.subplots(figsize=(12.5, 6.2))
+ax.set_xlim(0, 11); ax.set_ylim(0, 6.2); ax.axis("off")
+def wbox(x, y, w, h, title, lines, fc="#ececef", ec="#8c8c92", tc=INK):
+    ax.add_patch(FancyBboxPatch((x, y), w, h, boxstyle="round,pad=0.02,rounding_size=0.12", fc=fc, ec=ec, lw=1.4))
+    ax.text(x + w / 2, y + h - 0.32, title, ha="center", va="center", fontsize=11, fontweight="bold", color=tc)
+    ax.text(x + w / 2, y + (h - 0.5) / 2 - 0.02, lines, ha="center", va="center", fontsize=8.6, color=tc, linespacing=1.35)
+def warrow(x0, y0, x1, y1, color="#6f6f75"):
+    ax.add_patch(FancyArrowPatch((x0, y0), (x1, y1), arrowstyle="-|>", mutation_scale=18, lw=1.8, color=color))
+# row 1: reactions -> models search
+wbox(0.3, 4.4, 3.0, 1.5, "45 reactions", "Transition1x test split\nranked by N$_{FOD}$: low, mid, high MR\nno unrestricted reference exists")
+warrow(3.3, 5.15, 3.9, 5.15)
+wbox(3.9, 4.4, 3.2, 1.5, "3 OMol25 models search", "UMA-S, UMA-M, eSEN, as released\nrelax endpoints, CI-NEB\nsame settings as the DFT reference")
+warrow(7.1, 5.15, 7.7, 5.15)
+wbox(7.7, 4.4, 3.0, 1.5, "135 transition states", "one per model and reaction\nthe workflow reports success")
+# row 2: DFT check
+warrow(9.2, 4.4, 9.2, 3.75)
+wbox(3.9, 2.25, 6.8, 1.5, "one DFT single point at each, OMol25 protocol", "ωB97M-V/def2-TZVPD, unrestricted, plus a stability analysis\nno optimisation: the structure is judged where the model left it", fc="#fbe7d6", ec=NEW, tc=INK)
+# row 3: three outputs
+for k, (title, lines) in enumerate([
+        ("residual force", "largest force component\non the unrestricted surface\nis it a stationary point?"),
+        ("energy", "the barrier the model found,\nand the model's own energy\nand force error at the point"),
+        ("<S²>", "0: closed-shell\n> 0: broken-symmetry\n82 / 53 structures")]):
+    x = 3.9 + k * 2.3
+    warrow(x + 1.05, 2.25, x + 1.05, 1.75)
+    wbox(x, 0.35, 2.1, 1.4, title, lines, fc="#f5f5f7", ec="#b8b8bd")
+# left: the comparison
+ax.add_patch(FancyBboxPatch((0.3, 0.35), 3.0, 3.4, boxstyle="round,pad=0.02,rounding_size=0.12", fc="white", ec=NEW, lw=1.6, ls="--"))
+ax.text(1.8, 3.4, "the test", ha="center", va="center", fontsize=11, fontweight="bold", color=NEW)
+ax.text(1.8, 2.05, "same metrics on both groups\n\nclosed-shell: the surfaces coincide,\nthe models are on home ground\n\nbroken-symmetry: the unrestricted\nsurface has its own transition state,\nno training geometry sat on it\n\ndo the models do as well there?",
+        ha="center", va="center", fontsize=8.8, color=INK, linespacing=1.35)
+warrow(3.9, 1.05, 3.35, 1.05, color=NEW)
+fig.savefig(OUT + "pic_rq2_workflow.png", dpi=220, bbox_inches="tight", transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_rq2_workflow.png")
