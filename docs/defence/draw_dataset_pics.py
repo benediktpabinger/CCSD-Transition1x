@@ -803,17 +803,17 @@ def mountains_v2(ax):
     xs = np.linspace(0, 10, 600)
     back = 4.2 + 0.9 * np.sin(xs * 1.1 + 0.4) + 0.5 * np.sin(xs * 2.7) + 0.25 * np.sin(xs * 5.3 + 1)
     ax.fill_between(xs, 0, back, color="#dcdce0", lw=0)
-    front = (1.6 + 3.0 * np.exp(-((xs - 3.0) ** 2) / 1.6) + 3.3 * np.exp(-((xs - 7.2) ** 2) / 1.8)
+    front = (1.6 + 3.0 * np.exp(-((xs - 3.0) ** 2) / 1.6) + 3.3 * np.exp(-((xs - 8.2) ** 2) / 1.6)
              + 0.3 * np.sin(xs * 4.1) * np.exp(-((xs - 5.1) ** 2) / 8))
-    # the old notch is filled in, a new, lower notch opens further right
-    front = front + 1.0 * np.exp(-((xs - 5.1) ** 2) / 0.6) - 1.9 * np.exp(-((xs - 6.35) ** 2) / 0.22)
+    # the old notch is filled in, a new, lower notch opens well to the right
+    front = front + 1.0 * np.exp(-((xs - 5.1) ** 2) / 0.6) - 1.6 * np.exp(-((xs - 7.05) ** 2) / 0.22)
     ax.fill_between(xs, 0, front, color="#b3b3ba", lw=0)
     ax.plot(xs, front, color=NEW, lw=1.4)
-    for cx in (3.0, 7.2):
+    for cx in (3.0, 8.2):
         m = np.abs(xs - cx) < 0.6
         ax.fill_between(xs[m], front[m] - 0.32, front[m], color="#f2f2f4", lw=0)
     i_old = np.argmin(np.where(np.abs(xs - 5.1) < 1.4, front, 99))
-    i_new = np.argmin(np.where(np.abs(xs - 6.35) < 0.6, front, 99))
+    i_new = np.argmin(np.where(np.abs(xs - 7.05) < 0.6, front, 99))
     return xs, front, xs[i_old], front[i_old], xs[i_new], front[i_new]
 
 
@@ -847,9 +847,9 @@ for x, y in zip(tx2, ty2):
 ax.scatter([px], [np.interp(px, xs2, front2) + 0.1], s=160, marker="x", color="#6f6f75", lw=1.6, zorder=6)
 ax.text(px - 0.9, np.interp(px, xs2, front2) + 0.6, "not a pass" + chr(10) + "any more", ha="center", va="bottom", fontsize=9.5, color=MID, linespacing=1.2)
 ax.scatter([nx], [ny + 0.1], s=260, marker="*", color=NEW, edgecolor="#6f6f75", lw=1.0, zorder=6)
-ax.text(nx + 1.3, ny + 0.2, "the pass:" + chr(10) + "lower, elsewhere," + chr(10) + "no marker there", ha="left", va="center", fontsize=9.5, color=NEW, linespacing=1.2)
+ax.text(nx + 0.45, ny + 0.75, "the pass:" + chr(10) + "lower, elsewhere," + chr(10) + "no marker there", ha="left", va="bottom", fontsize=9.5, color=NEW, linespacing=1.2)
 ax.set_title("a different map", fontsize=13, fontweight="bold", color=NEW)
 ax.text(5, -0.95, "the new readings are right at every marker," + chr(10) + "but the pass moved and no marker leads there", ha="center", va="bottom", fontsize=10.5, color=NEW, linespacing=1.3)
-fig.savefig(OUT + "pic_mountain_pass_illustration_v2.png", dpi=220, bbox_inches="tight", transparent=True)
+fig.savefig(OUT + "pic_mountain_pass_illustration_v3.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
-print("written", OUT + "pic_mountain_pass_illustration_v2.png")
+print("written", OUT + "pic_mountain_pass_illustration_v3.png")
