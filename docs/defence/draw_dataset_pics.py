@@ -853,3 +853,56 @@ ax.text(5, -0.95, "the new readings are right at every marker," + chr(10) + "but
 fig.savefig(OUT + "pic_mountain_pass_illustration_v3.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_mountain_pass_illustration_v3.png")
+
+
+# 20. the middle case: only the level of theory changes, the map is almost the
+#     same and the pass moves by a step
+def mountains_lot(ax):
+    xs = np.linspace(0, 10, 600)
+    back = 4.2 + 0.9 * np.sin(xs * 1.1 + 0.4) + 0.5 * np.sin(xs * 2.7) + 0.25 * np.sin(xs * 5.3 + 1)
+    ax.fill_between(xs, 0, back, color="#dcdce0", lw=0)
+    front = (1.6 + 3.0 * np.exp(-((xs - 3.0) ** 2) / 1.6) + 3.3 * np.exp(-((xs - 7.2) ** 2) / 1.8)
+             + 0.3 * np.sin(xs * 4.1) * np.exp(-((xs - 5.1) ** 2) / 8))
+    # slightly different: a little higher overall, a little different in shape, notch a step to the right
+    front = front + 0.25 + 0.12 * np.sin(xs * 2.3 + 1) - 0.18 * np.exp(-((xs - 5.45) ** 2) / 0.15)
+    ax.fill_between(xs, 0, front, color="#b3b3ba", lw=0)
+    ax.plot(xs, front, color=NEW, lw=1.4)
+    for cx in (3.0, 7.2):
+        m = np.abs(xs - cx) < 0.6
+        ax.fill_between(xs[m], front[m] - 0.32, front[m], color="#f2f2f4", lw=0)
+    i_new = np.argmin(np.where(np.abs(xs - 5.3) < 1.0, front, 99))
+    return xs, front, xs[i_new], front[i_new]
+
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4.2), gridspec_kw={"wspace": 0.12})
+ax = axes[0]
+xs, front, px, py = mountains(ax)
+ax.set_xlim(0, 10); ax.set_ylim(-1.6, 6.2); ax.axis("off")
+ax.scatter([px], [py + 0.1], s=220, marker="*", color="white", edgecolor="#6f6f75", lw=1.2, zorder=6)
+ax.text(px, py + 0.5, "the pass", ha="center", fontsize=10, color=MID)
+tx, ty = zigzag(1.4, 0.9, px, py - 0.05, legs=3, width=2.4)
+ax.plot(tx, ty, color="#6f6f75", lw=1.2, zorder=4)
+for x, y in zip(tx, ty):
+    ax.plot([x, x], [y, y + 0.42], color="#6f6f75", lw=1.2, zorder=5)
+    ax.add_patch(FancyBboxPatch((x - 0.17, y + 0.42), 0.34, 0.24, boxstyle="round,pad=0.01,rounding_size=0.04", fc="#8c8c92", ec="#8c8c92", zorder=6))
+    ax.text(x, y + 0.54, "h", ha="center", va="center", fontsize=8, color="white", style="italic", zorder=7)
+ax.set_title("the marked trail", fontsize=13, fontweight="bold", color=MID)
+ax.text(5, -0.95, "the markers were placed on this map:" + chr(10) + "the trail leads to the pass", ha="center", va="bottom", fontsize=10.5, color=MID, linespacing=1.3)
+ax = axes[1]
+xs2, front2, nx, ny = mountains_lot(ax)
+ax.set_xlim(0, 10); ax.set_ylim(-1.6, 6.2); ax.axis("off")
+tx2, ty2 = zigzag(1.4, 0.9, px, py - 0.05, legs=3, width=2.4)
+ty2 = ty2 + 0.22   # the same markers, the map sits a little higher
+ax.plot(tx2, ty2, color="#6f6f75", lw=1.2, zorder=4)
+for x, y in zip(tx2, ty2):
+    ax.plot([x, x], [y, y + 0.42], color="#6f6f75", lw=1.2, zorder=5)
+    ax.add_patch(FancyBboxPatch((x - 0.17, y + 0.42), 0.34, 0.24, boxstyle="round,pad=0.01,rounding_size=0.04", fc=NEW, ec=NEW, zorder=6))
+    ax.text(x, y + 0.54, "h", ha="center", va="center", fontsize=8, color="white", style="italic", zorder=7)
+ax.scatter([nx], [ny + 0.1], s=240, marker="*", color=NEW, edgecolor="#6f6f75", lw=1.0, zorder=6)
+ax.scatter([px], [np.interp(px, xs2, front2) + 0.1], s=90, marker="*", color="white", edgecolor="#9a9a9a", lw=1.0, zorder=5)
+ax.text(nx + 0.05, ny + 1.15, "the pass: a step away," + chr(10) + "the last marker still" + chr(10) + "stands on it", ha="center", va="bottom", fontsize=9.5, color=NEW, linespacing=1.2)
+ax.set_title("a slightly different map", fontsize=13, fontweight="bold", color=NEW)
+ax.text(5, -0.95, "the heights change, the mountain hardly does:" + chr(10) + "new readings at the old markers are enough", ha="center", va="bottom", fontsize=10.5, color=NEW, linespacing=1.3)
+fig.savefig(OUT + "pic_mountain_pass_illustration_v4.png", dpi=220, bbox_inches="tight", transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_mountain_pass_illustration_v4.png")
