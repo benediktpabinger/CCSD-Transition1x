@@ -1039,3 +1039,52 @@ ax.text(11.1, 1.15, "a different" + chr(10) + "surface", fontsize=12.5, color="#
 fig.savefig(OUT + "pic_fidelity_table_v2.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_fidelity_table_v2.png")
+
+
+# 24. what a calculation does: geometry in, energy and forces out
+from matplotlib.patches import Circle
+DARK = "#3a3a40"
+atoms = [("C", 0.0, 0.0), ("C", 1.25, 0.45), ("O", 2.45, -0.15),
+         ("H", -0.75, 0.75), ("H", -0.65, -0.85), ("H", 0.35, -0.95),
+         ("H", 1.2, 1.55), ("H", 1.75, -0.45 + 1.45), ("H", 3.15, 0.45)]
+atoms[7] = ("H", 2.0, 1.15)
+bonds = [(0, 1), (1, 2), (0, 3), (0, 4), (0, 5), (1, 6), (1, 7), (2, 8)]
+forces = [(0.25, -0.3), (-0.2, 0.35), (0.4, 0.1), (-0.35, -0.05), (-0.15, -0.3), (0.2, -0.25), (0.05, 0.35), (0.3, 0.2), (0.3, 0.25)]
+RADIUS = {"C": 0.30, "O": 0.30, "H": 0.19}
+FILL = {"C": "#8c8c92", "O": "#c9c9ce", "H": "#f2f2f4"}
+
+
+def molecule(ax, ox, oy, with_forces=False):
+    for i, j in bonds:
+        ax.plot([ox + atoms[i][1], ox + atoms[j][1]], [oy + atoms[i][2], oy + atoms[j][2]], color="#6f6f75", lw=3, zorder=1, solid_capstyle="round")
+    for k, (el, x, y) in enumerate(atoms):
+        ax.add_patch(Circle((ox + x, oy + y), RADIUS[el], fc=FILL[el], ec=DARK, lw=1.3, zorder=2))
+        ax.text(ox + x, oy + y, el, ha="center", va="center", fontsize=10 if el != "H" else 8, color="white" if el == "C" else DARK, fontweight="bold", zorder=3)
+        if with_forces:
+            fx, fy = forces[k]
+            ax.add_patch(FancyArrowPatch((ox + x, oy + y), (ox + x + 1.7 * fx, oy + y + 1.7 * fy), arrowstyle="-|>", mutation_scale=14, lw=2.2, color=NEW, zorder=4))
+
+
+fig, ax = plt.subplots(figsize=(12.5, 4.2))
+ax.set_xlim(-1.6, 14.4); ax.set_ylim(-2.4, 2.9); ax.set_aspect("equal"); ax.axis("off")
+# in: the geometry
+molecule(ax, 0.0, 0.2)
+ax.text(1.2, 2.55, "geometry", ha="center", fontsize=14, fontweight="bold", color=DARK)
+ax.text(1.2, -1.75, "the positions of all atoms", ha="center", fontsize=11, color=DARK)
+# the calculation
+ax.add_patch(FancyArrowPatch((3.9, 0.35), (5.0, 0.35), arrowstyle="-|>", mutation_scale=22, lw=2.4, color="#6f6f75"))
+ax.add_patch(FancyBboxPatch((5.1, -0.75), 3.0, 2.2, boxstyle="round,pad=0.02,rounding_size=0.15", fc="#ececef", ec="#8c8c92", lw=1.5))
+ax.text(6.6, 0.85, "DFT", ha="center", va="center", fontsize=17, fontweight="bold", color=DARK)
+ax.text(6.6, -0.05, "functional" + chr(10) + "basis set" + chr(10) + "spin formalism", ha="center", va="center", fontsize=10.5, color=DARK, linespacing=1.35)
+ax.text(6.6, 2.55, "calculation", ha="center", fontsize=14, fontweight="bold", color=DARK)
+ax.text(6.6, -1.75, "one calculation per geometry", ha="center", fontsize=11, color=DARK)
+ax.add_patch(FancyArrowPatch((8.2, 0.35), (9.3, 0.35), arrowstyle="-|>", mutation_scale=22, lw=2.4, color="#6f6f75"))
+# out: energy and forces
+molecule(ax, 10.6, 0.2, with_forces=True)
+ax.text(11.8, 2.55, "energy and forces", ha="center", fontsize=14, fontweight="bold", color="#b8560f")
+ax.text(11.8, -1.75, "one energy E for the molecule," + chr(10) + "one force F on every atom", ha="center", va="center", fontsize=11, color="#b8560f", linespacing=1.3)
+ax.add_patch(FancyBboxPatch((9.2, 1.5), 0.85, 0.65, boxstyle="round,pad=0.02,rounding_size=0.08", fc="#fbe7d6", ec=NEW, lw=1.4))
+ax.text(9.625, 1.825, "E", ha="center", va="center", fontsize=15, fontweight="bold", color="#b8560f", style="italic")
+fig.savefig(OUT + "pic_geometry_to_labels.png", dpi=220, bbox_inches="tight", transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_geometry_to_labels.png")
