@@ -1062,7 +1062,7 @@ def molecule(ax, ox, oy, with_forces=False):
         ax.text(ox + x, oy + y, el, ha="center", va="center", fontsize=10 if el != "H" else 8, color="white" if el == "C" else DARK, fontweight="bold", zorder=3)
         if with_forces:
             fx, fy = forces[k]
-            ax.add_patch(FancyArrowPatch((ox + x, oy + y), (ox + x + 1.7 * fx, oy + y + 1.7 * fy), arrowstyle="-|>", mutation_scale=14, lw=2.2, color=NEW, zorder=4))
+            ax.add_patch(FancyArrowPatch((ox + x, oy + y), (ox + x + 1.7 * fx, oy + y + 1.7 * fy), arrowstyle="-|>", mutation_scale=14, lw=2.2, color="#030f4f", zorder=4))
 
 
 fig, ax = plt.subplots(figsize=(12.5, 4.2))
@@ -1081,10 +1081,10 @@ ax.text(6.6, -1.75, "one calculation per geometry", ha="center", fontsize=11, co
 ax.add_patch(FancyArrowPatch((8.2, 0.35), (9.3, 0.35), arrowstyle="-|>", mutation_scale=22, lw=2.4, color="#6f6f75"))
 # out: energy and forces
 molecule(ax, 10.6, 0.2, with_forces=True)
-ax.text(11.8, 2.55, "energy and forces", ha="center", fontsize=14, fontweight="bold", color="#b8560f")
-ax.text(11.8, -1.75, "one energy E for the molecule," + chr(10) + "one force F on every atom", ha="center", va="center", fontsize=11, color="#b8560f", linespacing=1.3)
-ax.add_patch(FancyBboxPatch((9.2, 1.5), 0.85, 0.65, boxstyle="round,pad=0.02,rounding_size=0.08", fc="#fbe7d6", ec=NEW, lw=1.4))
-ax.text(9.625, 1.825, "E", ha="center", va="center", fontsize=15, fontweight="bold", color="#b8560f", style="italic")
+ax.text(11.8, 2.55, "energy and forces", ha="center", fontsize=14, fontweight="bold", color="#030f4f")
+ax.text(11.8, -1.75, "one energy E for the molecule," + chr(10) + "one force F on every atom", ha="center", va="center", fontsize=11, color="#030f4f", linespacing=1.3)
+ax.add_patch(FancyBboxPatch((9.2, 1.5), 0.85, 0.65, boxstyle="round,pad=0.02,rounding_size=0.08", fc="#e3e6f3", ec="#030f4f", lw=1.4))
+ax.text(9.625, 1.825, "E", ha="center", va="center", fontsize=15, fontweight="bold", color="#030f4f", style="italic")
 fig.savefig(OUT + "pic_geometry_to_labels.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_geometry_to_labels.png")
