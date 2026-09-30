@@ -28,12 +28,12 @@ for k in (2, 4, 7):
     ax.scatter([xk], [y1], s=55, color=NEW, edgecolor=DARK, lw=1.2, zorder=6)
 ax.text(xs[4] + 0.03, 0.5 * (np.interp(xs[4], x, cheap) + np.interp(xs[4], x, expensive)), chr(916), fontsize=15, color=NAVY, fontweight="bold", va="center")
 # labels, below the plot
-ax.text(0.0, -0.66, "MACE is trained on the cheap level:", fontsize=11, color=DARK, fontweight="bold", va="center", transform=ax.transData)
-ax.text(0.0, -0.76, "every geometry of Transition1x, 9.6 million", fontsize=10.5, color=GREY, va="center")
-ax.text(0.0, -0.90, "the correction head is trained on the difference " + chr(916) + ":", fontsize=11, color=NAVY, fontweight="bold", va="center")
-ax.text(0.0, -1.00, "a few geometries relabelled at the expensive level, under 1 %", fontsize=10.5, color=NAVY, va="center")
-ax.text(0.0, -1.16, chr(916) + " is nearly constant along the path: a small offset, far easier to learn than the surface itself", fontsize=10.5, color=NAVY, va="center", style="italic")
-ax.set_xlim(0, 1); ax.set_ylim(-1.25, 1.75)
+ax.text(0.0, -0.74, "MACE is trained on the cheap level:", fontsize=11, color=DARK, fontweight="bold", va="center", transform=ax.transData)
+ax.text(0.0, -0.87, "every geometry of Transition1x, 9.6 million", fontsize=10.5, color=GREY, va="center")
+ax.text(0.0, -1.04, "the correction head is trained on the difference " + chr(916) + ":", fontsize=11, color=NAVY, fontweight="bold", va="center")
+ax.text(0.0, -1.17, "a few geometries relabelled at the expensive level, under 1 %", fontsize=10.5, color=NAVY, va="center")
+ax.text(0.0, -1.36, chr(916) + " is nearly constant along the path: a small offset, far easier to learn than the surface itself", fontsize=10.5, color=NAVY, va="center", style="italic")
+ax.set_xlim(0, 1); ax.set_ylim(-1.48, 1.75)
 ax.set_xticks([]); ax.set_yticks([])
 ax.text(0.5, -0.56, "reaction coordinate", fontsize=11, color=MID, ha="center", va="center"); ax.set_ylabel("energy", fontsize=11, color=MID, y=0.66)
 for sp in ("top", "right"):
