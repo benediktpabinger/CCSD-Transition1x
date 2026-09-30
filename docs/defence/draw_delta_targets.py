@@ -13,7 +13,7 @@ from matplotlib.patches import FancyArrowPatch
 OUT = "docs/defence/pics/"
 NEW, MID, DARK, NAVY, GREY = "#e0731f", "#7f7f86", "#3a3a40", "#030f4f", "#8c8c92"
 x = np.linspace(0, 1, 400)
-cheap = 0.8 * np.exp(-((x - 0.5) ** 2) / 0.05) - 0.25 * x
+cheap = 0.8 * np.exp(-((x - 0.5) ** 2) / 0.05) - 0.25 * x + 0.12
 gap = 0.42 + 0.08 * np.exp(-((x - 0.5) ** 2) / 0.04)           # nearly constant, a little larger at the barrier
 expensive = cheap + gap
 
@@ -30,8 +30,8 @@ xm = xs[4]; ym = 0.5 * (np.interp(xm, x, cheap) + np.interp(xm, x, expensive))
 ax.annotate(chr(916) + ": training target of" + chr(10) + "the correction head", (xm + 0.012, ym), xytext=(0.72, 1.05), fontsize=10.5, color=NAVY, fontweight="bold",
             ha="left", va="center", linespacing=1.3, arrowprops=dict(arrowstyle="-|>", color=NAVY, lw=1.2, shrinkB=4))
 xg = xs[1]; yg = np.interp(xg, x, cheap)
-ax.add_patch(FancyArrowPatch((xg, yg - 0.40), (xg, yg - 0.03), arrowstyle="-|>", mutation_scale=14, lw=2, color=GREY, zorder=5))
-ax.text(xg, yg - 0.47, "training target" + chr(10) + "of MACE", fontsize=10.5, color=DARK, fontweight="bold", ha="center", va="top", linespacing=1.3)
+ax.add_patch(FancyArrowPatch((xg, yg - 0.30), (xg, yg - 0.03), arrowstyle="-|>", mutation_scale=14, lw=2, color=GREY, zorder=5))
+ax.text(xg, yg - 0.34, "training target" + chr(10) + "of MACE", fontsize=10.5, color=DARK, fontweight="bold", ha="center", va="top", linespacing=1.3)
 # labels, below the plot
 ax.text(0.0, -0.74, "MACE is trained on the cheap level:", fontsize=11, color=DARK, fontweight="bold", va="center", transform=ax.transData)
 ax.text(0.0, -0.87, "every geometry of Transition1x, 9.6 million", fontsize=10.5, color=GREY, va="center")
