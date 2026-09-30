@@ -15,14 +15,14 @@ NEW, MID, DARK, NAVY = "#e0731f", "#7f7f86", "#3a3a40", "#030f4f"
 x = np.linspace(0, 1, 600)
 rks = np.exp(-((x - 0.5) ** 2) / 0.09)                     # restricted: a smooth hill
 x0 = 0.40                                                   # where the broken-symmetry solution sets in
-bs = rks - 2.2 * np.clip(x - x0, 0, None) * np.exp(-((x - 0.62) ** 2) / 0.06)
+bs = rks - 3.2 * np.clip(x - x0, 0, None) * np.exp(-((x - 0.60) ** 2) / 0.05)
 low = np.minimum(rks, bs)                                   # the unrestricted surface: the lowest solution
 # a smooth model fitted to the lowest surface: heavy smoothing
-k = np.exp(-0.5 * (np.linspace(-3, 3, 241)) ** 2); k /= k.sum()
-pad = np.pad(low, 120, mode="edge"); model = np.convolve(pad, k, mode="same")[120:-120]
+k = np.exp(-0.5 * (np.linspace(-3, 3, 321)) ** 2); k /= k.sum()
+pad = np.pad(low, 160, mode="edge"); model = np.convolve(pad, k, mode="same")[160:-160]
 
 fig, ax = plt.subplots(figsize=(6.4, 4.0))
-ax.fill_between(x, -0.3, low, color="#c9c9ce", lw=0, zorder=0)
+ax.fill_between(x, -0.6, low, color="#c9c9ce", lw=0, zorder=0)
 m = x >= x0
 ax.plot(x, rks, color="#8c8c92", lw=2.2, ls="--", label="restricted solution")
 ax.plot(x[m], bs[m], color=NEW, lw=3.2, label="broken-symmetry solution, where it exists")
@@ -33,7 +33,7 @@ i0 = np.argmin(np.abs(x - x0))
 ax.scatter([x[i0]], [low[i0]], s=140, facecolor="white", edgecolor=DARK, lw=2, zorder=5)
 ax.annotate("kink: the broken-symmetry\nsolution sets in", (x[i0], low[i0]), xytext=(0.03, 1.0), fontsize=10.5, color=DARK,
             ha="left", va="center", arrowprops=dict(arrowstyle="-", color=DARK, lw=1))
-ax.set_xlim(0, 1); ax.set_ylim(-0.3, 1.75)
+ax.set_xlim(0, 1); ax.set_ylim(-0.6, 1.75)
 ax.set_xticks([]); ax.set_yticks([])
 ax.set_xlabel("reaction coordinate", fontsize=11, color=MID); ax.set_ylabel("energy", fontsize=11, color=MID)
 for sp in ("top", "right"):
