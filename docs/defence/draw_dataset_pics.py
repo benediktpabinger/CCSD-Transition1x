@@ -1004,3 +1004,38 @@ warrow(3.9, 1.05, 3.35, 1.05, color=NEW)
 fig.savefig(OUT + "pic_rq2_workflow.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_rq2_workflow.png")
+
+
+# 23. fidelity table v2: larger, darker text for projection, no footer line
+DARK = "#3a3a40"
+fig, ax = plt.subplots(figsize=(12, 4.3))
+ax.set_xlim(0, 12); ax.set_ylim(0.45, 4.6); ax.axis("off")
+rows = [
+    (3.55, "Functional", "approximation for exchange" + chr(10) + "and correlation",
+     chr(969) + "B97X", "range-separated hybrid", chr(969) + "B97M-V", "a rung higher, with dispersion"),
+    (2.35, "Basis set", "the functions the orbitals" + chr(10) + "are built from",
+     "6-31G(d)", "double zeta, 15 functions per C", "def2-TZVP", "triple zeta, 31 functions per C"),
+    (1.15, "Spin formalism", "do spin-up and spin-down" + chr(10) + "electrons share orbitals?",
+     "restricted", "shared orbitals, the default", "unrestricted", "own orbitals: lower energy" + chr(10) + "where a bond is half broken"),
+]
+ax.text(4.55, 4.35, "Transition1x", ha="center", fontsize=14, color=DARK, fontweight="bold")
+ax.text(9.0, 4.35, "higher fidelity", ha="center", fontsize=14, color=NEW, fontweight="bold")
+for y, name, desc, a, adesc, b_, bdesc in rows:
+    ax.text(0.2, y + 0.2, name, fontsize=14, color=DARK, fontweight="bold", va="center")
+    ax.text(0.2, y - 0.24, desc, fontsize=10.5, color=DARK, va="center", linespacing=1.25)
+    ax.add_patch(FancyBboxPatch((3.0, y - 0.48), 3.1, 0.96, boxstyle="round,pad=0.02,rounding_size=0.08", fc="#ececef", ec="#8c8c92", lw=1.4))
+    ax.text(4.55, y + 0.18, a, ha="center", va="center", fontsize=13.5, color=DARK, fontweight="bold")
+    ax.text(4.55, y - 0.24, adesc, ha="center", va="center", fontsize=10, color=DARK)
+    ax.add_patch(FancyBboxPatch((7.45, y - 0.48), 3.1, 0.96, boxstyle="round,pad=0.02,rounding_size=0.08", fc="#fbe7d6", ec=NEW, lw=1.4))
+    ax.text(9.0, y + 0.18, b_, ha="center", va="center", fontsize=13.5, color="#b8560f", fontweight="bold")
+    ax.text(9.0, y - 0.24, bdesc, ha="center", va="center", fontsize=10, color="#b8560f", linespacing=1.2)
+    ax.add_patch(FancyArrowPatch((6.2, y), (7.35, y), arrowstyle="-|>", mutation_scale=20, lw=2.2, color="#6f6f75"))
+ax.plot([10.7, 10.85, 10.85, 10.7], [4.05, 4.05, 1.85, 1.85], color="#6f6f75", lw=1.6)
+ax.plot([10.85, 11.0], [2.95, 2.95], color="#6f6f75", lw=1.6)
+ax.text(11.1, 2.95, "level of" + chr(10) + "theory", fontsize=12.5, color=DARK, va="center", fontweight="bold", linespacing=1.2)
+ax.plot([10.7, 10.85, 10.85, 10.7], [1.63, 1.63, 0.67, 0.67], color=NEW, lw=1.6)
+ax.plot([10.85, 11.0], [1.15, 1.15], color=NEW, lw=1.6)
+ax.text(11.1, 1.15, "a different" + chr(10) + "surface", fontsize=12.5, color="#b8560f", va="center", fontweight="bold", linespacing=1.2)
+fig.savefig(OUT + "pic_fidelity_table_v2.png", dpi=220, bbox_inches="tight", transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_fidelity_table_v2.png")
