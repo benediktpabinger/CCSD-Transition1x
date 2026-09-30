@@ -31,7 +31,7 @@ ax.plot([], [], color=DARK, lw=3.2, label="the surface: the lowest of the two")
 ax.plot(x, model, color=NAVY, lw=2.2, ls=(0, (4, 2)), label="a smooth model")
 i0 = np.argmin(np.abs(x - x0))
 ax.scatter([x[i0]], [low[i0]], s=140, facecolor="white", edgecolor=DARK, lw=2, zorder=5)
-ax.annotate("kink: the broken-symmetry\nsolution sets in", (x[i0], low[i0]), xytext=(0.03, 1.05), fontsize=10.5, color=DARK,
+ax.annotate("kink: the broken-symmetry\nsolution sets in", (x[i0], low[i0]), xytext=(0.03, 0.62), fontsize=10.5, color=DARK,
             ha="left", va="center", arrowprops=dict(arrowstyle="-", color=DARK, lw=1))
 ax.set_xlim(0, 1); ax.set_ylim(-0.3, 1.55)
 ax.set_xticks([]); ax.set_yticks([])
