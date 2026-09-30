@@ -30,8 +30,8 @@ xm = xs[4]; ym = 0.5 * (np.interp(xm, x, cheap) + np.interp(xm, x, expensive))
 ax.annotate(chr(916) + ": training target of" + chr(10) + "the correction head", (xm + 0.012, ym), xytext=(0.72, 1.05), fontsize=10.5, color=NAVY, fontweight="bold",
             ha="left", va="center", linespacing=1.3, arrowprops=dict(arrowstyle="-|>", color=NAVY, lw=1.2, shrinkB=4))
 xg = xs[1]; yg = np.interp(xg, x, cheap)
-ax.annotate("training target of MACE", (xg, yg - 0.04), xytext=(0.22, -0.28), fontsize=10.5, color=DARK, fontweight="bold",
-            ha="center", va="center", arrowprops=dict(arrowstyle="-|>", color=GREY, lw=1.2, shrinkB=6))
+ax.add_patch(FancyArrowPatch((xg, yg - 0.40), (xg, yg - 0.03), arrowstyle="-|>", mutation_scale=14, lw=2, color=GREY, zorder=5))
+ax.text(xg, yg - 0.47, "training target" + chr(10) + "of MACE", fontsize=10.5, color=DARK, fontweight="bold", ha="center", va="top", linespacing=1.3)
 # labels, below the plot
 ax.text(0.0, -0.74, "MACE is trained on the cheap level:", fontsize=11, color=DARK, fontweight="bold", va="center", transform=ax.transData)
 ax.text(0.0, -0.87, "every geometry of Transition1x, 9.6 million", fontsize=10.5, color=GREY, va="center")
