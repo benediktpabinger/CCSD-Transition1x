@@ -1088,3 +1088,37 @@ ax.text(9.625, 1.825, "E", ha="center", va="center", fontsize=15, fontweight="bo
 fig.savefig(OUT + "pic_geometry_to_labels.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
 print("written", OUT + "pic_geometry_to_labels.png")
+
+
+# 25. the same, stacked top to bottom
+NAVY_C = "#030f4f"
+_forces_backup = None
+fig, ax = plt.subplots(figsize=(7.6, 6.9))
+ax.set_xlim(-1.9, 10.4); ax.set_ylim(-3.5, 7.6); ax.set_aspect("equal"); ax.axis("off")
+# top: geometry
+molecule(ax, 0.0, 5.6)
+ax.text(4.5, 6.15, "geometry", ha="left", va="center", fontsize=14, fontweight="bold", color=DARK)
+ax.text(4.5, 5.55, "the positions of all atoms", ha="left", va="center", fontsize=11, color=DARK)
+ax.add_patch(FancyArrowPatch((1.2, 4.35), (1.2, 3.55), arrowstyle="-|>", mutation_scale=22, lw=2.4, color="#6f6f75"))
+# middle: the calculation
+ax.add_patch(FancyBboxPatch((-0.3, 1.35), 3.0, 2.1, boxstyle="round,pad=0.02,rounding_size=0.15", fc="#ececef", ec="#8c8c92", lw=1.5))
+ax.text(1.2, 2.95, "DFT", ha="center", va="center", fontsize=17, fontweight="bold", color=DARK)
+ax.text(1.2, 2.05, "functional" + chr(10) + "basis set" + chr(10) + "spin formalism", ha="center", va="center", fontsize=10.5, color=DARK, linespacing=1.35)
+ax.text(4.5, 2.7, "calculation", ha="left", va="center", fontsize=14, fontweight="bold", color=DARK)
+ax.text(4.5, 2.1, "one calculation per geometry", ha="left", va="center", fontsize=11, color=DARK)
+ax.add_patch(FancyArrowPatch((1.2, 1.25), (1.2, 0.45), arrowstyle="-|>", mutation_scale=22, lw=2.4, color="#6f6f75"))
+# bottom: energy and forces
+for i_, j_ in bonds:
+    ax.plot([atoms[i_][1], atoms[j_][1]], [-2.0 + atoms[i_][2], -2.0 + atoms[j_][2]], color="#6f6f75", lw=3, zorder=1, solid_capstyle="round")
+for k_, (el, x, y) in enumerate(atoms):
+    ax.add_patch(Circle((x, -2.0 + y), RADIUS[el], fc=FILL[el], ec=DARK, lw=1.3, zorder=2))
+    ax.text(x, -2.0 + y, el, ha="center", va="center", fontsize=10 if el != "H" else 8, color="white" if el == "C" else DARK, fontweight="bold", zorder=3)
+    fx, fy = forces[k_]
+    ax.add_patch(FancyArrowPatch((x, -2.0 + y), (x + 1.7 * fx, -2.0 + y + 1.7 * fy), arrowstyle="-|>", mutation_scale=14, lw=2.2, color=NAVY_C, zorder=4))
+ax.add_patch(FancyBboxPatch((-1.6, -0.75), 0.85, 0.65, boxstyle="round,pad=0.02,rounding_size=0.08", fc="#e3e6f3", ec=NAVY_C, lw=1.4))
+ax.text(-1.175, -0.425, "E", ha="center", va="center", fontsize=15, fontweight="bold", color=NAVY_C, style="italic")
+ax.text(4.5, -1.45, "energy and forces", ha="left", va="center", fontsize=14, fontweight="bold", color=NAVY_C)
+ax.text(4.5, -2.2, "one energy E for the molecule," + chr(10) + "one force F on every atom", ha="left", va="center", fontsize=11, color=NAVY_C, linespacing=1.3)
+fig.savefig(OUT + "pic_geometry_to_labels_vertical.png", dpi=220, bbox_inches="tight", transparent=True)
+plt.close(fig)
+print("written", OUT + "pic_geometry_to_labels_vertical.png")
