@@ -31,16 +31,16 @@ ax.plot([], [], color=DARK, lw=3.2, label="the surface: the lowest of the two")
 ax.plot(x, model, color=NAVY, lw=2.2, ls=(0, (4, 2)), label="a smooth model")
 i0 = np.argmin(np.abs(x - x0))
 ax.scatter([x[i0]], [low[i0]], s=140, facecolor="white", edgecolor=DARK, lw=2, zorder=5)
-ax.annotate("kink: the broken-symmetry\nsolution sets in", (x[i0], low[i0]), xytext=(0.03, 0.62), fontsize=10.5, color=DARK,
+ax.annotate("kink: the broken-symmetry\nsolution sets in", (x[i0], low[i0]), xytext=(0.03, 1.0), fontsize=10.5, color=DARK,
             ha="left", va="center", arrowprops=dict(arrowstyle="-", color=DARK, lw=1))
-ax.set_xlim(0, 1); ax.set_ylim(-0.3, 1.55)
+ax.set_xlim(0, 1); ax.set_ylim(-0.3, 1.75)
 ax.set_xticks([]); ax.set_yticks([])
 ax.set_xlabel("reaction coordinate", fontsize=11, color=MID); ax.set_ylabel("energy", fontsize=11, color=MID)
 for sp in ("top", "right"):
     ax.spines[sp].set_visible(False)
 for sp in ("left", "bottom"):
     ax.spines[sp].set_color("#bbbbbb")
-ax.legend(loc="upper right", bbox_to_anchor=(1.0, 1.02), frameon=False, fontsize=9.5, labelcolor=["#6f6f75", NEW, DARK, NAVY])
+ax.legend(loc="upper right", bbox_to_anchor=(1.0, 1.03), frameon=False, fontsize=9.5, labelcolor=["#6f6f75", NEW, DARK, NAVY])
 ax.set_title("the surface has a corner, the model has none", fontsize=12.5, fontweight="bold", color=MID)
 fig.savefig(OUT + "pic_kink.png", dpi=220, bbox_inches="tight", transparent=True)
 plt.close(fig)
