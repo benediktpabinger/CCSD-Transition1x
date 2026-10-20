@@ -27,6 +27,7 @@ RQ2, test the OMol25 models (UMA-S, UMA-M, eSEN) at broken-symmetry transition s
 - User `bepab`, home `/home/energy/bepab`, login node `thul.fysik.dtu.dk` (`slid` rejects sessions). Old student account
   `s242862` is closed; its whole home was copied here, so old `/home/energy/s242862/...` paths exist under the new home with
   the name changed. Many scripts still hard-code the old path.
+- Login nodes are not reachable from outside the DTU network (SSH times out); from elsewhere use the DTU VPN first.
 - Do not open many SSH sessions in a row: a dozen rapid connections trip a port-22 ban on all login nodes for hours.
 - Login nodes enforce a hard limit of 20 min CPU time per process. Anything heavier than a few seconds goes into a SLURM job.
 - SLURM: max 20 concurrent jobs. Jobs must request whole nodes: `--ntasks 24` on xeon24el8/xeon24el9, 40 on xeon40el8/xeon40el9;
