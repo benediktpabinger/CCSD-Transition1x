@@ -38,3 +38,5 @@ calculation_inventory.csv
 
 # Claude memory
 .claude/
+# personal application documents, never commit
+PHD application/
