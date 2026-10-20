@@ -24,12 +24,19 @@ Additions:
         symmetry is propagated across NEB steps instead of being re-guessed.
     (4) Scratch is NOT deleted. Per-image ORCA .inp/.out/.gbw are retained.
 
-<S^2> is parsed from every ORCA output and logged per image per step to
-s2_log.json.
+nelec is DERIVED from the structure (sum of atomic numbers - charge). It selects
+which orbitals get rotated, and a wrong value would silently rotate the wrong
+pair with no error, so --nelec is only an optional cross-check that aborts on
+disagreement.
+
+<S^2> is logged per phase (relax_r / relax_p / neb) and per image to
+s2_log.json. The collapse flag is evaluated on the TS image only: reactant and
+product legitimately have <S^2> ~ 0 (intact bonds, no BS solution), so a pooled
+minimum over all images is meaningless.
 
 Usage:
     python orca_neb_bs.py --h5file ~/data/Transition1x.h5 --reaction rxn1320 \
-        --output ~/orca_neb_bs/rxn1320 --nelec 46 --nprocs 12
+        --output ~/orca_neb_bs/rxn1320 --nprocs 12
 """
 import argparse
 import glob
@@ -54,16 +61,13 @@ from ase.optimize.bfgs import BFGS
 LEVEL = 'UKS wB97M-V/def2-TZVPD, BS guess (20 deg beta HOMO-LUMO rotation)'
 BASE_SIMPLE = 'UKS wB97M-V def2-TZVPD def2/J RIJCOSX TightSCF DEFGRID3 EnGrad'
 ROT_ANGLE = 20
+BS_THRESH = 0.1          # <S^2> below this counts as collapsed
 
 S2_RE = re.compile(r'Expectation value of <S\*\*2>\s*:\s*([-\d.]+)')
 
-# collected as {image_index: [s2, s2, ...]} across all calls
+# {phase: {image_index: [s2 per call]}}
 S2LOG = {}
-
-
-def scf_common(maxcore, nprocs):
-    return (f'%pal nprocs {nprocs} end\n'
-            f'%maxcore {maxcore}\n')
+PHASE = {'name': 'init'}
 
 
 class BSORCA(ORCA):
@@ -80,11 +84,11 @@ class BSORCA(ORCA):
         self._lumo = lumo
         self._nprocs = nprocs
         self._maxcore = maxcore
-        self._bs_gbw = bs_store          # absolute path of the retained gbw
+        self._bs_gbw = bs_store
         super().__init__(*args, **kwargs)
 
     def _build(self):
-        common = scf_common(self._maxcore, self._nprocs)
+        common = f'%pal nprocs {self._nprocs} end\n%maxcore {self._maxcore}\n'
         if self._bs_gbw and os.path.exists(self._bs_gbw):
             simple = BASE_SIMPLE + ' MORead'
             blocks = (common
@@ -103,23 +107,20 @@ class BSORCA(ORCA):
         self.parameters['orcablocks'] = blocks
 
     def calculate(self, atoms=None, properties=None, system_changes=None):
-        # ASE 3.28 ORCA is a GenericFileIOCalculator: there is no write_input /
-        # read_results to override, the template consumes self.parameters. So
-        # rebuild the input right before the run and post-process right after.
+        # ASE 3.28 ORCA is a GenericFileIOCalculator: no write_input /
+        # read_results to override, the template consumes self.parameters.
         self._build()
         super().calculate(atoms, properties, system_changes)
         self._post()
 
     def _post(self):
         d = str(self.directory)
-        outs = sorted(glob.glob(os.path.join(d, '*.out')),
-                      key=os.path.getmtime)
+        outs = sorted(glob.glob(os.path.join(d, '*.out')), key=os.path.getmtime)
         if outs:
-            txt = open(outs[-1], errors='replace').read()
-            hits = S2_RE.findall(txt)
+            hits = S2_RE.findall(open(outs[-1], errors='replace').read())
             if hits:
-                S2LOG.setdefault(str(self._img), []).append(float(hits[-1]))
-        # retain the converged BS orbitals for the next call on this image
+                (S2LOG.setdefault(PHASE['name'], {})
+                      .setdefault(str(self._img), []).append(float(hits[-1])))
         gbws = sorted(glob.glob(os.path.join(d, '*.gbw')), key=os.path.getmtime)
         if gbws and self._bs_gbw:
             try:
@@ -128,15 +129,34 @@ class BSORCA(ORCA):
                 print(f'  [img {self._img}] gbw copy failed: {e}', flush=True)
 
 
+# ---------------------------------------------------------------- fix 3
 def load_wB97x_images(h5file, reaction, split):
+    """Starting band, selection identical to pipeline/orca_neb.py:
+       [0] + last 8 + [9].  The indices are printed and checked for
+       duplicates/gaps, because that expression can silently misbehave for
+       short trajectories (and the same expression is in the older scripts)."""
     with h5py.File(h5file, 'r') as f:
         for formula in f[split]:
             if reaction in f[split][formula]:
                 g = f[split][formula][reaction]
                 pos = g['positions'][:]
                 z = g['atomic_numbers'][:]
+                n = pos.shape[0]
+                idx = [0] + list(range(n - 8, n)) + [9]
+                print(f'H5 trajectory: {n} configurations')
+                print(f'selected indices: {idx}')
+                dup = len(idx) != len(set(idx))
+                bad = [i for i in idx if i < 0 or i >= n]
+                if dup:
+                    print(f'  WARNING: duplicated indices -> {sorted(idx)}')
+                    print(f'  (n={n}; last-8 window overlaps index 9 when n <= 17)')
+                if bad:
+                    print(f'  WARNING: out-of-range indices {bad} for n={n}')
+                if not dup and not bad:
+                    print(f'  index check OK: 10 distinct images, all in [0,{n-1}]')
+                print('  NOTE: identical selection to orca_neb.py / '
+                      'orca_neb_omol25.py, so the old runs behaved the same way.')
                 sel = [pos[0]] + list(pos[-8:]) + [pos[9]]
-                print(f'Loaded 10 wB97x images ({pos.shape[0]} total)')
                 return [Atoms(numbers=z, positions=p) for p in sel]
     raise ValueError(f'{reaction} not in split {split}')
 
@@ -152,55 +172,108 @@ class DBWriter:
                     db.write(a, data=a.calc.results)
 
 
-def dump_s2(output):
+# ---------------------------------------------------------------- fix 2
+def dump_s2(output, quiet=False):
     json.dump(S2LOG, open(os.path.join(output, 's2_log.json'), 'w'), indent=1)
-    allv = [v for lst in S2LOG.values() for v in lst]
-    if allv:
-        print(f'  <S^2>: n={len(allv)} min={min(allv):.4f} max={max(allv):.4f}',
-              flush=True)
+    if quiet:
+        return
+    ph = PHASE['name']
+    per = S2LOG.get(ph, {})
+    if not per:
+        return
+    parts = []
+    for k in sorted(per, key=int):
+        v = per[k]
+        parts.append(f'img{int(k):02d}={v[-1]:.3f}(n={len(v)})')
+    print(f'  <S^2> [{ph}] ' + '  '.join(parts), flush=True)
+
+
+def collapse_flag(ts_img):
+    """Evaluate BS retention on the TS image only, during the NEB phase.
+    Endpoints legitimately sit at <S^2> ~ 0 and must not enter this check."""
+    traj = S2LOG.get('neb', {}).get(str(ts_img), [])
+    if not traj:
+        return 'NO_DATA', None, traj
+    first = next((i for i, v in enumerate(traj) if v > BS_THRESH), None)
+    if first is None:
+        return 'NO_BS', None, traj
+    after = traj[first:]
+    lost = next((first + i for i, v in enumerate(after) if v < BS_THRESH), None)
+    if lost is not None:
+        return 'BS_LOST', lost, traj
+    return 'BS_MAINTAINED', None, traj
 
 
 def main(a):
     os.makedirs(a.output, exist_ok=True)
-    scratch = os.path.join(a.output, 'scratch')     # retained, not /tmp
+    scratch = os.path.join(a.output, 'scratch')
     os.makedirs(scratch, exist_ok=True)
 
     orca_cmd = a.orca_cmd if os.path.isabs(a.orca_cmd) else shutil.which(a.orca_cmd)
     if not orca_cmd:
         print('ERROR: orca not found'); sys.exit(1)
 
-    nalpha = a.nelec // 2
-    homo, lumo = nalpha - 1, nalpha        # 0-based beta HOMO / LUMO
-    print(f'{LEVEL}\nORCA {orca_cmd} nprocs={a.nprocs}')
-    print(f'nelec={a.nelec} -> beta HOMO={homo} LUMO={lumo}')
+    images = load_wB97x_images(a.h5file, a.reaction, a.split)
+
+    # ------------------------------------------------------------ fix 1
+    nelec = int(sum(images[0].get_atomic_numbers())) - a.charge
+    if nelec % 2 != 0:
+        print(f'ERROR: odd electron count {nelec} for charge {a.charge}; '
+              'a closed-shell singlet guess is not defined'); sys.exit(1)
+    if a.nelec is not None and a.nelec != nelec:
+        print(f'ERROR: --nelec {a.nelec} disagrees with the value derived from '
+              f'the structure ({nelec} = sum(Z) - charge {a.charge}). '
+              'Refusing to rotate a possibly wrong orbital pair.')
+        sys.exit(1)
+    nalpha = nelec // 2
+    homo, lumo = nalpha - 1, nalpha          # 0-based beta HOMO / LUMO
+
+    print(f'{LEVEL}')
+    print(f'ORCA {orca_cmd}  nprocs={a.nprocs}')
+    print(f'formula {images[0].get_chemical_formula()}  charge {a.charge}')
+    print(f'nelec (derived) = {nelec}   nalpha = {nalpha}')
+    print(f'beta HOMO = {homo}   beta LUMO = {lumo}   '
+          f'-> Rotate {{{homo}, {lumo}, {ROT_ANGLE}, 1, 1}}')
 
     json.dump({'level': LEVEL, 'simpleinput': BASE_SIMPLE,
-               'rotate': f'{{{homo}, {lumo}, {ROT_ANGLE}, 1, 1}}  (1 = beta)',
-               'nelec': a.nelec, 'nprocs': a.nprocs,
+               'rotate': f'{{{homo}, {lumo}, {ROT_ANGLE}, 1, 1}}  (op 1 = beta)',
+               'nelec_derived': nelec, 'charge': a.charge,
+               'beta_homo': homo, 'beta_lumo': lumo,
+               'nprocs': a.nprocs, 'bs_thresh': BS_THRESH,
                'orca_version': '5.0.4 (OMol25 used 6.0.0)',
                'scratch_retained': True},
               open(os.path.join(a.output, 'level.json'), 'w'), indent=1)
 
-    images = load_wB97x_images(a.h5file, a.reaction, a.split)
     for i, at in enumerate(images):
         d = os.path.join(scratch, f'img{i:02d}')
         os.makedirs(d, exist_ok=True)
         at.calc = BSORCA(profile=OrcaProfile(command=orca_cmd),
-                         charge=0, mult=1, directory=d,
+                         charge=a.charge, mult=1, directory=d,
                          img=i, homo=homo, lumo=lumo,
                          nprocs=a.nprocs, maxcore=a.maxcore,
                          bs_store=os.path.join(scratch, f'bs_img{i:02d}.gbw'))
 
     r_xyz = os.path.join(a.output, 'reactant.xyz')
     p_xyz = os.path.join(a.output, 'product.xyz')
-    print('Relaxing reactant (BS-UKS) ...', flush=True)
+
+    PHASE['name'] = 'relax_r'
+    print('\nRelaxing reactant (BS-UKS) ...', flush=True)
     BFGS(images[0], logfile=os.path.join(a.output, 'relax_r.log')).run(fmax=0.05)
     write(r_xyz, images[0]); dump_s2(a.output)
+
+    PHASE['name'] = 'relax_p'
     print('Relaxing product (BS-UKS) ...', flush=True)
     BFGS(images[-1], logfile=os.path.join(a.output, 'relax_p.log')).run(fmax=0.05)
     write(p_xyz, images[-1]); dump_s2(a.output)
 
-    print('NEB ...', flush=True)
+    for ph, lbl in (('relax_r', 'reactant'), ('relax_p', 'product')):
+        v = [x for lst in S2LOG.get(ph, {}).values() for x in lst]
+        if v:
+            bs = 'BS' if v[-1] > BS_THRESH else 'closed-shell'
+            print(f'  endpoint {lbl}: final <S^2> = {v[-1]:.4f}  ({bs})', flush=True)
+
+    PHASE['name'] = 'neb'
+    print('\nNEB ...', flush=True)
     neb = NEB(images, climb=False, parallel=False)
     tools = NEBTools(images)
     opt = NEBOptimizer(neb, logfile=os.path.join(a.output, 'neb.log'))
@@ -211,7 +284,7 @@ def main(a):
     opt.attach(lambda: dump_s2(a.output))
     opt.run(fmax=a.neb_fmax, steps=a.steps)
 
-    print('CI-NEB ...', flush=True)
+    print('\nCI-NEB ...', flush=True)
     neb.climb = True
     converged = opt.run(fmax=a.cineb_fmax, steps=a.steps)
     if converged:
@@ -226,15 +299,24 @@ def main(a):
     write(os.path.join(a.output, 'transition_state.xyz'), ts)
     write(r_xyz, images[0]); write(p_xyz, images[-1])
 
-    # retain the TS single-point ORCA output
+    flag, lost_at, traj = collapse_flag(ts_i)
+    print(f'\nTS image {ts_i}: {flag}'
+          + (f' (fell below {BS_THRESH} at NEB call {lost_at})' if lost_at is not None else ''))
+    if traj:
+        print(f'  TS <S^2> first={traj[0]:.4f} last={traj[-1]:.4f} '
+              f'min={min(traj):.4f} max={max(traj):.4f} n={len(traj)}')
+
+    json.dump({'ts_image': ts_i, 'bs_flag': flag, 'lost_at_call': lost_at,
+               'ts_s2_trajectory': traj,
+               'ts_s2_final': traj[-1] if traj else None},
+              open(os.path.join(a.output, 'bs_summary.json'), 'w'), indent=1)
+
     tsd = os.path.join(scratch, f'img{ts_i:02d}')
     for pat in ('*.out', '*.inp', '*.gbw'):
         for f in glob.glob(os.path.join(tsd, pat)):
             shutil.copy(f, os.path.join(a.output, f'TS_{os.path.basename(f)}'))
-    json.dump({'ts_image': ts_i}, open(os.path.join(a.output, 'ts_image.json'), 'w'))
 
-    tools2 = NEBTools(images)
-    fit = tools2.get_fit()
+    fit = NEBTools(images).get_fit()
     fig, ax = plt.subplots()
     ax.plot(fit.fit_path, fit.fit_energies, 'b-o', markersize=4,
             label=f'{LEVEL} (barrier {max(fit.fit_energies):.3f} eV)')
@@ -250,7 +332,10 @@ if __name__ == '__main__':
     p.add_argument('--reaction', required=True)
     p.add_argument('--split', default='test')
     p.add_argument('--output', required=True)
-    p.add_argument('--nelec', type=int, required=True)
+    p.add_argument('--charge', type=int, default=0)
+    p.add_argument('--nelec', type=int, default=None,
+                   help='optional cross-check; aborts if it disagrees with '
+                        'sum(Z) - charge derived from the structure')
     p.add_argument('--orca-cmd', default='orca')
     p.add_argument('--nprocs', type=int, default=12)
     p.add_argument('--maxcore', type=int, default=3000)
@@ -264,25 +349,35 @@ if __name__ == '__main__':
     if a.dry_run:
         os.makedirs(a.output, exist_ok=True)
         d = os.path.join(a.output, 'dryrun')
+        shutil.rmtree(d, ignore_errors=True)
         os.makedirs(d, exist_ok=True)
-        nalpha = a.nelec // 2
+        imgs = load_wB97x_images(a.h5file, a.reaction, a.split)
+        nelec = int(sum(imgs[0].get_atomic_numbers())) - a.charge
+        if a.nelec is not None and a.nelec != nelec:
+            print(f'ERROR: --nelec {a.nelec} != derived {nelec}'); sys.exit(1)
+        nalpha = nelec // 2
+        print(f'formula {imgs[0].get_chemical_formula()}  charge {a.charge}')
+        print(f'nelec (derived) = {nelec}  -> beta HOMO {nalpha-1}, LUMO {nalpha}')
         c = BSORCA(profile=OrcaProfile(command=shutil.which('orca') or 'orca'),
-                   charge=0, mult=1, directory=d, img=0,
+                   charge=a.charge, mult=1, directory=d, img=0,
                    homo=nalpha - 1, lumo=nalpha,
                    nprocs=a.nprocs, maxcore=a.maxcore,
                    bs_store=os.path.join(d, 'bs.gbw'))
-        imgs = load_wB97x_images(a.h5file, a.reaction, a.split)
         c._build()
         c.template.write_input(profile=c.profile, directory=c.directory,
                                atoms=imgs[0], parameters=c.parameters,
                                properties=['energy'])
         inp = sorted(glob.glob(os.path.join(d, '*.inp')))
-        print('\n===== WRITTEN ORCA INPUT =====')
-        print(open(inp[0]).read() if inp else 'NO INPUT WRITTEN')
-        print('==============================')
         txt = open(inp[0]).read() if inp else ''
+        print('\n===== WRITTEN ORCA INPUT =====')
+        print(txt if txt else 'NO INPUT WRITTEN')
+        print('==============================')
         print('UKS present :', 'UKS' in txt)
         print('Rotate      :', 'Rotate' in txt)
-        print('beta op (1) :', bool(re.search(r'Rotate\s*\{[^}]*,\s*1\s*,\s*1\s*\}', txt)))
+        print('beta op (1) :',
+              bool(re.search(r'Rotate\s*\{[^}]*,\s*1\s*,\s*1\s*\}', txt)))
+        m = re.search(r'Rotate\s*\{\s*(\d+)\s*,\s*(\d+)', txt)
+        print('rotated pair:', f'{m.group(1)} -> {m.group(2)}' if m else 'NONE',
+              f'(expected {nalpha-1} -> {nalpha})')
         sys.exit(0)
     main(a)
