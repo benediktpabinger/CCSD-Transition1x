@@ -40,7 +40,8 @@ RQ2, test the OMol25 models (UMA-S, UMA-M, eSEN) at broken-symmetry transition s
   is not what a compute node sees; check with a short job on `xeon24el9_test`.
 - ORCA: every thesis calculation used `ORCA/5.0.4-gompi-2023a` from the el8 trees on `xeon24el8`. Since 2026-10 all el8
   nodes are being reinstalled as el9 ("Reboot ASAP"), and NO el9 tree has ORCA or gompi/2023a (checked 2026-10-27, job
-  11062092 failed on it). ORCA jobs are blocked until the admins install ORCA on el9 or a private install exists.
+  11062092 failed on it). ORCA jobs are blocked until the admins install ORCA on el9. Decision 2026-10-27: all new
+  calculations use ORCA 6 (docs/paper_decisions.md D14); thesis numbers remain ORCA 5.0.4.
 - SLURM accounting: MaxJobs 20 running, MaxSubmit 100 queued; both count array elements, so split arrays above 100 and
   use `%18` to stay under the running limit. `squeue` collapses a pending array into one line; count with `squeue -r`.
 - Old working folders next to the repo clone: `~/pipeline` (stale copies of the repo scripts), `~/mr_benchmark`
