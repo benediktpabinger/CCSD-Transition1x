@@ -33,8 +33,16 @@ RQ2, test the OMol25 models (UMA-S, UMA-M, eSEN) at broken-symmetry transition s
 - SLURM: max 20 concurrent jobs. Jobs must request whole nodes: `--ntasks 24` on xeon24el8/xeon24el9, 40 on xeon40el8/xeon40el9;
   do not mix partitions with different core counts. GPU partitions: `h200el9` (used for the delta-head evaluation), `a100`.
   `h200` without suffix is invalid. `#SBATCH --output=~/logs/...` writes to a literal `~/logs` directory; use `$HOME/logs`.
-- Environment: `source /etc/profile; module load Python/3.13.5-GCCcore-14.3.0` (fairchem-core 2.20.0, ase 3.28, torch 2.8).
-  ORCA: `ORCA/5.0.4-gompi-2023a`. Node: `module load nodejs/22.17.1-GCCcore-14.3.0`.
+- Environment: `source /etc/profile; module load Python/3.13.5-GCCcore-14.3.0` (fairchem-core 2.20.0, ase 3.28, torch 2.8,
+  pyscf 2.12.1). Node: `module load nodejs/22.17.1-GCCcore-14.3.0`.
+- Module trees are per CPU type and OS (`/home/modules` is an NFS mount of `/u/modules/<arch>_<os>`): the login node sees
+  `skylake_el9`, xeon24 nodes `broadwell_el9`, the old el8 nodes `xeonv4_el8`. What `module avail` shows on the login node
+  is not what a compute node sees; check with a short job on `xeon24el9_test`.
+- ORCA: every thesis calculation used `ORCA/5.0.4-gompi-2023a` from the el8 trees on `xeon24el8`. Since 2026-10 all el8
+  nodes are being reinstalled as el9 ("Reboot ASAP"), and NO el9 tree has ORCA or gompi/2023a (checked 2026-10-27, job
+  11062092 failed on it). ORCA jobs are blocked until the admins install ORCA on el9 or a private install exists.
+- SLURM accounting: MaxJobs 20 running, MaxSubmit 100 queued; both count array elements, so split arrays above 100 and
+  use `%18` to stay under the running limit. `squeue` collapses a pending array into one line; count with `squeue -r`.
 - Old working folders next to the repo clone: `~/pipeline` (stale copies of the repo scripts), `~/mr_benchmark`
   (ORCA single points; `orca_engrad_nod3` is the final run), `~/delta_head`, `~/data/transition1x_train.db`,
   `~/autocas_*`, `~/band_*` (multireference and NEB experiments). The repo clone is `~/Transition1x`.
