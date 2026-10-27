@@ -40,3 +40,4 @@ calculation_inventory.csv
 .claude/
 # personal application documents, never commit
 PHD application/
+results/omol25_census/*.jsonl
