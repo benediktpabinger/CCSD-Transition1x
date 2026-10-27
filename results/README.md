@@ -512,3 +512,60 @@ Schlüsselmengen deckungsgleich · jede Reaktion mit genau drei Modellzeilen ·
 Kennzahlen** (n, beide Gruppengrößen, beide Mediane, beide Überschreitungs-
 zahlen, Name und Wert des Maximums, 49 von 53) — weicht eine ab, bricht der
 Lauf ab.
+
+## omol25_ts_all.csv — 10073 Zeilen, eine je Transition1x-Reaktion
+
+`rxn, split, formula, n_atoms, found, n_hits, n_frames, dup_conflict, rmsd_A,
+best_rmsd_A, s2, group_omol, e_omol_ev, fmax_omol, e_ref, fmax_ref,
+unrestricted, charge, spin, n_scf_steps, source`
+
+**Die Frage.** Welche Transition1x-Reaktionen haben am gespeicherten
+Übergangszustand ein broken-symmetry-Label in OMol25, und wie groß ist dort
+die Restkraft auf der unrestricted Fläche? Das ist Stufe 3 der Leiter aus
+`hinge_t1x.csv`, nur für den ganzen Datensatz statt für 45 Reaktionen, und
+die Vorauswahl für das Paper (docs/paper_decisions.md, D04 und D08–D11).
+
+**Herkunft.** Slurm-Job **11011680** (xeon40el9, 6 h): der OMol25-Trainingssplit
+wurde stückweise heruntergeladen, gescannt und gelöscht
+([`pipeline/job_omol25_ts_scan.sh`](../pipeline/job_omol25_ts_scan.sh),
+[`pipeline/omol25_stream_scan_ts.py`](../pipeline/omol25_stream_scan_ts.py)).
+Je Reaktion wird der OMol25-Rahmen behalten, dessen Geometrie dem
+`transition_state` des H5 auf RMSD < 10⁻⁵ Å gleicht (der echte Rahmen liegt bei
+~5·10⁻⁷ Å, reines Rundungsrauschen; der nächste NEB-Nachbar bei ≥ 5·10⁻⁵ Å).
+Die Referenzgeometrien kommen aus
+[`pipeline/omol25_dump_ts_all.py`](../pipeline/omol25_dump_ts_all.py)
+(`~/t1x_ts_all.json`), der Sammler ist
+[`pipeline/omol25_ts_table.py`](../pipeline/omol25_ts_table.py). Die Rohdaten
+(`~/omol25_ts_all.jsonl`, 20 MB mit Koordinaten und Kräften) sind nicht in git;
+der Zensus je Reaktion (`n_frames`, `best_rmsd_A`) liegt unter
+`omol25_census/omol25_census_ts_all.json`.
+
+**Ergebnis.** 10009 von 10073 Übergangszuständen gefunden (train 9502/9561,
+val 225/225, test 282/287). `group_omol = bs` bei ⟨S²⟩ > 0.05: **1152
+broken-symmetry, 8857 closed-shell** (11.5 %). Restkraft `fmax_omol` auf der
+unrestricted Fläche: Median 1.07 eV/Å (broken-symmetry) gegen 0.37 eV/Å
+(closed-shell); auf dem eigenen Niveau (`fmax_ref`, H5) sind beide ≈ 0.018.
+
+**Die 64 nicht gefundenen** (`found = 0`) haben alle Rahmen in OMol25, aber
+keinen innerhalb der Schwelle (bester RMSD 7·10⁻⁵ bis 9·10⁻² Å). Sie bleiben
+nach D10 außerhalb des Pools und stehen nur zur Dokumentation in der Tabelle.
+
+**Mehrfach geführte Rahmen.** 225 Reaktionen haben denselben Rahmen 2- bis
+106-mal in OMol25 (wiederholte Rechnungen, Energiestreuung < 4·10⁻⁵ eV). Es
+zählt die energetisch tiefere Lösung (D11). Genau eine Reaktion widerspricht
+sich in der Klasse, `rxn1523` (`dup_conflict = 1`): eine Wiederholung erreicht
+die broken-symmetry-Lösung 81 meV unter der closed-shell-Lösung.
+
+**Kein Spalt bei 0.05.** Anders als bei den 135 Audit-Strukturen (nichts
+zwischen 0 und 0.058) ist ⟨S²⟩ hier ein Kontinuum: 7557 exakt 0, 1119 unter
+10⁻⁴, 126 zwischen 10⁻³ und 0.05, 87 zwischen 0.05 und 0.1. Die Schwelle 0.05
+ist also eine Wahl, und die Grenzfälle sollten im Paper gegen die eigene
+Stabilitätsanalyse geprüft werden (offener Punkt in docs/paper_decisions.md).
+
+**Prüfungen.** Jeder Treffer RMSD < 10⁻⁵ Å · Wiederholungen derselben Klasse
+stimmen in ⟨S²⟩ (10⁻⁴) und Energie (10⁻⁴ eV) überein · bei Klassenwiderspruch
+ist die tiefere Lösung broken-symmetry · Anker: die 44 Reaktionen aus
+`omol25_label_compare.csv` identisch in ⟨S²⟩ und Energie (10⁻⁶) · jede Zeile
+neutrales Singulett, unrestricted, Atomzahl wie im H5 · eine Zeile je Reaktion.
+
+---
