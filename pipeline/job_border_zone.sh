@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=borderzone
-#SBATCH --partition=xeon24el9
+#SBATCH --partition=xeon24el8
 #SBATCH --nodes=1
 #SBATCH --ntasks=24
 #SBATCH --cpus-per-task=1
@@ -17,6 +17,10 @@
 #   1  rks_sp      RKS + EnGrad                 -> E_RKS, F_RKS
 #   2  uks_sp      UKS + STABPerform            -> E_BS, <S^2>
 #   3  uks_engrad  EnGrad auf den Orbitalen von uks_sp (MORead) -> F_BS
+#
+# Partition xeon24el8, nicht el9: ORCA/5.0.4-gompi-2023a gibt es nur in den
+# el8-Modulbaeumen, und die Admins halten die el8-Knoten dafuer vorerst am
+# Leben (Steen Lysgaard, 2026-10-28; docs/paper_decisions.md D15).
 #
 # Ein ganzer xeon24-Knoten je Array-Task (CLAUDE.md), darauf ZWEI Reaktionen
 # gleichzeitig mit je 12 Kernen: Task i rechnet die Taskfile-Zeilen 2i+1 und
