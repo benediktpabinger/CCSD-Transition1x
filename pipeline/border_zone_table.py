@@ -15,7 +15,16 @@ Ausgabe results/border_zone.csv, eine Zeile je Reaktion:
                                      der restringierten Loesung, au; < 0 heisst
                                      instabil, ORCA startet dann neu
     orca_unstable                    1 wenn ORCA "UNSTABLE" meldet
-    s2_ours                          <S^2> der Loesung, auf der uks_sp endet
+    s2_ours                          <S^2> der Loesung, auf der uks_engrad endet:
+                                     derselbe konvergierte Zustand, aus dem E_BS
+                                     und F_BS stammen (wie E_BS in hinge_t1x.py)
+    s2_sp                            <S^2> am Ende von uks_sp, vor dem MORead-
+                                     Neustart im EnGrad-Lauf. In der Grenzzone
+                                     kann der Neustart die Loesung noch ein
+                                     Stueck weiter relaxieren (rxn0030: 0.0508
+                                     -> 0.0383, Energie 0.6 meV ueber RKS ->
+                                     0.4 meV darunter); sp_engrad_differ zaehlt
+                                     das, statt abzubrechen
     group_ours                       bs wenn s2_ours > 0.05, sonst closed
     depth_mev                        E_RKS - E_BS, meV (0 bei closed-shell)
     f_rks, f_bs                      groesste Kraftkomponente, eV/A, beide Flaechen
@@ -26,8 +35,9 @@ Ausgabe results/border_zone.csv, eine Zeile je Reaktion:
 
 Pruefungen
     alle drei Laeufe normal beendet (sonst nur Bericht, keine CSV)
-    uks_engrad und uks_sp auf derselben Seite von 0.05
     E_RKS >= E_BS - 1e-7 Ha (die UKS-Loesung liegt nie ueber der RKS)
+    (uks_sp und uks_engrad auf verschiedenen Seiten von 0.05 ist in der
+     Grenzzone erwartbar und wird nur gezaehlt, Spalte sp_engrad_differ)
     lambda_min > 0  =>  |E_RKS - E_BS| < 1e-8 Ha und |F_RKS - F_BS| < 1e-3 eV/A
     Anker: rxn7937 und rxn7945 liegen auch in ~/orca_hinge_t1x (Thesis, Job
         10773547); s2 und Energien muessen auf 1e-6 gleich sein
@@ -109,7 +119,9 @@ def collect(d):
     if f_bs is None or f_rks is None:
         return None
     return dict(lambda_min=uks['lam'], orca_unstable=uks['unstable'],
-                s2_ours=uks['s2'], s2_engrad=ueg['s2'],
+                s2_ours=ueg['s2'], s2_sp=uks['s2'],
+                sp_engrad_differ=int((abs(uks['s2']) > S2_BREAK)
+                                     != (abs(ueg['s2']) > S2_BREAK)),
                 depth_mev=(rks['e'] - ueg['e']) * HA_EV * 1000.0,
                 f_rks=f_rks, f_bs=f_bs, e_rks_ha=rks['e'], e_bs_ha=ueg['e'],
                 scf_cyc_rks=rks['cyc'], scf_cyc_uks=uks['cyc'])
@@ -147,6 +159,9 @@ print('   closed-shell                   : %3d   davon ORCA "UNSTABLE" %d, '
       % (len(cs), sum(r['orca_unstable'] for r in cs),
          sum((r['lambda_min'] or 0) < 0 for r in cs),
          sum(abs(r['s2_ours']) > 1e-3 for r in cs)))
+dif = [r['rxn'] for r in rows if r['sp_engrad_differ']]
+print('   uks_sp und uks_engrad auf verschiedenen Seiten von %.2f: %d%s'
+      % (S2_BREAK, len(dif), (' (%s)' % ' '.join(dif[:10])) if dif else ''))
 print()
 print('Nach OMol25-<S^2> gestaffelt (Zeilen: OMol25-Bin; Spalten: unser Urteil)')
 edges = [1e-3, 3e-3, 1e-2, 2e-2, 3e-2, 5e-2, 7e-2, 1e-1]
@@ -185,8 +200,6 @@ print('Pruefungen')
 check(not missing, 'alle %d Reaktionen fertig' % len(sel)
       + ('' if not missing else ' -- fehlen %d: %s%s' % (
           len(missing), ' '.join(missing[:8]), ' ...' if len(missing) > 8 else '')))
-check(all((abs(r['s2_ours']) > S2_BREAK) == (abs(r['s2_engrad']) > S2_BREAK)
-          for r in rows), 'uks_engrad und uks_sp auf derselben Seite von %.2f' % S2_BREAK)
 bad = [r['rxn'] for r in rows if r['e_rks_ha'] < r['e_bs_ha'] - 1e-7]
 check(not bad, 'E_RKS >= E_BS ueberall' + ('' if not bad else ': %s' % bad))
 st = [r for r in rows if r['lambda_min'] is not None and r['lambda_min'] > 0]
@@ -217,11 +230,12 @@ if fails:
              + '\n  '.join(fails))
 
 COLS = ['rxn', 'split', 'formula', 'n_atoms', 's2_omol', 'e_omol_ev', 'fmax_omol',
-        'lambda_min', 'orca_unstable', 's2_ours', 'group_ours', 'depth_mev',
+        'lambda_min', 'orca_unstable', 's2_ours', 's2_sp', 'sp_engrad_differ',
+        'group_ours', 'depth_mev',
         'f_rks', 'f_bs', 'e_rks_ha', 'e_bs_ha', 'd_omol_rks_mev', 'd_omol_bs_mev',
         'scf_cyc_rks', 'scf_cyc_uks']
 FMT = {'s2_omol': '%.6f', 'e_omol_ev': '%.9f', 'fmax_omol': '%.6f',
-       'lambda_min': '%.6f', 's2_ours': '%.6f', 'depth_mev': '%.3f',
+       'lambda_min': '%.6f', 's2_ours': '%.6f', 's2_sp': '%.6f', 'depth_mev': '%.3f',
        'f_rks': '%.6f', 'f_bs': '%.6f', 'e_rks_ha': '%.9f', 'e_bs_ha': '%.9f',
        'd_omol_rks_mev': '%.3f', 'd_omol_bs_mev': '%.3f'}
 out = os.path.join(REPO, 'results', 'border_zone.csv')
