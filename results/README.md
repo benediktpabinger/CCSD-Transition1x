@@ -569,3 +569,69 @@ ist die tiefere Lösung broken-symmetry · Anker: die 44 Reaktionen aus
 neutrales Singulett, unrestricted, Atomzahl wie im H5 · eine Zeile je Reaktion.
 
 ---
+
+## border_zone.csv — 213 Zeilen, die Grenzzone der ⟨S²⟩-Schwelle
+
+`rxn, split, formula, n_atoms, s2_omol, e_omol_ev, fmax_omol, lambda_min,
+orca_unstable, s2_ours, s2_sp, sp_engrad_differ, group_ours, depth_mev, f_rks,
+f_bs, e_rks_ha, e_bs_ha, d_omol_rks_mev, d_omol_bs_mev, scf_cyc_rks, scf_cyc_uks`
+
+**Die Frage.** In `omol25_ts_all.csv` ist ⟨S²⟩ ein Kontinuum ohne Lücke bei
+0.05. Was steckt in den 213 Reaktionen, deren OMol25-Label am gespeicherten
+Transition1x-Übergangszustand 0.001 < ⟨S²⟩ ≤ 0.1 trägt: echte flache
+Symmetriebrechung, Rauschen der 20°-Rotation, oder verfehlte tiefe Lösungen?
+Entscheidung D13 in docs/paper_decisions.md.
+
+**Herkunft.** Slurm-Arrays **11066525** (Tasks 0–52) und **11066805**
+(53–106) auf `xeon24el8`, zwei Reaktionen je Knoten, ORCA 5.0.4, Protokoll
+der Thesis (RKS + EnGrad; UKS + STABPerform; EnGrad auf den UKS-Orbitalen via
+MORead), Ausgaben in `~/orca_border_zone/<rxn>/`. Auswahl
+[`pipeline/mk_border_tasks.py`](../pipeline/mk_border_tasks.py)
+(`border_zone_selection.csv`), Job
+[`pipeline/job_border_zone.sh`](../pipeline/job_border_zone.sh), Sammler
+[`pipeline/border_zone_table.py`](../pipeline/border_zone_table.py).
+⟨S²⟩, E_BS und F_BS stammen aus demselben konvergierten Zustand, dem
+EnGrad-Lauf; `s2_sp` ist der Wert am Ende des Stabilitätslaufs davor. In 5
+Reaktionen liegen die beiden auf verschiedenen Seiten von 0.05
+(`sp_engrad_differ`), weil der MORead-Neustart die flache Lösung noch ein
+Stück weiter relaxiert (rxn0030: 0.051 → 0.038).
+
+**Ergebnis.** Nach unserer Stabilitätsanalyse 99 broken-symmetry
+(⟨S²⟩ > 0.05) und 114 closed-shell. Die Klasse stimmt mit der OMol25-Seite
+von 0.05 in 201 von 213 Fällen überein; alle 12 Abweichungen gehen in eine
+Richtung: wir finden eine Lösung, die OMol25 nicht hat. Die Breaking Depth
+ist der eigentliche Befund:
+
+| Breaking Depth | Reaktionen |
+|---|---|
+| ≤ 0.1 meV (33 davon stabil, λ_min > 0) | 74 |
+| 0.1–1 meV | 54 |
+| 1–10 meV | 74 |
+| 10–50 meV | 4 |
+| 160–455 meV | 7 |
+
+Die Grenzzone ist also zu 95 % ein Kontinuum sehr flacher Symmetriebrechungen
+(Median 1.8 meV bei den 99 bs-Zeilen), bei denen die Schwelle 0.05 nichts
+Physikalisches trennt. **Sieben Reaktionen sind anders:** rxn9324, rxn2546,
+rxn2077, rxn7023, rxn7264, rxn1119, rxn9422 haben eine broken-symmetry-Lösung
+0.16 bis 0.46 eV unter RKS (⟨S²⟩ 0.56–1.09, λ_min −0.036 bis −0.061), die die
+20°-Rotation von OMol25 verfehlt hat: das OMol25-Label sitzt dort auf einer
+flachen Lösung wenige meV unter RKS (`d_omol_rks_mev` ≤ 7.5) und damit 0.16
+bis 0.46 eV über der tiefsten Lösung. In der Thesis gab es einen solchen Fall
+(rxn4113/UMA-S, 7 meV); hier sind es 7 von 213, 3.3 % der Grenzzone.
+
+**Wo das OMol25-Label sitzt.** Außerhalb der sieben verfehlten liegt es auf
+unserer tiefsten Lösung: |E_omol − E_BS| Median 0.07 meV, max 0.22 meV bei
+den closed-shell-Zeilen; `fmax_omol` und `f_bs` stimmen im Median auf
+0.004 eV/Å. Die ORCA-Version (6.0.0 gegen 5.0.4) spielt also auch hier keine
+Rolle.
+
+**Prüfungen.** Alle 213 Reaktionen mit drei normal beendeten Läufen ·
+E_RKS ≥ E_BS − 10⁻⁶ Ha überall (23 marginale Fälle mit λ_min ≈ −3·10⁻⁴ au
+enden bis 0.018 meV über RKS, die Tiefe ist dort null innerhalb des
+SCF-Rauschens) · λ_min > 0 ⇒ |E_RKS − E_BS| < 10⁻⁸ Ha und |F_RKS − F_BS| <
+5·10⁻³ eV/Å (33 Zeilen, max 0.0016) · λ_min in jeder Zeile gelesen · Anker
+rxn7937 und rxn7945 reproduzieren `~/orca_hinge_t1x` (Thesis, Job 10773547)
+auf 10⁻⁶ in ⟨S²⟩ und Energie.
+
+---
