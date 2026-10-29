@@ -698,3 +698,70 @@ Paarung bei gleichem MR-Charakter ist für den ganzen Pool möglich.
 Summenformeln von N_FOD stimmen auf 10⁻⁵ · Atomzahl wie im H5 · 10073 Zeilen.
 
 ---
+
+## model_sp_ts_all.csv — 30027 Zeilen, drei Modelle an allen gespeicherten Übergangszuständen
+
+`rxn, model, spin, split, formula, n_atoms, group_omol, s2_omol, nfod,
+e_model_ev, e_omol_ev, de_mev, fmax_model, fmax_omol, f_mae, f_maxdiff, f_cos`
+
+**Die Frage.** Wie gut reproduzieren UMA-S, UMA-M und MACE-OMol ihre eigenen
+Trainingspunkte: das OMol25-Label (Energie, Kräfte) am gespeicherten
+Transition1x-Übergangszustand, 10 009 Reaktionen, nach broken-symmetry /
+closed-shell und nach MR-Charakter (N_FOD)? Anders als in der Thesis (Fehler
+an den Übergangszuständen, die die Modelle selbst finden) ist dies der Fehler
+an fixen Geometrien, die im Training waren.
+
+**Herkunft.** [`pipeline/model_sp_ts.py`](../pipeline/model_sp_ts.py)
+(Einzelpunkte, Ladung 0, Spin 1 = Multiplizität, explizit gesetzt), Jobs
+[`pipeline/job_model_sp_ts.sh`](../pipeline/job_model_sp_ts.sh) (GPU, Array
+11079437) und [`pipeline/job_model_sp_ts_cpu.sh`](../pipeline/job_model_sp_ts_cpu.sh)
+(CPU, 11079468); beide liefen durch und stimmen auf 0.003 meV und 2·10⁻⁵ eV/Å
+überein, die Tabelle nimmt die GPU-Dateien `~/model_sp_ts/all_<model>_spin1.jsonl`.
+Checkpoints: `uma-s-1p2.pt`, `uma-m-1p1.pt` (fairchem 2.20.0, task `omol`),
+`MACE-omol-0-extra-large-1024.model` (mace-torch 0.3.15 mit e3nn 0.4.4 aus
+`~/venvs/e3nn044`, float64). Referenz: das OMol25-Label derselben Geometrie
+aus `~/omol25_ts_all.jsonl` (tiefste Zeile je Reaktion, D11). Sammler
+[`pipeline/model_sp_table.py`](../pipeline/model_sp_table.py).
+`f_mae` ist der mittlere Betrag der Komponentendifferenz über 3N, wie der
+Kraftfehler der Thesis; `de_mev` die Differenz der Totalenergien.
+
+**Spin-Test** (`model_sp_spintest.csv`, 44 Anker, Spin 0/1/2): `spin` ist für
+alle drei Modelle die Multiplizität. Spin 1: UMA-S 2.4 meV / 0.013 eV/Å, UMA-M
+1.7 / 0.008, MACE-OMol 5.7 / 0.016 gegen das Label. Spin 0 ist kein Zustand
+und zerstört die Vorhersage (UMA-S 3.2 eV, MACE 10²⁷ eV); fairchem setzt
+fehlende Werte selbst auf 0/1 (`validate_atoms_data`), die Thesis-NEBs ohne
+`atoms.info` liefen also richtig.
+
+**Ergebnis** (Mediane, Kraft-MAE in eV/Å, |ΔE| in meV):
+
+| | UMA-S | UMA-M | MACE-OMol |
+|---|---|---|---|
+| alle 10 009 | 0.0096 / 2.0 | 0.0059 / 2.5 | 0.0122 / 6.4 |
+| closed-shell (8857) | 0.0093 / 2.0 | 0.0056 / 2.5 | 0.0117 / 6.1 |
+| broken-symmetry (1152) | 0.0133 / 2.3 | 0.0084 / 2.3 | 0.0177 / 9.0 |
+| Verhältnis bs/cs, gepoolt | 1.43 | 1.50 | 1.51 |
+| closed-shell, N_FOD > 0.5 (731) | 0.0132 | 0.0080 | 0.0173 |
+| broken-symmetry, N_FOD > 0.5 (840) | 0.0141 | 0.0088 | 0.0184 |
+| Zwillinge unter 0.5, bs / cs (365 Paare) | 0.0124 / 0.0112 | 0.0077 / 0.0069 | 0.0157 / 0.0146 |
+| Paare mit bs schlechter | 52 % | 53 % | 51 % |
+
+**Lesart.** An den Trainingsgeometrien fitten die Modelle ihre
+broken-symmetry-Punkte gepoolt um 1.4 bis 1.5 schlechter, aber bei gleichem
+MR-Charakter fast gleich gut: Zwillingsverhältnis 1.07 bis 1.13, in der
+Hälfte der Paare ist der closed-shell-Zwilling der schlechtere; im
+hoch-MR-Feld 1.05 bis 1.10. Der gepoolte Faktor ist also fast ganz
+MR-Charakter (ρ(f_mae, N_FOD) = 0.33 bis 0.35 innerhalb der closed-shell-
+Gruppe). Das steht neben dem Thesis-Befund an den Modell-Übergangszuständen
+(Faktor 2 bis 3, 1.6 bei gleichem MR): dort wirkt die Symmetriebrechung, hier,
+an den Trainingspunkten selbst, kaum. Die Schwierigkeit der Modelle an
+broken-symmetry-Sattelpunkten entsteht demnach abseits der Trainingspfade,
+dort, wo die Suche die Modelle hinführt, nicht beim Fitten der Labels. Die
+Energien sind in allen Zellen auf 2 bis 3 meV (UMA) bzw. 6 bis 9 meV (MACE)
+gleich. Gruppen hier nach dem OMol25-Label; die Fassung mit unserer eigenen
+Stabilitätsanalyse und der Breaking Depth folgt aus den ORCA-6.0.1-Läufen.
+
+**Prüfungen.** Jede Modellzeile hat ein Label (die 64 ohne OMol25-Treffer
+sind weggelassen) · Atomzahl Modell = Label · keine NaN · 10 009 Reaktionen je
+Modell · GPU- und CPU-Lauf identisch (s. o.).
+
+---
