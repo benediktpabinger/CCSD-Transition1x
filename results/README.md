@@ -635,3 +635,66 @@ rxn7937 und rxn7945 reproduzieren `~/orca_hinge_t1x` (Thesis, Job 10773547)
 auf 10⁻⁶ in ⟨S²⟩ und Energie.
 
 ---
+
+## zero_sample.csv — 200 Zeilen, Stichprobe der ⟨S²⟩ = 0-Labels
+
+Spalten wie `border_zone.csv`.
+
+**Die Frage.** In der Grenzzone hat die 20°-Rotation von OMol25 bei 7 von
+213 Reaktionen eine tiefe broken-symmetry-Lösung verfehlt. Wie oft passiert
+das bei den 8731 Reaktionen, deren OMol25-Label ⟨S²⟩ ≤ 0.001 trägt, also
+closed-shell aussieht?
+
+**Herkunft.** 200 Reaktionen gleichverteilt zufällig (Seed 0) aus den 8731,
+182 davon mit exakt 0
+([`pipeline/mk_zero_sample_tasks.py`](../pipeline/mk_zero_sample_tasks.py),
+`zero_sample_selection.csv`). Slurm-Arrays **11072062** (Tasks 0–49) und
+**11072824** (50–99) auf `xeon24el8`, dasselbe Protokoll und Jobskript wie
+die Grenzzone (`TASKFILE`/`OUTROOT` per `--export`), Ausgaben in
+`~/orca_zero_sample/`, Sammler `BZ_SET=zero pipeline/border_zone_table.py`.
+
+**Ergebnis.** **0 von 200** haben eine instabile restringierte Lösung: alle
+λ_min > 0 (kleinster +0.028 au), alle ⟨S²⟩ = 0, alle Tiefen 0. Das
+OMol25-Label liegt auf der RKS-Lösung, |E_omol − E_RKS| Median 0.07 meV, max
+0.11 meV; `fmax_omol` und `f_rks` stimmen im Median auf 0.001 eV/Å. Mit 0 von
+200 liegt die Rate verfehlter Lösungen unter den ⟨S²⟩ = 0-Labels mit 95 %
+unter etwa 1.5 %. Das Verfehlen tritt also dort auf, wo die Rotation
+überhaupt etwas gefunden hat, aber zu wenig (Grenzzone), nicht dort, wo sie
+nichts gefunden hat.
+
+**Prüfungen.** Wie `border_zone.csv`; die Anker fehlen in dieser Auswahl und
+werden übersprungen.
+
+---
+
+## fod_ts_all.csv — 10073 Zeilen, N_FOD am gespeicherten Übergangszustand
+
+`rxn, split, formula, n_atoms, n_elec, nfod, e_fod_ha, seconds, found,
+s2_omol, group_omol`
+
+**Die Frage.** Der MR-Charakter jeder Reaktion an derselben Geometrie, an der
+das OMol25-Label gelesen wurde, für die Paarung broken-symmetry gegen
+closed-shell bei gleichem N_FOD (docs/paper_decisions.md D05, D07).
+
+**Herkunft.** Slurm-Array **11072061** (41 Tasks auf `xeon24el9`, 6
+PySCF-Prozesse mit je 4 Threads), [`pipeline/fod_all_ts.py`](../pipeline/fod_all_ts.py)
+mit der Rechenfunktion aus [`pipeline/screen_fod.py`](../pipeline/screen_fod.py)
+(PBE/def2-SVP, RKS, Fermi-Schmierung 5000 K; Thesis-Einstellungen), eine JSON
+je Reaktion in `~/fod_ts_all/`, Sammler
+[`pipeline/fod_ts_table.py`](../pipeline/fod_ts_table.py). Alle 10073
+konvergiert, Median 17 s, zusammen 191 Kern-h. Anders als in der Thesis
+(N_FOD am def2-TZVP-NEB-Übergangszustand der 279 Test-Referenzen) steht die
+Zahl hier am gespeicherten Transition1x-TS, für alle Splits.
+
+**Ergebnis.** N_FOD Median 0.19, Mittel 0.27, max 3.26; 8.3 % über 0.68 (die
+Thesis-Schwelle der hohen Gruppe, dort 9.3 % des Testsplits). Nach
+OMol25-Gruppe: broken-symmetry Median **0.67** (10/90 %: 0.35/1.06),
+closed-shell Median **0.16** (0.04/0.47); Spearman ρ(N_FOD, ⟨S²⟩) = 0.61.
+Im 10–90 %-Fenster der broken-symmetry-Reaktionen liegen **1691
+closed-shell-Reaktionen**, mehr als die 1152 broken-symmetry insgesamt: eine
+Paarung bei gleichem MR-Charakter ist für den ganzen Pool möglich.
+
+**Prüfungen.** Eine JSON je Reaktion · keine mit Fehler · die beiden
+Summenformeln von N_FOD stimmen auf 10⁻⁵ · Atomzahl wie im H5 · 10073 Zeilen.
+
+---
