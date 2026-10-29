@@ -1,10 +1,12 @@
-"""The ORCA 6.0.0 acceptance test ("gate"): the private ORCA 6.0.0 install on el9
-against (a) our ORCA 5.0.4 runs and (b) the OMol25 labels, at the 45 stored
-Transition1x transition states, same protocol in all three.
+"""The ORCA 6.0.1 acceptance test ("gate"): the private ORCA 6.0.1 install on el9
+against (a) our ORCA 5.0.4 runs and (b) the OMol25 labels (ORCA 6.0.0), at the
+45 stored Transition1x transition states, same protocol in all three.
+(6.0.0 itself failed this protocol: broken stability analysis for wB97M-V,
+see docs/cluster_orca.md; its partial run is in ~/orca600_hinge_t1x.)
 
 Inputs (cluster)
     ~/orca_hinge_t1x/<rxn>/    ORCA 5.0.4  (pipeline/job_hinge_t1x.sh, job 10773547)
-    ~/orca6_hinge_t1x/<rxn>/   ORCA 6.0.0  (~/orca6_hinge_t1x/job_hinge_t1x_orca6.sh)
+    ~/orca6_hinge_t1x/<rxn>/   ORCA 6.0.1  (~/orca6_hinge_t1x/job_hinge_t1x_orca6.sh, array 11079206)
         rks_sp.out  RKS + EnGrad;  uks_sp.out  UKS + STABPerform;  uks_engrad.out  EnGrad on those orbitals
     results/omol25_label_compare.csv   OMol25 label (ORCA 6.0.0, Levine et al. 2025) at the same geometry:
         s2_omol, e_omol_ev (total energy), fmax_omol (largest force component, eV/A)
@@ -73,8 +75,10 @@ omol = {r['rxn']: r for r in csv.DictReader(open(os.path.join(REPO, 'results', '
 rows, missing, fails = [], [], []
 for d5 in sorted(glob.glob(f'{H}/orca_hinge_t1x/rxn*')):
     rx = os.path.basename(d5)
+    if rx not in omol:          # rxn5691: not in the OMol25 release, nothing to gate against
+        continue
     r5, r6 = run(d5), run(f'{H}/orca6_hinge_t1x/{rx}')
-    if r5 is None or r6 is None or rx not in omol:
+    if r5 is None or r6 is None:
         missing.append(rx)
         continue
     o = omol[rx]
@@ -100,14 +104,14 @@ with open(os.path.join(REPO, 'results', 'orca6_gate.csv'), 'w', newline='') as f
     for r in rows:
         w.writerow({c: (('%.6f' % r[c]) if isinstance(r[c], float) else r[c]) for c in COLS})
 
-print('ORCA 6.0.0 GATE: %d reactions compared, %d missing, %d fail' % (len(rows), len(missing), len(fails)))
-for k, lab in (('dE65_mev', 'E_BS  6.0.0 vs 5.0.4  [meV]'), ('dE6omol_mev', 'E_BS  6.0.0 vs OMol25 [meV]'),
-               ('dF65', 'F_BS  6.0.0 vs 5.0.4  [eV/A]'), ('dF6omol', 'F_BS  6.0.0 vs OMol25 [eV/A]')):
+print('ORCA 6.0.1 GATE: %d reactions compared, %d missing, %d fail' % (len(rows), len(missing), len(fails)))
+for k, lab in (('dE65_mev', 'E_BS  6.0.1 vs 5.0.4  [meV]'), ('dE6omol_mev', 'E_BS  6.0.1 vs OMol25 [meV]'),
+               ('dF65', 'F_BS  6.0.1 vs 5.0.4  [eV/A]'), ('dF6omol', 'F_BS  6.0.1 vs OMol25 [eV/A]')):
     a = np.abs([r[k] for r in rows])
     if len(a):
         print('  %-30s median %.4f  max %.4f' % (lab, np.median(a), a.max()))
 for grp in ('closed', 'bs'):
-    print('  group %-7s 5.0.4 %2d  6.0.0 %2d  OMol25 %2d' % (grp, *[sum(r[c] == grp for r in rows)
+    print('  group %-7s 5.0.4 %2d  6.0.1 %2d  OMol25 %2d' % (grp, *[sum(r[c] == grp for r in rows)
                                                             for c in ('group5', 'group6', 'group_omol')]))
 if missing:
     print('  missing:', ' '.join(missing))

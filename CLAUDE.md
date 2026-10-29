@@ -40,10 +40,11 @@ RQ2, test the OMol25 models (UMA-S, UMA-M, eSEN) at broken-symmetry transition s
   is not what a compute node sees; check with a short job on `xeon24el9_test`.
 - ORCA: two versions, how to use them in `docs/cluster_orca.md`. `ORCA/5.0.4-gompi-2023a` exists only in the el8 trees
   (`xeon24el8` 24 tasks, `xeon40el8` 40 tasks); every thesis number used it. No el9 tree has ORCA, and the admins will not
-  build one (forum builds need OpenMPI 4.1, el9 has 5.0; Steen Lysgaard 2026-10-28). Since 2026-10-29 ORCA 6.0.0, the
-  version OMol25 used, is installed privately in `~/opt/orca_6.0.0` with its own OpenMPI 4.1.6, for el9 nodes:
-  `source $HOME/opt/orca6.env`, call `$ORCADIR/orca`. Decision in docs/paper_decisions.md (D15 is being revised: the
-  user chose ORCA 6.0.0 for the paper on 2026-10-29, pending the 44-reaction acceptance test in `~/orca6_hinge_t1x`).
+  build one (forum builds need OpenMPI 4.1, el9 has 5.0; Steen Lysgaard 2026-10-28). Since 2026-10-29 ORCA 6.0.1 is
+  installed privately in `~/opt/orca_6.0.1` with its own OpenMPI 4.1.6, for el9 nodes: `source $HOME/opt/orca6.env`,
+  call `$ORCADIR/orca`. NOT 6.0.0 (OMol25's version, `~/opt/orca_6.0.0`): its stability analysis is broken for wB97M-V
+  (spurious negative eigenvalues, 9 of 17 runs aborted), fixed in 6.0.1. Decision D16 in docs/paper_decisions.md: paper
+  DFT = ORCA 6.0.1 on el9, gated by `pipeline/orca6_gate.py` (45 stored TS against 5.0.4 and the OMol25 labels).
 - Old working folders next to the repo clone: `~/pipeline` (stale copies of the repo scripts), `~/mr_benchmark`
   (ORCA single points; `orca_engrad_nod3` is the final run), `~/delta_head`, `~/data/transition1x_train.db`,
   `~/autocas_*`, `~/band_*` (multireference and NEB experiments). The repo clone is `~/Transition1x`.

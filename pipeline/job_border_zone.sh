@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --job-name=borderzone
-#SBATCH --partition=xeon24el8
+#SBATCH --partition=xeon24el9
 #SBATCH --nodes=1
 #SBATCH --ntasks=24
 #SBATCH --cpus-per-task=1
@@ -18,9 +18,12 @@
 #   2  uks_sp      UKS + STABPerform            -> E_BS, <S^2>
 #   3  uks_engrad  EnGrad auf den Orbitalen von uks_sp (MORead) -> F_BS
 #
-# Partition xeon24el8, nicht el9: ORCA/5.0.4-gompi-2023a gibt es nur in den
-# el8-Modulbaeumen, und die Admins halten die el8-Knoten dafuer vorerst am
-# Leben (Steen Lysgaard, 2026-10-28; docs/paper_decisions.md D15).
+# ORCA-Version: seit 2026-10-29 die private ORCA 6.0.1 auf el9
+# ($HOME/opt/orca6.env, docs/cluster_orca.md, Entscheidung D16). Die
+# Grenzzone (Arrays 11066525/11066805) und die <S^2>=0-Stichprobe
+# (11072062/11072824) liefen davor mit ORCA/5.0.4-gompi-2023a auf xeon24el8;
+# fuer einen 5.0.4-Lauf: Partition xeon24el8 und die beiden module-load-Zeilen
+# statt orca6.env (Vorlage: pipeline/job_hinge_t1x.sh).
 #
 # Ein ganzer xeon24-Knoten je Array-Task (CLAUDE.md), darauf ZWEI Reaktionen
 # gleichzeitig mit je 12 Kernen: Task i rechnet die Taskfile-Zeilen 2i+1 und
@@ -33,10 +36,10 @@
 #   N=$(wc -l < ~/t1x_ts_border_tasks.txt); sbatch --array=0-$(( (N+1)/2 - 1 ))%18 pipeline/job_border_zone.sh
 
 source /etc/profile
-module load gompi/2023a
-module load ORCA/5.0.4-gompi-2023a
-ORCA=$(which orca)
+source $HOME/opt/orca6.env          # ORCA 6.0.1 + OpenMPI 4.1.6, privat, el9
+ORCA=$ORCADIR/orca
 [ -x "$ORCA" ] || { echo "ABBRUCH: orca nicht ausfuehrbar ($ORCA)"; exit 5; }
+echo "ORCA: $ORCA"
 export OMPI_MCA_hwloc_base_binding_policy=none
 export OMPI_MCA_rmaps_base_oversubscribe=true
 
