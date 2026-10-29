@@ -61,7 +61,12 @@ import numpy as np
 
 H = os.path.expanduser('~')
 REPO = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-RUNS = f'{H}/orca_border_zone'
+# BZ_SET=zero: dieselbe Auswertung fuer die <S^2>=0-Stichprobe
+# (pipeline/mk_zero_sample_tasks.py, Laeufe in ~/orca_zero_sample).
+SETS = {'border': ('border_zone_selection.csv', 'orca_border_zone', 'border_zone.csv'),
+        'zero': ('zero_sample_selection.csv', 'orca_zero_sample', 'zero_sample.csv')}
+SEL_CSV, RUN_DIR, OUT_CSV = SETS[os.environ.get('BZ_SET', 'border')]
+RUNS = f'{H}/{RUN_DIR}'
 ANCHOR_RUNS = f'{H}/orca_hinge_t1x'
 EVA = 51.42208
 HA_EV = 27.211386245988
@@ -134,8 +139,7 @@ def collect(d):
                 scf_cyc_rks=rks['cyc'], scf_cyc_uks=uks['cyc'])
 
 
-sel = list(csv.DictReader(open(os.path.join(REPO, 'results',
-                                            'border_zone_selection.csv'))))
+sel = list(csv.DictReader(open(os.path.join(REPO, 'results', SEL_CSV))))
 rows, missing = [], []
 for s in sel:
     r = collect(f"{RUNS}/{s['rxn']}")
@@ -249,7 +253,7 @@ FMT = {'s2_omol': '%.6f', 'e_omol_ev': '%.9f', 'fmax_omol': '%.6f',
        'lambda_min': '%.6f', 's2_ours': '%.6f', 's2_sp': '%.6f', 'depth_mev': '%.3f',
        'f_rks': '%.6f', 'f_bs': '%.6f', 'e_rks_ha': '%.9f', 'e_bs_ha': '%.9f',
        'd_omol_rks_mev': '%.3f', 'd_omol_bs_mev': '%.3f'}
-out = os.path.join(REPO, 'results', 'border_zone.csv')
+out = os.path.join(REPO, 'results', OUT_CSV)
 with open(out, 'w', newline='') as fh:
     w = csv.writer(fh)
     w.writerow(COLS)

@@ -41,9 +41,13 @@ export OMPI_MCA_hwloc_base_binding_policy=none
 export OMPI_MCA_rmaps_base_oversubscribe=true
 
 H=/home/energy/bepab
+# Andere Auswahl mit demselben Protokoll: TASKFILE und OUTROOT per
+# sbatch --export=ALL,TASKFILE=...,OUTROOT=... setzen (z. B. die
+# <S^2>=0-Stichprobe aus pipeline/mk_zero_sample_tasks.py).
 TASKFILE=${TASKFILE:-$H/t1x_ts_border_tasks.txt}
-OUTROOT=$H/orca_border_zone
+OUTROOT=${OUTROOT:-$H/orca_border_zone}
 mkdir -p $OUTROOT
+echo "Taskfile $TASKFILE   Ausgabe $OUTROOT"
 
 METHOD='wB97M-V def2-TZVPD def2/J RIJCOSX TightSCF DEFGRID3'
 HEAD='%pal nprocs 12 end
