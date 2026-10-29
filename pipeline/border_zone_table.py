@@ -72,7 +72,8 @@ SETS = {'border': ('border_zone_selection.csv', 'orca_border_zone', 'border_zone
         's2pos': ('s2pos_selection.csv', 'orca6_s2pos', 'stab_s2pos_orca6.csv', 'orca6_hinge_t1x'),
         'zero6': ('zero_sample_selection.csv', 'orca6_zero_sample', 'zero_sample_orca6.csv', 'orca6_hinge_t1x'),
         'cshigh': ('cshigh_selection.csv', 'orca6_cshigh', 'stab_cshigh_orca6.csv', 'orca6_hinge_t1x'),
-        'cslow': ('cslow_selection.csv', 'orca6_cslow', 'stab_cslow_orca6.csv', 'orca6_hinge_t1x')}
+        'twins': ('twins_selection.csv', 'orca6_twins', 'stab_twins_orca6.csv', 'orca6_hinge_t1x'),
+        'base': ('base_selection.csv', 'orca6_base', 'stab_base_orca6.csv', 'orca6_hinge_t1x')}
 SEL_CSV, RUN_DIR, OUT_CSV, ANCHOR_DIR = SETS[os.environ.get('BZ_SET', 'border')]
 RUNS = f'{H}/{RUN_DIR}'
 ANCHOR_RUNS = f'{H}/{ANCHOR_DIR}'

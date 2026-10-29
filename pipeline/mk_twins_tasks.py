@@ -1,24 +1,24 @@
-"""Die gepaarte closed-shell-Kontrollgruppe (docs/paper_decisions.md D17).
+"""Die Zwillinge: zu jeder broken-symmetry-Reaktion mit N_FOD < 0.5 eine
+closed-shell-Reaktion mit gleichem MR-Charakter (docs/paper_decisions.md D19,
+Option A: Zwillinge plus Basislinie).
 
-Zu jeder Reaktion der broken-symmetry-Seite (results/s2pos_selection.csv,
-OMol25-s2 > 1e-3, 1278 Reaktionen) eine closed-shell-Reaktion (OMol25-s2 <=
-1e-3, in OMol25 gefunden) mit gleichem MR-Charakter:
+Oberhalb von N_FOD 0.5 werden ALLE closed-shell-Reaktionen gerechnet (Satz
+cshigh); dort entstehen die Zwillinge bei der Auswertung aus den gerechneten.
+Hier also nur die 365 broken-symmetry-Reaktionen unter 0.5
+(results/s2pos_selection.csv), Pool: closed-shell (OMol25-s2 <= 1e-3, in
+OMol25 gefunden) mit N_FOD < 0.5. Regel:
     1. im N_FOD-Fenster |dN_FOD| <= 0.05 (results/fod_ts_all.csv, am
        gespeicherten TS) die naechste closed-shell-Reaktion mit gleicher Zahl
        schwerer Atome (C, N, O), sonst die naechste im Fenster;
-    2. ist das Fenster leer: die naechste freie ueberhaupt (match_rule
-       'nfod_far', am oberen Ende der N_FOD-Skala, wo closed-shell selten ist).
-    Ohne Zuruecklegen, die Reaktionen mit dem hoechsten N_FOD zuerst.
-    N_FOD-Naehe geht vor Groessengleichheit: der MR-Charakter ist die
-    Kovariate, die Kraftfehler sind je Komponente und damit groessenneutral.
-Die 200 Reaktionen der Zufallsstichprobe (results/zero_sample_selection.csv)
-bleiben aus dem Pool, sie laufen ohnehin.
+    2. ist das Fenster leer: ohne Partner (results/twins_unmatched_bs.csv;
+       unter 0.5 ist der Pool dicht, erwartet: keine).
+    Ohne Zuruecklegen, aufsteigend nach N_FOD.
 
-Ausgaben wie mk_stab_tasks.py: ~/t1x_ts_matched/<rxn>.xyz,
-~/t1x_ts_matched_tasks.txt, results/matched_selection.csv (eine Zeile je
-closed-shell-Reaktion mit ihrem broken-symmetry-Partner).
+Ausgaben wie mk_stab_tasks.py: ~/t1x_ts_twins/<rxn>.xyz,
+~/t1x_ts_twins_tasks.txt, results/twins_selection.csv (eine Zeile je
+closed-shell-Zwilling mit seinem broken-symmetry-Partner).
 
-    python pipeline/mk_matched_tasks.py
+    python pipeline/mk_twins_tasks.py
 """
 import bisect
 import csv
@@ -29,13 +29,13 @@ H = os.path.expanduser('~')
 REPO = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 RES = os.path.join(REPO, 'results')
 SYM = {1: 'H', 6: 'C', 7: 'N', 8: 'O'}
-XYZ_DIR = f'{H}/t1x_ts_matched'
-TASKFILE = f'{H}/t1x_ts_matched_tasks.txt'
+XYZ_DIR = f'{H}/t1x_ts_twins'
+TASKFILE = f'{H}/t1x_ts_twins_tasks.txt'
+FOD_MAX = 0.5
 
 omol = {r['rxn']: r for r in csv.DictReader(open(f'{RES}/omol25_ts_all.csv'))}
 fod = {r['rxn']: float(r['nfod']) for r in csv.DictReader(open(f'{RES}/fod_ts_all.csv'))}
-bs = [r['rxn'] for r in csv.DictReader(open(f'{RES}/s2pos_selection.csv'))]
-zero = {r['rxn'] for r in csv.DictReader(open(f'{RES}/zero_sample_selection.csv'))}
+bs = [r['rxn'] for r in csv.DictReader(open(f'{RES}/s2pos_selection.csv')) if fod[r['rxn']] < FOD_MAX]
 ts = json.load(open(f'{H}/t1x_ts_all.json'))
 
 
@@ -44,7 +44,7 @@ def n_heavy(rx):
 
 
 pool = [rx for rx, r in omol.items()
-        if r['found'] == '1' and float(r['s2']) <= 1e-3 and rx not in zero]
+        if r['found'] == '1' and float(r['s2']) <= 1e-3 and fod[rx] < FOD_MAX]
 # Pool nach Schweratomzahl, je Groesse nach N_FOD sortiert
 by_size = {}
 for rx in pool:
@@ -110,13 +110,13 @@ with open(TASKFILE, 'w') as tf:
             for z, (x, y, w) in zip(Z, R):
                 fh.write(f'{SYM[z]:2s} {x:16.8f} {y:16.8f} {w:16.8f}\n')
         tf.write(f"{p['rxn']}:{xyz}:{nel}\n")
-out = f'{RES}/matched_selection.csv'
+out = f'{RES}/twins_selection.csv'
 with open(out, 'w', newline='') as fh:
     w = csv.DictWriter(fh, fieldnames=list(pairs[0].keys()))
     w.writeheader()
     w.writerows(pairs)
 
-with open(f'{RES}/matched_unmatched_bs.csv', 'w', newline='') as fh:
+with open(f'{RES}/twins_unmatched_bs.csv', 'w', newline='') as fh:
     w = csv.DictWriter(fh, fieldnames=['rxn_bs', 'nfod_bs', 'n_heavy_bs', 's2_omol'])
     w.writeheader()
     w.writerows(sorted(unmatched, key=lambda u: u['rxn_bs']))
@@ -132,5 +132,5 @@ print('   N_FOD Median: gepaarte bs %.3f, cs %.3f; ohne Partner %.3f (min %.3f)'
       % (np.median([p['nfod_bs'] for p in pairs]), np.median([p['nfod_cs'] for p in pairs]),
          np.median([u['nfod_bs'] for u in unmatched]) if unmatched else float('nan'),
          min((u['nfod_bs'] for u in unmatched), default=float('nan'))))
-print('   results/matched_unmatched_bs.csv')
+print('   results/twins_unmatched_bs.csv')
 print(f'{TASKFILE}\n{XYZ_DIR}/\n{os.path.relpath(out, REPO)}')
