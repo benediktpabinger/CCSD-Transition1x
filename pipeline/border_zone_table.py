@@ -61,13 +61,20 @@ import numpy as np
 
 H = os.path.expanduser('~')
 REPO = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-# BZ_SET=zero: dieselbe Auswertung fuer die <S^2>=0-Stichprobe
-# (pipeline/mk_zero_sample_tasks.py, Laeufe in ~/orca_zero_sample).
-SETS = {'border': ('border_zone_selection.csv', 'orca_border_zone', 'border_zone.csv'),
-        'zero': ('zero_sample_selection.csv', 'orca_zero_sample', 'zero_sample.csv')}
-SEL_CSV, RUN_DIR, OUT_CSV = SETS[os.environ.get('BZ_SET', 'border')]
+# BZ_SET waehlt den Satz: Auswahl-CSV, Laufverzeichnis, Ausgabe-CSV, Anker.
+#   border, zero   ORCA 5.0.4 auf xeon24el8 (2026-10-28/29), Anker = Thesis-Laeufe
+#   s2pos, zero6   ORCA 6.0.1 auf el9 (D16): alle 1278 Reaktionen mit
+#                  OMol25-s2 > 1e-3 (pipeline/mk_stab_tasks.py) und dieselbe
+#                  200er-Stichprobe noch einmal; Anker = Gate-Laeufe
+#                  ~/orca6_hinge_t1x (gleiche Version, gleiche Geometrie)
+SETS = {'border': ('border_zone_selection.csv', 'orca_border_zone', 'border_zone.csv', 'orca_hinge_t1x'),
+        'zero': ('zero_sample_selection.csv', 'orca_zero_sample', 'zero_sample.csv', 'orca_hinge_t1x'),
+        's2pos': ('s2pos_selection.csv', 'orca6_s2pos', 'stab_s2pos_orca6.csv', 'orca6_hinge_t1x'),
+        'zero6': ('zero_sample_selection.csv', 'orca6_zero_sample', 'zero_sample_orca6.csv', 'orca6_hinge_t1x'),
+        'matched': ('matched_selection.csv', 'orca6_matched', 'stab_matched_orca6.csv', 'orca6_hinge_t1x')}
+SEL_CSV, RUN_DIR, OUT_CSV, ANCHOR_DIR = SETS[os.environ.get('BZ_SET', 'border')]
 RUNS = f'{H}/{RUN_DIR}'
-ANCHOR_RUNS = f'{H}/orca_hinge_t1x'
+ANCHOR_RUNS = f'{H}/{ANCHOR_DIR}'
 EVA = 51.42208
 HA_EV = 27.211386245988
 S2_BREAK = 0.05
@@ -225,7 +232,10 @@ if st:
           % max(abs(r['f_rks'] - r['f_bs']) for r in st))
 check(all(r['lambda_min'] is not None for r in rows), 'lambda_min in jeder Zeile gelesen')
 anch = []
-for rx in ('rxn7937', 'rxn7945'):
+# Anker: alle Reaktionen des Satzes, die auch im Ankerverzeichnis liegen
+# (border/zero: rxn7937, rxn7945 in den Thesis-Laeufen; s2pos: die 17
+# broken-symmetry-Reaktionen der 45 in den Gate-Laeufen)
+for rx in sorted(r['rxn'] for r in rows if os.path.isdir(f'{ANCHOR_RUNS}/{r["rxn"]}')):
     a = collect(f'{ANCHOR_RUNS}/{rx}')
     b = next((r for r in rows if r['rxn'] == rx), None)
     if a is None or b is None:
