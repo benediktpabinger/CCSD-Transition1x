@@ -38,12 +38,12 @@ RQ2, test the OMol25 models (UMA-S, UMA-M, eSEN) at broken-symmetry transition s
 - Module trees are per CPU type and OS (`/home/modules` is an NFS mount of `/u/modules/<arch>_<os>`): the login node sees
   `skylake_el9`, xeon24 nodes `broadwell_el9`, the old el8 nodes `xeonv4_el8`. What `module avail` shows on the login node
   is not what a compute node sees; check with a short job on `xeon24el9_test`.
-- ORCA: only `ORCA/5.0.4-gompi-2023a` in the el8 trees exists; NO el9 tree has ORCA or gompi/2023a (checked 2026-10-27,
-  job 11062092 failed on it), and the admins cannot build ORCA against the el9 OpenMPI, so they keep el8 nodes alive for
-  ORCA users (Steen Lysgaard, 2026-10-28). ALL ORCA jobs go to `xeon24el8` (24 tasks) or `xeon40el8` (40 tasks). Decision
-  D15 (docs/paper_decisions.md): the paper stays with ORCA 5.0.4 throughout, like the thesis.
-- SLURM accounting: MaxJobs 20 running, MaxSubmit 100 queued; both count array elements, so split arrays above 100 and
-  use `%18` to stay under the running limit. `squeue` collapses a pending array into one line; count with `squeue -r`.
+- ORCA: two versions, how to use them in `docs/cluster_orca.md`. `ORCA/5.0.4-gompi-2023a` exists only in the el8 trees
+  (`xeon24el8` 24 tasks, `xeon40el8` 40 tasks); every thesis number used it. No el9 tree has ORCA, and the admins will not
+  build one (forum builds need OpenMPI 4.1, el9 has 5.0; Steen Lysgaard 2026-10-28). Since 2026-10-29 ORCA 6.0.0, the
+  version OMol25 used, is installed privately in `~/opt/orca_6.0.0` with its own OpenMPI 4.1.6, for el9 nodes:
+  `source $HOME/opt/orca6.env`, call `$ORCADIR/orca`. Decision in docs/paper_decisions.md (D15 is being revised: the
+  user chose ORCA 6.0.0 for the paper on 2026-10-29, pending the 44-reaction acceptance test in `~/orca6_hinge_t1x`).
 - Old working folders next to the repo clone: `~/pipeline` (stale copies of the repo scripts), `~/mr_benchmark`
   (ORCA single points; `orca_engrad_nod3` is the final run), `~/delta_head`, `~/data/transition1x_train.db`,
   `~/autocas_*`, `~/band_*` (multireference and NEB experiments). The repo clone is `~/Transition1x`.
