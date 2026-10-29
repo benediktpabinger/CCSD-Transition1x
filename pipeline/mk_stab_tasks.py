@@ -24,15 +24,29 @@ SYM = {1: 'H', 6: 'C', 7: 'N', 8: 'O'}
 
 ap = argparse.ArgumentParser()
 ap.add_argument('--name', default='s2pos')
-ap.add_argument('--min-s2', type=float, default=1e-3)
-ap.add_argument('--max-s2', type=float, default=2.0)
+ap.add_argument('--min-s2', type=float, default=1e-3, help='s2 > min-s2 (OMol25-Label)')
+ap.add_argument('--max-s2', type=float, default=2.0, help='s2 <= max-s2')
+ap.add_argument('--min-fod', type=float, default=-1.0, help='N_FOD > min-fod (results/fod_ts_all.csv)')
+ap.add_argument('--max-fod', type=float, default=99.0, help='N_FOD <= max-fod')
+ap.add_argument('--random', type=int, default=0, help='Zufallsstichprobe dieser Groesse aus der Auswahl')
+ap.add_argument('--seed', type=int, default=0)
 a = ap.parse_args()
 XYZ_DIR = f'{H}/t1x_ts_{a.name}'
 TASKFILE = f'{H}/t1x_ts_{a.name}_tasks.txt'
 
+# Die 2x2-Zellen des Papers (docs/paper_decisions.md D18), MR-Schnitt N_FOD = 0.5:
+#   s2pos   --min-s2 1e-3                      (broken-symmetry-Seite, beide MR-Zeilen)
+#   cshigh  --max-s2 1e-3 --min-fod 0.5        (closed-shell, hohe MR, vollstaendig)
+#   cslow   --max-s2 1e-3 --max-fod 0.5 --random 365   (closed-shell, niedrige MR, Stichprobe)
+fod = {r['rxn']: float(r['nfod'])
+       for r in csv.DictReader(open(os.path.join(REPO, 'results', 'fod_ts_all.csv')))}
 rows = [r for r in csv.DictReader(open(os.path.join(REPO, 'results', 'omol25_ts_all.csv')))
-        if r['found'] == '1' and a.min_s2 < float(r['s2']) <= a.max_s2]
+        if r['found'] == '1' and a.min_s2 < float(r['s2']) <= a.max_s2
+        and a.min_fod < fod[r['rxn']] <= a.max_fod]
 rows.sort(key=lambda r: r['rxn'])
+if a.random:
+    import random
+    rows = sorted(random.Random(a.seed).sample(rows, a.random), key=lambda r: r['rxn'])
 ts = json.load(open(f'{H}/t1x_ts_all.json'))
 
 os.makedirs(XYZ_DIR, exist_ok=True)
@@ -53,7 +67,7 @@ with open(TASKFILE, 'w') as tf:
                 fh.write(f'{SYM[z]:2s} {x:16.8f} {y:16.8f} {w:16.8f}\n')
         tf.write(f"{r['rxn']}:{xyz}:{nel}\n")
         sel.append(dict(rxn=r['rxn'], split=r['split'], formula=r['formula'],
-                        n_atoms=r['n_atoms'], s2_omol=r['s2'],
+                        n_atoms=r['n_atoms'], s2_omol=r['s2'], nfod=fod[r['rxn']],
                         e_omol_ev=r['e_omol_ev'], fmax_omol=r['fmax_omol']))
 
 out = os.path.join(REPO, 'results', f'{a.name}_selection.csv')
@@ -61,7 +75,11 @@ with open(out, 'w', newline='') as fh:
     w = csv.DictWriter(fh, fieldnames=list(sel[0].keys()))
     w.writeheader()
     w.writerows(sel)
-print(f'{len(sel)} Reaktionen mit {a.min_s2:g} < s2 <= {a.max_s2:g}')
+print(f'{len(sel)} Reaktionen mit {a.min_s2:g} < s2 <= {a.max_s2:g}, {a.min_fod:g} < N_FOD <= {a.max_fod:g}'
+      + (f', Zufallsstichprobe Seed {a.seed}' if a.random else ''))
+print('   N_FOD Median %.3f, < 0.5: %d, > 0.5: %d'
+      % (sorted(r['nfod'] for r in sel)[len(sel) // 2], sum(r['nfod'] < 0.5 for r in sel),
+         sum(r['nfod'] >= 0.5 for r in sel)))
 for lo, hi in ((a.min_s2, 0.05), (0.05, 0.1), (0.1, 0.5), (0.5, a.max_s2)):
     print('   %g..%g: %d' % (lo, hi, sum(lo < float(r['s2_omol']) <= hi for r in sel)))
 print(f'Atome {min(int(r["n_atoms"]) for r in sel)}..{max(int(r["n_atoms"]) for r in sel)}')
