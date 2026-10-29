@@ -29,6 +29,8 @@ ap.add_argument('--max-s2', type=float, default=2.0, help='s2 <= max-s2')
 ap.add_argument('--min-fod', type=float, default=-1.0, help='N_FOD > min-fod (results/fod_ts_all.csv)')
 ap.add_argument('--max-fod', type=float, default=99.0, help='N_FOD <= max-fod')
 ap.add_argument('--random', type=int, default=0, help='Zufallsstichprobe dieser Groesse aus der Auswahl')
+ap.add_argument('--match-hist', help='Auswahl-CSV (z. B. results/s2pos_selection.csv): Stichprobe '
+                'mit derselben N_FOD-Verteilung wie deren Reaktionen im Fenster, Bins von 0.1')
 ap.add_argument('--seed', type=int, default=0)
 a = ap.parse_args()
 XYZ_DIR = f'{H}/t1x_ts_{a.name}'
@@ -37,16 +39,34 @@ TASKFILE = f'{H}/t1x_ts_{a.name}_tasks.txt'
 # Die 2x2-Zellen des Papers (docs/paper_decisions.md D18), MR-Schnitt N_FOD = 0.5:
 #   s2pos   --min-s2 1e-3                      (broken-symmetry-Seite, beide MR-Zeilen)
 #   cshigh  --max-s2 1e-3 --min-fod 0.5        (closed-shell, hohe MR, vollstaendig)
-#   cslow   --max-s2 1e-3 --max-fod 0.5 --random 365   (closed-shell, niedrige MR, Stichprobe)
+#   cslow   --max-s2 1e-3 --max-fod 0.5 --match-hist results/s2pos_selection.csv
+#           (closed-shell, niedrige MR: Stichprobe mit derselben N_FOD-Verteilung
+#            wie die broken-symmetry-Reaktionen unter 0.5, also ab deren
+#            niedrigstem N_FOD 0.134, nicht aus dem ganzen Bereich ab 0)
 fod = {r['rxn']: float(r['nfod'])
        for r in csv.DictReader(open(os.path.join(REPO, 'results', 'fod_ts_all.csv')))}
 rows = [r for r in csv.DictReader(open(os.path.join(REPO, 'results', 'omol25_ts_all.csv')))
         if r['found'] == '1' and a.min_s2 < float(r['s2']) <= a.max_s2
         and a.min_fod < fod[r['rxn']] <= a.max_fod]
 rows.sort(key=lambda r: r['rxn'])
+import random  # noqa: E402
 if a.random:
-    import random
     rows = sorted(random.Random(a.seed).sample(rows, a.random), key=lambda r: r['rxn'])
+if a.match_hist:
+    # Zielverteilung: die Reaktionen der Referenz-Auswahl im selben N_FOD-Fenster
+    ref = [fod[r['rxn']] for r in csv.DictReader(open(a.match_hist))
+           if a.min_fod < fod[r['rxn']] <= a.max_fod]
+    rng = random.Random(a.seed)
+    picked = []
+    b = 0.0
+    while b < max(ref):
+        want = sum(b < x <= b + 0.1 for x in ref)
+        have = [r for r in rows if b < fod[r['rxn']] <= b + 0.1]
+        assert len(have) >= want, f'Bin {b:.1f}: {want} gewuenscht, {len(have)} vorhanden'
+        picked += rng.sample(have, want)
+        b += 0.1
+    rows = sorted(picked, key=lambda r: r['rxn'])
+    print(f'Stichprobe mit der N_FOD-Verteilung von {a.match_hist} ({len(ref)} Referenzreaktionen)')
 ts = json.load(open(f'{H}/t1x_ts_all.json'))
 
 os.makedirs(XYZ_DIR, exist_ok=True)
