@@ -15,6 +15,10 @@ Ausgabe results/border_zone.csv, eine Zeile je Reaktion:
                                      der restringierten Loesung, au; < 0 heisst
                                      instabil, ORCA startet dann neu
     orca_unstable                    1 wenn ORCA "UNSTABLE" meldet
+    uks_direct_bs                    1 wenn die UKS-Rechnung schon vor der
+                                     Stabilitaetsanalyse auf der broken-symmetry-
+                                     Loesung lag (s2_sp > 0.05 ohne Neustart);
+                                     lambda_min gilt dann fuer diese Loesung
     s2_ours                          <S^2> der Loesung, auf der uks_engrad endet:
                                      derselbe konvergierte Zustand, aus dem E_BS
                                      und F_BS stammen (wie E_BS in hinge_t1x.py)
@@ -85,7 +89,12 @@ PARTIAL = '--partial' in sys.argv
 E_RE = re.compile(r'FINAL SINGLE POINT ENERGY\s+([-\d.]+)')
 S2_RE = re.compile(r'Expectation value of <S\*\*2>\s*:\s*([-\d.]+)')
 CYC_RE = re.compile(r'SCF CONVERGED AFTER\s+(\d+)\s+CYCLES')
-LAM_RE = re.compile(r'Root\s+Eigenvalue \(au\)\s*\n\s*0\s+([-\d.]+)')
+# kleinster Stabilitaets-Eigenwert der ERSTEN Analyse (restringierte Loesung):
+# ORCA 5.0.4 druckt "Root  Eigenvalue (au)" / "0  -0.0310", ORCA 6.0.1
+# "The eigenvalues of the stability matrix:" / "E( 0) = -0.03114230 Eh"
+LAM_RE = re.compile(r'Root\s+Eigenvalue \(au\)\s*\n\s*0\s+([-\d.]+)'
+                    r'|eigenvalues of the stability matrix:\s*\n\s*E\(\s*0\)\s*=\s*([-\d.]+)')
+UNSTABLE_RE = re.compile(r'indicates an UNSTABLE|indicates that the wavefunction is unstable')
 
 fails = []
 
@@ -104,11 +113,12 @@ def sp(p):
         return None
     e, s2, c, lam = (E_RE.findall(t), S2_RE.findall(t), CYC_RE.findall(t),
                      LAM_RE.findall(t))
+    lam0 = next((a or b for a, b in lam), None)
     return dict(e=float(e[-1]) if e else None,
                 s2=float(s2[-1]) if s2 else None,
                 cyc=int(c[-1]) if c else None,
-                lam=float(lam[0]) if lam else None,
-                unstable=int('indicates an UNSTABLE' in t))
+                lam=float(lam0) if lam0 is not None else None,
+                unstable=int(bool(UNSTABLE_RE.search(t))))
 
 
 def gradmax(p):
@@ -225,12 +235,26 @@ check(not bad, 'E_RKS >= E_BS - 1e-6 Ha ueberall' + ('' if not bad else ': %s' %
 neg = [r for r in rows if r['depth_mev'] < 0]
 print('       (UKS marginal ueber RKS, |dE| < 1e-6 Ha: %d Zeilen, tiefste %.4f meV)'
       % (len(neg), min((r['depth_mev'] for r in neg), default=0)))
-st = [r for r in rows if r['lambda_min'] is not None and r['lambda_min'] > 0]
+# lambda_min gehoert zur ERSTEN Stabilitaetsanalyse, also zu der Loesung, auf
+# die die UKS-Rechnung aus dem Startguess zuerst konvergiert ist. Meist ist
+# das die restringierte (s2 = 0); bei einigen tiefen Faellen landet die SCF
+# aber direkt auf der broken-symmetry-Loesung (uks_direct_bs = 1, z. B.
+# rxn2531: s2 0.68, lambda +0.056, Tiefe 261 meV) -- dann ist lambda_min > 0
+# die Stabilitaet DIESER Loesung, und E_BS != E_RKS ist richtig.
+for r in rows:
+    r['uks_direct_bs'] = int(abs(r['s2_sp']) > S2_BREAK and not r['orca_unstable'])
+nd = sum(r['uks_direct_bs'] for r in rows)
+print('       (UKS direkt auf der broken-symmetry-Loesung konvergiert, ohne Neustart: %d Zeilen)' % nd)
+st = [r for r in rows if r['lambda_min'] is not None and r['lambda_min'] > 0
+      and abs(r['s2_ours']) <= S2_BREAK and not r['uks_direct_bs']]
 if st:
-    check(max(abs(r['e_rks_ha'] - r['e_bs_ha']) for r in st) < 1e-8,
-          'lambda_min > 0: |E_RKS - E_BS| < 1e-8 Ha (%d Zeilen)' % len(st))
+    # 1e-6 Ha (0.03 meV): zwei getrennte SCF-Laeufe (RKS, UKS ohne Neustart)
+    # auf derselben Loesung stimmen in ORCA 6.0.1 (LEANSCF) auf ~1e-7 Ha
+    check(max(abs(r['e_rks_ha'] - r['e_bs_ha']) for r in st) < 1e-6,
+          'lambda_min > 0 auf der closed-shell-Loesung: |E_RKS - E_BS| < 1e-6 Ha (%d Zeilen, max %.1e)'
+          % (len(st), max(abs(r['e_rks_ha'] - r['e_bs_ha']) for r in st)))
     check(max(abs(r['f_rks'] - r['f_bs']) for r in st) < 5e-3,
-          'lambda_min > 0: |F_RKS - F_BS| < 5e-3 eV/A (max %.4f)'
+          'lambda_min > 0 auf der closed-shell-Loesung: |F_RKS - F_BS| < 5e-3 eV/A (max %.4f)'
           % max(abs(r['f_rks'] - r['f_bs']) for r in st))
 check(all(r['lambda_min'] is not None for r in rows), 'lambda_min in jeder Zeile gelesen')
 anch = []
@@ -257,7 +281,7 @@ if fails:
              + '\n  '.join(fails))
 
 COLS = ['rxn', 'split', 'formula', 'n_atoms', 's2_omol', 'e_omol_ev', 'fmax_omol',
-        'lambda_min', 'orca_unstable', 's2_ours', 's2_sp', 'sp_engrad_differ',
+        'lambda_min', 'orca_unstable', 'uks_direct_bs', 's2_ours', 's2_sp', 'sp_engrad_differ',
         'group_ours', 'depth_mev',
         'f_rks', 'f_bs', 'e_rks_ha', 'e_bs_ha', 'd_omol_rks_mev', 'd_omol_bs_mev',
         'scf_cyc_rks', 'scf_cyc_uks']
