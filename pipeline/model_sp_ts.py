@@ -33,11 +33,12 @@ from ase import Atoms
 H = os.path.expanduser('~')
 CHECKPOINTS = {'uma-s': f'{H}/checkpoints/uma-s-1p2.pt',
                'uma-m': f'{H}/checkpoints/uma-m-1p1.pt',
+               'esen': f'{H}/checkpoints/esen_sm_conserving_all.pt',
                'mace-omol': f'{H}/.cache/mace/MACE-omol-0-extra-large-1024.model'}
 
 
 def make_calc(model, device):
-    if model.startswith('uma'):
+    if model != 'mace-omol':
         from fairchem.core import pretrained_mlip, FAIRChemCalculator
         pu = pretrained_mlip.load_predict_unit(CHECKPOINTS[model], device=device)
         return FAIRChemCalculator(pu, task_name='omol')
