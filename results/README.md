@@ -699,12 +699,12 @@ Summenformeln von N_FOD stimmen auf 10⁻⁵ · Atomzahl wie im H5 · 10073 Zeil
 
 ---
 
-## model_sp_ts_all.csv — 30027 Zeilen, drei Modelle an allen gespeicherten Übergangszuständen
+## model_sp_ts_all.csv — 40036 Zeilen, vier Modelle an allen gespeicherten Übergangszuständen
 
 `rxn, model, spin, split, formula, n_atoms, group_omol, s2_omol, nfod,
 e_model_ev, e_omol_ev, de_mev, fmax_model, fmax_omol, f_mae, f_maxdiff, f_cos`
 
-**Die Frage.** Wie gut reproduzieren UMA-S, UMA-M und MACE-OMol ihre eigenen
+**Die Frage.** Wie gut reproduzieren UMA-S, UMA-M, eSEN und MACE-OMol ihre eigenen
 Trainingspunkte: das OMol25-Label (Energie, Kräfte) am gespeicherten
 Transition1x-Übergangszustand, 10 009 Reaktionen, nach broken-symmetry /
 closed-shell und nach MR-Charakter (N_FOD)? Anders als in der Thesis (Fehler
@@ -717,7 +717,7 @@ an fixen Geometrien, die im Training waren.
 11079437) und [`pipeline/job_model_sp_ts_cpu.sh`](../pipeline/job_model_sp_ts_cpu.sh)
 (CPU, 11079468); beide liefen durch und stimmen auf 0.003 meV und 2·10⁻⁵ eV/Å
 überein, die Tabelle nimmt die GPU-Dateien `~/model_sp_ts/all_<model>_spin1.jsonl`.
-Checkpoints: `uma-s-1p2.pt`, `uma-m-1p1.pt` (fairchem 2.20.0, task `omol`),
+Checkpoints: `uma-s-1p2.pt`, `uma-m-1p1.pt`, `esen_sm_conserving_all.pt` (fairchem 2.20.0, task `omol`; eSEN nur auf CPU gerechnet, Array 11095268),
 `MACE-omol-0-extra-large-1024.model` (mace-torch 0.3.15 mit e3nn 0.4.4 aus
 `~/venvs/e3nn044`, float64). Referenz: das OMol25-Label derselben Geometrie
 aus `~/omol25_ts_all.jsonl` (tiefste Zeile je Reaktion, D11). Sammler
@@ -727,41 +727,50 @@ Kraftfehler der Thesis; `de_mev` die Differenz der Totalenergien.
 
 **Spin-Test** (`model_sp_spintest.csv`, 44 Anker, Spin 0/1/2): `spin` ist für
 alle drei Modelle die Multiplizität. Spin 1: UMA-S 2.4 meV / 0.013 eV/Å, UMA-M
-1.7 / 0.008, MACE-OMol 5.7 / 0.016 gegen das Label. Spin 0 ist kein Zustand
+1.7 / 0.008, eSEN 2.1 / 0.020, MACE-OMol 5.7 / 0.016 gegen das Label. Spin 0 ist kein Zustand
 und zerstört die Vorhersage (UMA-S 3.2 eV, MACE 10²⁷ eV); fairchem setzt
 fehlende Werte selbst auf 0/1 (`validate_atoms_data`), die Thesis-NEBs ohne
-`atoms.info` liefen also richtig.
+`atoms.info` liefen also richtig. Für eSEN wählt der Calculator ohne `task_name` selbst `omol`, Energien und Kräfte wie mit explizitem Spin 1 (geprüft an 3 Reaktionen, 2026-10-31).
 
 **Ergebnis** (Mediane, Kraft-MAE in eV/Å, |ΔE| in meV):
 
-| | UMA-S | UMA-M | MACE-OMol |
-|---|---|---|---|
-| alle 10 009 | 0.0096 / 2.0 | 0.0059 / 2.5 | 0.0122 / 6.4 |
-| closed-shell (8857) | 0.0093 / 2.0 | 0.0056 / 2.5 | 0.0117 / 6.1 |
-| broken-symmetry (1152) | 0.0133 / 2.3 | 0.0084 / 2.3 | 0.0177 / 9.0 |
-| Verhältnis bs/cs, gepoolt | 1.43 | 1.50 | 1.51 |
-| closed-shell, N_FOD > 0.5 (731) | 0.0132 | 0.0080 | 0.0173 |
-| broken-symmetry, N_FOD > 0.5 (840) | 0.0141 | 0.0088 | 0.0184 |
-| Zwillinge unter 0.5, bs / cs (365 Paare) | 0.0124 / 0.0112 | 0.0077 / 0.0069 | 0.0157 / 0.0146 |
-| Paare mit bs schlechter | 52 % | 53 % | 51 % |
+| | UMA-S | UMA-M | eSEN | MACE-OMol |
+|---|---|---|---|---|
+| alle 10 009 | 0.0096 / 2.0 | 0.0059 / 2.5 | 0.0140 / 3.3 | 0.0122 / 6.4 |
+| closed-shell (8857) | 0.0093 / 2.0 | 0.0056 / 2.5 | 0.0134 / 3.2 | 0.0117 / 6.1 |
+| broken-symmetry (1152) | 0.0133 / 2.3 | 0.0084 / 2.3 | 0.0195 / 4.1 | 0.0177 / 9.0 |
+| Verhältnis bs/cs, gepoolt | 1.43 | 1.50 | 1.46 | 1.51 |
+| closed-shell, N_FOD > 0.5 (731) | 0.0132 | 0.0080 | 0.0202 | 0.0173 |
+| broken-symmetry, N_FOD > 0.5 (840) | 0.0141 | 0.0088 | 0.0201 | 0.0184 |
+| Zwillinge unter 0.5, bs / cs (365 Paare) | 0.0124 / 0.0112 | 0.0077 / 0.0069 | 0.0183 / 0.0165 | 0.0157 / 0.0146 |
+| Paare mit bs schlechter | 52 % | 53 % | 54 % | 51 % |
 
-**Lesart.** An den Trainingsgeometrien fitten die Modelle ihre
-broken-symmetry-Punkte gepoolt um 1.4 bis 1.5 schlechter, aber bei gleichem
-MR-Charakter fast gleich gut: Zwillingsverhältnis 1.07 bis 1.13, in der
-Hälfte der Paare ist der closed-shell-Zwilling der schlechtere; im
-hoch-MR-Feld 1.05 bis 1.10. Der gepoolte Faktor ist also fast ganz
-MR-Charakter (ρ(f_mae, N_FOD) = 0.33 bis 0.35 innerhalb der closed-shell-
-Gruppe). Das steht neben dem Thesis-Befund an den Modell-Übergangszuständen
-(Faktor 2 bis 3, 1.6 bei gleichem MR): dort wirkt die Symmetriebrechung, hier,
-an den Trainingspunkten selbst, kaum. Die Schwierigkeit der Modelle an
-broken-symmetry-Sattelpunkten entsteht demnach abseits der Trainingspfade,
-dort, wo die Suche die Modelle hinführt, nicht beim Fitten der Labels. Die
-Energien sind in allen Zellen auf 2 bis 3 meV (UMA) bzw. 6 bis 9 meV (MACE)
-gleich. Gruppen hier nach dem OMol25-Label; die Fassung mit unserer eigenen
-Stabilitätsanalyse und der Breaking Depth folgt aus den ORCA-6.0.1-Läufen.
+**Lesart, korrigiert 2026-11-01.** Der gepoolte Faktor 1.4 bis 1.5 ist fast
+ganz MR-Charakter: bei gleichem N_FOD bleibt im Mittel 1.07 bis 1.13. Dieses
+Mittel verdeckt aber einen Gang mit der Breaking Depth (`twins_by_depth.csv`,
+360 Zwillingspaare unter N_FOD 0.5, Verhältnis der Mediane, 95 %-Bootstrap):
+
+| Tiefe [meV] | Paare | UMA-S | UMA-M | eSEN | MACE-OMol |
+|---|---|---|---|---|---|
+| < 1 | 52 | 1.60 [1.18, 2.05] | 1.59 [1.27, 2.10] | 1.56 [1.16, 1.94] | 1.56 [1.23, 2.01] |
+| 1–10 | 74 | 1.35 | 1.45 | 1.23 | 1.17 |
+| 10–43 | 86 | 1.14 | 1.19 | 1.23 | 1.20 |
+| 43–100 | 73 | 1.11 | 1.01 | 1.10 | 0.97 |
+| > 100 | 75 | 0.80 [0.61, 0.98] | 0.85 [0.66, 1.01] | 0.75 [0.61, 0.98] | 0.75 [0.66, 0.91] |
+
+Der Kraftfehler ist also am Einsatz der Symmetriebrechung am größten und fällt
+mit der Tiefe unter den closed-shell-Zwilling. Das ist die Vorhersage der
+Thesis für die Hypothese "Form der Fläche". Die frühere Lesart hier, die Modelle
+fitteten broken-symmetry-Punkte ebenso gut und das spreche für die
+Trainingsdaten-Hypothese, ist damit nicht haltbar. Vorbehalte: nur die niedrige
+MR-Zeile; die vier Modelle teilen Daten und Reaktionen und sind keine
+unabhängigen Bestätigungen; und nahe dem Einsatz können die Labels selbst
+unsauber sein (die Rotation endet dort oft in einem knapp konvergierten
+Zustand), sodass auch Label-Rauschen den Anstieg erklären könnte. Gruppen hier
+nach dem OMol25-Label, Tiefen aus den ORCA-6.0.1-Läufen (`stab_s2pos`).
 
 **Prüfungen.** Jede Modellzeile hat ein Label (die 64 ohne OMol25-Treffer
 sind weggelassen) · Atomzahl Modell = Label · keine NaN · 10 009 Reaktionen je
-Modell · GPU- und CPU-Lauf identisch (s. o.).
+Modell · GPU- und CPU-Lauf identisch für die drei doppelt gerechneten Modelle (s. o.).
 
 ---
