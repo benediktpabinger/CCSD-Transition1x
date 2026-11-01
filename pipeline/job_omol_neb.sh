@@ -28,7 +28,12 @@ BLOCK=${BLOCK:-50}
 WORKERS=${WORKERS:-4}
 DEVICE=${DEVICE:-cpu}
 OUTROOT=${OUTROOT:-$HOME/neb_omol}
+PRECISION=${PRECISION:-default}     # default, float32 or float64
+CINEB_FMAX=${CINEB_FMAX:-0.05}
+STEPS=${STEPS:-500}
 I=${SLURM_ARRAY_TASK_ID:-0}
+EXTRA=""
+[ -n "$CONTINUE_FROM" ] && EXTRA="--continue-from $CONTINUE_FROM"
 
 # mace-torch 0.3.15 needs e3nn 0.4.4, fairchem e3nn >= 0.5 (see job_model_sp_ts.sh)
 [ "$MODEL" = "mace-omol" ] && export PYTHONPATH=$HOME/venvs/e3nn044${PYTHONPATH:+:$PYTHONPATH}
@@ -46,7 +51,8 @@ cd $HOME/Transition1x
 PIDS=()
 for (( W = 0; W < WORKERS; W++ )); do
   python3 pipeline/omol_neb.py --model $MODEL --rxns $RXNS --start $(( I * BLOCK )) --count $BLOCK \
-      --worker $W --nworkers $WORKERS --device $DEVICE --outroot "$OUTROOT" &
+      --worker $W --nworkers $WORKERS --device $DEVICE --outroot "$OUTROOT" \
+      --precision $PRECISION --cineb-fmax $CINEB_FMAX --steps $STEPS $EXTRA &
   PIDS+=($!)
 done
 RC=0

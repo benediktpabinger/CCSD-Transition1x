@@ -47,7 +47,7 @@ import traceback
 import h5py
 import numpy as np
 from ase import Atoms
-from ase.io import write
+from ase.io import read, write
 from ase.mep import NEB
 from ase.mep.neb import NEBOptimizer
 from ase.optimize.bfgs import BFGS
@@ -62,12 +62,15 @@ CINEB_TOL = 5e-5        # neb.log rounds to four decimals, as in pipeline/neb_ru
 LOGLINE = re.compile(r'^NEBOptimizer\[\w+\]:\s+(\d+)\s+\S+\s+([-\d.eE+]+)\s*$')
 
 
-def make_calc_factory(model, device):
+def make_calc_factory(model, device, precision='default'):
     """Return a function that gives each NEB image its own calculator,
-    sharing one loaded model (ASE NEB refuses a shared calculator)."""
+    sharing one loaded model (ASE NEB refuses a shared calculator).
+    precision 'default' is single for UMA and eSEN (fairchem's default, also
+    the thesis) and double for MACE-OMol (recommended for optimisation)."""
     if model == 'mace-omol':
         from mace.calculators import mace_omol
-        base = mace_omol(model=CHECKPOINTS[model], device=device, default_dtype='float64')
+        base = mace_omol(model=CHECKPOINTS[model], device=device,
+                         default_dtype='float32' if precision == 'float32' else 'float64')
 
         def factory():
             c = copy.copy(base)
@@ -75,8 +78,28 @@ def make_calc_factory(model, device):
             return c
         return factory
     from fairchem.core import pretrained_mlip, FAIRChemCalculator
-    unit = pretrained_mlip.load_predict_unit(CHECKPOINTS[model], device=device)
+    kw = {}
+    if precision == 'float64':
+        import torch
+        from fairchem.core.units.mlip_unit.api.inference import inference_settings_default
+        st = inference_settings_default()
+        st.base_precision_dtype = torch.float64
+        kw['inference_settings'] = st
+    unit = pretrained_mlip.load_predict_unit(CHECKPOINTS[model], device=device, **kw)
     return lambda: FAIRChemCalculator(unit, task_name='omol')
+
+
+def software_versions():
+    from importlib import metadata
+    v = {}
+    for p in ('fairchem-core', 'mace-torch', 'e3nn', 'torch', 'ase'):
+        try:
+            v[p] = metadata.version(p)
+        except metadata.PackageNotFoundError:
+            v[p] = None
+    import e3nn
+    v['e3nn'] = e3nn.__version__        # the version actually on the path
+    return v
 
 
 def load_band(f, split, rxn):
@@ -107,27 +130,43 @@ def run_one(rxn, split, f5, factory, out, a):
         if os.path.exists(f'{out}/{name}'):
             os.remove(f'{out}/{name}')
     t0 = time.time()
-    res = dict(rxn=rxn, split=split, model=a.model, device=a.device, status='error')
+    res = dict(rxn=rxn, split=split, model=a.model, device=a.device, precision=a.precision,
+               continue_from=a.continue_from, cineb_fmax=a.cineb_fmax, status='error',
+               versions=VERSIONS)
     images = None
     try:
-        images = load_band(f5, split, rxn)
-        for im in images:
-            im.calc = factory()
+        if a.continue_from:
+            # keep going from a finished band: endpoints stay fixed, climbing image on
+            old = read(f'{a.continue_from}/{a.model}/{rxn}/final_band.extxyz', ':')
+            images = [Atoms(numbers=x.numbers, positions=x.positions, info={'charge': 0, 'spin': 1})
+                      for x in old]
+            for im in images:
+                im.calc = factory()
+            write(f'{out}/reactant.xyz', images[0])
+            write(f'{out}/product.xyz', images[-1])
+            neb = NEB(images, climb=True, parallel=False, method='improvedtangent')
+            opt = NEBOptimizer(neb, logfile=f'{out}/neb.log')
+            res['solver_ok_cineb'] = bool(opt.run(fmax=a.cineb_fmax, steps=a.steps))
+            res['status'] = 'done'
+        else:
+            images = load_band(f5, split, rxn)
+            for im in images:
+                im.calc = factory()
 
-        r_opt = BFGS(images[0], logfile=f'{out}/relax_r.log')
-        p_opt = BFGS(images[-1], logfile=f'{out}/relax_p.log')
-        res['endpoint_r_ok'] = bool(r_opt.run(fmax=0.05, steps=2000))
-        res['endpoint_p_ok'] = bool(p_opt.run(fmax=0.05, steps=2000))
-        res['seconds_endpoints'] = round(time.time() - t0, 1)
-        write(f'{out}/reactant.xyz', images[0])
-        write(f'{out}/product.xyz', images[-1])
+            r_opt = BFGS(images[0], logfile=f'{out}/relax_r.log')
+            p_opt = BFGS(images[-1], logfile=f'{out}/relax_p.log')
+            res['endpoint_r_ok'] = bool(r_opt.run(fmax=0.05, steps=2000))
+            res['endpoint_p_ok'] = bool(p_opt.run(fmax=0.05, steps=2000))
+            res['seconds_endpoints'] = round(time.time() - t0, 1)
+            write(f'{out}/reactant.xyz', images[0])
+            write(f'{out}/product.xyz', images[-1])
 
-        neb = NEB(images, climb=False, parallel=False, method='improvedtangent')
-        opt = NEBOptimizer(neb, logfile=f'{out}/neb.log')
-        res['solver_ok_neb'] = bool(opt.run(fmax=a.neb_fmax, steps=a.steps))
-        neb.climb = True
-        res['solver_ok_cineb'] = bool(opt.run(fmax=a.cineb_fmax, steps=a.steps))
-        res['status'] = 'done'
+            neb = NEB(images, climb=False, parallel=False, method='improvedtangent')
+            opt = NEBOptimizer(neb, logfile=f'{out}/neb.log')
+            res['solver_ok_neb'] = bool(opt.run(fmax=a.neb_fmax, steps=a.steps))
+            neb.climb = True
+            res['solver_ok_cineb'] = bool(opt.run(fmax=a.cineb_fmax, steps=a.steps))
+            res['status'] = 'done'
     except Exception as e:      # one reaction must not stop the block
         res['error'] = f'{type(e).__name__}: {e}'
         res['traceback'] = traceback.format_exc()[-800:]
@@ -163,7 +202,11 @@ if __name__ == '__main__':
     ap.add_argument('--neb-fmax', type=float, default=0.15)
     ap.add_argument('--cineb-fmax', type=float, default=0.05)
     ap.add_argument('--steps', type=int, default=500)
+    ap.add_argument('--precision', default='default', choices=['default', 'float32', 'float64'])
+    ap.add_argument('--continue-from', default=None,
+                    help='outroot of a finished run: continue its final bands with the climbing image')
     a = ap.parse_args()
+    VERSIONS = software_versions()
 
     rxns = [l.strip() for l in open(a.rxns) if l.strip()]
     block = rxns[a.start:a.start + a.count][a.worker::a.nworkers]
@@ -175,7 +218,7 @@ if __name__ == '__main__':
         raise SystemExit(0)
 
     t0 = time.time()
-    factory = make_calc_factory(a.model, a.device)
+    factory = make_calc_factory(a.model, a.device, a.precision)
     print(f'model loaded in {time.time() - t0:.1f} s', flush=True)
     with h5py.File(H5, 'r') as f5:
         for rx in todo:
