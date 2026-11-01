@@ -774,3 +774,43 @@ sind weggelassen) · Atomzahl Modell = Label · keine NaN · 10 009 Reaktionen j
 Modell · GPU- und CPU-Lauf identisch für die drei doppelt gerechneten Modelle (s. o.).
 
 ---
+
+## prec_test.csv, ts_hessian.csv, ts_linescan.csv, labels_vs_dft.csv — Numerik der Modell-NEBs
+
+**Die Frage.** Warum enden wiederholte NEBs desselben Modells an derselben
+Reaktion an verschiedenen Übergangszuständen? Entscheidung D21 in
+docs/paper_decisions.md, die Lesart wurde vor den Läufen festgelegt.
+
+**Herkunft.** 123 NEBs an 6 Reaktionen (rxn0346, rxn4113, rxn1147, rxn4518
+broken-symmetry; rxn0101, rxn0000 closed-shell) mit
+[`pipeline/omol_neb.py`](../pipeline/omol_neb.py), Läufe in `~/neb_test`,
+`~/neb_prec`; Auswertung [`pipeline/prec_test_table.py`](../pipeline/prec_test_table.py),
+Hessian und Linienscans [`pipeline/ts_hessian_scan.py`](../pipeline/ts_hessian_scan.py),
+Label gegen DFT [`pipeline/labels_vs_dft.py`](../pipeline/labels_vs_dft.py).
+Zwei Läufe gelten als gleich bei RMSD ≤ 0.003 Å und |ΔE_TS| ≤ 0.5 meV. Stand
+2026-11-02: ein Paar (UMA-M, rxn0000) fehlt noch, es ändert das Urteil nicht.
+
+**Ergebnis.** Paare mit Übereinstimmung, broken-symmetry / closed-shell:
+
+| Vergleich | bs | closed |
+|---|---|---|
+| einfache Genauigkeit, CPU gegen GPU | 5 von 12 | 6 von 6 |
+| doppelte Genauigkeit, CPU gegen GPU | 9 von 12 | 5 von 6 |
+| beide Bänder bis 0.01 eV/Å fortgesetzt | 6 von 12 | 5 von 5 |
+| MACE-OMol einfache Genauigkeit | 2 von 4 | 2 von 2 |
+
+Gefordert waren 10 von 12, die Ursache gilt damit als ungeklärt. Nur 3 der 12
+broken-symmetry-Paare erreichten beidseitig 0.01 eV/Å, alle drei stimmen überein.
+Dasselbe GPU-Setup zweimal unterscheidet sich so stark wie CPU gegen GPU
+(`repeat_gpu`, bis 0.022 Å und 5.7 meV), das Gerät ist also nicht die Ursache.
+Hessian: nicht jedes Ende ist ein Sattel (`n_negative`), siehe D21-Ergebnis in
+der Entscheidungsliste. Linienscans: auf den kurzen Strecken stimmen Energie und
+Kräfte überein, kein Knick; die langen Strecken (> 2 Å) sind dafür zu grob
+abgetastet.
+
+**Labels.** `labels_vs_dft.csv`: OMol25-Label gegen unsere DFT am selben
+Rahmen, 0.0001 bis 0.0005 eV/Å, etwa 20-mal unter dem Modellfehler. Der Anstieg
+am Einsatz der Symmetriebrechung bleibt gegen unsere DFT bestehen (1.57 bis
+1.66 unter 1 meV). Geprüft ist nur der Übergangszustands-Rahmen je Reaktion.
+
+---
