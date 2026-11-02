@@ -223,20 +223,14 @@ if __name__ == '__main__':
     JOB = os.environ.get('SLURM_JOB_ID', str(os.getpid()))
 
     def claim(rx):
-        """True if this worker gets the reaction. A claim from an older job is taken over."""
+        """True if this worker gets the reaction. One claim file per job, so a claim
+        left by a killed job does not block its restart."""
         os.makedirs(f'{a.outroot}/{a.model}/{rx}', exist_ok=True)
-        p = f'{a.outroot}/{a.model}/{rx}/claim'
         try:
-            fd = os.open(p, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
-            os.write(fd, JOB.encode())
-            os.close(fd)
+            os.close(os.open(f'{a.outroot}/{a.model}/{rx}/claim.{JOB}', os.O_CREAT | os.O_EXCL))
             return True
         except FileExistsError:
-            if open(p).read().strip() == JOB:
-                return False
-            with open(p, 'w') as fh:
-                fh.write(JOB)
-            return True
+            return False
 
     print(f'{a.model} on {a.device}: {len(todo)} of {len(block)} reactions to do '
           f'(worker {a.worker}/{a.nworkers}, OMP {os.environ.get("OMP_NUM_THREADS")})', flush=True)
