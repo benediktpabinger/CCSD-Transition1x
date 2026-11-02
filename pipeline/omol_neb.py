@@ -214,9 +214,30 @@ if __name__ == '__main__':
     VERSIONS = software_versions()
 
     rxns = [l.strip() for l in open(a.rxns) if l.strip()]
-    block = rxns[a.start:a.start + a.count][a.worker::a.nworkers]
+    # All workers of a node share the block and claim one reaction at a time, so no
+    # worker runs out of reactions while another still has a queue (a fixed split
+    # left cores idle and triggered a Niflheim warning, job 11104497).
+    block = rxns[a.start:a.start + a.count]
     split = {k: v['split'] for k, v in json.load(open(f'{H}/t1x_ts_all.json')).items()}
     todo = [r for r in block if not os.path.exists(f'{a.outroot}/{a.model}/{r}/result.json')]
+    JOB = os.environ.get('SLURM_JOB_ID', str(os.getpid()))
+
+    def claim(rx):
+        """True if this worker gets the reaction. A claim from an older job is taken over."""
+        os.makedirs(f'{a.outroot}/{a.model}/{rx}', exist_ok=True)
+        p = f'{a.outroot}/{a.model}/{rx}/claim'
+        try:
+            fd = os.open(p, os.O_CREAT | os.O_EXCL | os.O_WRONLY)
+            os.write(fd, JOB.encode())
+            os.close(fd)
+            return True
+        except FileExistsError:
+            if open(p).read().strip() == JOB:
+                return False
+            with open(p, 'w') as fh:
+                fh.write(JOB)
+            return True
+
     print(f'{a.model} on {a.device}: {len(todo)} of {len(block)} reactions to do '
           f'(worker {a.worker}/{a.nworkers}, OMP {os.environ.get("OMP_NUM_THREADS")})', flush=True)
     if not todo:
@@ -227,6 +248,8 @@ if __name__ == '__main__':
     print(f'model loaded in {time.time() - t0:.1f} s', flush=True)
     with h5py.File(H5, 'r') as f5:
         for rx in todo:
+            if not claim(rx):
+                continue
             r = run_one(rx, split[rx], f5, factory, f'{a.outroot}/{a.model}/{rx}', a)
             print('  %s %-5s f_band %s  met %s  steps %s  %.0f s  %s'
                   % (rx, r['status'], r['f_band_final'], r['criterion_met'], r['n_steps'],
