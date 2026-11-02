@@ -58,9 +58,9 @@ def run_one(rx, src, out, factory):
     write(f'{out}/reactant.xyz', r, format='xyz')
     write(f'{out}/product.xyz', p, format='xyz')
     res = dict(rxn=rx, start='fsm', status='fsm_error', criterion_met=False, n_grad_fsm=0, n_steps_sella=0)
-    string = FreezingString(r, p, 18, 'ric', 50, 0.0)
-    opt = CartesianOptimizer(factory(), 'L-BFGS-B', 2, 3, 0.05)
     try:
+        string = FreezingString(r, p, 18, 'ric', 50, 0.0)
+        opt = CartesianOptimizer(factory(), 'L-BFGS-B', 2, 3, 0.05)
         while string.growing:
             string.grow()
             string.optimize(opt)
