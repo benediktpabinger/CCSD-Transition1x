@@ -31,6 +31,7 @@ OUTROOT=${OUTROOT:-$HOME/neb_omol}
 PRECISION=${PRECISION:-default}     # default, float32 or float64
 CINEB_FMAX=${CINEB_FMAX:-0.05}
 STEPS=${STEPS:-500}
+START_BAND=${START_BAND:-t1x}
 I=${SLURM_ARRAY_TASK_ID:-0}
 EXTRA=""
 [ -n "$CONTINUE_FROM" ] && EXTRA="--continue-from $CONTINUE_FROM"
@@ -52,7 +53,7 @@ PIDS=()
 for (( W = 0; W < WORKERS; W++ )); do
   python3 pipeline/omol_neb.py --model $MODEL --rxns $RXNS --start $(( I * BLOCK )) --count $BLOCK \
       --worker $W --nworkers $WORKERS --device $DEVICE --outroot "$OUTROOT" \
-      --precision $PRECISION --cineb-fmax $CINEB_FMAX --steps $STEPS $EXTRA &
+      --precision $PRECISION --cineb-fmax $CINEB_FMAX --steps $STEPS --start-band $START_BAND $EXTRA &
   PIDS+=($!)
 done
 RC=0

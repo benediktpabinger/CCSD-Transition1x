@@ -131,7 +131,7 @@ def run_one(rxn, split, f5, factory, out, a):
             os.remove(f'{out}/{name}')
     t0 = time.time()
     res = dict(rxn=rxn, split=split, model=a.model, device=a.device, precision=a.precision,
-               continue_from=a.continue_from, cineb_fmax=a.cineb_fmax, status='error',
+               continue_from=a.continue_from, cineb_fmax=a.cineb_fmax, start_band=a.start_band, status='error',
                versions=VERSIONS)
     images = None
     try:
@@ -162,6 +162,9 @@ def run_one(rxn, split, f5, factory, out, a):
             write(f'{out}/product.xyz', images[-1])
 
             neb = NEB(images, climb=False, parallel=False, method='improvedtangent')
+            if a.start_band == 'idpp':
+                # no Transition1x path: only the relaxed endpoints enter
+                neb.interpolate(method='idpp')
             opt = NEBOptimizer(neb, logfile=f'{out}/neb.log')
             res['solver_ok_neb'] = bool(opt.run(fmax=a.neb_fmax, steps=a.steps))
             neb.climb = True
@@ -203,6 +206,8 @@ if __name__ == '__main__':
     ap.add_argument('--cineb-fmax', type=float, default=0.05)
     ap.add_argument('--steps', type=int, default=500)
     ap.add_argument('--precision', default='default', choices=['default', 'float32', 'float64'])
+    ap.add_argument('--start-band', default='t1x', choices=['t1x', 'idpp'],
+                    help='t1x: final Transition1x band (thesis); idpp: interpolation between the relaxed endpoints')
     ap.add_argument('--continue-from', default=None,
                     help='outroot of a finished run: continue its final bands with the climbing image')
     a = ap.parse_args()
