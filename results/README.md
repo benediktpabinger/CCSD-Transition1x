@@ -814,3 +814,7 @@ am Einsatz der Symmetriebrechung bleibt gegen unsere DFT bestehen (1.57 bis
 1.66 unter 1 meV). Geprüft ist nur der Übergangszustands-Rahmen je Reaktion.
 
 ---
+
+## pilot_check.csv
+
+`pipeline/pilot_check.py`, decision D23. Hessian and downhill check of both structures of every lower pilot run pair, on the model's own surface in double precision. `cls` is route, one_end, same_end, elsewhere, no_mode or multi; `end_a`, `end_b` are R, P or X (neither), by bond graph.
