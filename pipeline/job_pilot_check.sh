@@ -21,6 +21,7 @@ module load Python/3.13.5-GCCcore-14.3.0
 MODEL=${MODEL:?MODEL not set}
 WORKERS=${WORKERS:-3}
 OUTDIR=${OUTDIR:-$HOME/neb_pilot/check}
+ROOT=${ROOT:-$HOME/neb_pilot}
 export OMP_NUM_THREADS=$(( 24 / WORKERS ))
 export MKL_NUM_THREADS=$OMP_NUM_THREADS
 [ "$MODEL" = "mace-omol" ] && export PYTHONPATH=$HOME/venvs/e3nn044${PYTHONPATH:+:$PYTHONPATH}
@@ -28,7 +29,7 @@ export MKL_NUM_THREADS=$OMP_NUM_THREADS
 cd $HOME/Transition1x
 PIDS=()
 for (( W = 0; W < WORKERS; W++ )); do
-  python3 pipeline/pilot_check.py --model $MODEL --outdir "$OUTDIR" &
+  python3 pipeline/pilot_check.py --model $MODEL --outdir "$OUTDIR" --root "$ROOT" &
   PIDS+=($!)
 done
 RC=0
