@@ -9,7 +9,7 @@
 #SBATCH --output=/home/energy/bepab/logs/marksdft_%A_%a.out
 #SBATCH --error=/home/energy/bepab/logs/marksdft_%A_%a.err
 
-# DFT refinement of one model transition state per node (D33), ORCA 6.0.1:
+# DFT refinement of one model transition state per node (D32), ORCA 6.0.1:
 #   1 uks_sp    UKS + STABPerform at the model structure
 #   2 optts     OptTS from those orbitals, starting Hessian from the model (model.hess)
 #   3 stab      UKS + STABPerform at the DFT saddle

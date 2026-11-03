@@ -1,4 +1,4 @@
-"""Structures and starting Hessians for the DFT refinement pilot of D33.
+"""Structures and starting Hessians for the DFT refinement pilot of D32.
 
 25 eSEN freezing-string structures, seed 0: 10 failing and 10 passing high-MR structures
 (groups closed, bs and high with N_FOD >= 0.5; pass = class route under the D23 check)
