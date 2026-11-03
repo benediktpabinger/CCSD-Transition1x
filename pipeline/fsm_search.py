@@ -100,7 +100,8 @@ if __name__ == '__main__':
     ap.add_argument('--outroot', default=f'{H}/neb_fsm')
     ap.add_argument('--rxns')
     a = ap.parse_args()
-    S = {r['rxn']: r for r in csv.DictReader(open(f'{REPO}/results/d24_set.csv'))}
+    S = {r['rxn']: r for name in ('d24_set', 'd29_set') if os.path.exists(f'{REPO}/results/{name}.csv')
+         for r in csv.DictReader(open(f'{REPO}/results/{name}.csv'))}
     rxns = [x.strip() for x in open(a.rxns) if x.strip()] if a.rxns else list(S)
     base = f'{a.outroot}/fsm/{a.model}'
     os.makedirs(base, exist_ok=True)

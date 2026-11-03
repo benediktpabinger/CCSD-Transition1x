@@ -22,7 +22,7 @@ n = 0
 with open(f'{H}/neb_fsm/check/cases.csv', 'w', newline='') as fh:
     w = csv.writer(fh)
     w.writerow(['rxn', 'group', 'bin', 'model', 'start'])
-    for r in csv.DictReader(open('results/d24_set.csv')):
+    for r in [r for name in ('d24_set', 'd29_set') if os.path.exists(f'results/{name}.csv') for r in csv.DictReader(open(f'results/{name}.csv'))]:
         p = f"{H}/neb_fsm/fsm/esen/{r['rxn']}/result.json"
         if os.path.exists(p) and json.load(open(p))['criterion_met']:
             w.writerow([r['rxn'], r['group'], r['bin'], 'esen', 'fsm'])
