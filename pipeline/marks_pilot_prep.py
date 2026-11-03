@@ -1,6 +1,6 @@
 """Structures and starting Hessians for the DFT refinement pilot of D32.
 
-25 eSEN freezing-string structures, seed 0: 10 failing and 10 passing high-MR structures
+25 MACE-OMol freezing-string structures, seed 0 (the model of the 96.6 % of Marks et al.): 10 failing and 10 passing high-MR structures
 (groups closed, bs and high with N_FOD >= 0.5; pass = class route under the D23 check)
 and 5 passing baseline structures. For each, the model Hessian in double precision
 (central differences, 0.005 A, not projected) is written as an ORCA .hess file, so the
@@ -28,7 +28,8 @@ from omol_neb import make_calc_factory  # noqa: E402
 H = os.path.expanduser('~')
 REPO = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 S = {r['rxn']: r for n in ('d24_set', 'd29_set') for r in csv.DictReader(open(f'{REPO}/results/{n}.csv'))}
-J = [json.load(open(f)) for f in glob.glob(f'{H}/neb_fsm/check/esen/*_fsm.json')]
+MODEL = 'mace-omol'
+J = [json.load(open(f)) for f in glob.glob(f'{H}/neb_fsm/check_{MODEL}/{MODEL}/*_fsm.json')]
 hard = lambda j: S[j['rxn']]['group'] in ('closed', 'bs', 'high') and float(S[j['rxn']]['nfod']) >= 0.5   # noqa: E731
 rng = random.Random(0)
 pick = []
@@ -36,7 +37,7 @@ for kind, pool, n in (('fail', [j for j in J if hard(j) and j['cls'] != 'route']
                       ('pass', [j for j in J if hard(j) and j['cls'] == 'route'], 10),
                       ('baseline', [j for j in J if S[j['rxn']]['group'] == 'baseline' and j['cls'] == 'route'], 5)):
     pick += [(kind, j) for j in rng.sample(sorted(pool, key=lambda j: j['rxn']), n)]
-calc = make_calc_factory('esen', 'cpu', 'float64')()
+calc = make_calc_factory(MODEL, 'cpu', 'float64')()
 
 
 def grad(Z, x):
@@ -66,7 +67,7 @@ def write_hess(p, Z, x, Hm):
 lines = []
 for kind, j in pick:
     rx = j['rxn']
-    d = f'{H}/neb_fsm/fsm/esen/{rx}'
+    d = f'{H}/neb_fsm/fsm/{MODEL}/{rx}'
     ts = read(f'{d}/transition_state.xyz')
     Z, x = ts.numbers, ts.positions.copy()
     n = x.size
