@@ -87,4 +87,9 @@ for kind, j in pick:
     lines.append(f'{rx}:{out}/ts_model.xyz:{int(Z.sum())}')
     print(kind, rx, S[rx]['group'], j['cls'], flush=True)
 open(f'{H}/marks_pilot/tasks.txt', 'w').write('\n'.join(lines) + '\n')
+# the five structures that also start from the model Hessian: 3 failing, 2 passing high-MR (seed 0)
+kinds = {ln.split(':')[0]: k for (k, j), ln in zip(pick, lines)}
+sub = rng.sample([ln for ln in lines if kinds[ln.split(':')[0]] == 'fail'], 3) + \
+    rng.sample([ln for ln in lines if kinds[ln.split(':')[0]] == 'pass'], 2)
+open(f'{H}/marks_pilot/tasks_model.txt', 'w').write('\n'.join(sub) + '\n')
 print(len(lines), 'structures')

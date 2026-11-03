@@ -11,13 +11,16 @@
 
 # DFT refinement of one model transition state per node (D32), ORCA 6.0.1:
 #   1 uks_sp    UKS + STABPerform at the model structure
-#   2 optts     OptTS from those orbitals, starting Hessian from the model (model.hess)
+#   2 optts     OptTS from those orbitals, maximum 250 steps, starting Hessian a numerical
+#               DFT Hessian (HESS=dft, default, as Marks et al. start from a DFT Hessian) or
+#               the model Hessian model.hess (HESS=model, in the subfolder modelhess/)
 #   3 stab      UKS + STABPerform at the DFT saddle
 #   4 freq      NumFreq on the stable solution
 #   5 irc       IRC from the DFT saddle with the frequency Hessian
 # Finished steps are skipped on restart. Scratch is removed at the end.
 #
 #   N=$(wc -l < ~/marks_pilot/tasks.txt); sbatch --array=0-$(( N - 1 )) pipeline/job_marks_dft.sh
+#   sbatch --array=0-4 --export=ALL,HESS=model,TASKS=$HOME/marks_pilot/tasks_model.txt pipeline/job_marks_dft.sh
 
 source /etc/profile
 source $HOME/opt/orca6.env
@@ -28,19 +31,27 @@ HEAD='%pal nprocs 24 end
 SCF='  Thresh 1e-12
   TCut   1e-13
   MaxIter 300'
-LINE=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" $HOME/marks_pilot/tasks.txt)
+HESS=${HESS:-dft}
+TASKS=${TASKS:-$HOME/marks_pilot/tasks.txt}
+LINE=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" $TASKS)
 RXN=$(echo "$LINE" | cut -d: -f1)
 W=$HOME/marks_pilot/$RXN
+if [ "$HESS" = model ]; then
+  mkdir -p $W/modelhess && cp $W/ts_model.xyz $W/model.hess $W/modelhess/ && W=$W/modelhess
+  GEOM='  InHess Read\n  InHessName "model.hess"'
+else
+  GEOM='  Calc_Hess true\n  NumHess true'
+fi
 cd $W || exit 2
 ok () { grep -q "ORCA TERMINATED NORMALLY" $1.out 2>/dev/null; }
-echo "$RXN start $(date)"
+echo "$RXN start, starting Hessian $HESS, $(date)"
 
 ok uks_sp || { printf '! UKS %s\n%s\n%%scf\n%s\n  STABPerform true\n  STABRestartUHFifUnstable true\nend\n* xyzfile 0 1 ts_model.xyz\n' "$METHOD" "$HEAD" "$SCF" > uks_sp.inp; $ORCA uks_sp.inp > uks_sp.out 2>&1; }
 ok uks_sp || { echo "ABBRUCH uks_sp"; exit 7; }
 echo "uks_sp done $(date)"
 
 ok optts || { cp uks_sp.gbw optts_start.gbw
-  printf '! UKS %s OptTS MORead\n%%moinp "optts_start.gbw"\n%s\n%%scf\n%s\nend\n%%geom\n  InHess Read\n  InHessName "model.hess"\n  MaxIter 150\nend\n* xyzfile 0 1 ts_model.xyz\n' "$METHOD" "$HEAD" "$SCF" > optts.inp
+  printf '! UKS %s OptTS MORead\n%%moinp "optts_start.gbw"\n%s\n%%scf\n%s\nend\n%%geom\n'"$GEOM"'\n  MaxIter 250\nend\n* xyzfile 0 1 ts_model.xyz\n' "$METHOD" "$HEAD" "$SCF" > optts.inp
   $ORCA optts.inp > optts.out 2>&1; }
 ok optts && [ -f optts.xyz ] || { echo "ABBRUCH optts"; grep -i -m3 "error\|hess" optts.out; exit 8; }
 echo "optts done $(date)"
