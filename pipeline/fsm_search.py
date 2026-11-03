@@ -6,7 +6,8 @@ redundant internal coordinates, Cartesian L-BFGS-B with at most 3 line-search an
 (first-order saddle, internal coordinates, 0.05 eV/A, at most 1000 steps).
 
 Starts from the relaxed endpoints of the eSEN NEB of the same reaction, so nothing
-comes from the Transition1x band. Precision as in the NEBs (D24).
+comes from the Transition1x band; the other models relax those endpoints first
+(BFGS, 0.05 eV/A, as in omol_neb.py). Precision as in the NEBs (D24).
 
 Each run folder has the layout of omol_neb.py, with transition_state.xyz the refined
 structure, so pipeline/pilot_check.py can check it with start = fsm.
@@ -25,6 +26,7 @@ import time
 import numpy as np
 from ase import Atoms
 from ase.io import read, write
+from ase.optimize.bfgs import BFGS
 from mlfsm.cos import FreezingString
 from mlfsm.geom import project_trans_rot
 from mlfsm.opt import CartesianOptimizer
@@ -48,10 +50,15 @@ def energy(a, factory):
     return float(b.get_potential_energy()), float(np.sqrt((b.get_forces() ** 2).sum(1)).max())
 
 
-def run_one(rx, src, out, factory):
+def run_one(rx, src, out, factory, model='esen'):
     os.makedirs(out, exist_ok=True)
     t0 = time.time()
     r, p = load(f'{src}/reactant.xyz'), load(f'{src}/product.xyz')
+    if model != 'esen':                 # each model starts from its own minima, as in omol_neb.py
+        for a in (r, p):
+            a.calc = factory()
+            BFGS(a, logfile=None).run(fmax=0.05, steps=2000)
+            a.calc = None
     xr, xp = project_trans_rot(r.get_positions(), p.get_positions())
     r.set_positions(xr.reshape(-1, 3))
     p.set_positions(xp.reshape(-1, 3))
@@ -117,7 +124,7 @@ if __name__ == '__main__':
         except FileExistsError:
             continue
         src = f"{H}/{S[rx]['root']}/t1x/esen/{rx}"
-        res = run_one(rx, src, out, factory)
+        res = run_one(rx, src, out, factory, a.model)
         with open(f'{out}/result.tmp', 'w') as fh:
             json.dump(res, fh, indent=1)
         os.replace(f'{out}/result.tmp', f'{out}/result.json')

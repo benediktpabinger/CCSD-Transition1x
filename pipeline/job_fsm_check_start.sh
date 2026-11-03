@@ -14,19 +14,23 @@
 source /etc/profile
 module load Python/3.13.5-GCCcore-14.3.0
 cd $HOME/Transition1x
-mkdir -p $HOME/neb_fsm/check
+export MODEL=${MODEL:-esen}
+export CK=$HOME/neb_fsm/check
+[ "$MODEL" != esen ] && export CK=$HOME/neb_fsm/check_$MODEL
+mkdir -p $CK
 python3 - <<'PY'
 import csv, json, os
 H = os.path.expanduser('~')
+M, CK = os.environ['MODEL'], os.environ['CK']
 n = 0
-with open(f'{H}/neb_fsm/check/cases.csv', 'w', newline='') as fh:
+with open(f'{CK}/cases.csv', 'w', newline='') as fh:
     w = csv.writer(fh)
     w.writerow(['rxn', 'group', 'bin', 'model', 'start'])
     for r in [r for name in ('d24_set', 'd29_set') if os.path.exists(f'results/{name}.csv') for r in csv.DictReader(open(f'results/{name}.csv'))]:
-        p = f"{H}/neb_fsm/fsm/esen/{r['rxn']}/result.json"
+        p = f"{H}/neb_fsm/fsm/{M}/{r['rxn']}/result.json"
         if os.path.exists(p) and json.load(open(p))['criterion_met']:
-            w.writerow([r['rxn'], r['group'], r['bin'], 'esen', 'fsm'])
+            w.writerow([r['rxn'], r['group'], r['bin'], M, 'fsm'])
             n += 1
 print(n, 'structures to check')
 PY
-sbatch --export=ALL,MODEL=esen,OUTDIR=$HOME/neb_fsm/check,ROOT=$HOME/neb_fsm pipeline/job_pilot_check.sh
+sbatch --export=ALL,MODEL=$MODEL,OUTDIR=$CK,ROOT=$HOME/neb_fsm pipeline/job_pilot_check.sh
