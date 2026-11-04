@@ -4,6 +4,9 @@ MSc thesis (DTU Energy, Atomic Scale Materials Modelling, supervisor Arghya Bhow
 Two questions: RQ1, lift a MACE model trained on Transition1x to wB97M-V/def2-TZVP with a delta head trained on <1 % relabelled data;
 RQ2, test the OMol25 models (UMA-S, UMA-M, eSEN) at broken-symmetry transition states. A paper from RQ2 is in preparation.
 
+New session: read docs/handover_2026-11-04.md first (state of the paper, open audit items, running jobs).
+Old cluster transcripts are in ~/.claude/projects/-home-energy-bepab-Transition1x/*.jsonl, grep them for details.
+
 ## Where things are
 
 - `docs/overleaf_v2/`: the submitted thesis text (LaTeX), `REVIEW_LOG.md` with every number check. `docs/overleaf/` is the older mirror.
