@@ -67,13 +67,14 @@ with h5py.File(f'{H}/data/Transition1x.h5', 'r') as f:
                     paths[rx] = np.array(f[split][formula][rx]['positions'])
 factory = make_calc_factory('esen', 'cpu')
 calc = factory()
-rows = []
+rows, missing = [], []
 for rx, r in S.items():
     d = f'{H}/neb_fsm/fsm/esen/{rx}'
     if not os.path.exists(f'{d}/result.json') or not json.load(open(f'{d}/result.json'))['criterion_met']:
         continue
     F = forces(f'{H}/orca6_fsm/{rx}_ts/uks_engrad.out')
     if F is None:
+        missing.append((rx, r['group']))
         continue
     res = json.load(open(f'{d}/result.json'))
     x = read(f'{d}/transition_state.xyz')
@@ -91,7 +92,9 @@ for rx, r in S.items():
                      f_model=float(np.sqrt((Fm ** 2).sum(1)).max()), f_err_max=float(np.sqrt(((F - Fm) ** 2).sum(1)).max()),
                      f_err_mae=float(np.abs(F - Fm).mean()), barrier_dft=et - er if et and er else np.nan,
                      barrier_model=res['barrier_ev']))
-print(len(rows), 'structures with DFT')
+print(len(rows), 'structures with DFT; missing (no DFT gradient):', len(missing), missing)
+with open(f'{RES}/d28_forces_missing.csv', 'w') as fh:
+    fh.write('rxn,group\n' + ''.join('%s,%s\n' % m for m in missing))
 with open(f'{RES}/d28_forces.csv', 'w', newline='') as fh:
     w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
     w.writeheader()

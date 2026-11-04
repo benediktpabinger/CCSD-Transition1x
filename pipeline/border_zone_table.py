@@ -302,3 +302,7 @@ with open(out, 'w', newline='') as fh:
         w.writerow([('' if r.get(c) is None else
                      (FMT[c] % r[c] if c in FMT else r[c])) for c in COLS])
 print('\n%s   %d Zeilen' % (os.path.relpath(out, REPO), len(rows)))
+miss = out.replace('.csv', '_missing.csv')
+with open(miss, 'w') as fh:
+    fh.write('rxn\n' + ''.join(f'{rx}\n' for rx in sorted(missing)))
+print('%s   %d fehlende Reaktionen' % (os.path.relpath(miss, REPO), len(missing)))

@@ -34,7 +34,10 @@ def bonds(Z, x):
     a = Atoms(numbers=Z, positions=x)
     nl = NeighborList([1.15 * c for c in natural_cutoffs(a)], self_interaction=False, bothways=False, skin=0)
     nl.update(a)
-    return {(min(i, int(j)), max(i, int(j))) for i in range(len(a)) for j in nl.get_neighbors(i)[0]}
+    b = {(min(i, int(j)), max(i, int(j))) for i in range(len(a)) for j in nl.get_neighbors(i)[0]}
+    hh = [i for i, z in enumerate(Z) if z == 1]    # 1.15 x 2 x 0.31 A = 0.71 A misses H2 (0.74 A)
+    b |= {(i, j) for k, i in enumerate(hh) for j in hh[k + 1:] if np.linalg.norm(x[i] - x[j]) < 0.95}
+    return b
 
 
 ts = json.load(open(f'{H}/t1x_ts_all.json'))

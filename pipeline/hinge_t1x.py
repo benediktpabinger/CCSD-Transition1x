@@ -42,8 +42,8 @@ import re
 
 import numpy as np
 
-H = '/home/energy/s242862'
-OUT = f'{H}/results'
+H = os.path.expanduser('~')
+OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'results')
 EVA = 51.42208
 HA_EV = 27.211386245988
 S2_BREAK = 0.05

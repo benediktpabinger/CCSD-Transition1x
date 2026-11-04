@@ -56,7 +56,7 @@ def norm(F):
     return float(np.sqrt((F ** 2).sum(1)).max())
 
 
-rows = {}
+rows, missing = {}, []
 for r in csv.DictReader(open(f'{RES}/d24_set.csv')):
     rx = r['rxn']
     d = f"{H}/{r['root']}/t1x/{model}/{rx}"
@@ -65,6 +65,7 @@ for r in csv.DictReader(open(f'{RES}/d24_set.csv')):
     res = json.load(open(f'{d}/result.json'))
     F = forces(f'{orca}/{rx}_ts/uks_engrad.out')
     if F is None:
+        missing.append((rx, r['group'], int(bool(res['criterion_met']))))
         continue
     Fm = read(f'{d}/transition_state.xyz').get_forces()
     et, er = energy(f'{orca}/{rx}_ts/uks_engrad.out'), energy(f'{orca}/{rx}_r/uks_engrad.out')
@@ -77,6 +78,9 @@ for r in csv.DictReader(open(f'{RES}/d24_set.csv')):
                     barrier_dft=et - er if et and er else np.nan, barrier_model=res.get('barrier_ev', np.nan))
 R = list(rows.values())
 print(len(R), 'structures with DFT,', sum(r['met'] for r in R), 'converged,', model)
+print('missing (no DFT gradient):', len(missing), missing)
+with open(f'{RES}/d24_forces_{model}_missing.csv', 'w') as fh:
+    fh.write('rxn,group,converged\n' + ''.join('%s,%s,%d\n' % m for m in missing))
 
 
 def line(name, S):
