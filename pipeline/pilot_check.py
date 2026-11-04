@@ -8,13 +8,17 @@ of each pair are checked on the model's own surface, in double precision:
   Downhill  only with exactly one negative mode: displace 0.15 A along it (largest
             atom), both ways, BFGS with steps of at most 0.05 A to 0.02 eV/A.
             Each end is compared with the reactant and product of the run by bond
-            graph (bond if d < 1.15 * sum of covalent radii, atom order fixed).
+            graph (bond if d < 1.15 * sum of covalent radii, atom order fixed; H-H
+            bond if d < 0.95 A, since 1.15 * 2 * 0.31 A = 0.71 A misses H2 at 0.74 A).
+            Both downhill runs must converge (D35). End structures, their energies
+            and the bonds by which each differs from reactant and product are stored.
 
 Class of a structure:
   route      one negative mode, one side is the reactant, the other the product
   one_end    one negative mode, only one side is an endpoint (the other is new)
   same_end   one negative mode, both sides are the same endpoint
   elsewhere  one negative mode, neither side is an endpoint
+  unconverged  one negative mode, a downhill run hit the step limit (not a pass)
   no_mode    no negative mode
   multi      two or more negative modes
 
@@ -50,20 +54,26 @@ REPO = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 RES = os.path.join(REPO, 'results')
 GAP = 0.043
 NEG_TOL = -0.05
+HH_CUT = 0.95
 
 
 def bonds(Z, x):
     a = Atoms(numbers=Z, positions=x)
     nl = NeighborList([1.15 * c for c in natural_cutoffs(a)], self_interaction=False, bothways=False, skin=0)
     nl.update(a)
-    return {(min(i, int(j)), max(i, int(j))) for i in range(len(a)) for j in nl.get_neighbors(i)[0]}
+    b = {(min(i, int(j)), max(i, int(j))) for i in range(len(a)) for j in nl.get_neighbors(i)[0]}
+    hh = [i for i, z in enumerate(Z) if z == 1]
+    b |= {(i, j) for k, i in enumerate(hh) for j in hh[k + 1:] if np.linalg.norm(x[i] - x[j]) < HH_CUT}
+    return b
 
 
-def classify(n_neg, ends):
+def classify(n_neg, ends, conv=(1, 1)):
     if n_neg == 0:
         return 'no_mode'
     if n_neg > 1:
         return 'multi'
+    if not all(conv):
+        return 'unconverged'
     if set(ends) == {'R', 'P'}:
         return 'route'
     if ends[0] == ends[1] and ends[0] in 'RP':
@@ -82,7 +92,7 @@ def check(c, factory, root):
     n_neg = int((w < NEG_TOL).sum())
     out = dict(c, n_negative=n_neg, w1=float(w[0]), w2=float(w[1]), f_band=stored['f_band_final'],
                ts_minus_p_ev=stored['e_ts_ev'] - stored['e_p_ev'], barrier_ev=stored['barrier_ev'],
-               end_a='', end_b='', steps_a=0, steps_b=0, conv_a=0, conv_b=0)
+               n_rp_diff=len(bR ^ bP), end_a='', end_b='', steps_a=0, steps_b=0, conv_a=0, conv_b=0)
     ends = ['', '']
     if n_neg == 1:
         mode = v[:, 0].reshape(-1, 3)
@@ -95,7 +105,11 @@ def check(c, factory, root):
             b = bonds(Z, a.positions)
             ends[k] = 'R' if b == bR else 'P' if b == bP else 'X'
             out[f'end_{tag}'] = ends[k]
-    out['cls'] = classify(n_neg, ends)
+            out[f'e_end_{tag}_ev'] = float(a.get_potential_energy())
+            out[f'diff_r_{tag}'] = sorted(b ^ bR)     # bonds made or broken against the reactant
+            out[f'diff_p_{tag}'] = sorted(b ^ bP)
+            out[f'pos_{tag}'] = a.positions.round(5).tolist()
+    out['cls'] = classify(n_neg, ends, (out['conv_a'], out['conv_b']) if n_neg == 1 else (1, 1))
     return out
 
 
@@ -107,7 +121,7 @@ def table(outdir):
             rows.append(json.load(open(p)))
     n = sum(1 for _ in csv.DictReader(open(f'{outdir}/cases.csv')))
     print('%d of %d structures checked' % (len(rows), n))
-    cls = ('route', 'one_end', 'same_end', 'elsewhere', 'no_mode', 'multi')
+    cls = ('route', 'one_end', 'same_end', 'elsewhere', 'unconverged', 'no_mode', 'multi')
     for start in ('idpp', 't1x'):
         for g in ('bs', 'closed'):
             S = [r for r in rows if r['start'] == start and r['group'] == g]
@@ -136,11 +150,13 @@ def table(outdir):
     pv = min(1.0, 2 * sum(comb(m, k) for k in range(0, min(b, c) + 1)) / 2 ** m) if m else 1.0
     print('complete pairs %d: verified start-sensitive BS %d, closed-shell %d; only BS %d, only closed %d; exact McNemar p = %.4f'
           % (len(done), sum(sens(p['rxn_bs']) for p in done), sum(sens(p['rxn_cs']) for p in done), b, c, pv))
+    keys = list(dict.fromkeys(k for r in rows for k in r if not k.startswith('pos_')))
     with open(f'{RES}/pilot_check.csv', 'w', newline='') as fh:
-        w = csv.DictWriter(fh, fieldnames=list(rows[0].keys()))
+        w = csv.DictWriter(fh, fieldnames=keys, restval='', extrasaction='ignore')
         w.writeheader()
         for r in rows:
-            w.writerow({k: ('%.5f' % v if isinstance(v, float) else v) for k, v in r.items()})
+            w.writerow({k: ('%.5f' % v if isinstance(v, float) else ' '.join('%d-%d' % t for t in v)
+                            if isinstance(v, list) else v) for k, v in r.items()})
 
 
 if __name__ == '__main__':

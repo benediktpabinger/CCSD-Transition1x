@@ -11,7 +11,8 @@
 
 # Hessian and downhill check of the lower pilot barriers (pipeline/pilot_check.py).
 # WORKERS processes on one node share the structures of MODEL. Finished ones are
-# skipped, so a rerun only does the rest.
+# skipped, so a rerun only does the rest. SETS="outdir:root outdir:root ..." runs
+# several check sets one after the other (D35); without it OUTDIR and ROOT are used.
 #
 #   sbatch --export=ALL,MODEL=esen pipeline/job_pilot_check.sh
 
@@ -22,17 +23,20 @@ MODEL=${MODEL:?MODEL not set}
 WORKERS=${WORKERS:-3}
 OUTDIR=${OUTDIR:-$HOME/neb_pilot/check}
 ROOT=${ROOT:-$HOME/neb_pilot}
+SETS=${SETS:-$OUTDIR:$ROOT}
 export OMP_NUM_THREADS=$(( 24 / WORKERS ))
 export MKL_NUM_THREADS=$OMP_NUM_THREADS
 [ "$MODEL" = "mace-omol" ] && export PYTHONPATH=$HOME/venvs/e3nn044${PYTHONPATH:+:$PYTHONPATH}
 
 cd $HOME/Transition1x
-PIDS=()
-for (( W = 0; W < WORKERS; W++ )); do
-  python3 pipeline/pilot_check.py --model $MODEL --outdir "$OUTDIR" --root "$ROOT" &
-  PIDS+=($!)
-done
 RC=0
-for P in "${PIDS[@]}"; do wait $P || RC=1; done
+for S in $SETS; do
+  PIDS=()
+  for (( W = 0; W < WORKERS; W++ )); do
+    python3 pipeline/pilot_check.py --model $MODEL --outdir "${S%%:*}" --root "${S#*:}" &
+    PIDS+=($!)
+  done
+  for P in "${PIDS[@]}"; do wait $P || RC=1; done
+done
 echo "ENDE $MODEL rc=$RC $(date)"
 exit $RC

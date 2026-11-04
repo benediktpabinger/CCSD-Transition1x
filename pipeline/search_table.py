@@ -1,6 +1,7 @@
 """Valid transition states by search method, model and group (D27, D30, D31).
 
-A structure passes if it is class route under the D23 check. Rates are given among
+A structure passes if it is class route under the D23 check, as rerun with the D35
+fixes (folders *_v2; unconverged downhill runs count as checked, not passed). Rates are given among
 converged runs and among started runs. The paired test is BS against twin, all
 pairs counted from the start, exact McNemar.
 
@@ -21,8 +22,8 @@ S = {r['rxn']: r for n in ('d24_set', 'd29_set') for r in csv.DictReader(open(f'
 M = ('esen', 'uma-s', 'uma-m', 'mace-omol')
 G = ('baseline', 'closed', 'bs', 'high')
 METHODS = {
-    'fsm': (lambda m: f'{H}/neb_fsm/fsm/{m}', lambda m: f'{H}/neb_fsm/check' if m == 'esen' else f'{H}/neb_fsm/check_{m}', 'fsm'),
-    'neb_idpp': (lambda m: f'{H}/neb_pilot/idpp/{m}', lambda m: f'{H}/neb_pilot/check_idpp', 'idpp'),
+    'fsm': (lambda m: f'{H}/neb_fsm/fsm/{m}', lambda m: f'{H}/neb_fsm/check_v2', 'fsm'),
+    'neb_idpp': (lambda m: f'{H}/neb_pilot/idpp/{m}', lambda m: f'{H}/neb_pilot/check_idpp_v2', 'idpp'),
     'neb_t1x': (None, None, 't1x'),
 }
 
@@ -39,7 +40,7 @@ def runs(method, m):
         if m != 'esen':
             return out
         chk = {}
-        for d in (f'{H}/neb_d24/check/esen', f'{H}/neb_d29/check/esen'):
+        for d in (f'{H}/neb_d24/check_v2/esen', f'{H}/neb_d29/check_v2/esen'):
             for f in glob.glob(f'{d}/*.json'):
                 j = json.load(open(f))
                 chk[j['rxn']] = j['cls']
@@ -74,7 +75,7 @@ for method in METHODS:
             chk = [rx for rx in conv if R[rx][1] is not None]
             ok = sum(R[rx][1] == 'route' for rx in chk)
             rows.append(dict(method=method, model=m, group=g, started=len(A), converged=len(conv), checked=len(chk),
-                             passed=ok, pct_checked=100 * ok / len(chk) if chk else float('nan'),
+                             passed=ok, unconverged=sum(R[rx][1] == 'unconverged' for rx in chk), pct_checked=100 * ok / len(chk) if chk else float('nan'),
                              pct_started=100 * ok / len(A) if len(chk) == len(conv) else float('nan')))
         P = [(rx, S[rx]['partner']) for rx in R if S[rx]['group'] == 'bs' and S[rx]['partner'] in R]
         if P and all(R[rx][1] is not None or not R[rx][0] for rx in R):
