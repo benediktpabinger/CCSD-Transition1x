@@ -12,13 +12,14 @@
 # Endet, wenn alle Stuecke eingereicht sind UND die Queue leer ist.
 STATE=$1; NTOT=$2; CHUNK=$3; OPTS=$4; SCRIPT=$5
 MAXQ=${MAXQ:-54}          # 54 + 46 = 100
+THROTTLE=${THROTTLE:-18}  # gleichzeitig laufende Tasks je Stueck (Slots fuer andere Jobs freihalten)
 [ -f "$STATE" ] || echo 0 > "$STATE"
 while true; do
   NEXT=$(cat "$STATE")
   NQ=$(squeue -u "$USER" -h -r -o '%A' | wc -l)
   if [ "$NEXT" -lt "$NTOT" ] && [ "$NQ" -le "$MAXQ" ]; then
     LAST=$(( NEXT + CHUNK - 1 )); [ "$LAST" -ge "$NTOT" ] && LAST=$(( NTOT - 1 ))
-    OUT=$(sbatch $OPTS --array=${NEXT}-${LAST}%18 "$SCRIPT" 2>&1)
+    OUT=$(sbatch $OPTS --array=${NEXT}-${LAST}%${THROTTLE} "$SCRIPT" 2>&1)
     echo "$(date '+%F %T') tasks ${NEXT}-${LAST}: $OUT"
     if echo "$OUT" | grep -q "^Submitted"; then echo $(( LAST + 1 )) > "$STATE"; else sleep 600; continue; fi
     sleep 30; continue
