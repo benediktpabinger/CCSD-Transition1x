@@ -1,0 +1,11 @@
+model,rxn,group,reason
+esen,rxn9143,bs,no DFT gradient
+esen,rxn2077,high,no DFT gradient
+esen,rxn8801,high,no DFT gradient
+uma-s,rxn6964,bs,no DFT gradient
+uma-s,rxn3954,high,no DFT gradient
+uma-m,rxn2305,bs,no DFT gradient
+uma-m,rxn8755,bs,no DFT gradient
+uma-m,rxn9877,high,no DFT gradient
+uma-m,rxn8801,high,no DFT gradient
+mace-omol,rxn9431,high,no DFT gradient
