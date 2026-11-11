@@ -157,3 +157,36 @@ a2.set_xlabel('Force-error ratio (median, 95 % interval)')
 a2.set_title('Freezing-string structures, all four models', fontsize=9, loc='left')
 a2.text(-0.75, 1.06, 'b', transform=a2.transAxes, fontweight='bold', fontsize=11)
 save(fig, 'fig3_forces')
+plt.close(fig)
+
+# Figure 4 -----------------------------------------------------------------------------
+# DFT residual force at the structures each model's freezing-string search called converged
+# (D37): largest per-atom DFT force (D34 measure for convergence), median with 95 % bootstrap
+# interval per group and model; the models' own criterion was 0.05 eV/A.
+d37 = list(csv.DictReader(open(f'{RES}/d37_forces.csv')))
+G4 = {'baseline': 'Low-MR\nbaseline', 'closed': 'CS\ntwins', 'bs': 'BS', 'high': 'BS,\n' + r'$N_\mathrm{FOD}\geq 1$'}
+fig, ax = plt.subplots(figsize=(5.2, 3.6))
+style(ax)
+rng = np.random.default_rng(0)
+for j, m in enumerate(MODELS):
+    xs, med, lo95, hi95 = [], [], [], []
+    for i, g in enumerate(GROUPS):
+        v = np.array([float(r['f_dft']) for r in d37 if r['model'] == m and r['group'] == g])
+        b = np.median(rng.choice(v, (2000, len(v))), axis=1)
+        xs.append(i + (j - 1.5) * 0.14)
+        med.append(np.median(v))
+        lo95.append(np.percentile(b, 2.5))
+        hi95.append(np.percentile(b, 97.5))
+    ax.vlines(xs, lo95, hi95, color=COLOR[m], lw=1.5)
+    ax.plot(xs, med, ls='none', marker=MARK[m], color=COLOR[m], ms=6, mec='white', mew=1, label=LABEL[m])
+ax.axhline(0.05, color=INK2, lw=1, ls='--')
+ax.text(3.45, 0.05, 'model\ncriterion', ha='left', va='center', fontsize=7, color=INK2)
+ax.set_yscale('log')
+ax.set_yticks([0.03, 0.05, 0.1, 0.2, 0.4], ['0.03', '0.05', '0.1', '0.2', '0.4'])
+ax.yaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
+ax.set_xticks(range(len(GROUPS)), [G4[g] for g in GROUPS], fontsize=8)
+ax.set_xlim(-0.5, 3.9)
+ax.set_ylabel('DFT residual force at the model-\nconverged structure (eV/Å, median)')
+ax.set_title('Freezing-string saddles that the models call converged', fontsize=9, loc='left')
+ax.legend(frameon=False, fontsize=7.5, loc='upper left')
+save(fig, 'fig4_residual')
