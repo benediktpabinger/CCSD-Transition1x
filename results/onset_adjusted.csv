@@ -1,0 +1,85 @@
+analysis,model,term,n,ratio,lo,hi,unadjusted_median_ratio
+twins,uma-s,depth <1 meV,52,1.3873,1.1159,1.7209,1.3951
+twins,uma-s,depth 1-10 meV,74,1.3633,1.1407,1.6139,1.2318
+twins,uma-s,depth 10-43 meV,86,1.2144,1.0500,1.4182,1.0821
+twins,uma-s,depth 43-100 meV,73,1.1812,0.9852,1.4062,1.1531
+twins,uma-s,depth >100 meV,75,0.8614,0.7338,1.0164,0.7114
+twins,uma-s,per 10 % more atoms,360,0.9450,0.9133,0.9758,nan
+twins,uma-s,per 0.1 stretch,360,0.9664,0.9451,0.9915,nan
+twins,uma-m,depth <1 meV,52,1.4578,1.1500,1.8649,1.3315
+twins,uma-m,depth 1-10 meV,74,1.3787,1.1658,1.6297,1.2183
+twins,uma-m,depth 10-43 meV,86,1.3186,1.1404,1.5184,1.1217
+twins,uma-m,depth 43-100 meV,73,1.2411,1.0569,1.4809,1.0974
+twins,uma-m,depth >100 meV,75,0.9187,0.7788,1.0910,0.7191
+twins,uma-m,per 10 % more atoms,360,0.9117,0.8833,0.9411,nan
+twins,uma-m,per 0.1 stretch,360,0.9718,0.9485,0.9957,nan
+twins,esen,depth <1 meV,52,1.3394,1.0660,1.6932,1.2484
+twins,esen,depth 1-10 meV,74,1.3869,1.1798,1.6471,1.3456
+twins,esen,depth 10-43 meV,86,1.2725,1.0774,1.4815,1.1453
+twins,esen,depth 43-100 meV,73,1.2249,1.0271,1.4507,1.1638
+twins,esen,depth >100 meV,75,0.8308,0.6860,1.0025,0.7387
+twins,esen,per 10 % more atoms,360,0.9357,0.9045,0.9661,nan
+twins,esen,per 0.1 stretch,360,0.9642,0.9404,0.9901,nan
+twins,mace-omol,depth <1 meV,52,1.4475,1.1187,1.8163,1.1654
+twins,mace-omol,depth 1-10 meV,74,1.3230,1.1125,1.5756,1.5002
+twins,mace-omol,depth 10-43 meV,86,1.2634,1.0894,1.4775,1.1208
+twins,mace-omol,depth 43-100 meV,73,1.1769,0.9878,1.4188,1.1193
+twins,mace-omol,depth >100 meV,75,0.8166,0.7009,0.9543,0.7167
+twins,mace-omol,per 10 % more atoms,360,0.9463,0.9151,0.9758,nan
+twins,mace-omol,per 0.1 stretch,360,0.9675,0.9461,0.9914,nan
+all,uma-s,N_FOD 0.2-0.4,379,1.4310,1.3063,1.5618,nan
+all,uma-s,N_FOD 0.4-0.6,811,1.6039,1.4871,1.7270,nan
+all,uma-s,N_FOD 0.6-0.8,596,1.7338,1.5881,1.8856,nan
+all,uma-s,N_FOD 0.8-1.0,294,2.0405,1.8210,2.2702,nan
+all,uma-s,N_FOD 1.0-1.2,112,2.5108,2.0911,3.0354,nan
+all,uma-s,N_FOD 1.2-9,61,3.4741,2.6829,4.5816,nan
+all,uma-s,per 10 % more atoms,2490,0.9592,0.9483,0.9703,nan
+all,uma-s,per 0.1 stretch,2490,0.9680,0.9594,0.9769,nan
+all,uma-s,BS <1 meV,14,1.0103,0.7745,1.3442,nan
+all,uma-s,BS 1-10 meV,182,1.0818,0.9861,1.1842,nan
+all,uma-s,BS 10-43 meV,213,1.1321,1.0280,1.2489,nan
+all,uma-s,BS 43-100 meV,188,1.1598,1.0533,1.2825,nan
+all,uma-s,BS 100-300 meV,338,1.0259,0.9445,1.1135,nan
+all,uma-s,BS >300 meV,239,0.7998,0.7270,0.8819,nan
+all,uma-m,N_FOD 0.2-0.4,379,1.4876,1.3658,1.6142,nan
+all,uma-m,N_FOD 0.4-0.6,811,1.6443,1.5335,1.7583,nan
+all,uma-m,N_FOD 0.6-0.8,596,1.7639,1.6316,1.9008,nan
+all,uma-m,N_FOD 0.8-1.0,294,2.0832,1.8675,2.3036,nan
+all,uma-m,N_FOD 1.0-1.2,112,2.6338,2.2106,3.1976,nan
+all,uma-m,N_FOD 1.2-9,61,3.6581,2.7708,4.9213,nan
+all,uma-m,per 10 % more atoms,2490,0.9321,0.9206,0.9429,nan
+all,uma-m,per 0.1 stretch,2490,0.9685,0.9599,0.9769,nan
+all,uma-m,BS <1 meV,14,0.9939,0.8181,1.2006,nan
+all,uma-m,BS 1-10 meV,182,1.1593,1.0614,1.2704,nan
+all,uma-m,BS 10-43 meV,213,1.2102,1.0972,1.3423,nan
+all,uma-m,BS 43-100 meV,188,1.2154,1.1081,1.3479,nan
+all,uma-m,BS 100-300 meV,338,1.0890,1.0066,1.1802,nan
+all,uma-m,BS >300 meV,239,0.8354,0.7605,0.9171,nan
+all,esen,N_FOD 0.2-0.4,379,1.4663,1.3362,1.6118,nan
+all,esen,N_FOD 0.4-0.6,811,1.6801,1.5528,1.8228,nan
+all,esen,N_FOD 0.6-0.8,596,1.8331,1.6804,1.9965,nan
+all,esen,N_FOD 0.8-1.0,294,2.1366,1.9022,2.3924,nan
+all,esen,N_FOD 1.0-1.2,112,2.6106,2.1691,3.1581,nan
+all,esen,N_FOD 1.2-9,61,3.6031,2.7725,4.7593,nan
+all,esen,per 10 % more atoms,2490,0.9478,0.9356,0.9592,nan
+all,esen,per 0.1 stretch,2490,0.9623,0.9525,0.9713,nan
+all,esen,BS <1 meV,14,0.9284,0.7067,1.2418,nan
+all,esen,BS 1-10 meV,182,1.0814,0.9894,1.1890,nan
+all,esen,BS 10-43 meV,213,1.1368,1.0216,1.2593,nan
+all,esen,BS 43-100 meV,188,1.1946,1.0912,1.3088,nan
+all,esen,BS 100-300 meV,338,1.0357,0.9554,1.1216,nan
+all,esen,BS >300 meV,239,0.7941,0.7222,0.8748,nan
+all,mace-omol,N_FOD 0.2-0.4,379,1.4505,1.3318,1.5886,nan
+all,mace-omol,N_FOD 0.4-0.6,811,1.6335,1.5156,1.7634,nan
+all,mace-omol,N_FOD 0.6-0.8,596,1.7889,1.6510,1.9435,nan
+all,mace-omol,N_FOD 0.8-1.0,294,2.1844,1.9660,2.4444,nan
+all,mace-omol,N_FOD 1.0-1.2,112,2.7590,2.3201,3.2912,nan
+all,mace-omol,N_FOD 1.2-9,61,3.7264,2.8748,4.9533,nan
+all,mace-omol,per 10 % more atoms,2490,0.9609,0.9495,0.9717,nan
+all,mace-omol,per 0.1 stretch,2490,0.9716,0.9626,0.9807,nan
+all,mace-omol,BS <1 meV,14,0.9641,0.7349,1.2623,nan
+all,mace-omol,BS 1-10 meV,182,1.0737,0.9759,1.1762,nan
+all,mace-omol,BS 10-43 meV,213,1.1503,1.0454,1.2618,nan
+all,mace-omol,BS 43-100 meV,188,1.1927,1.0927,1.3142,nan
+all,mace-omol,BS 100-300 meV,338,1.0340,0.9557,1.1196,nan
+all,mace-omol,BS >300 meV,239,0.7961,0.7221,0.8751,nan
