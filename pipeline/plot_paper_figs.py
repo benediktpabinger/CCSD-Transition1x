@@ -105,14 +105,28 @@ plt.close(fig)
 sp = list(csv.DictReader(open(f'{RES}/model_sp_ts_all.csv')))
 fig, (a1, a2) = plt.subplots(1, 2, figsize=(9, 3.4), gridspec_kw=dict(width_ratios=(1.1, 1), wspace=0.75))
 style(a1)
-edges = np.arange(0, 1.61, 0.2)
-mid = 0.5 * (edges[1:] + edges[:-1])
+# bins of 0.2 up to 1.2, everything above merged (the bins above 1.2 hold about 30 reactions each);
+# shaded band: 95 % bootstrap interval of the median, 2000 resamples per bin
+edges = np.array([0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, 9])
+mid = np.array([0.1, 0.3, 0.5, 0.7, 0.9, 1.1, 1.35])
+rng = np.random.default_rng(0)
 for m in MODELS:
     R = [(float(r['nfod']), float(r['f_mae'])) for r in sp if r['model'] == m and r['f_mae']]
     n, e = np.array(R).T
-    med = [np.median(e[(n >= lo) & (n < hi)]) if ((n >= lo) & (n < hi)).sum() >= 20 else np.nan
-           for lo, hi in zip(edges[:-1], edges[1:])]
-    a1.plot(mid, np.array(med) * 1e3, color=COLOR[m], lw=1.5, marker=MARK[m], ms=5, mec='white', mew=1, label=LABEL[m])
+    med, lo95, hi95, cnt = [], [], [], []
+    for lo, hi in zip(edges[:-1], edges[1:]):
+        v = e[(n >= lo) & (n < hi)] * 1e3
+        b = np.median(rng.choice(v, (2000, len(v))), axis=1)
+        med.append(np.median(v))
+        lo95.append(np.percentile(b, 2.5))
+        hi95.append(np.percentile(b, 97.5))
+        cnt.append(len(v))
+    a1.fill_between(mid, lo95, hi95, color=COLOR[m], alpha=0.18, lw=0)
+    a1.plot(mid, med, color=COLOR[m], lw=1.5, marker=MARK[m], ms=5, mec='white', mew=1, label=LABEL[m])
+for x0, c in zip(mid, cnt):
+    a1.text(x0, 0.6, f'{c}', ha='center', va='bottom', fontsize=6.5, color=INK2)
+a1.text(0.0, 0.6, 'n =', ha='right', va='bottom', fontsize=6.5, color=INK2)
+a1.set_xticks([0, 0.2, 0.4, 0.6, 0.8, 1.0, 1.35], ['0', '0.2', '0.4', '0.6', '0.8', '1.0', '>1.2'])
 a1.set_xlabel(r'$N_\mathrm{FOD}$ at the stored transition state')
 a1.set_ylabel('Median force error vs. OMol25 label\n(mean abs. component, meV/Å)')
 a1.set_ylim(bottom=0)
