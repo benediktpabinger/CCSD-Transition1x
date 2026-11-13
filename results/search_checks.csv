@@ -23,8 +23,10 @@ neb_idpp,uma-s,baseline,150,143,143,103,0,72.0,68.7
 neb_idpp,uma-s,closed,130,111,111,55,0,49.5,42.3
 neb_idpp,uma-s,bs,130,90,90,29,0,32.2,22.3
 neb_idpp,uma-s,high,100,71,71,20,0,28.2,20.0
-neb_idpp,uma-m,closed,100,88,88,42,0,47.7,42.0
-neb_idpp,uma-m,bs,100,64,64,13,0,20.3,13.0
+neb_idpp,uma-m,baseline,150,144,144,106,0,73.6,70.7
+neb_idpp,uma-m,closed,130,111,111,53,0,47.7,40.8
+neb_idpp,uma-m,bs,130,88,88,25,0,28.4,19.2
+neb_idpp,uma-m,high,100,68,68,19,0,27.9,19.0
 neb_idpp,mace-omol,baseline,150,142,142,105,0,73.9,70.0
 neb_idpp,mace-omol,closed,130,106,106,59,0,55.7,45.4
 neb_idpp,mace-omol,bs,130,93,93,33,0,35.5,25.4
