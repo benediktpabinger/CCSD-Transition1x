@@ -37,7 +37,7 @@ HESS=${HESS:-dft}
 TASKS=${TASKS:-$HOME/marks_pilot/tasks.txt}
 LINE=$(sed -n "$((SLURM_ARRAY_TASK_ID + 1))p" $TASKS)
 RXN=$(echo "$LINE" | cut -d: -f1)
-W=$HOME/marks_pilot/$RXN
+W=${ROOT:-$HOME/marks_pilot}/$RXN     # ROOT: another run folder (D44); STOP_AFTER=optts: no freq/IRC
 if [ "$HESS" = model ]; then
   mkdir -p $W/modelhess && cp $W/ts_model.xyz $W/model.hess $W/modelhess/ && W=$W/modelhess
   GEOM='  InHess Read\n  InHessName "model.hess"'
@@ -82,6 +82,10 @@ done
 echo $R > stab_rounds
 grep -q "THE OPTIMIZATION HAS CONVERGED" optts.out || { echo "ENDE optts not converged, no freq/IRC"; exit 0; }
 echo "optts done $(date)"
+if [ "$STOP_AFTER" = optts ]; then
+  find . -maxdepth 2 -type f \( -name '*.tmp' -o -name '*.tmp.*' -o -name '*.densities*' -o -name '*_start.gbw' -o -name '*.ges' -o -name '*.bibtex' -o -name '*_property.txt' \) -delete
+  echo "$RXN end after optts $(date)"; exit 0
+fi
 
 ok freq || { cp stab.gbw freq_start.gbw
   printf '! UKS %s NumFreq MORead\n%%moinp "freq_start.gbw"\n%s\n%%scf\n%s\nend\n* xyzfile 0 1 optts.xyz\n' "$METHOD" "$HEAD" "$SCF" > freq.inp
