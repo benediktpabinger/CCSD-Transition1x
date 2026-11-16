@@ -51,13 +51,18 @@ def save(fig, name):
 
 
 # Figure 2 -----------------------------------------------------------------------------
+# a: success by group and search method; b: what freezing string found; c: success against N_FOD
+# (freezing string, four models) with the Transition1x share of each bin; d: our pooled rates next
+# to the published ones (Marks et al. 2026: OMol25 models, standard reaction sets, reference-saddle
+# criterion; Zhao et al. 2025: best of seven other potentials on Transition1x, connectivity criterion).
 rows = list(csv.DictReader(open(f'{RES}/search_checks.csv')))
-fig = plt.figure(figsize=(11.5, 3.8))
-gs = fig.add_gridspec(1, 4, width_ratios=(1, 1, 1, 1.15), wspace=0.35)
+GL2 = dict(GLABEL, high='BS,\n' + r'$N_\mathrm{FOD}\geq 1$')
+fig = plt.figure(figsize=(11.5, 7.6))
+gs = fig.add_gridspec(2, 4, width_ratios=(1, 1, 1, 1.15), height_ratios=(1, 0.95), wspace=0.35, hspace=0.55)
 methods = (('fsm', 'Freezing string + Sella'), ('neb_idpp', 'NEB, interpolated start'), ('neb_t1x', 'NEB, Transition1x start'))
 x = np.arange(len(GROUPS))
 for k, (meth, title) in enumerate(methods):
-    ax = fig.add_subplot(gs[k])
+    ax = fig.add_subplot(gs[0, k])
     style(ax)
     for m in MODELS:
         v = {r['group']: float(r['pct_checked']) for r in rows if r['method'] == meth and r['model'] == m}
@@ -66,17 +71,16 @@ for k, (meth, title) in enumerate(methods):
         xs = [i for i, g in enumerate(GROUPS) if g in v]
         ax.plot(xs, [v[GROUPS[i]] for i in xs], color=COLOR[m], lw=1.5, marker=MARK[m], ms=6,
                 mec='white', mew=1, label=LABEL[m])
-    ax.set_xticks(x, [GLABEL[g] for g in GROUPS], fontsize=7.5)
+    ax.set_xticks(x, [GL2[g] for g in GROUPS], fontsize=7.5)
     ax.set_ylim(0, 100)
     ax.set_title(title, fontsize=9, loc='left')
     if k == 0:
         ax.set_ylabel('Converged searches that are a\nsaddle of the intended reaction (%)')
+        ax.text(-0.32, 1.12, 'a', transform=ax.transAxes, fontweight='bold', fontsize=11)
     else:
         ax.set_yticklabels([])
 fig.axes[0].legend(frameon=False, fontsize=7.5, loc='lower left')
-fig.text(0.125, 0.98, 'a', fontweight='bold', fontsize=11)
 
-# failure composition, freezing string, four models pooled
 CLS = (('route', 'Intended reaction', '#2a78d6'), ('one_end', 'Saddle of another step', '#eb6834'),
        ('elsewhere', 'Saddle of an unrelated reaction', '#e87ba4'), ('no_mode', 'No saddle (minimum or flat)', '#8a8981'),
        ('other', 'Other (same end, higher order, unconverged)', '#c9c8c1'))
@@ -86,18 +90,61 @@ for f in glob.glob(f'{H}/neb_fsm/check_v2/*/*_fsm.json'):
     j = json.load(open(f))
     c = j['cls'] if j['cls'] in ('route', 'one_end', 'elsewhere', 'no_mode') else 'other'
     cnt[grp[j['rxn']]][c] += 1
-ax = fig.add_subplot(gs[3])
+ax = fig.add_subplot(gs[0, 3])
 bottom = np.zeros(len(GROUPS))
 for key, lab, col in CLS:
     v = np.array([100 * cnt[g][key] / sum(cnt[g].values()) for g in GROUPS])
     ax.bar(x, v, bottom=bottom, color=col, width=0.7, edgecolor='white', linewidth=1.5, label=lab)
     bottom += v
-ax.set_xticks(x, [GLABEL[g] for g in GROUPS], fontsize=7.5)
+ax.set_xticks(x, [GL2[g] for g in GROUPS], fontsize=7.5)
 ax.set_ylim(0, 100)
 ax.set_ylabel('Share of converged searches (%)')
 ax.set_title('Freezing string: what was found', fontsize=9, loc='left')
 ax.legend(frameon=False, fontsize=7, loc='upper left', bbox_to_anchor=(1.0, 1.0))
-fig.text(0.70, 0.98, 'b', fontweight='bold', fontsize=11)
+ax.text(-0.3, 1.12, 'b', transform=ax.transAxes, fontweight='bold', fontsize=11)
+
+# c: success against N_FOD
+sb = list(csv.DictReader(open(f'{RES}/search_by_nfod.csv')))
+binr = [r for r in sb if r['model'] == 'esen' and r['nfod_lo'] != 'weighted']
+xb = np.arange(len(binr))
+blab = [f"{float(r['nfod_lo']):g}–{float(r['nfod_hi']):g}" if r['nfod_hi'] else f"≥{float(r['nfod_lo']):g}" for r in binr]
+ax = fig.add_subplot(gs[1, 0:2])
+style(ax)
+for m in MODELS:
+    v = [100 * float(r['success']) for r in sb if r['model'] == m and r['nfod_lo'] != 'weighted']
+    ax.plot(xb, v, color=COLOR[m], lw=1.5, marker=MARK[m], ms=6, mec='white', mew=1, label=LABEL[m])
+ax.set_xticks(xb, blab, fontsize=8)
+ax.set_xlabel(r'$N_\mathrm{FOD}$ at the stored transition state (grey: share of Transition1x)')
+ax.set_ylim(0, 100)
+ax.set_ylabel('Saddle of the intended reaction (%)')
+ax.set_title('Freezing string + Sella, by multireference character', fontsize=9, loc='left')
+for xi, r in zip(xb, binr):
+    ax.text(xi, 3, f"{100 * float(r['t1x_share']):.0f} %", ha='center', fontsize=7, color=INK2)
+ax.text(-0.15, 1.12, 'c', transform=ax.transAxes, fontweight='bold', fontsize=11)
+
+# d: our pooled rates next to the published ones
+ax = fig.add_subplot(gs[1, 2:4].subgridspec(1, 2, width_ratios=(0.3, 1))[1])
+style(ax)
+ax.grid(axis='y', visible=False)
+ax.grid(axis='x', color=GRID, lw=0.8)
+low = {m: [float(r['success']) for r in sb if r['model'] == m and r['nfod_lo'] != 'weighted' and float(r['nfod_lo']) < 0.2] for m in MODELS}
+nlow = {m: [int(r['n_checked']) for r in sb if r['model'] == m and r['nfod_lo'] != 'weighted' and float(r['nfod_lo']) < 0.2] for m in MODELS}
+ours_low = [100 * np.average(low[m], weights=nlow[m]) for m in MODELS]
+ours_w = [100 * float(r['success']) for m in MODELS for r in sb if r['model'] == m and r['nfod_lo'] == 'weighted']
+ax.axvspan(91.8, 96.6, ymin=0.47, ymax=0.78, color='#c9c8c1', alpha=0.6, lw=0)
+ax.text(94.2, 3.75, 'Marks et al.\n(OMol25 models,\nstandard sets)', ha='center', va='center', fontsize=7, color=INK)
+for j, (m, v) in enumerate(zip(MODELS, ours_low)):
+    ax.plot(v, 2.55 + (j - 1.5) * 0.12, ls='none', marker=MARK[m], color=COLOR[m], ms=6, mec='white', mew=1)
+ax.plot([69, 69], [0.55, 1.45], color=INK2, lw=2)
+ax.text(69.6, 1.25, 'Zhao et al.\n(Transition1x)', ha='left', va='center', fontsize=7, color=INK)
+for j, (m, v) in enumerate(zip(MODELS, ours_w)):
+    ax.plot(v, 0.75 + (j - 1.5) * 0.12, ls='none', marker=MARK[m], color=COLOR[m], ms=6, mec='white', mew=1)
+ax.set_yticks([0.75, 2.55], ['Ours,\nTransition1x mix', 'Ours,\n' + r'$N_\mathrm{FOD}$ < 0.2'], fontsize=8)
+ax.set_ylim(0, 4.3)
+ax.set_xlim(55, 100)
+ax.set_xlabel('Success rate (%)')
+ax.set_title('Our rates next to the published benchmarks', fontsize=9, loc='left')
+ax.text(-0.42, 1.12, 'd', transform=ax.transAxes, fontweight='bold', fontsize=11)
 save(fig, 'fig2_search')
 plt.close(fig)
 
