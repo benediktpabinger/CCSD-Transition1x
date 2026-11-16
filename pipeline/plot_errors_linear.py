@@ -1,0 +1,90 @@
+"""Force and barrier errors at the searched saddles on a linear axis (iteration 4 of these figures).
+
+Freezing string + Sella, one panel per model, closed-shell vs broken-symmetry. Every reaction as a dot;
+running median (window N_FOD +- 0.1, at least 15 reactions) with the band between the 25th and 75th
+percentile. Linear y axis capped at CAP; reactions above it are drawn as triangles at the top edge.
+
+  v4_forces    force error vs DFT (D37, mean absolute component), meV/A, cap 100
+  v4_barriers  absolute barrier error vs DFT (D40), meV, cap 100, dashed line at 43 meV
+
+Output figures/paper/v4_*.{png,pdf}
+
+    python pipeline/plot_errors_linear.py
+"""
+import csv
+import os
+
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+
+REPO = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
+RES = os.path.join(REPO, 'results')
+OUT = os.path.join(REPO, 'figures', 'paper')
+INK, INK2, GRID = '#1f1f1e', '#5f5e58', '#e4e3df'
+M = ('esen', 'uma-s', 'uma-m', 'mace-omol')
+LABEL = {'esen': 'eSEN', 'uma-s': 'UMA-S', 'uma-m': 'UMA-M', 'mace-omol': 'MACE-OMol'}
+SPIN = {'cs': ('Closed-shell', '#2a78d6'), 'bs': ('Broken-symmetry', '#eb6834')}
+GRIDX = np.linspace(0, 1.6, 81)
+plt.rcParams.update({'font.size': 9, 'axes.edgecolor': INK2, 'axes.labelcolor': INK, 'xtick.color': INK2,
+                     'ytick.color': INK2, 'text.color': INK, 'axes.spines.top': False, 'axes.spines.right': False,
+                     'font.family': 'DejaVu Sans'})
+
+S = {r['rxn']: r for n in ('d24_set', 'd29_set') for r in csv.DictReader(open(f'{RES}/{n}.csv'))}
+spin = {rx: ('cs' if r['group'] in ('baseline', 'closed') else 'bs') for rx, r in S.items()}
+nfod = {rx: float(r['nfod']) for rx, r in S.items()}
+
+
+def running(x, y, half=0.1, nmin=15):
+    out = []
+    for g in GRIDX:
+        sel = np.abs(x - g) <= half
+        if sel.sum() >= nmin:
+            out.append((g, *np.percentile(y[sel], [25, 50, 75])))
+    return np.array(out).T if out else np.empty((4, 0))
+
+
+def figure(rows, value, cap, ylabel, title, name, ref=None):
+    fig, axs = plt.subplots(2, 2, figsize=(9.6, 6.6), sharex=True, sharey=True)
+    fig.suptitle(title, x=0.06, ha='left', fontsize=11)
+    for ax, m in zip(axs.flat, M):
+        ax.grid(axis='y', color=GRID, lw=0.8)
+        ax.set_axisbelow(True)
+        ax.set_title(LABEL[m], fontsize=10, loc='left')
+        if ref:
+            ax.axhline(ref, color=INK2, lw=1, ls='--')
+        for sp, (lab, col) in SPIN.items():
+            R = [r for r in rows if r['model'] == m and spin[r['rxn']] == sp]
+            x = np.array([nfod[r['rxn']] for r in R])
+            y = np.array([value(r) for r in R])
+            inside = y <= cap
+            ax.scatter(x[inside], y[inside], s=7, color=col, alpha=0.3, lw=0)
+            ax.scatter(x[~inside], np.full((~inside).sum(), cap * 0.985), s=16, marker='^', color=col, alpha=0.7, lw=0)
+            g, q1, med, q3 = running(x, y)
+            ax.fill_between(g, q1, np.minimum(q3, cap), color=col, alpha=0.18, lw=0)
+            ax.plot(g, med, color=col, lw=2.2, label=lab)
+        ax.set_xlim(-0.03, 1.65)
+        ax.set_ylim(0, cap)
+    if ref:
+        axs.flat[1].text(1.62, ref + 1.5, f'{ref} meV', ha='right', va='bottom', fontsize=8, color=INK2)
+    axs.flat[0].legend(frameon=False, fontsize=8.5, loc='upper left')
+    for ax in axs[:, 0]:
+        ax.set_ylabel(ylabel)
+    for ax in axs[1]:
+        ax.set_xlabel(r'$N_\mathrm{FOD}$ at the stored transition state')
+    fig.text(0.99, 0.005, f'Line: running median; band: middle half of reactions; triangles: reactions above {cap}.',
+             ha='right', fontsize=7.5, color=INK2)
+    fig.tight_layout(rect=(0, 0.02, 1, 0.96))
+    for ext in ('pdf', 'png'):
+        fig.savefig(f'{OUT}/{name}.{ext}', dpi=200, bbox_inches='tight')
+    plt.close(fig)
+    print('wrote', name)
+
+
+forces = list(csv.DictReader(open(f'{RES}/d37_forces.csv')))
+figure(forces, lambda r: 1000 * float(r['f_err_mae']), 100, 'Force error vs DFT\n(mean abs. component, meV/Å)',
+       'Model force error at the searched saddles (freezing string + Sella)', 'v4_forces')
+barriers = list(csv.DictReader(open(f'{RES}/d40_barriers.csv')))
+figure(barriers, lambda r: abs(float(r['error_mev'])), 100, '|Barrier error| vs DFT (meV)',
+       'Barrier error at the searched saddles (freezing string + Sella)', 'v4_barriers', ref=43)
