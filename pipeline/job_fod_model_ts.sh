@@ -4,7 +4,7 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=24
 #SBATCH --cpus-per-task=1
-#SBATCH --time=06:00:00
+#SBATCH --time=01:00:00
 #SBATCH --mem=120G
 #SBATCH --output=/home/energy/bepab/logs/fod_model_ts_%A_%a.out
 #SBATCH --error=/home/energy/bepab/logs/fod_model_ts_%A_%a.err
