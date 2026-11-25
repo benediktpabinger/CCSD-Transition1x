@@ -74,7 +74,7 @@ The search follows Marks et al.\cite{marks2026fsm} and uses ML-FSM 1.0.1\cite{ma
 
 \section{S4\quad Located Transition States}
 
-\paragraph{Converged searches.} Of 2,040 searches (510 reactions, four models), 1,672 converged (Table~S2). For 10 of these, the DFT gradient calculation did not finish, leaving 1,662 located transition states with a DFT force. For 4 more, the DFT gradient at the reactant is missing, leaving 1,658 barriers.
+\paragraph{Converged searches.} Of 2,040 searches (510 reactions, four models), 1,672 located a transition state (Table~S2). Of the 368 failures, 367 occurred while the freezing string was built: the back transformation from redundant internal coordinates to Cartesian coordinates did not converge within 200 iterations. These failures come from 102 reactions, 81 of which fail on all four models, so they depend on the reaction geometry rather than the model. The high-multireference group is affected least (38 of 400 searches, against 99 of 600 for the baseline, 125 of 520 for the closed-shell twins and 106 of 520 for the broken-symmetry group). One further search reached the step limit of Sella. For 10 of these, the DFT gradient calculation did not finish, leaving 1,662 located transition states with a DFT force. For 4 more, the DFT gradient at the reactant is missing, leaving 1,658 barriers.
 
 \paragraph{Check for the intended saddle.} Each converged structure is checked on the model surface, in double precision:
 \begin{enumerate}
