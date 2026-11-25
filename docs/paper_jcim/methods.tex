@@ -28,3 +28,39 @@ A structure is \emph{broken-symmetry} if its final UKS solution has $\langle S^2
 We test four machine-learned interatomic potentials trained on OMol25: eSEN-sm-conserving\cite{fu2025esen}, UMA-S 1.2 and UMA-M 1.1\cite{wood2025uma}, and MACE-OMol-0 (extra large)\cite{batatia2025maceomol}. All four are trained to reproduce $\omega$B97M-V/def2-TZVPD energies and forces. They are the models benchmarked by Marks et al.\cite{marks2026fsm}, except that we use the newer UMA-S 1.2. eSEN and MACE-OMol are trained on OMol25 alone and differ in architecture. The two UMA models are also trained on datasets of materials, surfaces and molecular crystals, and differ in size. eSEN and the UMA models run in single precision, the fairchem default, and MACE-OMol in double precision.
 
 Every structure is given to the models as a neutral singlet (charge 0, spin multiplicity 1). The models have no input that distinguishes a closed-shell from a broken-symmetry solution; what they predict for a broken-symmetry reaction follows from the labels they were trained on.
+
+% 2.2 Reactions
+% Numbers: fod_ts_all.csv (10,073; shares >= 0.5 / >= 1), stab_*_orca6.csv (2,490 unique, 2,466 agree),
+% d24_set.csv + d29_set.csv (groups, depth bins 30/34/33/33, high all bs)
+% TODO verify against Schreiner et al.: CI-NEB at wB97x/6-31G(d), "about 9.6 million"
+\subsection{Reactions}
+\label{sec:reactions}
+
+We draw reactions from Transition1x,\cite{schreiner2022transition1x} a dataset of 10,073 gas-phase reactions of molecules containing C, H, N and O. Transition1x was generated with nudged elastic band calculations at the $\omega$B97x/6-31G(d) level, finished with a climbing image, and stores the structures of all band iterations, about 9.6 million in total. For each reaction, it also provides the reactant, the product and the converged transition state (the climbing image), which we call the Transition1x transition state. OMol25\cite{levine2025omol25} recomputed the Transition1x structures at $\omega$B97M-V/def2-TZVPD and includes them in its training data.
+
+Most Transition1x transition states have low multireference character (Figure~\ref{fgr:landscape}): 16\,\% have $N_\mathrm{FOD} \geq 0.5$ and 2\,\% have $N_\mathrm{FOD} \geq 1$, and broken symmetry becomes common only at high $N_\mathrm{FOD}$. A random sample would therefore contain few of the reactions we are interested in.
+
+\begin{figure}
+  \includegraphics[width=0.8\textwidth]{Reactions.png}
+  \caption{Multireference character of 10,009 Transition1x transition states, split by spin class (top), and the share of broken-symmetry transition states against $N_\mathrm{FOD}$ (bottom). Spin class here is from the OMol25 label, $\langle S^2\rangle > 0.05$, which is available for all transition states. For the 2,490 transition states we recomputed, it agrees with our own stability analysis in 2,466 cases (Section~\ref{sec:labelcheck}).}
+  \label{fgr:landscape}
+\end{figure}
+
+We therefore draw 510 reactions so that the set covers low and high multireference character, and closed-shell and broken-symmetry reactions. Each reaction is classified by its Transition1x transition state: by $N_\mathrm{FOD}$, and by the spin class from our stability analysis (Section~\ref{sec:dft}), which we computed for 2,490 candidate reactions (SI, Section~S2). Table~\ref{tbl:set} lists the groups.
+
+\begin{table}
+  \caption{The reaction set. $N_\mathrm{FOD}$ and spin class refer to the Transition1x transition state.}
+  \label{tbl:set}
+  \begin{tabular}{lrllp{5.2cm}}
+    \hline
+    Group & Reactions & Spin class & $N_\mathrm{FOD}$ & Selection \\
+    \hline
+    Baseline            & 150 & closed-shell    & 0.01--0.20 & random, $N_\mathrm{FOD} < 0.2$ \\
+    Broken-symmetry     & 130 & broken-symmetry & 0.17--1.16 & random, evenly over the depth of the broken-symmetry solution (SI) \\
+    Closed-shell twins  & 130 & closed-shell    & 0.17--1.17 & for each broken-symmetry reaction, the closed-shell reaction of nearest $N_\mathrm{FOD}$ \\
+    High multireference & 100 & broken-symmetry & 1.00--3.26 & random, $N_\mathrm{FOD} \geq 1.0$ \\
+    \hline
+    Total               & 510 &                 &            & \\
+    \hline
+  \end{tabular}
+\end{table}
