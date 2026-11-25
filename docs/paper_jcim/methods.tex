@@ -64,3 +64,9 @@ We therefore draw 510 reactions so that the set covers low and high multireferen
     \hline
   \end{tabular}
 \end{table}
+
+% 2.3 Transition-state search. Settings: pipeline/fsm_search.py
+\subsection{Transition-State Search}
+\label{sec:search}
+The Transition1x transition states are part of the training data, so errors there show how well the models fit their training data. In practice, a model is used to locate a transition state, and the result depends on how accurate the model is at the structure it finds. We therefore let each model search for the transition state itself, with the workflow that Marks et al.\cite{marks2026fsm} found reliable for these models: the freezing string method\cite{behn2011fsm} builds a path between reactant and product and gives a guess for the transition state, which Sella\cite{hermes2022sella} then refines to a first-order saddle point on the model surface. Reactant and product are the Transition1x structures, first relaxed on each model (BFGS, 0.05\,eV/\AA); the search does not use the Transition1x path or transition state. We call the converged structure the located transition state; all quantities in Sections~2.4 and \ref{sec:results} are evaluated there. Settings are given in SI Section~S3.
+% TODO bib keys behn2011fsm, hermes2022sella (from memory, verify)

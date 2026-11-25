@@ -46,3 +46,28 @@ We recomputed 44 Transition1x transition states with this protocol, and also wit
 Candidates were chosen with $N_\mathrm{FOD}$ and the OMol25 $\langle S^2\rangle$, which is available for every transition state.
 % TODO: depth bins (1-10, 10-43, 43-300, >300 meV: 30/34/33/33), twin rule (within 0.05, same heavy-atom
 % count where possible, no reuse), seed 0, candidate pools (s2pos 1,271, cshigh 656, twins 364, base 200)
+
+\section{S3\quad Transition-State Search}
+The search follows Marks et al.\cite{marks2026fsm} and uses ML-FSM 1.0.1\cite{marks2026fsm} and Sella 2.6.0\cite{hermes2022sella} with ASE.
+
+\paragraph{Endpoints.} The Transition1x reactant and product are relaxed on each model with BFGS to a largest atomic force below 0.05\,eV/\AA{} (at most 2,000 steps). Overall translation and rotation between the two are removed before the search.
+
+\paragraph{Freezing string.} The string is grown from both ends with 18 nodes, interpolated in redundant internal coordinates. Each new node is optimized perpendicular to the path with L-BFGS-B in Cartesian coordinates (at most 2 optimization steps with 3 line-search steps each, step length at most 0.05\,\AA). The node of highest model energy is the transition-state guess.
+
+\paragraph{Saddle-point refinement.} Sella refines the guess to a first-order saddle point in internal coordinates, until the largest atomic force is below 0.05\,eV/\AA{}, with at most 1,000 steps. Runs that do not converge are not used for the error analysis.
+
+\begin{table}[h]
+  \caption{Settings of the transition-state search.}
+  \begin{tabular}{ll}
+    \hline
+    Endpoint relaxation & BFGS, 0.05\,eV/\AA, $\leq$ 2,000 steps \\
+    Freezing string     & 18 nodes, redundant internal coordinates \\
+    Node optimization   & L-BFGS-B, 2 steps, 3 line-search steps, max.\ step 0.05\,\AA \\
+    Saddle refinement   & Sella, order 1, internal coordinates, 0.05\,eV/\AA, $\leq$ 1,000 steps \\
+    \hline
+  \end{tabular}
+\end{table}
+% TODO check the meaning of the CartesianOptimizer arguments ('L-BFGS-B', 2, 3, 0.05) in ML-FSM;
+% docstring of fsm_search.py says "at most 3 line-search and 2 optimisation steps per node, step limit 0.05 A".
+% TODO eSEN endpoints come from the NEB runs (omol_neb.py, same BFGS settings) -- check steps limit there.
+% Source: ~/opt/mlfsm_src (thegomeslab, commit f1f53a0), ~/venvs/sella (sella 2.6.0)
