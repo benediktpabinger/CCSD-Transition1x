@@ -16,3 +16,15 @@ OMol25 instead broke the spin symmetry of the initial guess by rotating the $\be
 % Numbers: results/fod_ts_all.csv (10,073), results/fod_model_ts.csv (1,662)
 \paragraph{Multireference character.}
 As a measure of multireference character, we use the fractional occupation number weighted electron density, $N_\mathrm{FOD}$\cite{grimme2015fod}. It counts the electrons in fractionally occupied orbitals of a finite-temperature DFT calculation. Values near zero mean that a single determinant describes the structure well; values around 1 and above indicate strong static correlation. We compute $N_\mathrm{FOD}$ with PBE/def2-SVP at $T_\mathrm{el} = 5000$\,K in PySCF 2.12.1\cite{pyscf}.
+
+% 2.1 Computational Details -- spin class
+\paragraph{Spin class.}
+A structure is \emph{broken-symmetry} if its final UKS solution has $\langle S^2\rangle > 0.05$, and \emph{closed-shell} otherwise.
+
+% 2.1 Computational Details -- models
+% Marks et al. used UMA-S 1.1, UMA-M 1.1, eSEN-S, MACE-OMol25 (marks.txt l. 285-297).
+% Software versions (fairchem-core 2.20.0, mace-torch 0.3.15) -> Data and Software Availability.
+\paragraph{Models}
+We test four machine-learned interatomic potentials trained on OMol25: eSEN-sm-conserving\cite{fu2025esen}, UMA-S 1.2 and UMA-M 1.1\cite{wood2025uma}, and MACE-OMol-0 (extra large)\cite{batatia2025maceomol}. All four are trained to reproduce $\omega$B97M-V/def2-TZVPD energies and forces. They are the models benchmarked by Marks et al.\cite{marks2026fsm}, except that we use the newer UMA-S 1.2. eSEN and MACE-OMol are trained on OMol25 alone and differ in architecture. The two UMA models are also trained on datasets of materials, surfaces and molecular crystals, and differ in size. eSEN and the UMA models run in single precision, the fairchem default, and MACE-OMol in double precision.
+
+Every structure is given to the models as a neutral singlet (charge 0, spin multiplicity 1). The models have no input that distinguishes a closed-shell from a broken-symmetry solution; what they predict for a broken-symmetry reaction follows from the labels they were trained on.
