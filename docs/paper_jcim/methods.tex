@@ -11,3 +11,8 @@ OMol25 instead broke the spin symmetry of the initial guess by rotating the $\be
 %   bauernschmitt1996       J. Chem. Phys. 104, 9047 (1996)
 %   orca6                   Neese, WIREs Comput. Mol. Sci. (2025), "Software Update: The ORCA Program System--Version 6.0"
 % TODO check 20 degree / beta wording against the OMol25 PDF (Sec. 2.7, arXiv 2505.08762)
+
+% 2.1 Computational Details -- multireference character
+% Numbers: results/fod_ts_all.csv (10,073), results/fod_model_ts.csv (1,662)
+\paragraph{Multireference character.}
+As a measure of multireference character, we use the fractional occupation number weighted electron density, $N_\mathrm{FOD}$\cite{grimme2015fod}. It counts the electrons in fractionally occupied orbitals of a finite-temperature DFT calculation. Values near zero mean that a single determinant describes the structure well; values around 1 and above indicate strong static correlation. Because $N_\mathrm{FOD}$ is needed for all 10{,}073 Transition1x transition states and for every located transition state, we compute it at lower cost than the recommended TPSS/def2-TZVP\cite{grimme2015fod}, with PBE/def2-SVP at $T_\mathrm{el} = 5000$\,K in PySCF 2.12.1\cite{pyscf}.
