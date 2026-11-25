@@ -1,0 +1,43 @@
+\section{S1\quad DFT Protocol}
+
+\subsection*{Input}
+All reference calculations use ORCA 6.0.1. Each structure is computed in two runs. The first is a UKS single point with stability analysis:
+
+\begin{verbatim}
+! UKS wB97M-V def2-TZVPD def2/J RIJCOSX TightSCF DEFGRID3
+%scf
+  Thresh 1e-12
+  TCut   1e-13
+  MaxIter 300
+  STABPerform true
+  STABRestartUHFifUnstable true
+end
+* xyzfile 0 1 ts.xyz
+\end{verbatim}
+
+The second computes energy and forces (\texttt{EnGrad}) and reads the converged orbitals of the first run (\texttt{MORead}). A gradient run from a fresh guess could converge back to the closed-shell solution. Its forces would then belong to a different solution than the one the spin class was determined on.
+
+\subsection*{ORCA version}
+OMol25 used ORCA 6.0.0\cite{omol25}. In that version, the stability analysis reports spurious negative eigenvalues for $\omega$B97M-V; in a test on 17 structures, 9 runs aborted. ORCA 6.0.1 corrects this. OMol25 itself was not affected, because it did not use the stability analysis.
+
+\subsection*{Agreement with the OMol25 labels}
+We recomputed 44 Transition1x transition states with this protocol, and also with ORCA 5.0.4 (Table~S1). Both versions give the same spin class as OMol25 for all 44 structures (27 closed-shell, 17 broken-symmetry). The energy deviates from the OMol25 label by a nearly constant 0.07\,meV, at most 0.1\,meV. The largest force component deviates by at most 0.013\,eV/\AA{}.
+
+\begin{table}[h]
+  \caption{Deviation of our protocol from the OMol25 labels and between ORCA versions, at 44 Transition1x transition states. Force: difference of the largest force component.}
+  \label{tab:S1}
+  \begin{tabular}{lcccc}
+    \hline
+    & \multicolumn{2}{c}{Energy (meV)} & \multicolumn{2}{c}{Force (eV/\AA)} \\
+    Comparison & median & max & median & max \\
+    \hline
+    ORCA 6.0.1 vs OMol25      & 0.072  & 0.098 & 0.0004 & 0.013 \\
+    ORCA 6.0.1 vs ORCA 5.0.4  & 0.0001 & 0.028 & 0.0006 & 0.007 \\
+    \hline
+  \end{tabular}
+\end{table}
+
+% Numbers: results/orca6_gate.csv (44 rows, dE6omol_mev, dF6omol, dE65_mev, dF65).
+% TODO 5.0.4 row only if the thesis/5.0.4 is mentioned
+% TODO "9 of 17" is from D16 (docs/paper_decisions.md); needs a results file for the checker
+% TODO the 38 lower solutions (table) go to S2 next to the label check

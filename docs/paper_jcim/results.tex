@@ -1,0 +1,9 @@
+% Results -- label check. Numbers: results/stab_{s2pos,cshigh,twins,base}_orca6.csv (unique rxn),
+% d_omol_bs_mev > 1 meV for 38, all positive (our solution lower); 24 OMol25 closed -> ours bs, 0 reverse.
+\subsection{Label Check}
+\label{sec:labelcheck}
+We recomputed 2{,}490 Transition1x transition states from all four groups with the protocol of Section~2.1. For 2{,}452 of them, the energy agrees with the OMol25 label to within 1\,meV. For the remaining 38, the stability analysis finds a lower solution than the one in OMol25, and 24 of these change from closed-shell to broken-symmetry. Our energy is never above the OMol25 label. The OMol25 labels are therefore reliable for most of these structures, but the guess rotation occasionally misses a lower broken-symmetry solution.
+
+% TODO the 2,490 are the candidate pools, larger than the 510 used -> "considered for the four groups"?
+% TODO rxn9718: 2.3 eV lower, <S^2> 1.0 -> 2.0, check by hand before quoting a maximum
+% TODO assert 2490 / 2452 / 38 / 24 / 0.07 meV in the checker

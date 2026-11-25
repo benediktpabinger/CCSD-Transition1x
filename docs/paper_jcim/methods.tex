@@ -1,0 +1,13 @@
+% 2.1 Computational Details -- DFT reference
+\paragraph{DFT reference.}
+Reference energies and forces are computed at the OMol25 level of theory, $\omega$B97M-V/def2-TZVPD\cite{mardirossian2016wb97mv,weigend2005def2}, with ORCA 6.0.1\cite{orca6} (RI-J, COSX, DEFGRID3, tight SCF convergence, as in OMol25\cite{omol25}). Each structure is computed in the unrestricted Kohn--Sham (UKS) formalism from an unperturbed initial guess, which for a singlet converges to the closed-shell solution. A wavefunction stability analysis\cite{seeger1977,bauernschmitt1996} then tests this solution. If it is unstable, the SCF is reoptimized on the lower-energy, broken-symmetry solution. Energy and forces are taken from the final solution.
+
+OMol25 instead broke the spin symmetry of the initial guess by rotating the $\beta$ HOMO and LUMO by 20$^\circ$\cite{omol25}. If that SCF returns to the closed-shell solution, it remains open whether a lower solution exists. The stability analysis answers this question. Where both protocols reach the same solution, our energies and forces agree with the OMol25 labels to within 0.1\,meV in energy and 0.013\,eV/\AA{} in the largest force component (SI, Section~S1). For a small share of structures, the stability analysis finds a lower solution than the OMol25 label (Section~\ref{sec:labelcheck}).
+
+% TODO bib keys, all from memory, verify:
+%   mardirossian2016wb97mv  J. Chem. Phys. 144, 214110 (2016)
+%   weigend2005def2         Phys. Chem. Chem. Phys. 7, 3297 (2005); def2-TZVPD: Rappoport & Furche, J. Chem. Phys. 133, 134105 (2010)
+%   seeger1977              J. Chem. Phys. 66, 3045 (1977)
+%   bauernschmitt1996       J. Chem. Phys. 104, 9047 (1996)
+%   orca6                   Neese, WIREs Comput. Mol. Sci. (2025), "Software Update: The ORCA Program System--Version 6.0"
+% TODO check 20 degree / beta wording against the OMol25 PDF (Sec. 2.7, arXiv 2505.08762)
