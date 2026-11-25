@@ -71,3 +71,44 @@ The search follows Marks et al.\cite{marks2026fsm} and uses ML-FSM 1.0.1\cite{ma
 % docstring of fsm_search.py says "at most 3 line-search and 2 optimisation steps per node, step limit 0.05 A".
 % TODO eSEN endpoints come from the NEB runs (omol_neb.py, same BFGS settings) -- check steps limit there.
 % Source: ~/opt/mlfsm_src (thegomeslab, commit f1f53a0), ~/venvs/sella (sella 2.6.0)
+
+\section{S4\quad Located Transition States}
+
+\paragraph{Converged searches.} Of 2,040 searches (510 reactions, four models), 1,672 converged (Table~S2). For 10 of these, the DFT gradient calculation did not finish, leaving 1,662 located transition states with a DFT force. For 4 more, the DFT gradient at the reactant is missing, leaving 1,658 barriers.
+
+\paragraph{Check for the intended saddle.} Each converged structure is checked on the model surface, in double precision:
+\begin{enumerate}
+  \item The Hessian must have exactly one eigenvalue below $-0.05$\,eV/\AA$^2$.
+  \item The structure is displaced by $\pm 0.15$\,\AA{} along the corresponding mode, and both sides are relaxed with BFGS (step at most 0.05\,\AA) to a largest atomic force below 0.02\,eV/\AA{}, with at most 2,000 steps.
+  \item The two relaxed structures are compared with the reactant and product of the search by their bond graphs. Two atoms are bonded if their distance is below 1.15 times the sum of their covalent radii (H--H: below 0.95\,\AA).
+\end{enumerate}
+This is a short downhill relaxation in both directions, not a full intrinsic reaction coordinate calculation. Each structure falls into one of the following classes:
+\begin{itemize}
+  \item \textbf{Intended}: one side relaxes to the reactant, the other to the product.
+  \item \textbf{Intermediate}: one side relaxes to the reactant or the product, the other to a different minimum.
+  \item \textbf{Same end}: both sides relax to the same minimum.
+  \item \textbf{Other reaction}: neither side relaxes to the reactant or the product.
+  \item \textbf{Not a saddle}: no eigenvalue below the threshold.
+  \item \textbf{Higher-order saddle}: more than one eigenvalue below the threshold.
+  \item \textbf{Unresolved}: a downhill relaxation did not converge.
+\end{itemize}
+
+\begin{table}[h]
+  \caption{Converged searches and the share of each class, pooled over the four models. Percentages of converged searches.}
+  \begin{tabular}{lrrrrrrrr}
+    \hline
+    Group & Converged & Intended & Intermediate & Same end & Other & Not a saddle & Higher-order & Unresolved \\
+    \hline
+    Baseline           & 501 & 86 & 10 & 1 & 1 & 1  & 1 & 0 \\
+    Closed-shell twins & 395 & 50 & 33 & 2 & 7 & 6  & 3 & 0 \\
+    Broken-symmetry    & 414 & 36 & 43 & 3 & 8 & 8  & 1 & 0 \\
+    High multireference& 362 & 21 & 50 & 9 & 9 & 10 & 1 & 0 \\
+    \hline
+  \end{tabular}
+\end{table}
+% Per model: results/search_checks.csv (started / converged / passed per model and group) -> Table S2.
+% Classes: ~/neb_fsm/check_v2/<model>/*_fsm.json (route, one_end, same_end, elsewhere, no_mode, multi, unconverged).
+% 2 unresolved (1 bs, 1 high), both MACE-OMol.
+
+\paragraph{DFT comparison.} For 9 high-multireference reactions where the search located an intermediate, a DFT saddle optimization with an intrinsic reaction coordinate calculation confirmed the intermediate in all 9 cases.
+% TODO check the pilot numbers and wording against the D36 pilot report before using
