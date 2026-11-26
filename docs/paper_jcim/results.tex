@@ -7,3 +7,39 @@ We recomputed 2{,}490 Transition1x transition states from all four groups with t
 % TODO the 2,490 are the candidate pools, larger than the 510 used -> "considered for the four groups"?
 % TODO rxn9718: 2.3 eV lower, <S^2> 1.0 -> 2.0, check by hand before quoting a maximum
 % TODO assert 2490 / 2452 / 38 / 24 / 0.07 meV in the checker
+
+% Numbers: results/model_ts_summary.csv, quantity == force. Figure: figures/paper/v6_forces.pdf
+\subsection{Force Errors}
+\label{sec:forces}
+Figure~\ref{fgr:forces} shows the force error of each model at its located transition states against $N_\mathrm{FOD}$ at the same structure. For closed-shell transition states with low multireference character, the median force error is 6--13\,meV/\AA{}. It rises with $N_\mathrm{FOD}$ and is largest around $N_\mathrm{FOD} = 1$--1.2. The few structures above $N_\mathrm{FOD} = 1.5$ have lower errors again, although mostly still above those at low $N_\mathrm{FOD}$. At $N_\mathrm{FOD} \geq 1$, the median force error is 21--54\,meV/\AA{}, three to four times the value at low multireference character for all four models (Table~\ref{tbl:ratios}).
+
+At similar multireference character ($0.4 \leq N_\mathrm{FOD} < 0.9$), broken-symmetry transition states have larger force errors than closed-shell ones for all four models, by a factor of 1.2 to 1.6 (Table~\ref{tbl:ratios}).
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{v6_forces.pdf}
+  \caption{Force error of each model at its located transition states against $N_\mathrm{FOD}$ at the same structure, split by spin class. Force error: mean absolute difference between model and DFT force components. Lines show the running median (window $N_\mathrm{FOD} \pm 0.1$, at least 15 structures), bands the 25th to 75th percentile. Structures with errors above 100\,meV/\AA{} are shown as triangles at the upper edge.}
+  \label{fgr:forces}
+\end{figure}
+
+\begin{table}
+  \caption{Median errors at low (closed-shell, $N_\mathrm{FOD} < 0.2$) and high ($N_\mathrm{FOD} \geq 1$) multireference character, their ratio, and the ratio of broken-symmetry to closed-shell medians at $0.4 \leq N_\mathrm{FOD} < 0.9$. Brackets: 95\,\% bootstrap confidence intervals.}
+  \label{tbl:ratios}
+  \begin{tabular}{llccccc}
+    \hline
+    & Model & Low & High & High/low & $>$43\,meV (low/high) & BS/CS \\
+    \hline
+    Force (meV/\AA{}) & eSEN      & 12.7 & 39.6 & 3.1 [2.4--4.3] & -- & 1.29 [1.03--1.86] \\
+                      & UMA-S     &  9.5 & 37.2 & 3.9 [3.0--4.9] & -- & 1.61 [1.07--2.24] \\
+                      & UMA-M     &  5.6 & 21.0 & 3.7 [3.0--4.7] & -- & 1.22 [1.02--1.64] \\
+                      & MACE-OMol & 12.2 & 53.6 & 4.4 [3.2--5.3] & -- & 1.36 [1.11--1.97] \\
+    \hline
+    Barrier (meV)     & eSEN      &  3.7 & 18.1 & 4.9 [3.4--7.3] & 2\,\% / 27\,\% & 2.40 [1.48--3.51] \\
+                      & UMA-S     &  2.0 & 15.3 & 7.5 [4.4--10.3] & 1\,\% / 21\,\% & 2.34 [1.65--3.54] \\
+                      & UMA-M     &  3.3 &  9.8 & 3.0 [1.8--3.9] & 0\,\% / 11\,\% & 1.15 [0.84--1.99] \\
+                      & MACE-OMol &  4.8 & 30.9 & 6.4 [4.5--8.7] & 2\,\% / 38\,\% & 1.14 [0.89--1.98] \\
+    \hline
+  \end{tabular}
+\end{table}
+
+% TODO n per model and range (n_low 128-132, n_high 113-117, n_bs 69-80, n_cs 50-54) -> SI table
+% TODO assert all table numbers in the checker
