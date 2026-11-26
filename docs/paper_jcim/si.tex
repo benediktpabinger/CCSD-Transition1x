@@ -112,3 +112,12 @@ This is a short downhill relaxation in both directions, not a full intrinsic rea
 
 \paragraph{DFT comparison.} For 9 high-multireference reactions where the search located an intermediate, a DFT saddle optimization with an intrinsic reaction coordinate calculation confirmed the intermediate in all 9 cases.
 % TODO check the pilot numbers and wording against the D36 pilot report before using
+
+\section{S5\quad Error Measures}
+\paragraph{DFT energies.} The DFT energies in the barrier are taken from the same gradient calculation as the forces, on the final UKS orbitals (Section~S1). In this calculation the VV10 nonlocal correlation of $\omega$B97M-V is evaluated self-consistently, so its energy differs slightly from that of the preceding single point.
+
+\paragraph{Reactant.} The reactant each model relaxed for its search is computed with the same protocol as the transition state, including the stability analysis, so that a broken-symmetry reactant is treated in the same way.
+
+\paragraph{Sign.} A positive barrier error, $\Delta\Delta E^\ddagger > 0$, means that the model overestimates the barrier; a negative one, that it underestimates it.
+% Source: pipeline/d40_table.py (error_mev = barrier_model - barrier_dft, EnGrad on UKS orbitals at TS and R),
+% results/d40_barriers.csv. Missing calculations are listed in S4.
