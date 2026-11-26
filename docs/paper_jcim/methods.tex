@@ -80,4 +80,12 @@ We call the converged structure the located transition state. Of the 2,040 searc
 \label{sec:errors}
 At every located transition state we compute the DFT reference, $N_\mathrm{FOD}$ and the spin class as described in Section~2.1, so that the error and the multireference character are measured at the same structure.
 
-We use two error measures. The \emph{force error} is the mean absolute difference between model and DFT force components at the located transition state. The \emph{barrier error} is the difference between the model and the DFT barrier, $\Delta E^\ddagger_\mathrm{model} - \Delta E^\ddagger_\mathrm{DFT}$, where $\Delta E^\ddagger = E(\mathrm{TS}) - E(\mathrm{R})$ is evaluated at the located transition state and at the reactant the model relaxed for its search. We compare barrier errors with chemical accuracy, 1\,kcal/mol (43\,meV).
+We use two error measures. The \emph{force error} is the mean absolute difference between model and DFT force components at the located transition state,
+\begin{equation}
+  \mathrm{MAE}_F = \frac{1}{3N}\sum_{i=1}^{N}\sum_{\alpha=x,y,z} \left| F^\mathrm{model}_{i\alpha} - F^\mathrm{DFT}_{i\alpha} \right|,
+\end{equation}
+where $N$ is the number of atoms. The \emph{barrier error} is the difference between the model and the DFT barrier,
+\begin{equation}
+  \Delta\Delta E^\ddagger = \Delta E^\ddagger_\mathrm{model} - \Delta E^\ddagger_\mathrm{DFT}, \qquad \Delta E^\ddagger = E(\mathrm{TS}) - E(\mathrm{R}),
+\end{equation}
+where both barriers are evaluated at the same two structures, the located transition state and the reactant the model relaxed for its search, so that the barrier error contains no difference in geometry. We compare barrier errors with chemical accuracy, 1\,kcal/mol (43\,meV).
