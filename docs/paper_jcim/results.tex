@@ -13,7 +13,7 @@ We recomputed 2{,}490 Transition1x transition states from all four groups with t
 \label{sec:forces}
 Figure~\ref{fgr:forces} shows the force error of each model at its located transition states against $N_\mathrm{FOD}$ at the same structure. For closed-shell transition states with low multireference character, the median force error is 6--13\,meV/\AA{}. It rises with $N_\mathrm{FOD}$ and is largest around $N_\mathrm{FOD} = 1$--1.2. The few structures above $N_\mathrm{FOD} = 1.5$ have lower errors again, although mostly still above those at low $N_\mathrm{FOD}$. At $N_\mathrm{FOD} \geq 1$, the median force error is 21--54\,meV/\AA{}, three to four times the value at low multireference character for all four models (Table~\ref{tbl:ratios}). UMA-M has the smallest force errors at both low and high multireference character, and MACE-OMol the largest at high multireference character, but the relative increase is similar for all models.
 
-Because broken-symmetry transition states usually have higher $N_\mathrm{FOD}$, we compare the two spin classes between $N_\mathrm{FOD} = 0.4$ and 0.9, where both occur and their median $N_\mathrm{FOD}$ differs by at most 0.04 for each model. In this range, the median force error of broken-symmetry transition states is 1.2 to 1.6 times that of closed-shell ones, depending on the model (Table~\ref{tbl:ratios}). $N_\mathrm{FOD}$ alone therefore does not explain the larger errors at broken-symmetry transition states. A regression on $N_\mathrm{FOD}$ and spin class and a comparison of pairs matched in $N_\mathrm{FOD}$ give similar factors (SI).
+Broken-symmetry transition states usually have higher $N_\mathrm{FOD}$ than closed-shell ones. To separate the effect of the spin class from that of $N_\mathrm{FOD}$, we compare the two classes in the range $0.4 \leq N_\mathrm{FOD} < 0.9$, where both occur with nearly the same median $N_\mathrm{FOD}$ (Table~\ref{tbl:ratios}). In this range, broken-symmetry transition states still have larger force errors: their median is 1.2 to 1.6 times that of closed-shell ones, depending on the model. A regression on $N_\mathrm{FOD}$ and spin class and pairs matched in $N_\mathrm{FOD}$ give similar factors (SI). The larger force errors at broken-symmetry transition states therefore do not follow from their higher $N_\mathrm{FOD}$ alone.
 % TODO median N_FOD and regression/matched pairs: scratchpad bs_sep.py -> pipeline/ + results/, SI paragraph, checker
 
 \begin{figure}
@@ -23,21 +23,21 @@ Because broken-symmetry transition states usually have higher $N_\mathrm{FOD}$, 
 \end{figure}
 
 \begin{table}
-  \caption{Median errors at low (closed-shell, $N_\mathrm{FOD} < 0.2$) and high ($N_\mathrm{FOD} \geq 1$) multireference character, their ratio, and the ratio of broken-symmetry (BS) to closed-shell (CS) medians at $0.4 \leq N_\mathrm{FOD} < 0.9$, with 95\,\% bootstrap confidence intervals.}
+  \caption{Median errors at low (closed-shell, $N_\mathrm{FOD} < 0.2$) and high ($N_\mathrm{FOD} \geq 1$) multireference character, their ratio, and the ratio of broken-symmetry (BS) to closed-shell (CS) medians at $0.4 \leq N_\mathrm{FOD} < 0.9$, with 95\,\% bootstrap confidence intervals, and the median $N_\mathrm{FOD}$ of each class in that range.}
   \label{tbl:ratios}
-  \begin{tabular}{llcccc}
+  \begin{tabular}{llccccc}
     \hline
-    & Model & Low & High & High/low & BS/CS \\
+    & Model & Low & High & High/low & BS/CS & $N_\mathrm{FOD}$ BS/CS \\
     \hline
-    Force (meV/\AA{}) & eSEN      & 12.7 & 39.6 & 3.1 & 1.29 [1.03--1.86] \\
-                      & UMA-S     &  9.5 & 37.2 & 3.9 & 1.61 [1.07--2.24] \\
-                      & UMA-M     &  5.6 & 21.0 & 3.7 & 1.22 [1.02--1.64] \\
-                      & MACE-OMol & 12.2 & 53.6 & 4.4 & 1.36 [1.11--1.97] \\
+    Force (meV/\AA{}) & eSEN      & 12.7 & 39.6 & 3.1 & 1.29 [1.03--1.86] & 0.64/0.63 \\
+                      & UMA-S     &  9.5 & 37.2 & 3.9 & 1.61 [1.07--2.24] & 0.65/0.65 \\
+                      & UMA-M     &  5.6 & 21.0 & 3.7 & 1.22 [1.02--1.64] & 0.66/0.69 \\
+                      & MACE-OMol & 12.2 & 53.6 & 4.4 & 1.36 [1.11--1.97] & 0.66/0.62 \\
     \hline
-    Barrier (meV)     & eSEN      &  3.7 & 18.1 & 4.9 & 2.40 [1.48--3.51] \\
-                      & UMA-S     &  2.0 & 15.3 & 7.5 & 2.34 [1.65--3.54] \\
-                      & UMA-M     &  3.3 &  9.8 & 3.0 & 1.15 [0.84--1.99] \\
-                      & MACE-OMol &  4.8 & 30.9 & 6.4 & 1.14 [0.89--1.98] \\
+    Barrier (meV)     & eSEN      &  3.7 & 18.1 & 4.9 & 2.40 [1.48--3.51] & 0.64/0.63 \\
+                      & UMA-S     &  2.0 & 15.3 & 7.5 & 2.34 [1.65--3.54] & 0.65/0.65 \\
+                      & UMA-M     &  3.3 &  9.8 & 3.0 & 1.15 [0.84--1.99] & 0.66/0.69 \\
+                      & MACE-OMol &  4.8 & 30.9 & 6.4 & 1.14 [0.89--1.98] & 0.65/0.62 \\
     \hline
   \end{tabular}
 \end{table}
