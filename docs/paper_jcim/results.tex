@@ -61,3 +61,12 @@ In the range $0.4 \leq N_\mathrm{FOD} < 0.9$, where both spin classes occur with
 \end{figure}
 
 % TODO assert share_43 and the barrier numbers in the checker
+
+% Numbers: results/training_point_summary.csv (pipeline/training_point_summary.py), OMol25 train split only
+\subsection{Errors at Training Structures}
+\label{sec:training}
+The located transition states are structures of the model's own surface, and at high multireference character they may lie further from the training data. The larger errors there could therefore reflect distance from the training data rather than multireference character. To separate the two, we evaluate the models at the Transition1x transition states that are part of the OMol25 training set, against their OMol25 labels. For closed-shell transition states with low multireference character, the median force error is 5--12\,meV/\AA{}, similar to the located transition states. At $N_\mathrm{FOD} \geq 1$, it is 11--25\,meV/\AA{}, 1.9 to 2.2 times the value at low multireference character for all four models (95\,\% confidence intervals 1.7--2.6). The force error therefore rises with multireference character even at structures the models were trained on. The increase is smaller than at the located transition states (3--4 times), so part of the increase there may come from the search reaching structures further from the training data.
+
+% TODO spin class here is OMol25's (group_omol); switch to ours after the D46 label check
+% TODO n: 4,946 low / 167 high per model (train split); state in SI. Closed-shell at N_FOD >= 1: only 16, not reported.
+% TODO assert in checker
