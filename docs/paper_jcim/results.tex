@@ -23,11 +23,13 @@ Broken-symmetry transition states usually have higher $N_\mathrm{FOD}$ than clos
 \end{figure}
 
 \begin{table}
-  \caption{Median errors at low (closed-shell, $N_\mathrm{FOD} < 0.2$) and high ($N_\mathrm{FOD} \geq 1$) multireference character, their ratio, and the ratio of broken-symmetry (BS) to closed-shell (CS) medians at $0.4 \leq N_\mathrm{FOD} < 0.9$, with 95\,\% bootstrap confidence intervals, and the median $N_\mathrm{FOD}$ of each class in that range.}
+  \caption{Median force and barrier errors at low and high multireference character and their ratio, and the ratio of broken-symmetry (BS) to closed-shell (CS) medians where both classes occur, with 95\,\% bootstrap confidence intervals and the median $N_\mathrm{FOD}$ of each class in that range.}
   \label{tbl:ratios}
   \begin{tabular}{llccccc}
     \hline
-    & Model & Low & High & High/low & BS/CS & $N_\mathrm{FOD}$ BS/CS \\
+    & & Low MR & High MR & & \multicolumn{2}{c}{Both classes} \\
+    & & CS, $N_\mathrm{FOD} < 0.2$ & $N_\mathrm{FOD} \geq 1$ & & \multicolumn{2}{c}{$0.4 \leq N_\mathrm{FOD} < 0.9$} \\
+    & Model & median & median & High/low & BS/CS & $N_\mathrm{FOD}$ BS/CS \\
     \hline
     Force (meV/\AA{}) & eSEN      & 12.7 & 39.6 & 3.1 & 1.29 [1.03--1.86] & 0.64/0.63 \\
                       & UMA-S     &  9.5 & 37.2 & 3.9 & 1.61 [1.07--2.24] & 0.65/0.65 \\
