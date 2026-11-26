@@ -31,6 +31,8 @@ We test four machine-learned interatomic potentials trained on OMol25: eSEN-sm-c
 
 Every structure is given to the models as a neutral singlet (charge 0, spin multiplicity 1). The models have no input that distinguishes a closed-shell from a broken-symmetry solution; what they predict for a broken-symmetry reaction follows from the labels they were trained on.
 
+As a reference without broken-symmetry training data, we also evaluate a MACE model\cite{batatia2022mace} that we trained from scratch on the Transition1x training split at $\omega$B97X/6-31G(d) (MACE-T1x; settings in SI, Section~S6). Its training labels are restricted calculations, so it has never seen a broken-symmetry solution.
+
 % 2.2 Reactions
 % Numbers: fod_ts_all.csv (10,073; shares >= 0.5 / >= 1), stab_*_orca6.csv (2,490 unique, 2,466 agree),
 % d24_set.csv + d29_set.csv (groups, depth bins 30/34/33/33, high all bs)
