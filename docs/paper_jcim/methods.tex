@@ -1,4 +1,6 @@
 % 2.1 Computational Details -- DFT reference
+\subsection{Computational Details}
+\label{sec:dft}
 \paragraph{DFT reference.}
 Reference energies and forces are computed at the OMol25 level of theory, $\omega$B97M-V/def2-TZVPD\cite{mardirossian2016wb97mv,weigend2005def2}, with ORCA 6.0.1\cite{orca6} (RI-J, COSX, DEFGRID3, tight SCF convergence, as in OMol25\cite{omol25}). Each structure is computed in the unrestricted Kohn--Sham (UKS) formalism from an unperturbed initial guess, which for a singlet converges to the closed-shell solution. A wavefunction stability analysis\cite{seeger1977,bauernschmitt1996} then tests this solution. If it is unstable, the SCF is reoptimized on the lower-energy, broken-symmetry solution. Energy and forces are taken from the final solution.
 
@@ -24,7 +26,7 @@ A structure is \emph{broken-symmetry} if its final UKS solution has $\langle S^2
 % 2.1 Computational Details -- models
 % Marks et al. used UMA-S 1.1, UMA-M 1.1, eSEN-S, MACE-OMol25 (marks.txt l. 285-297).
 % Software versions (fairchem-core 2.20.0, mace-torch 0.3.15) -> Data and Software Availability.
-\paragraph{Models}
+\paragraph{Models.}
 We test four machine-learned interatomic potentials trained on OMol25: eSEN-sm-conserving\cite{fu2025esen}, UMA-S 1.2 and UMA-M 1.1\cite{wood2025uma}, and MACE-OMol-0 (extra large)\cite{batatia2025maceomol}. All four are trained to reproduce $\omega$B97M-V/def2-TZVPD energies and forces. They are the models benchmarked by Marks et al.\cite{marks2026fsm}, except that we use the newer UMA-S 1.2. eSEN and MACE-OMol are trained on OMol25 alone and differ in architecture. The two UMA models are also trained on datasets of materials, surfaces and molecular crystals, and differ in size. eSEN and the UMA models run in single precision, the fairchem default, and MACE-OMol in double precision.
 
 Every structure is given to the models as a neutral singlet (charge 0, spin multiplicity 1). The models have no input that distinguishes a closed-shell from a broken-symmetry solution; what they predict for a broken-symmetry reaction follows from the labels they were trained on.
@@ -78,7 +80,7 @@ where $N$ is the number of atoms. $N_\mathrm{FOD}$ is computed at the same struc
 % 2.4 Transition-state search. Settings: pipeline/fsm_search.py
 \subsection{Transition-State Search}
 \label{sec:search}
-The Transition1x transition states are part of the training data, so errors there show how well the models fit their training data. In practice, a model is used to locate a transition state, and the result depends on how accurate the model is at the structure it finds. We therefore let each model search for the transition state itself, with the workflow that Marks et al.\cite{marks2026fsm} found reliable for these models: the freezing string method\cite{behn2011fsm} builds a path between reactant and product and gives a guess for the transition state, which Sella\cite{hermes2022sella} then refines to a first-order saddle point on the model surface. Reactant and product are the Transition1x structures, first relaxed on each model (BFGS, 0.05\,eV/\AA); the search does not use the Transition1x path or transition state. Settings are given in SI Section~S3.
+In practice, a model is used to locate a transition state, and the result depends on how accurate the model is at the structure it finds. We therefore let each model search for the transition state itself, with the workflow that Marks et al.\cite{marks2026fsm} found reliable for these models: the freezing string method\cite{behn2011fsm} builds a path between reactant and product and gives a guess for the transition state, which Sella\cite{hermes2022sella} then refines to a first-order saddle point on the model surface. Reactant and product are the Transition1x structures, first relaxed on each model (BFGS, 0.05\,eV/\AA); the search does not use the Transition1x path or transition state. Settings are given in SI Section~S3.
 
 We call the converged structure the located transition state. Of the 2,040 searches (510 reactions, four models), 1,672 located a transition state. Almost all failures occurred while the freezing string was built and depended on the reaction, not on the model (SI, Section~S4). A located transition state need not connect the intended reactant and product; it can, for example, lead to an intermediate. We check this by displacing it along its imaginary mode and relaxing both sides on the model (SI, Section~S4). The check is reported but not used as a filter: every located transition state enters the error analysis in Section~\ref{sec:errors} and Section~\ref{sec:results}, because the model can be compared with DFT at any structure it identifies as a transition state.
 % TODO bib keys behn2011fsm, hermes2022sella (from memory, verify)
@@ -88,13 +90,13 @@ We call the converged structure the located transition state. Of the 2,040 searc
 % d37_forces_missing.csv (10, no DFT gradient), d40_barriers.csv (1,658), d40_barriers_missing.csv (4)
 \subsection{Evaluation at the Located Transition States}
 \label{sec:errors}
-At every located transition state we compute the DFT reference, $N_\mathrm{FOD}$ and the spin class as described in Section~2.1, so that the error and the multireference character are measured at the same structure.
+At every located transition state we compute the DFT reference, $N_\mathrm{FOD}$ and the spin class as described in Section~\ref{sec:dft}, so that the error and the multireference character are measured at the same structure.
 
-We use two error measures: the force error of Section~\ref{sec:evalt1x}, now against our DFT reference, and the \emph{barrier error} is the difference between the model and the DFT barrier,
+We use two error measures: the force error of Section~\ref{sec:evalt1x}, now against our DFT reference, and the \emph{barrier error}, the difference between the model and the DFT barrier,
 \begin{equation}
   \Delta\Delta E^\ddagger = \Delta E^\ddagger_\mathrm{model} - \Delta E^\ddagger_\mathrm{DFT}, \qquad \Delta E^\ddagger = E(\mathrm{TS}) - E(\mathrm{R}),
 \end{equation}
 where both barriers are evaluated at the same two structures, the located transition state and the reactant the model relaxed for its search, so that the barrier error contains no difference in geometry. We compare barrier errors with chemical accuracy, 1\,kcal/mol (43\,meV).
 
 % Numbers: results/model_ts_summary.csv (pipeline/model_ts_summary.py)
-We plot each error against $N_\mathrm{FOD}$ at the same structure, separately for closed-shell and broken-symmetry transition states, with a running median over a window of $\pm 0.1$ in $N_\mathrm{FOD}$ (at least 15 structures) and the 25th to 75th percentile. We summarise errors by their median and give 95\,\% confidence intervals for ratios of medians from 5{,}000 bootstrap resamples.
+We plot each error against $N_\mathrm{FOD}$ at the same structure, separately for closed-shell and broken-symmetry transition states, with a running median over a window of $\pm 0.1$ in $N_\mathrm{FOD}$ (at least 15 structures) and the 25th to 75th percentile. In both evaluations, we summarise errors by their median and give 95\,\% confidence intervals for ratios of medians from 5{,}000 bootstrap resamples.
