@@ -69,7 +69,7 @@ def figure(rows, value, cap, ylabel, title, name, ref=None):
             g, q1, med, q3 = running(x, y)
             ax.fill_between(g, q1, np.minimum(q3, cap), color=col, alpha=0.18, lw=0)
             ax.plot(g, med, color=col, lw=2.2, label=lab)
-        ax.set_xlim(-0.03, 1.65)
+        ax.set_xlim(-0.05, 2.85)
         ax.set_ylim(0, cap)
     if ref:
         axs.flat[1].text(1.62, ref + 1.5, f'{ref} meV', ha='right', va='bottom', fontsize=8, color=INK2)
