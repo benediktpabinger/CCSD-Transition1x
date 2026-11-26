@@ -46,3 +46,18 @@ Broken-symmetry transition states usually have higher $N_\mathrm{FOD}$ than clos
 
 % TODO n per model and range (n_low 128-132, n_high 113-117, n_bs 69-80, n_cs 50-54) -> SI table
 % TODO assert all table numbers in the checker
+
+% Numbers: results/model_ts_summary.csv, quantity == barrier. Figure: figures/paper/v6_barriers.pdf
+\subsection{Barrier Errors}
+\label{sec:barriers}
+Figure~\ref{fgr:barriers} shows the absolute barrier error of each model at its located transition states against $N_\mathrm{FOD}$ at the same structure. For closed-shell transition states with low multireference character, the median barrier error is 2--5\,meV, well below chemical accuracy (43\,meV). It rises with $N_\mathrm{FOD}$ and is largest around $N_\mathrm{FOD} = 1$--1.5. The few structures above $N_\mathrm{FOD} = 1.6$ have lower errors again. At $N_\mathrm{FOD} \geq 1$, the median barrier error is 10--31\,meV, three to eight times the value at low multireference character (Table~\ref{tbl:ratios}). Most barriers therefore remain within chemical accuracy, but the share that does not grows from 0--2\,\% at low multireference character to 11\,\% (UMA-M), 21\,\% (UMA-S), 27\,\% (eSEN) and 38\,\% (MACE-OMol) at $N_\mathrm{FOD} \geq 1$. UMA-M has the smallest barrier errors at high multireference character and the smallest increase, and MACE-OMol the largest errors. The scatter is larger than for forces, because the barrier error combines the errors at two structures, the transition state and the reactant.
+
+In the range $0.4 \leq N_\mathrm{FOD} < 0.9$, where both spin classes occur with nearly the same median $N_\mathrm{FOD}$ (Table~\ref{tbl:ratios}), broken-symmetry transition states have larger barrier errors for eSEN and UMA-S: their median is 2.4 and 2.3 times that of closed-shell ones. For UMA-M and MACE-OMol, the difference is not clear, and the confidence intervals include 1. For barriers, the effect of the spin class beyond $N_\mathrm{FOD}$ therefore depends on the model.
+
+\begin{figure}
+  \includegraphics[width=\textwidth]{v6_barriers.pdf}
+  \caption{Absolute barrier error of each model at its located transition states against $N_\mathrm{FOD}$ at the same structure, split by spin class. Model and DFT barriers are evaluated at the same transition-state and reactant structures. Lines show the running median (window $N_\mathrm{FOD} \pm 0.1$, at least 15 structures), bands the 25th to 75th percentile. The dashed line marks chemical accuracy, 1\,kcal/mol (43\,meV). Structures with errors above 100\,meV are shown as triangles at the upper edge.}
+  \label{fgr:barriers}
+\end{figure}
+
+% TODO assert share_43 and the barrier numbers in the checker
