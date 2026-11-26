@@ -65,26 +65,32 @@ We therefore draw 510 reactions so that the set covers low and high multireferen
   \end{tabular}
 \end{table}
 
-% 2.3 Transition-state search. Settings: pipeline/fsm_search.py
+% 2.3 Evaluation at the Transition1x transition states. Numbers: results/model_sp_ts_all.csv (9,502 TS in the OMol25 train split),
+% label check: job_label_all.sh (D46), all 10,009 TS
+\subsection{Evaluation at the Transition1x Transition States}
+\label{sec:evalt1x}
+We first evaluate at the Transition1x transition states, which are part of the OMol25 training data. To check the reference, we recompute all 10,009 of them with the protocol of Section~\ref{sec:dft} and compare energy, forces and spin class with the OMol25 labels. To measure how well the models fit their training data, we evaluate each model at the 9,502 transition states in the OMol25 training split and compare with the OMol25 labels. The \emph{force error} is the mean absolute difference between model and reference force components,
+\begin{equation}
+  \mathrm{MAE}_F = \frac{1}{3N}\sum_{i=1}^{N}\sum_{\alpha=x,y,z} \left| F^\mathrm{model}_{i\alpha} - F^\mathrm{ref}_{i\alpha} \right|,
+\end{equation}
+where $N$ is the number of atoms. $N_\mathrm{FOD}$ is computed at the same structures.
+
+% 2.4 Transition-state search. Settings: pipeline/fsm_search.py
 \subsection{Transition-State Search}
 \label{sec:search}
 The Transition1x transition states are part of the training data, so errors there show how well the models fit their training data. In practice, a model is used to locate a transition state, and the result depends on how accurate the model is at the structure it finds. We therefore let each model search for the transition state itself, with the workflow that Marks et al.\cite{marks2026fsm} found reliable for these models: the freezing string method\cite{behn2011fsm} builds a path between reactant and product and gives a guess for the transition state, which Sella\cite{hermes2022sella} then refines to a first-order saddle point on the model surface. Reactant and product are the Transition1x structures, first relaxed on each model (BFGS, 0.05\,eV/\AA); the search does not use the Transition1x path or transition state. Settings are given in SI Section~S3.
 
-We call the converged structure the located transition state. Of the 2,040 searches (510 reactions, four models), 1,672 located a transition state. Almost all failures occurred while the freezing string was built and depended on the reaction, not on the model (SI, Section~S4). A located transition state need not connect the intended reactant and product; it can, for example, lead to an intermediate. We check this by displacing it along its imaginary mode and relaxing both sides on the model (SI, Section~S4). The check is reported but not used as a filter: every located transition state enters the error analysis in Section~2.4 and Section~\ref{sec:results}, because the model can be compared with DFT at any structure it identifies as a transition state.
+We call the converged structure the located transition state. Of the 2,040 searches (510 reactions, four models), 1,672 located a transition state. Almost all failures occurred while the freezing string was built and depended on the reaction, not on the model (SI, Section~S4). A located transition state need not connect the intended reactant and product; it can, for example, lead to an intermediate. We check this by displacing it along its imaginary mode and relaxing both sides on the model (SI, Section~S4). The check is reported but not used as a filter: every located transition state enters the error analysis in Section~\ref{sec:errors} and Section~\ref{sec:results}, because the model can be compared with DFT at any structure it identifies as a transition state.
 % TODO bib keys behn2011fsm, hermes2022sella (from memory, verify)
 
-% 2.4 Errors at the located transition states
+% 2.5 Evaluation at the located transition states
 % Numbers: search_checks.csv (fsm: 2,040 started, 1,672 converged), d37_forces.csv (1,662),
 % d37_forces_missing.csv (10, no DFT gradient), d40_barriers.csv (1,658), d40_barriers_missing.csv (4)
-\subsection{Model Accuracy at the Located Transition States}
+\subsection{Evaluation at the Located Transition States}
 \label{sec:errors}
 At every located transition state we compute the DFT reference, $N_\mathrm{FOD}$ and the spin class as described in Section~2.1, so that the error and the multireference character are measured at the same structure.
 
-We use two error measures. The \emph{force error} is the mean absolute difference between model and DFT force components at the located transition state,
-\begin{equation}
-  \mathrm{MAE}_F = \frac{1}{3N}\sum_{i=1}^{N}\sum_{\alpha=x,y,z} \left| F^\mathrm{model}_{i\alpha} - F^\mathrm{DFT}_{i\alpha} \right|,
-\end{equation}
-where $N$ is the number of atoms. The \emph{barrier error} is the difference between the model and the DFT barrier,
+We use two error measures: the force error of Section~\ref{sec:evalt1x}, now against our DFT reference, and the \emph{barrier error} is the difference between the model and the DFT barrier,
 \begin{equation}
   \Delta\Delta E^\ddagger = \Delta E^\ddagger_\mathrm{model} - \Delta E^\ddagger_\mathrm{DFT}, \qquad \Delta E^\ddagger = E(\mathrm{TS}) - E(\mathrm{R}),
 \end{equation}
