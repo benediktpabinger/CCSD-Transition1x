@@ -78,7 +78,7 @@ EOF
   grep -q "CARTESIAN GRADIENT" uks_engrad.out || { echo "  ABORT $RXN uks_engrad"; tail -3 uks_engrad.out; return 9; }
   local NEL_OUT=$(grep -m1 "Number of Electrons" uks_sp.out | awk '{print $NF}')
   [ -z "$NEL" ] || [ "$NEL_OUT" = "$NEL" ] || { echo "  ABORT $RXN: electrons $NEL vs ORCA $NEL_OUT"; return 10; }
-  rm -f *.densities *.densitiesinfo *_property.txt *.property.txt uks_start.gbw uks_sp.gbw uks_engrad.gbw
+  rm -f *.densities *.densitiesinfo *_property.txt *.property.txt *.tmp uks_start.gbw uks_sp.gbw uks_engrad.gbw
   echo "DONE $RXN  <S^2> $(grep 'Expectation value of <S\*\*2>' uks_engrad.out | tail -1 | awk '{print $NF}')  $(date +%T)"
 }
 
