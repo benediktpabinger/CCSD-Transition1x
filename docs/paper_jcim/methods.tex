@@ -65,11 +65,11 @@ We therefore draw 510 reactions so that the set covers low and high multireferen
   \end{tabular}
 \end{table}
 
-% 2.3 Evaluation at the Transition1x transition states. Numbers: results/model_sp_ts_all.csv (9,502 TS in the OMol25 train split),
+% 2.3 Evaluation at the Transition1x transition states. Numbers: results/model_sp_ts_all.csv (all 10,009 TS, D03/D08),
 % label check: job_label_all.sh (D46), all 10,009 TS
 \subsection{Evaluation at the Transition1x Transition States}
 \label{sec:evalt1x}
-We first evaluate at the Transition1x transition states, which are part of the OMol25 training data. To check the reference, we recompute all 10,009 of them with the protocol of Section~\ref{sec:dft} and compare energy, forces and spin class with the OMol25 labels. To measure how well the models fit their training data, we evaluate each model at the 9,502 transition states in the OMol25 training split and compare with the OMol25 labels. The \emph{force error} is the mean absolute difference between model and reference force components,
+We first evaluate at the Transition1x transition states, which are part of the OMol25 training data. To check the reference, we recompute all 10,009 of them with the protocol of Section~\ref{sec:dft} and compare energy, forces and spin class with the OMol25 labels. To measure how well the models fit their training data, we evaluate each model at the same transition states and compare with the OMol25 labels. The \emph{force error} is the mean absolute difference between model and reference force components,
 \begin{equation}
   \mathrm{MAE}_F = \frac{1}{3N}\sum_{i=1}^{N}\sum_{\alpha=x,y,z} \left| F^\mathrm{model}_{i\alpha} - F^\mathrm{ref}_{i\alpha} \right|,
 \end{equation}

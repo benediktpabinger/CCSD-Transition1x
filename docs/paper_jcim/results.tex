@@ -4,11 +4,11 @@
 \label{sec:labelcheck}
 We recomputed 2{,}490 Transition1x transition states from all four groups with the protocol of Section~2.1. For 2{,}452 of them, the energy agrees with the OMol25 label to within 1\,meV. For the remaining 38, the stability analysis finds a lower solution than the one in OMol25, and 24 of these change from closed-shell to broken-symmetry. Our energy is never above the OMol25 label. The OMol25 labels are therefore reliable for most of these structures, but the guess rotation occasionally misses a lower broken-symmetry solution.
 
-% Numbers: results/training_point_summary.csv (pipeline/training_point_summary.py), OMol25 train split only
-At the same structures, we evaluate the models against the OMol25 labels. For closed-shell transition states with low multireference character, the median force error against the OMol25 label is 5--12\,meV/\AA{}. At $N_\mathrm{FOD} \geq 1$, it is 11--25\,meV/\AA{}, 1.9 to 2.2 times the value at low multireference character for all four models (95\,\% confidence intervals 1.7--2.6). The force error therefore rises with multireference character even at structures the models were trained on.
+% Numbers: results/training_point_summary.csv (pipeline/training_point_summary.py), all 10,009 TS
+At the same structures, we evaluate the models against the OMol25 labels. For closed-shell transition states with low multireference character, the median force error against the OMol25 label is 5--12\,meV/\AA{}. At $N_\mathrm{FOD} \geq 1$, it is 11--25\,meV/\AA{}, 1.9 to 2.3 times the value at low multireference character for all four models (95\,\% confidence intervals 1.7--2.7). The force error therefore rises with multireference character even at structures the models were trained on.
 
 % TODO spin class here is OMol25's (group_omol); switch to ours after the D46 label check
-% TODO n: 4,946 low / 167 high per model (train split); state in SI. Closed-shell at N_FOD >= 1: only 16, not reported.
+% TODO n: 5,224 low / 173 high per model; state in SI. Closed-shell at N_FOD >= 1: only 16, not reported.
 % TODO assert in checker
 
 % TODO the 2,490 are the candidate pools, larger than the 510 used -> "considered for the four groups"?

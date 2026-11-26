@@ -1,6 +1,7 @@
-"""Paper 3.4: force error at the Transition1x transition states that are in the OMol25 training split.
+"""Paper 3.1: force error at the 10,009 Transition1x transition states, all in the OMol25 training data (D03, D08).
 
-Per model, from results/model_sp_ts_all.csv (model vs OMol25 label at the stored TS), split == train only:
+Per model, from results/model_sp_ts_all.csv (model vs OMol25 label at the stored TS). Its split column is the
+Transition1x split, which carries no held-out meaning for the OMol25 models, so all rows are used:
   low   OMol25 closed-shell, N_FOD < 0.2       high   N_FOD >= 1 (either class)
   force error = f_mae (meV/A); ratio = median(high) / median(low), 95 % bootstrap CI (5000, seed 0)
 Spin class is OMol25's (group_omol) until the D46 label check gives ours at all 10,009 TS.
@@ -16,7 +17,7 @@ import numpy as np
 
 REPO = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 RES = os.path.join(REPO, 'results')
-rows = [r for r in csv.DictReader(open(f'{RES}/model_sp_ts_all.csv')) if r['split'] == 'train' and r['f_mae']]
+rows = [r for r in csv.DictReader(open(f'{RES}/model_sp_ts_all.csv')) if r['f_mae']]
 rng = np.random.default_rng(0)
 
 
